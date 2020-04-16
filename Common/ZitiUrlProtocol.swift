@@ -20,7 +20,7 @@ import Foundation
  *
  * Call the `ZitiUrlProtocol.start()`method to register this `URLProtocol` and start the background processing thread for `Ziti` requests.
  */
-class ZitiUrlProtocol: URLProtocol {
+@objc public class ZitiUrlProtocol: URLProtocol {
     var clt = um_http_t()
     var started = false
     var req:UnsafeMutablePointer<um_http_req_t>? = nil
@@ -52,8 +52,8 @@ class ZitiUrlProtocol: URLProtocol {
      * urlSession = URLSession(configuration:configuration)
      * ```
      */
-    class func start() -> Bool {
-        uv_mbed_set_debug(5, stdout) // 6 is trace, 5 is verb, 4 is debug, 3 is info
+    @objc public class func start() -> Bool {
+        //uv_mbed_set_debug(5, stdout) // 6 is trace, 5 is verb, 4 is debug, 3 is info
         
         // Init the start/stop async send handles
         if uv_async_init(ZitiUrlProtocol.loop, &async_start_h, ZitiUrlProtocol.on_async_start) != 0 {
@@ -114,7 +114,7 @@ class ZitiUrlProtocol: URLProtocol {
         print("deinit \(self), Thread: \(String(describing: Thread.current.name))")
     }
     
-    override class func canInit(with request: URLRequest) -> Bool {
+    public override class func canInit(with request: URLRequest) -> Bool {
         print("Checking if can handle \(request.debugDescription)")
         print("--- Request Headers ---")
         print("\(String(describing: request.allHTTPHeaderFields))")
@@ -127,11 +127,11 @@ class ZitiUrlProtocol: URLProtocol {
         return false
     }
     
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest {
+    public override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
     
-    override func startLoading() {
+    public override func startLoading() {
         print("*** start loading, Thread: \(String(describing: Thread.current.name))")
         
         // client callbacks need to run in client thread in any of its modes
@@ -155,7 +155,7 @@ class ZitiUrlProtocol: URLProtocol {
         }
     }
     
-    override func stopLoading() {
+    public override func stopLoading() {
         print("*** stop loading, Thread: \(String(describing: Thread.current.name))")
         if uv_async_send(&ZitiUrlProtocol.async_close_h) != 0 {
             NSLog("ZitiUrlProtocol.stopLoading request \(request) queued, but unable to trigger async send")
