@@ -1,6 +1,6 @@
 ## Ziti URL Protocol
 
-WIP: A Framework containing a URLProtocol that intercepts http and https requests and channles them over a Ziti network.  Currently justs passes all requests over um_http.  Plan is to add support to um_http for a configurable uv_link implmented to run over ziti (http -> (tls) -> [tcp|ziti])...
+WIP: A Framework containing a `URLProtocol` that intercepts http and https requests and routes them over a Ziti network.  Currently justs passes all requests via `um_http`.  Plan is to add support to `um_http` for a configurable `uv_linki` implmented to run over ziti (http -> (tls) -> [tcp|ziti])...
 
 ## Building
 
