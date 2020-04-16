@@ -4,7 +4,7 @@ WIP: A Framework containing a URLProtocol that intercepts http and https request
 
 ## Building
 
-`ziti-sdk-c` is a git submodule.  This project expect builds to be built in `./deps/ziti-sdk-c/build-darwin-x86_64` for macOS and `./deps/ziti-sdk-c/build-iOS-arm64` for iOS (simulator not currently supported).
+`./deps/ziti-sdk-c` is a git submodule.  This project expect builds to be built in `./deps/ziti-sdk-c/build-darwin-x86_64` for macOS and `./deps/ziti-sdk-c/build-iOS-arm64` for iOS (simulator not currently supported).  See the build instructions in the `ziti-sdk-c` repository.
 
 ## Getting Help
 
