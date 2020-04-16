@@ -7,20 +7,52 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5A2D840A2444D54C008B1D32 /* ZitiUrlProtocol_iOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A2D84082444D54C008B1D32 /* ZitiUrlProtocol_iOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		5A2D84172444D5AE008B1D32 /* ZitiUrlProtocol_macOS.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A2D84152444D5AE008B1D32 /* ZitiUrlProtocol_macOS.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A2D84172444D5AE008B1D32 /* ZitiUrlProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A2D84152444D5AE008B1D32 /* ZitiUrlProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5A2D841D2444D748008B1D32 /* ZitiUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */; };
-		5A2D841E2444F3AE008B1D32 /* ZitiUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */; };
+		5A2D94A424451564008B1D32 /* ZitiUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */; };
+		5A2D94B624451E07008B1D32 /* http_parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A2D94B524451E07008B1D32 /* http_parser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A2D94B724451E07008B1D32 /* http_parser.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A2D94B524451E07008B1D32 /* http_parser.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5A2D94C324451F6F008B1D32 /* libhttp-parser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A2D94C124451F57008B1D32 /* libhttp-parser.a */; };
+		5A2D94C424451F73008B1D32 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A2D94C224451F57008B1D32 /* libmbedcrypto.a */; };
+		5A2D94C524451F77008B1D32 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A2D94BE24451F57008B1D32 /* libmbedtls.a */; };
+		5A2D94C624451F7B008B1D32 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A2D94BF24451F57008B1D32 /* libmbedx509.a */; };
+		5A2D94C724451F7F008B1D32 /* libuv_link.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A2D94BD24451F57008B1D32 /* libuv_link.a */; };
+		5A2D94C824451F85008B1D32 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A2D94C024451F57008B1D32 /* libuv_mbed.a */; };
+		5A2D94CA24451FDA008B1D32 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A2D94C924451FD4008B1D32 /* libuv_a.a */; };
+		5AA628C22446228B003D374B /* uv.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AA628C12446228A003D374B /* uv.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AA628C324462296003D374B /* uv.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AA628C12446228A003D374B /* uv.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AA629172446341C003D374B /* uv_link_t.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AA629162446341C003D374B /* uv_link_t.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AA6291824463430003D374B /* uv_link_t.h in Headers */ = {isa = PBXBuildFile; fileRef = 5AA629162446341C003D374B /* uv_link_t.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AA6291A244635BA003D374B /* uv_mbed in Resources */ = {isa = PBXBuildFile; fileRef = 5AA62919244635B9003D374B /* uv_mbed */; };
+		5AA6291C24463650003D374B /* uv_mbed in Headers */ = {isa = PBXBuildFile; fileRef = 5AA62919244635B9003D374B /* uv_mbed */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AA6291E24463B43003D374B /* uv in Resources */ = {isa = PBXBuildFile; fileRef = 5AA6291D24463B43003D374B /* uv */; };
+		5AD37EC22446A8DA00C9C0F3 /* uv in Resources */ = {isa = PBXBuildFile; fileRef = 5AA6291D24463B43003D374B /* uv */; };
+		5AD37EC52447DE0900C9C0F3 /* uv in Headers */ = {isa = PBXBuildFile; fileRef = 5AA6291D24463B43003D374B /* uv */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AD37EC62447DE2700C9C0F3 /* ZitiUrlProtocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 5A2D84152444D5AE008B1D32 /* ZitiUrlProtocol.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AD37EC72447DE7300C9C0F3 /* uv_mbed in Headers */ = {isa = PBXBuildFile; fileRef = 5AA62919244635B9003D374B /* uv_mbed */; settings = {ATTRIBUTES = (Public, ); }; };
+		5AD37EC82447DE7700C9C0F3 /* uv in Headers */ = {isa = PBXBuildFile; fileRef = 5AA6291D24463B43003D374B /* uv */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		5A2D84052444D54C008B1D32 /* ZitiUrlProtocol.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZitiUrlProtocol.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5A2D84082444D54C008B1D32 /* ZitiUrlProtocol_iOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZitiUrlProtocol_iOS.h; sourceTree = "<group>"; };
 		5A2D84092444D54C008B1D32 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5A2D84132444D5AE008B1D32 /* ZitiUrlProtocol.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = ZitiUrlProtocol.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		5A2D84152444D5AE008B1D32 /* ZitiUrlProtocol_macOS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZitiUrlProtocol_macOS.h; sourceTree = "<group>"; };
+		5A2D84152444D5AE008B1D32 /* ZitiUrlProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ZitiUrlProtocol.h; sourceTree = "<group>"; };
 		5A2D84162444D5AE008B1D32 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiUrlProtocol.swift; sourceTree = "<group>"; };
+		5A2D94A32445148A008B1D32 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		5A2D94B524451E07008B1D32 /* http_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = http_parser.h; path = "deps/ziti-sdk-c/deps/uv-mbed/deps/http-parser/http_parser.h"; sourceTree = SOURCE_ROOT; };
+		5A2D94BD24451F57008B1D32 /* libuv_link.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_link.a; path = "deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/libuv_link.a"; sourceTree = "<group>"; };
+		5A2D94BE24451F57008B1D32 /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/mbedtls/library/libmbedtls.a"; sourceTree = "<group>"; };
+		5A2D94BF24451F57008B1D32 /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/mbedtls/library/libmbedx509.a"; sourceTree = "<group>"; };
+		5A2D94C024451F57008B1D32 /* libuv_mbed.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_mbed.a; path = "deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/libuv_mbed.a"; sourceTree = "<group>"; };
+		5A2D94C124451F57008B1D32 /* libhttp-parser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libhttp-parser.a"; path = "deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/libhttp-parser.a"; sourceTree = "<group>"; };
+		5A2D94C224451F57008B1D32 /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/mbedtls/crypto/library/libmbedcrypto.a"; sourceTree = "<group>"; };
+		5A2D94C924451FD4008B1D32 /* libuv_a.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_a.a; path = "deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/libuv/libuv_a.a"; sourceTree = "<group>"; };
+		5AA628C12446228A003D374B /* uv.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uv.h; path = "deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include/uv.h"; sourceTree = SOURCE_ROOT; };
+		5AA629162446341C003D374B /* uv_link_t.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = uv_link_t.h; path = "deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include/uv_link_t.h"; sourceTree = SOURCE_ROOT; };
+		5AA62919244635B9003D374B /* uv_mbed */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = uv_mbed; path = "deps/ziti-sdk-c/deps/uv-mbed/include/uv_mbed"; sourceTree = SOURCE_ROOT; };
+		5AA6291D24463B43003D374B /* uv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = uv; path = "deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include/uv"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -35,6 +67,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A2D94C724451F7F008B1D32 /* libuv_link.a in Frameworks */,
+				5A2D94CA24451FDA008B1D32 /* libuv_a.a in Frameworks */,
+				5A2D94C424451F73008B1D32 /* libmbedcrypto.a in Frameworks */,
+				5A2D94C824451F85008B1D32 /* libuv_mbed.a in Frameworks */,
+				5A2D94C624451F7B008B1D32 /* libmbedx509.a in Frameworks */,
+				5A2D94C524451F77008B1D32 /* libmbedtls.a in Frameworks */,
+				5A2D94C324451F6F008B1D32 /* libhttp-parser.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -48,6 +87,7 @@
 				5A2D84072444D54C008B1D32 /* ZitiUrlProtocol-iOS */,
 				5A2D84142444D5AE008B1D32 /* ZitiUrlProtocol-macOS */,
 				5A2D84062444D54C008B1D32 /* Products */,
+				5A2D94BC24451F56008B1D32 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -63,7 +103,6 @@
 		5A2D84072444D54C008B1D32 /* ZitiUrlProtocol-iOS */ = {
 			isa = PBXGroup;
 			children = (
-				5A2D84082444D54C008B1D32 /* ZitiUrlProtocol_iOS.h */,
 				5A2D84092444D54C008B1D32 /* Info.plist */,
 			);
 			path = "ZitiUrlProtocol-iOS";
@@ -72,7 +111,6 @@
 		5A2D84142444D5AE008B1D32 /* ZitiUrlProtocol-macOS */ = {
 			isa = PBXGroup;
 			children = (
-				5A2D84152444D5AE008B1D32 /* ZitiUrlProtocol_macOS.h */,
 				5A2D84162444D5AE008B1D32 /* Info.plist */,
 			);
 			path = "ZitiUrlProtocol-macOS";
@@ -81,9 +119,30 @@
 		5A2D841B2444D731008B1D32 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				5AA6291D24463B43003D374B /* uv */,
+				5AA62919244635B9003D374B /* uv_mbed */,
+				5AA629162446341C003D374B /* uv_link_t.h */,
+				5AA628C12446228A003D374B /* uv.h */,
+				5A2D94B524451E07008B1D32 /* http_parser.h */,
+				5A2D84152444D5AE008B1D32 /* ZitiUrlProtocol.h */,
 				5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */,
+				5A2D94A32445148A008B1D32 /* module.modulemap */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		5A2D94BC24451F56008B1D32 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5A2D94C924451FD4008B1D32 /* libuv_a.a */,
+				5A2D94C124451F57008B1D32 /* libhttp-parser.a */,
+				5A2D94C224451F57008B1D32 /* libmbedcrypto.a */,
+				5A2D94BE24451F57008B1D32 /* libmbedtls.a */,
+				5A2D94BF24451F57008B1D32 /* libmbedx509.a */,
+				5A2D94BD24451F57008B1D32 /* libuv_link.a */,
+				5A2D94C024451F57008B1D32 /* libuv_mbed.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -93,7 +152,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A2D840A2444D54C008B1D32 /* ZitiUrlProtocol_iOS.h in Headers */,
+				5A2D94B624451E07008B1D32 /* http_parser.h in Headers */,
+				5AA629172446341C003D374B /* uv_link_t.h in Headers */,
+				5AD37EC62447DE2700C9C0F3 /* ZitiUrlProtocol.h in Headers */,
+				5AA628C22446228B003D374B /* uv.h in Headers */,
+				5AD37EC82447DE7700C9C0F3 /* uv in Headers */,
+				5AD37EC72447DE7300C9C0F3 /* uv_mbed in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,7 +165,12 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A2D84172444D5AE008B1D32 /* ZitiUrlProtocol_macOS.h in Headers */,
+				5A2D84172444D5AE008B1D32 /* ZitiUrlProtocol.h in Headers */,
+				5AD37EC52447DE0900C9C0F3 /* uv in Headers */,
+				5AA6291C24463650003D374B /* uv_mbed in Headers */,
+				5A2D94B724451E07008B1D32 /* http_parser.h in Headers */,
+				5AA6291824463430003D374B /* uv_link_t.h in Headers */,
+				5AA628C324462296003D374B /* uv.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +254,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AA6291A244635BA003D374B /* uv_mbed in Resources */,
+				5AA6291E24463B43003D374B /* uv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -192,6 +263,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AD37EC22446A8DA00C9C0F3 /* uv in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -210,7 +282,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A2D841E2444F3AE008B1D32 /* ZitiUrlProtocol.swift in Sources */,
+				5A2D94A424451564008B1D32 /* ZitiUrlProtocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -286,6 +358,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/http-parser",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+				);
 				INFOPLIST_FILE = "ZitiUrlProtocol-iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
@@ -294,6 +372,8 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/deps/ziti-sdk-c/build-iOS-arm64/**";
+				MODULEMAP_FILE = "$(SRCROOT)/Common/module.modulemap";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -361,6 +441,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/http-parser",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+				);
 				INFOPLIST_FILE = "ZitiUrlProtocol-iOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
@@ -369,6 +455,8 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/deps/ziti-sdk-c/build-iOS-arm64/**";
+				MODULEMAP_FILE = "$(SRCROOT)/Common/module.modulemap";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.ZitiUrlProtocol-iOS";
@@ -389,6 +477,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -443,6 +532,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/http-parser",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
+				);
 				INFOPLIST_FILE = "ZitiUrlProtocol-macOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -450,7 +545,20 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/deps/ziti-sdk-c/build-darwin-x86_64/**",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/library",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/_deps/libsodium-build/lib",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/_deps/libsodium-build/src/libsodium/.libs",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/libuv",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/mbedtls/crypto/library",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/mbedtls/library",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MODULEMAP_FILE = "$(SRCROOT)/Common/module.modulemap";
+				MODULEMAP_PRIVATE_FILE = "";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -470,6 +578,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -518,6 +627,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/http-parser",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+					"$(SRCROOT)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
+				);
 				INFOPLIST_FILE = "ZitiUrlProtocol-macOS/Info.plist";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -525,7 +640,20 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/Frameworks",
 				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(SRCROOT)/deps/ziti-sdk-c/build-darwin-x86_64/**",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/library",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/_deps/libsodium-build/lib",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/_deps/libsodium-build/src/libsodium/.libs",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/libuv",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/mbedtls/crypto/library",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-darwin-x86_64/deps/uv-mbed/deps/mbedtls/library",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MODULEMAP_FILE = "$(SRCROOT)/Common/module.modulemap";
+				MODULEMAP_PRIVATE_FILE = "";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.ZitiUrlProtocol-macOS";
