@@ -14,8 +14,8 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5A2D84122444D5AE008B1D32"
-               BuildableName = "ZitiUrlProtocol.framework"
+               BlueprintIdentifier = "5AB6DF67244B7C3C00F4B4E0"
+               BuildableName = "libZitiUrlProtocol.a"
                BlueprintName = "ZitiUrlProtocol-macOS"
                ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
             </BuildableReference>
@@ -50,8 +50,8 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5A2D84122444D5AE008B1D32"
-            BuildableName = "ZitiUrlProtocol.framework"
+            BlueprintIdentifier = "5AB6DF67244B7C3C00F4B4E0"
+            BuildableName = "libZitiUrlProtocol.a"
             BlueprintName = "ZitiUrlProtocol-macOS"
             ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
          </BuildableReference>
