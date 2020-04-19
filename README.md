@@ -9,6 +9,7 @@ WIP: A static library containing a `URLProtocol` that intercepts http and https 
 ```
 $ cd ziti-url-protocol
 $ git submodule update --init --recursive
+$ cd deps/ziti-sdk-c
 $ mkdir build-macosx-x86_64
 $ cd build-macosx-x86_64
 $ cmake .. && make
@@ -19,6 +20,9 @@ $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake && make
 ```
 
 Currently use `ZitiUrlProtocol.xcodeproj` to build the libraries...
+
+## Using
+TODO, like `Integration to Another Project` section of https://medium.com/better-programming/create-swift-5-static-library-f1c7a1be3e45
 
 ## Getting Help
 
