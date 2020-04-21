@@ -79,16 +79,6 @@ import Foundation
     }
     
     @objc private class func doLoop() {
-        // Add a timer to keep the loop alive...
-        let timeoutMs:UInt64 = 30 * 1000
-        var th = uv_timer_t()
-        guard uv_timer_init(loop, &th) == 0 else {
-            NSLog("ZitiUrlProtocol unable to init runloop timer")
-            return
-        }
-        uv_timer_start(&th, ZitiUrlProtocol.on_uv_keepalive, timeoutMs, timeoutMs)
-        
-        // start the loop (blocking)
         print("starting loop")
         let status = uv_run(loop, UV_RUN_DEFAULT)
         print("uv_run complete with status=\(status)")
@@ -96,10 +86,6 @@ import Foundation
         if uv_loop_close(loop) != 0 {
             NSLog("Error closing uv_loop")
         }
-    }
-    
-    static private let on_uv_keepalive:uv_timer_cb = { th in
-        print("tick")
     }
     
     //
@@ -191,6 +177,9 @@ import Foundation
                 zup.req?.pointee.resp.body_cb = ZitiUrlProtocol.on_http_body
                 
                 if zup.req != nil {
+                    
+                     //TODO: Request headers! um_http_req_header
+                    
                     if let body = zup.request.httpBody {
                         let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: body.count)
                         var bytes:[Int8] = body.map{ Int8(bitPattern: $0) }
