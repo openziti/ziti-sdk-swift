@@ -102,9 +102,6 @@ import Foundation
     
     public override class func canInit(with request: URLRequest) -> Bool {
         print("Checking if can handle \(request.debugDescription)")
-        print("--- Request Headers ---")
-        print("\(String(describing: request.allHTTPHeaderFields))")
-        print("--- End Request Headers ---")
         if let url = request.url, (url.scheme == "http" || url.scheme == "https") {
             return true // would check to see if we should intercept...
         } else if let url = request.url {
@@ -177,9 +174,21 @@ import Foundation
                 zup.req?.pointee.resp.body_cb = ZitiUrlProtocol.on_http_body
                 
                 if zup.req != nil {
+                    // Add request headers 
+                    print("--- Request Headers ---")
+                    zup.request.allHTTPHeaderFields?.forEach { h in
+                        print("\(h.key): \(h.value)")
+                        let status = um_http_req_header(zup.req,
+                                                        h.key.cString(using: .utf8),
+                                                        h.value.cString(using: .utf8))
+                        if (status != 0) {
+                            let str = String(cString: uv_strerror(Int32(status)))
+                            NSLog("ZitiUrlProtocol request header error ignored: \(str)")
+                        }
+                    }
+                    print("--- End Request Headers ---")
                     
-                     //TODO: Request headers! um_http_req_header
-                    
+                    // Add body
                     if let body = zup.request.httpBody {
                         let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: body.count)
                         var bytes:[Int8] = body.map{ Int8(bitPattern: $0) }
