@@ -238,11 +238,19 @@ import Foundation
             hdrMap[String(cString: hdr.name)] = String(cString: hdr.value)
         }
                 
-        //let vStr = "HTTP/" + String(cString: resp.pointee.http_version)
-        // TODO: url potential crash (next version of um_http includes request in this callback I believe)
+        // On TLS handshake error getting a negative response code (-53), notifyDidReceive
+        // nothing, so we end up waiting for timeout. So notifyDidFailWithError instead...
+        let code = Int(resp.pointee.code)
+        guard code > 0 else {
+            let str = String(cString: uv_strerror(Int32(code)))
+            let err = HttpResponseError(code:Int32(code), str:str)
+            mySelf.notifyDidFailWithError(err)
+            return
+        }
+        
         mySelf.resp = HTTPURLResponse(url: reqUrl,
-                                      statusCode: Int(resp.pointee.code),
-                                      httpVersion: nil,
+                                      statusCode: code,
+                                      httpVersion: nil, // "HTTP/" + String(cString: resp.pointee.http_version)
                                       headerFields: hdrMap)
         guard let httpResp = mySelf.resp else {
             NSLog("ZitiUrlProtocol.on_http_resp unable create response object for \(reqUrl)")
