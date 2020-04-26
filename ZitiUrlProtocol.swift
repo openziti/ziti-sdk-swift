@@ -21,7 +21,6 @@ import Foundation
  * Call the `ZitiUrlProtocol.start()`method to register this `URLProtocol` and start the background processing thread for `Ziti` requests.
  */
 @objc public class ZitiUrlProtocol: URLProtocol {
-    var clt = um_http_t()
     var started = false
     var req:UnsafeMutablePointer<um_http_req_t>? = nil
     var resp:HTTPURLResponse?
@@ -34,15 +33,64 @@ import Foundation
     static let reqsLock = NSLock()
     static var reqs:[ZitiUrlProtocol] = []
     
+    static var nf_context:nf_context?
+    static var nf_init_cond:NSCondition?
+    static var nf_init_complete = false
+    
     static var loop = uv_default_loop()
-    static var async_start_h = uv_async_t()
-    static var async_close_h = uv_async_t()
+    static var async_dud_h = uv_async_t() // hold the loop open...
+    
+    // Usafe pointers since we need to cast 'em
+    static var async_start_h:UnsafeMutablePointer<uv_async_t> = UnsafeMutablePointer<uv_async_t>.allocate(capacity: 1)
+    static var async_stop_h:UnsafeMutablePointer<uv_async_t> = UnsafeMutablePointer<uv_async_t>.allocate(capacity: 1)
+    
+    class Intercept : NSObject {
+        let name:String
+        let urlStr:String
+        var clt:UnsafeMutablePointer<um_http_t>? = nil
+        var zl:UnsafeMutablePointer<ziti_link_t>? = nil
+        var initPending = true
+        init(name:String, urlStr:String) {
+            self.name = name
+            self.urlStr = urlStr
+            super.init()
+        }
+        
+        func initLinks() {
+            print("initializing links \(String(describing: Thread.current.name))")
+            clt?.deinitialize(count: 1)
+            clt?.deallocate()
+            clt = UnsafeMutablePointer<um_http_t>.allocate(capacity: 1)
+            zl?.deinitialize(count: 1)
+            zl?.deallocate()
+            zl = UnsafeMutablePointer<ziti_link_t>.allocate(capacity: 1)
+            um_http_init(ZitiUrlProtocol.loop, clt, urlStr.cString(using: .utf8))
+            um_http_idle_keepalive(clt, 10 * 1000) // TODO: make configurable...
+            ziti_link_init(zl, clt, name.cString(using: .utf8),
+                           ZitiUrlProtocol.nf_context, ZitiUrlProtocol.on_ziti_link_close)
+            initPending = false
+            print("links initialized")
+        }
+        
+        deinit {
+            clt?.deinitialize(count: 1)
+            clt?.deallocate()
+            zl?.deinitialize(count: 1)
+            zl?.deallocate()
+        }
+    }
+    static var interceptsLock = NSLock()
+    static var intercepts:[String:Intercept] = [:]
     
     // MARK: - Register and start
     /**
      * Registers this protocol via `URLProtocol.registerClass` and starts the background thread for processing `Ziti` requests.
      *
      * - Returns: `true` on success
+     *
+     * - Parameters:
+     *   - blocking: wait until Ziti is fully initialized before registering as URLProtocol (recommended)
+     *   - waitFor: how to wait for Ziti to initialize before considering it an error condition
      *
      * Note that in some cases `ZitiUrlProtocol` will beed to be configured in your `URLSession`'s configuration ala:
      *
@@ -52,22 +100,44 @@ import Foundation
      * urlSession = URLSession(configuration:configuration)
      * ```
      */
-    @objc public class func start() -> Bool {
+    @objc public class func start(_ blocking:Bool=true, _ waitFor:TimeInterval=TimeInterval(10.0)) -> Bool {
+        
         //uv_mbed_set_debug(5, stdout) // 6 is trace, 5 is verb, 4 is debug, 3 is info
         
+        // condition for blocking if requested
+        ZitiUrlProtocol.nf_init_cond = blocking ? NSCondition() : nil
+        
+        // never called.  Keeps the loop running until unref'd
+        uv_async_init(ZitiUrlProtocol.loop, &async_dud_h, ZitiUrlProtocol.on_async_dud)
+        
         // Init the start/stop async send handles
-        if uv_async_init(ZitiUrlProtocol.loop, &async_start_h, ZitiUrlProtocol.on_async_start) != 0 {
+        if uv_async_init(ZitiUrlProtocol.loop, async_start_h, ZitiUrlProtocol.on_async_start) != 0 {
             NSLog("ZitiUrlProcol.start unable to init async_start_h")
             return false
         }
-        if uv_async_init(ZitiUrlProtocol.loop, &async_close_h, ZitiUrlProtocol.on_async_close) != 0 {
-            NSLog("ZitiUrlProcol.start unable to init async_close_h")
+        async_start_h.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_unref($0)
+        }
+        
+        if uv_async_init(ZitiUrlProtocol.loop, async_stop_h, ZitiUrlProtocol.on_async_stop) != 0 {
+            NSLog("ZitiUrlProcol.start unable to init async_stop_h")
+            return false
+        }
+        async_stop_h.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_unref($0)
+        }
+        
+        // NF_init... TODO: whole enrollment dance (and use of keychain...)
+        guard let cfgPath = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".netfoundry/id.json", isDirectory: false).path.cString(using: .utf8) else {
+            NSLog("ZitiUrlProtocol unable to find Ziti identity file")
             return false
         }
         
-        // Register protocol
-        guard URLProtocol.registerClass(ZitiUrlProtocol.self) else {
-            NSLog("ZitiUrlProcol.start Unable to register ZitiUrlProcol")
+        print("ziti id file: \(String(cString: cfgPath))")
+        let initStatus = NF_init(cfgPath, ZitiUrlProtocol.loop, ZitiUrlProtocol.on_nf_init, nil)
+        guard initStatus == ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(initStatus))
+            NSLog("ZitiUrlProtocol unable to initialize Ziti, \(initStatus): \(errStr)")
             return false
         }
         
@@ -75,6 +145,18 @@ import Foundation
         let t = Thread(target: self, selector: #selector(ZitiUrlProtocol.doLoop), object: nil)
         t.name = "ziti_uv_loop"
         t.start()
+        
+        if let cond = ZitiUrlProtocol.nf_init_cond {
+            cond.lock()
+            while blocking && !ZitiUrlProtocol.nf_init_complete {
+                if !cond.wait(until: Date(timeIntervalSinceNow: waitFor))  {
+                    NSLog("ZitiUrlProtocol timed out waiting for Ziti intialization")
+                    cond.unlock()
+                    return false
+                }
+            }
+            cond.unlock()
+        }
         return true
     }
     
@@ -102,12 +184,20 @@ import Foundation
     
     public override class func canInit(with request: URLRequest) -> Bool {
         print("Checking if can handle \(request.debugDescription)")
-        if let url = request.url, (url.scheme == "http" || url.scheme == "https") {
-            return true // would check to see if we should intercept...
-        } else if let url = request.url {
-            NSLog("ZitiUrlProtocol unsupported scheme: \(url.scheme ?? "nil")")
+        var canIntercept = false;
+        if let url = request.url, let scheme = url.scheme, let host = url.host {
+            var port = url.port
+            if port == nil { port = (scheme == "https") ? 443 : 80 }
+            let key = "\(scheme)://\(host):\(port!)"
+            
+            ZitiUrlProtocol.interceptsLock.lock()
+            if ZitiUrlProtocol.intercepts[key] != nil {
+                canIntercept = true
+            }
+            ZitiUrlProtocol.interceptsLock.unlock()
         }
-        return false
+        print("*-*-*-*-* is \(canIntercept ? "" : "NOT") intercepting \(request.debugDescription)")
+        return canIntercept
     }
     
     public override class func canonicalRequest(for request: URLRequest) -> URLRequest {
@@ -132,7 +222,7 @@ import Foundation
         ZitiUrlProtocol.reqsLock.unlock()
         
         // run the um_http code via async_send to avoid potential race condition
-        if uv_async_send(&ZitiUrlProtocol.async_start_h) != 0 {
+        if uv_async_send(ZitiUrlProtocol.async_start_h) != 0 {
             NSLog("ZitiUrlProtocol.startLoading request \(request) queued, but unable to trigger async send")
             return
         }
@@ -140,7 +230,7 @@ import Foundation
     
     public override func stopLoading() {
         print("*** stop loading, Thread: \(String(describing: Thread.current.name))")
-        if uv_async_send(&ZitiUrlProtocol.async_close_h) != 0 {
+        if uv_async_send(ZitiUrlProtocol.async_stop_h) != 0 {
             NSLog("ZitiUrlProtocol.stopLoading request \(request) queued, but unable to trigger async send")
             return
         }
@@ -149,6 +239,10 @@ import Foundation
     //
     // MARK: - um_http callbacks
     //
+    static private let on_async_dud:uv_async_cb = { h in
+        print("aync dud loop holder called")
+    }
+    
     static private let on_async_start:uv_async_cb = { h in
         print("--- on_async_start, Thread: \(String(describing: Thread.current.name))")
         
@@ -160,13 +254,12 @@ import Foundation
         // Send queued requests
         reqs.forEach { zup in
             zup.started = true
-            if um_http_init(ZitiUrlProtocol.loop, &zup.clt, zup.getUrlString().cString(using: .utf8)) != 0 {
-                let str = "Unable to initialize ziti http client for \(zup.request)"
-                NSLog("ZitiUrlProtocol \(str)")
-                let err = HttpResponseError(code:-1, str:str)
-                zup.notifyDidFailWithError(err)
-            } else {
-                zup.req = um_http_req(&zup.clt,
+            let urlStr = zup.getUrlString()
+            
+            ZitiUrlProtocol.interceptsLock.lock()
+            if var intercept = ZitiUrlProtocol.intercepts[urlStr] {
+                if intercept.initPending { intercept.initLinks() }
+                zup.req = um_http_req(intercept.clt,
                                       zup.request.httpMethod ?? "GET",
                                       zup.getUrlPath().cString(using: .utf8),
                                       ZitiUrlProtocol.on_http_resp,
@@ -218,7 +311,9 @@ import Foundation
                     }
                 }
             }
+            ZitiUrlProtocol.interceptsLock.unlock()
         }
+        print("--- --- async_start_complete")
     }
     
     static private let on_http_resp:um_http_resp_cb = { resp, ctx in
@@ -237,13 +332,14 @@ import Foundation
             let hdr = resp.pointee.headers[Int(i)]
             hdrMap[String(cString: hdr.name)] = String(cString: hdr.value)
         }
-                
+                        
         // On TLS handshake error getting a negative response code (-53), notifyDidReceive
         // nothing, so we end up waiting for timeout. So notifyDidFailWithError instead...
         let code = Int(resp.pointee.code)
         guard code > 0 else {
             let str = String(cString: uv_strerror(Int32(code)))
             let err = HttpResponseError(code:Int32(code), str:str)
+            print("http response error code:\(code), str:\(str)")
             mySelf.notifyDidFailWithError(err)
             return
         }
@@ -284,22 +380,18 @@ import Foundation
         }
     }
     
-    static private let on_async_close:uv_async_cb = { h in
+    static private let on_async_stop:uv_async_cb = { h in
         print("--- on_async_close, Thread: \(String(describing: Thread.current.name))")
         
-        // grab on in started state and remove them from list of requests
+        // grab all that are in started state and remove them from list of requests
         ZitiUrlProtocol.reqsLock.lock()
         var toClose = ZitiUrlProtocol.reqs.filter { $0.started }
         ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { !($0.started) }
         ZitiUrlProtocol.reqsLock.unlock()
         
-        // close 'em
-        toClose.forEach { zup in
-            print("... calling um_http_close")
-            if um_http_close(&zup.clt) != 0 {
-                NSLog("ZitiUrlProtocol error on um_http_close for \(zup.request)")
-            }
-        }
+        // TODO: How do I tell um_http to stop loading? And how to handle idle timeout...
+        // (I get stopLoading call after every request, even when doing keep-alive...)
+        // Maybe: if no idle timeout set, call um_http_close.  Do cleanup in the ziti_link_close callback...
     }
     
     //
@@ -343,13 +435,68 @@ import Foundation
         perform(aSelector, on: clientThread!, with:arg, waitUntilDone:true, modes:modes)
     }
     
+    // MARK: NF_ziti callbacks
+    static private let on_nf_init:nf_init_cb = { nf_context, status, ctx in
+        if status != ZITI_OK {
+            let errStr = String(cString: ziti_errorstr(status))
+            NSLog("ZitiUrlProtocol on_nf_init error: \(errStr)")
+            return
+        }
+        
+        ZitiUrlProtocol.nf_context = nf_context
+        NF_dump(nf_context) // TODO: doesn't currently work...
+                
+        // TODO: SDK doensn't yet support giving me back a list of services. When it does,
+        // grab 'em and loop through to create intercepts list here...
+        // { LOOP OVER ALL INTERCEPTS
+            var intercept = Intercept(name: "httpbin", urlStr: "http://httpbin.ziti.io:80")
+            //intercept.reset()
+        
+            // Don't need to lock here since haven't registered as URLProtocol, but if
+            // the URLProtocol.registerClass is moved to happen before this, will need
+            // to protect intercepts map...
+            //ZitiUrlProtocol.interceptsLock.lock()
+            ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+            //ZitiUrlProtocol.interceptsLock.unlock()
+        //}
+                
+        print("TODO: on_nf_init conpletion once ziti-sdk updated...") // could check NF_service_available...
+        
+        // Register protocol
+        URLProtocol.registerClass(ZitiUrlProtocol.self)
+        NSLog("ZitiUrlProcol registered")
+        
+        // save of nf_context and wait up the blocked start() method
+        ZitiUrlProtocol.nf_init_cond?.lock()
+        ZitiUrlProtocol.nf_init_complete = true
+        ZitiUrlProtocol.nf_init_cond?.signal()
+        ZitiUrlProtocol.nf_init_cond?.unlock()
+    }
+    
+    static private let on_ziti_link_close:ziti_link_close_cb = { zl in
+        print("ziti_link_close")
+        ZitiUrlProtocol.interceptsLock.lock()
+        ZitiUrlProtocol.intercepts.forEach { i in
+            var intercept = i.value
+            if intercept.zl == zl {
+                intercept.initPending = true
+            }
+        }
+        ZitiUrlProtocol.interceptsLock.unlock()
+        print("ziti_link_close complete")
+    }
+    
     //
     // MARK: - Helpers
     // Helpers for manipulating URL to map to um_http calls
     //
     private func getUrlString() -> String {
-        guard let url = request.url else { return "" }
-        return (url.scheme ?? "http") + "://" + (url.host ?? "") + (url.port != nil ? ":\(url.port!)" : "")
+        guard let url = request.url, let scheme = url.scheme, let host = url.host else {
+            return ""
+        }
+        var port = url.port
+        if port == nil { port = (scheme == "https") ? 443 : 80 }
+        return "\(scheme)://\(host):\(port!)"
     }
     private func getUrlPath() -> String {
         guard let url = request.url else { return "/" }

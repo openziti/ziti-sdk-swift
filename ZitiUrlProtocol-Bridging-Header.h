@@ -13,4 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+#include <nf/ziti.h>
+#include <nf/ziti_link.h>
 #include <uv_mbed/um_http.h>
+
+extern void uv_mbed_set_debug(int level, FILE *output);
+
