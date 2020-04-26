@@ -22,7 +22,23 @@ $ cmake .. -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake && make
 Currently use `ZitiUrlProtocol.xcodeproj` to build the libraries...
 
 ## Using
-TODO, like `Integration to Another Project` section of https://medium.com/better-programming/create-swift-5-static-library-f1c7a1be3e45
+
+The library built above can be added to an Xcode project.  `libZitiUrlProtocol.a` should be included in Build Phases, Link Binary with Libraries (required). Build Setting Library Search Paths and Swift Compiler Import Paths should include the directory containing `libZitiUrlProtocol.a`.
+
+In your code, typically in your `AppDelegate` as part of `applicationDidFinishLaunching`, register the protocol and start Ziti in the background:
+```
+_ = ZitiUrlProtocol.start()
+```
+
+The start() method is blocking by default, waiting for Ziti to fully initialize before processing URL requests. Optional paramters on start allow it to be run non-blocking and to adjust a `TimeInterval` for how long to wait.
+
+Note that in some cases `ZitiUrlProtocol` will beed to be configured in your `URLSession`'s configuration ala:
+
+```
+let configuration = URLSessionConfiguration.default
+configuration.protocolClasses?.insert(ZitiUrlProtocol.self, at: 0)
+urlSession = URLSession(configuration:configuration)
+```
 
 ## Getting Help
 
