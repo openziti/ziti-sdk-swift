@@ -38,11 +38,10 @@ import Foundation
     static var nf_init_complete = false
     
     static var loop = uv_default_loop()
-    static var async_dud_h = uv_async_t() // hold the loop open...
     
     // Usafe pointers since we need to cast 'em
-    static var async_start_h:UnsafeMutablePointer<uv_async_t> = UnsafeMutablePointer<uv_async_t>.allocate(capacity: 1)
-    static var async_stop_h:UnsafeMutablePointer<uv_async_t> = UnsafeMutablePointer<uv_async_t>.allocate(capacity: 1)
+    static var async_start_h = uv_async_t()
+    static var async_stop_h = uv_async_t()
     
     class Intercept : NSObject {
         let name:String
@@ -101,30 +100,19 @@ import Foundation
      * ```
      */
     @objc public class func start(_ blocking:Bool=true, _ waitFor:TimeInterval=TimeInterval(10.0)) -> Bool {
-        
-        //uv_mbed_set_debug(5, stdout) // 6 is trace, 5 is verb, 4 is debug, 3 is info
-        
+                
         // condition for blocking if requested
         ZitiUrlProtocol.nf_init_cond = blocking ? NSCondition() : nil
         
-        // never called.  Keeps the loop running until unref'd
-        uv_async_init(ZitiUrlProtocol.loop, &async_dud_h, ZitiUrlProtocol.on_async_dud)
-        
         // Init the start/stop async send handles
-        if uv_async_init(ZitiUrlProtocol.loop, async_start_h, ZitiUrlProtocol.on_async_start) != 0 {
+        if uv_async_init(ZitiUrlProtocol.loop, &async_start_h, ZitiUrlProtocol.on_async_start) != 0 {
             NSLog("ZitiUrlProcol.start unable to init async_start_h")
             return false
         }
-        async_start_h.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
-            uv_unref($0)
-        }
         
-        if uv_async_init(ZitiUrlProtocol.loop, async_stop_h, ZitiUrlProtocol.on_async_stop) != 0 {
+        if uv_async_init(ZitiUrlProtocol.loop, &async_stop_h, ZitiUrlProtocol.on_async_stop) != 0 {
             NSLog("ZitiUrlProcol.start unable to init async_stop_h")
             return false
-        }
-        async_stop_h.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
-            uv_unref($0)
         }
         
         // NF_init... TODO: whole enrollment dance (and use of keychain...)
@@ -140,6 +128,8 @@ import Foundation
             NSLog("ZitiUrlProtocol unable to initialize Ziti, \(initStatus): \(errStr)")
             return false
         }
+        
+        uv_mbed_set_debug(5, stdout); // must be done after NF_init...
         
         // start thread for uv_loop
         let t = Thread(target: self, selector: #selector(ZitiUrlProtocol.doLoop), object: nil)
@@ -222,7 +212,7 @@ import Foundation
         ZitiUrlProtocol.reqsLock.unlock()
         
         // run the um_http code via async_send to avoid potential race condition
-        if uv_async_send(ZitiUrlProtocol.async_start_h) != 0 {
+        if uv_async_send(&ZitiUrlProtocol.async_start_h) != 0 {
             NSLog("ZitiUrlProtocol.startLoading request \(request) queued, but unable to trigger async send")
             return
         }
@@ -230,7 +220,7 @@ import Foundation
     
     public override func stopLoading() {
         print("*** stop loading, Thread: \(String(describing: Thread.current.name))")
-        if uv_async_send(ZitiUrlProtocol.async_stop_h) != 0 {
+        if uv_async_send(&ZitiUrlProtocol.async_stop_h) != 0 {
             NSLog("ZitiUrlProtocol.stopLoading request \(request) queued, but unable to trigger async send")
             return
         }
@@ -239,10 +229,6 @@ import Foundation
     //
     // MARK: - um_http callbacks
     //
-    static private let on_async_dud:uv_async_cb = { h in
-        print("aync dud loop holder called")
-    }
-    
     static private let on_async_start:uv_async_cb = { h in
         print("--- on_async_start, Thread: \(String(describing: Thread.current.name))")
         
