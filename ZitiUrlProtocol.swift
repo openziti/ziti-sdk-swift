@@ -47,24 +47,17 @@ import Foundation
         let name:String
         let urlStr:String
         var clt = um_http_t()
-        var zl:UnsafeMutablePointer<ziti_link_t>? = nil
+        var zl = ziti_link_t()
 
         init(name:String, urlStr:String) {
             self.name = name
             self.urlStr = urlStr
-            self.zl = UnsafeMutablePointer<ziti_link_t>.allocate(capacity: 1)
-            self.zl?.initialize(to: ziti_link_t())
             
             um_http_init(ZitiUrlProtocol.loop, &clt, urlStr.cString(using: .utf8))
             um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
-            ziti_link_init(zl, &clt, name.cString(using: .utf8),
+            ziti_link_init(&zl, &clt, name.cString(using: .utf8),
                            ZitiUrlProtocol.nf_context, ZitiUrlProtocol.on_ziti_link_close)
             super.init()
-        }
-        
-        deinit {
-            zl?.deinitialize(count: 1)
-            zl?.deallocate()
         }
     }
     static var interceptsLock = NSLock()
