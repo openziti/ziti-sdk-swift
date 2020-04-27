@@ -46,40 +46,34 @@ import Foundation
     class Intercept : NSObject {
         let name:String
         let urlStr:String
-        var clt:UnsafeMutablePointer<um_http_t>? = nil
+        var clt = um_http_t()
         var zl:UnsafeMutablePointer<ziti_link_t>? = nil
-        var initPending = true
+
         init(name:String, urlStr:String) {
             self.name = name
             self.urlStr = urlStr
+            self.zl = UnsafeMutablePointer<ziti_link_t>.allocate(capacity: 1)
+            self.zl?.initialize(to: ziti_link_t())
+            
+            um_http_init(ZitiUrlProtocol.loop, &clt, urlStr.cString(using: .utf8))
+            um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
+            ziti_link_init(zl, &clt, name.cString(using: .utf8),
+                           ZitiUrlProtocol.nf_context, ZitiUrlProtocol.on_ziti_link_close)
             super.init()
         }
         
-        func initLinks() {
-            print("initializing links \(String(describing: Thread.current.name))")
-            clt?.deinitialize(count: 1)
-            clt?.deallocate()
-            clt = UnsafeMutablePointer<um_http_t>.allocate(capacity: 1)
-            zl?.deinitialize(count: 1)
-            zl?.deallocate()
-            zl = UnsafeMutablePointer<ziti_link_t>.allocate(capacity: 1)
-            um_http_init(ZitiUrlProtocol.loop, clt, urlStr.cString(using: .utf8))
-            um_http_idle_keepalive(clt, 10 * 1000) // TODO: make configurable...
-            ziti_link_init(zl, clt, name.cString(using: .utf8),
-                           ZitiUrlProtocol.nf_context, ZitiUrlProtocol.on_ziti_link_close)
-            initPending = false
-            print("links initialized")
-        }
-        
         deinit {
-            clt?.deinitialize(count: 1)
-            clt?.deallocate()
             zl?.deinitialize(count: 1)
             zl?.deallocate()
         }
     }
     static var interceptsLock = NSLock()
     static var intercepts:[String:Intercept] = [:]
+    
+    /**
+     * Time, in miliiseconds,  client attempts to keep-alive an idle connection before allowing it to close
+     */
+    static public var idleTime:Int = 0;
     
     // MARK: - Register and start
     /**
@@ -225,7 +219,7 @@ import Foundation
             return
         }
     }
-    
+        
     //
     // MARK: - um_http callbacks
     //
@@ -244,8 +238,7 @@ import Foundation
             
             ZitiUrlProtocol.interceptsLock.lock()
             if var intercept = ZitiUrlProtocol.intercepts[urlStr] {
-                if intercept.initPending { intercept.initLinks() }
-                zup.req = um_http_req(intercept.clt,
+                zup.req = um_http_req(&intercept.clt,
                                       zup.request.httpMethod ?? "GET",
                                       zup.getUrlPath().cString(using: .utf8),
                                       ZitiUrlProtocol.on_http_resp,
@@ -436,18 +429,9 @@ import Foundation
         // grab 'em and loop through to create intercepts list here...
         // { LOOP OVER ALL INTERCEPTS
             var intercept = Intercept(name: "httpbin", urlStr: "http://httpbin.ziti.io:80")
-            //intercept.reset()
-        
-            // Don't need to lock here since haven't registered as URLProtocol, but if
-            // the URLProtocol.registerClass is moved to happen before this, will need
-            // to protect intercepts map...
-            //ZitiUrlProtocol.interceptsLock.lock()
-            ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-            //ZitiUrlProtocol.interceptsLock.unlock()
+            ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept // no need to Lock since protocol not registered yet
         //}
-                
-        print("TODO: on_nf_init conpletion once ziti-sdk updated...") // could check NF_service_available...
-        
+                        
         // Register protocol
         URLProtocol.registerClass(ZitiUrlProtocol.self)
         NSLog("ZitiUrlProcol registered")
@@ -459,18 +443,7 @@ import Foundation
         ZitiUrlProtocol.nf_init_cond?.unlock()
     }
     
-    static private let on_ziti_link_close:ziti_link_close_cb = { zl in
-        print("ziti_link_close")
-        ZitiUrlProtocol.interceptsLock.lock()
-        ZitiUrlProtocol.intercepts.forEach { i in
-            var intercept = i.value
-            if intercept.zl == zl {
-                intercept.initPending = true
-            }
-        }
-        ZitiUrlProtocol.interceptsLock.unlock()
-        print("ziti_link_close complete")
-    }
+    static private let on_ziti_link_close:ziti_link_close_cb = { zl in }
     
     //
     // MARK: - Helpers
