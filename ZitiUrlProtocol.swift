@@ -55,18 +55,14 @@ import Foundation
             
             um_http_init(ZitiUrlProtocol.loop, &clt, urlStr.cString(using: .utf8))
             um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
-            ziti_link_init(&zl, &clt, name.cString(using: .utf8),
-                           ZitiUrlProtocol.nf_context, ZitiUrlProtocol.on_ziti_link_close)
+            ziti_link_init(&zl, &clt, name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
             super.init()
         }
     }
     static var interceptsLock = NSLock()
     static var intercepts:[String:Intercept] = [:]
     
-    /**
-     * Time, in miliiseconds,  client attempts to keep-alive an idle connection before allowing it to close
-     */
-    static public var idleTime:Int = 0;
+    static var idleTime:Int = 0;
     
     // MARK: - Register and start
     /**
@@ -75,8 +71,9 @@ import Foundation
      * - Returns: `true` on success
      *
      * - Parameters:
-     *   - blocking: wait until Ziti is fully initialized before registering as URLProtocol (recommended)
-     *   - waitFor: how to wait for Ziti to initialize before considering it an error condition
+     *   - blocking: Wait until Ziti is fully initialized before registering as URLProtocol (recommended). Default=true
+     *   - waitFor: TimeInterval to wait for Ziti to initialize before considering it an error condition. Default=10.0
+     *   - idleTime: Time, in miliiseconds,  client attempts to keep-alive an idle connection before allowing it to close. Default=10000
      *
      * Note that in some cases `ZitiUrlProtocol` will beed to be configured in your `URLSession`'s configuration ala:
      *
@@ -86,8 +83,11 @@ import Foundation
      * urlSession = URLSession(configuration:configuration)
      * ```
      */
-    @objc public class func start(_ blocking:Bool=true, _ waitFor:TimeInterval=TimeInterval(10.0)) -> Bool {
+    @objc public class func start(
+        _ blocking:Bool=true, _ waitFor:TimeInterval=TimeInterval(10.0), _ idleTime:Int=10000) -> Bool {
                 
+        ZitiUrlProtocol.idleTime = idleTime
+        
         // condition for blocking if requested
         ZitiUrlProtocol.nf_init_cond = blocking ? NSCondition() : nil
         
@@ -173,7 +173,7 @@ import Foundation
             }
             ZitiUrlProtocol.interceptsLock.unlock()
         }
-        print("*-*-*-*-* is \(canIntercept ? "" : "NOT") intercepting \(request.debugDescription)")
+        print("*-*-*-*-* is\(canIntercept ? "" : " NOT") intercepting \(request.debugDescription)")
         return canIntercept
     }
     
@@ -435,9 +435,7 @@ import Foundation
         ZitiUrlProtocol.nf_init_cond?.signal()
         ZitiUrlProtocol.nf_init_cond?.unlock()
     }
-    
-    static private let on_ziti_link_close:ziti_link_close_cb = { zl in }
-    
+        
     //
     // MARK: - Helpers
     // Helpers for manipulating URL to map to um_http calls
