@@ -47,15 +47,16 @@ import Foundation
         let name:String
         let urlStr:String
         var clt = um_http_t()
-        var zl = ziti_link_t()
+        var zs = um_http_src_t()
 
         init(name:String, urlStr:String) {
             self.name = name
             self.urlStr = urlStr
             
-            um_http_init(ZitiUrlProtocol.loop, &clt, urlStr.cString(using: .utf8))
+            ziti_src_init(ZitiUrlProtocol.loop, &zs, name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
+            um_http_init_with_src(ZitiUrlProtocol.loop, &clt, urlStr.cString(using: .utf8), &zs)
             um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
-            ziti_link_init(&zl, &clt, name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
+            
             super.init()
         }
     }

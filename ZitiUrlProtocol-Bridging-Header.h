@@ -15,7 +15,7 @@ limitations under the License.
 */
 
 #include <nf/ziti.h>
-#include <nf/ziti_link.h>
+#include <nf/ziti_src.h>
 #include <uv_mbed/um_http.h>
 
 extern void uv_mbed_set_debug(int level, FILE *output);
