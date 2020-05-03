@@ -422,6 +422,14 @@ import Foundation
         performOnClientThread(#selector(notifyDidReceiveSelector), resp)
     }
     
+    @objc private func notifyWasRedirectedToSelector(_ arg:[Any]) {
+        guard let req = arg[0] as? URLRequest, let resp = arg[1] as? URLResponse else { return }
+        client?.urlProtocol(self, wasRedirectedTo: req, redirectResponse: resp)
+    }
+    private func notifyWasRedirectedTo(_ req:URLRequest, _ resp:URLResponse) {
+        performOnClientThread(#selector(notifyWasRedirectedToSelector), [req, resp])
+    }
+    
     private func performOnClientThread(_ aSelector:Selector, _ arg:Any?) {
         perform(aSelector, on: clientThread!, with:arg, waitUntilDone:true, modes:modes)
     }
