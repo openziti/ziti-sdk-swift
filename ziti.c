@@ -13,13 +13,10 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+#include <stdio.h>
 
-#include <nf/ziti.h>
-#include <nf/ziti_src.h>
-#include <nf/ziti_model.h>
-#include <uv_mbed/um_http.h>
+static const char* _ziti_all[] = {
+   "all", NULL
+};
 
-extern const char** ziti_all_configs;
-
-extern void uv_mbed_set_debug(int level, FILE *output);
-
+const char** ziti_all_configs = _ziti_all;
