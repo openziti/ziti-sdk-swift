@@ -1,0 +1,28 @@
+{
+  "$id":"http://ziti-edge.netfoundry.io/schemas/ziti-url-client.v1.config.json",
+  "additionalProperties":false,
+  "properties":{
+    "scheme":{
+      "type":"string"
+    },
+    "hostname":{
+      "type":"string"
+    },
+    "port":{
+      "maximum":65535,
+      "minimum":0,
+      "type":"integer"
+    },
+    "headers":{
+       "type": "object",
+       "patternProperties": {
+         	".{1,}": { "type": "string" }
+        }
+    }
+  },
+  "required":[
+    "scheme",
+    "hostname"],
+  "type":"object"
+}
+
