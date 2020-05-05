@@ -279,9 +279,13 @@ import Foundation
                     
                     // if no User-Agent add it
                     if zup.request.allHTTPHeaderFields?["User-Agent"] == nil {
+                        var zv = "(unknown)@unknown"
+                        if let nfv = NF_get_version()?.pointee {
+                            zv = "\(String(cString: nfv.version))(@\(String(cString: nfv.revision)))"
+                        }
                         um_http_req_header(zup.req,
                                            "User-Agent".cString(using: .utf8),
-                                           "ZitiUrlProtocol/1.0, ziti-sdk-c/x.y.c".cString(using: .utf8)) //TODO
+                                           "\(ZitiUrlProtocol.self), ziti-sdk-c/\(zv)".cString(using: .utf8))
                     }
                     
                     // if no Accept, add it
