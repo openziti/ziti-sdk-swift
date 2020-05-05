@@ -281,11 +281,11 @@ import Foundation
                     if zup.request.allHTTPHeaderFields?["User-Agent"] == nil {
                         var zv = "(unknown)@unknown"
                         if let nfv = NF_get_version()?.pointee {
-                            zv = "\(String(cString: nfv.version))(@\(String(cString: nfv.revision)))"
+                            zv = "\(String(cString: nfv.version))-@\(String(cString: nfv.revision))"
                         }
                         um_http_req_header(zup.req,
                                            "User-Agent".cString(using: .utf8),
-                                           "\(ZitiUrlProtocol.self), ziti-sdk-c/\(zv)".cString(using: .utf8))
+                                           "\(ZitiUrlProtocol.self); ziti-sdk-c/\(zv)".cString(using: .utf8))
                     }
                     
                     // if no Accept, add it
@@ -510,26 +510,32 @@ import Foundation
             ZitiUrlProtocol.intercepts = ZitiUrlProtocol.intercepts.filter { $0.value.name !=  svcName }
             ZitiUrlProtocol.interceptsLock.unlock()
         } else if status == ZITI_OK {
-            print("gotcha service \(String(cString: zs.name))")
             if let cfg = ziti_service_get_raw_config(&zs, ZitiUrlProtocol.cfgType) {
                 let data = Data(String(cString: cfg).utf8)
-                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
-                    if let hostname = json["hostname"] as? String, let port = json["port"] as? Int {
+                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let hostname = json["hostname"] as? String, let port = json["port"] as? Int
+                {
                         let hostPort = "\(hostname):\(port)"
-                        print("      intercept: \(hostPort)")
-                        
-                        // TODO: need to change this to update a service if we already have it, only add if we don't have it...
+                       
                         ZitiUrlProtocol.interceptsLock.lock()
+                        // Keying by urlStr since that's how we intercept, and we have two possible intercepts
+                        // per service name (http and https). This can lead to 'overwriting' a service on conflict,
+                        // since that's the unique key as far as Ziti is concerned...
+                        if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
+                            NSLog("ZitiUrlProtocol intercept of \"\(hostPort)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
+                        }
                         var i = Intercept(name: svcName, urlStr: "http://\(hostPort)")
                         ZitiUrlProtocol.intercepts[i.urlStr] = Intercept(name: svcName, urlStr: "http://\(hostPort)")
                         i = Intercept(name: svcName, urlStr: "https://\(hostPort)")
                         ZitiUrlProtocol.intercepts[i.urlStr] = Intercept(name: svcName, urlStr: "https://\(hostPort)")
+                        print("Setting intercept svc \(svcName): \(hostPort)")
                         ZitiUrlProtocol.interceptsLock.unlock()
-                    }
+                } else {
+                    NSLog("ZitiUrlProtocol Unable to parse configuration for service \"\(svcName)\"")
                 }
             } else {
-                let s = String(cString: ZitiUrlProtocol.cfgType)
-                print("   config type \(s) not found for service \(svcName)")
+                let ct = String(cString: ZitiUrlProtocol.cfgType)
+                print("Config type \(ct) not found for service \(svcName)")
             }
         }
     }
