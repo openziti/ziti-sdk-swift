@@ -22,6 +22,9 @@ import Foundation
  */
 @objc public class ZitiUrlProtocol: URLProtocol {
     var started = false
+    var stopped = false
+    var finished = false
+    
     var req:UnsafeMutablePointer<um_http_req_t>? = nil
     var resp:HTTPURLResponse?
     
@@ -303,8 +306,6 @@ import Foundation
                         um_http_req_data(zup.req, ptr, body.count, nil)
                         ptr.deallocate()
                     } else if let stream = zup.request.httpBodyStream {
-                        // TODO: Check for no Content-Lenth and Transfer-Encoding:chunked.  If so, we'll need multiple sends...
-                        // For now just log a warning that here's where things when south
                         if let clv = zup.request.allHTTPHeaderFields?["Content-Length"], let contentLen = Int(clv) {
                             var body = Data()
                             let ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: contentLen)
@@ -320,7 +321,9 @@ import Foundation
                             }
                             ptr.deallocate()
                         } else {
-                            NSLog("ZitiUrlProtocol - chunked encoding not yet supported :(")
+                            // TODO: Transfer-Encoding:chunked
+                            var encoding = zup.request.allHTTPHeaderFields?["Transfer-Encoding"] ?? ""
+                            NSLog("ZitiUrlProtocol - Content-Length required, \(encoding) encoding not yet supported :(")
                         }
                     }
                 }
@@ -365,13 +368,16 @@ import Foundation
                     newRequest.allHTTPHeaderFields = mySelf.request.allHTTPHeaderFields
                     newRequest.httpBody = mySelf.request.httpBody
                     
-                    var origResp = HTTPURLResponse(
+                    if var origResp = HTTPURLResponse(
                         url: url,
                         statusCode: Int(resp.pointee.code),
                         httpVersion: nil,
-                        headerFields: hdrMap)
-                    wasRedirected = true
-                    mySelf.notifyWasRedirectedTo(newRequest, origResp!) //TODO
+                        headerFields: hdrMap) {
+                        
+                        wasRedirected = true
+                        mySelf.notifyWasRedirectedTo(newRequest, origResp)
+                    }
+                    
                 }
             }
         }
@@ -408,6 +414,7 @@ import Foundation
         
         if uv_errno_t(Int32(len)) == UV_EOF {
             mySelf.notifyDidFinishLoading()
+            mySelf.finished = true
         } else if len < 0 {
             let str = String(cString: uv_strerror(Int32(len)))
             let err = HttpResponseError(str, errorCode: len)
@@ -415,20 +422,36 @@ import Foundation
         } else {
             let data = Data(bytes: body!, count: len)
             mySelf.notifyDidLoad(data)
+            mySelf.finished = true
         }
+        
+        // Filter out all that are stopped and finished
+        // see also on_async_stop()
+        ZitiUrlProtocol.reqsLock.lock()
+        ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { $0.stopped && $0.finished }
+        ZitiUrlProtocol.reqsLock.unlock()
     }
     
     static private let on_async_stop:uv_async_cb = { h in
         
-        // filter any that are in started state from list of requests
+        // We don't want to call um_http_close since we would rather just keep
+        // using the um_http_t (e.g., for the next startLoading() for this server, especially
+        // when http keep-alive is > 0). Also, there's no close callback on um_http_close (and
+        // um_http_close does a free() on the um_http_t that's passed in, which would be bad
+        // the way we use it.
+        //
+        // Removing the ZitiUrlProtol from the reqs array here could cause an issue where
+        // we keep getting callbacks from um_http after the ZitiUrlProtocol instance has
+        // been released.
+        //
+        // So, we'll synchronize releasing the ZitiUrlProtocol only after stopLoading() *and*
+        // on_http_body() indicates we won't get any more um_http callback.
         ZitiUrlProtocol.reqsLock.lock()
-        //var toClose = ZitiUrlProtocol.reqs.filter { $0.started }
-        ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { !($0.started) }
+        ZitiUrlProtocol.reqs.forEach { zup in
+            if zup.started { zup.stopped = true }
+        }
+        ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { $0.stopped && $0.finished }
         ZitiUrlProtocol.reqsLock.unlock()
-        
-        // TODO: I get stopLoading call after every request, even when doing keep-alive...
-        // no way to distinguish cancel verus regular processing.  don't want to call um_http_close
-        // since keep-alive should keep it alive, but if a cancel is meant.... dunno
     }
     
     //
