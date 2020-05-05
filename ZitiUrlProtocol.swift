@@ -25,6 +25,16 @@ import Foundation
     var req:UnsafeMutablePointer<um_http_req_t>? = nil
     var resp:HTTPURLResponse?
     
+    static var _redirectSession:URLSession?
+    static var redirectSession:URLSession {
+        if _redirectSession == nil {
+            let configuration = URLSessionConfiguration.default
+            configuration.protocolClasses?.insert(ZitiUrlProtocol.self, at: 0)
+            _redirectSession = URLSession(configuration:configuration)
+        }
+        return _redirectSession!
+    }
+    
     var clientThread:Thread? // Thread that calls start/stopLoading, handles client notifications
     var modes:[String] = []
     
@@ -140,7 +150,8 @@ import Foundation
         }
         
         // must be done after NF_init...
-        uv_mbed_set_debug(5, stdout);
+        //ziti_debug_level = 11
+        uv_mbed_set_debug(5, stdout)
         
         // start thread for uv_loop
         let t = Thread(target: self, selector: #selector(ZitiUrlProtocol.doLoop), object: nil)
@@ -276,6 +287,20 @@ import Foundation
                         }
                     }
                     
+                    // if no User-Agent add it
+                    if zup.request.allHTTPHeaderFields?["User-Agent"] == nil {
+                        um_http_req_header(zup.req,
+                                           "User-Agent".cString(using: .utf8),
+                                           "ZitiUrlProtocol/1.0, ziti-sdk-c/x.y.c".cString(using: .utf8)) //TODO
+                    }
+                    
+                    // if no Accept, add it
+                    if zup.request.allHTTPHeaderFields?["Accept"] == nil {
+                        um_http_req_header(zup.req,
+                                           "Accept".cString(using: .utf8),
+                                           "*/*".cString(using: .utf8))
+                    }
+                    
                     // Add body
                     if let body = zup.request.httpBody {
                         let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: body.count)
@@ -336,15 +361,38 @@ import Foundation
             return
         }
         
-        mySelf.resp = HTTPURLResponse(url: reqUrl,
-                                      statusCode: code,
-                                      httpVersion: nil, // "HTTP/" + String(cString: resp.pointee.http_version)
-                                      headerFields: hdrMap)
-        guard let httpResp = mySelf.resp else {
-            NSLog("ZitiUrlProtocol.on_http_resp unable create response object for \(reqUrl)")
-            return
+        // attempt to follow re-directs
+        var wasRedirected = false
+        if code >= 300 && code <= 308 && code != 304 && code != 305 {
+            if let location = hdrMap["Location"] {
+                if let url = URL(string: location, relativeTo: mySelf.request.url) {
+                    var newRequest = URLRequest(url: url)
+                    newRequest.httpMethod = (code == 303 ? "GET" : mySelf.request.httpMethod)
+                    newRequest.allHTTPHeaderFields = mySelf.request.allHTTPHeaderFields
+                    newRequest.httpBody = mySelf.request.httpBody
+                    
+                    var origResp = HTTPURLResponse(
+                        url: url,
+                        statusCode: Int(resp.pointee.code),
+                        httpVersion: nil,
+                        headerFields: hdrMap)
+                    wasRedirected = true
+                    mySelf.notifyWasRedirectedTo(newRequest, origResp!) //TODO
+                }
+            }
         }
-        mySelf.notifyDidReceive(httpResp)
+        
+        if !wasRedirected {
+            mySelf.resp = HTTPURLResponse(url: reqUrl,
+                                          statusCode: code,
+                                          httpVersion: nil, // "HTTP/" + String(cString: resp.pointee.http_version)
+                                          headerFields: hdrMap)
+            guard let httpResp = mySelf.resp else {
+                NSLog("ZitiUrlProtocol.on_http_resp unable create response object for \(reqUrl)")
+                return
+            }
+            mySelf.notifyDidReceive(httpResp)
+        }
     }
     
     class HttpResponseError : NSError {
@@ -431,7 +479,7 @@ import Foundation
     }
     
     private func performOnClientThread(_ aSelector:Selector, _ arg:Any?) {
-        perform(aSelector, on: clientThread!, with:arg, waitUntilDone:true, modes:modes)
+        perform(aSelector, on: clientThread!, with:arg, waitUntilDone:false, modes:modes)
     }
     
     // MARK: NF_ziti callbacks
@@ -476,6 +524,7 @@ import Foundation
                         let hostPort = "\(hostname):\(port)"
                         print("      intercept: \(hostPort)")
                         
+                        // TODO: need to change this to update a service if we already have it, only add if we don't have it...
                         ZitiUrlProtocol.interceptsLock.lock()
                         var i = Intercept(name: svcName, urlStr: "http://\(hostPort)")
                         ZitiUrlProtocol.intercepts[i.urlStr] = Intercept(name: svcName, urlStr: "http://\(hostPort)")
@@ -506,7 +555,7 @@ import Foundation
     private func getUrlPath() -> String {
         guard let url = request.url else { return "/" }
         guard url.path.count > 0 else { return "/" }
-        return url.path
+        return url.query == nil ? url.path : "\(url.path)?\(url.query!)"
     }
     
     //

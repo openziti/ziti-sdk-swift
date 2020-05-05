@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+#if 1
 
 #include <nf/ziti.h>
 #include <nf/ziti_src.h>
@@ -21,5 +22,8 @@ limitations under the License.
 
 extern const char** ziti_all_configs;
 
+extern int ziti_debug_level;
 extern void uv_mbed_set_debug(int level, FILE *output);
+
+#endif
 
