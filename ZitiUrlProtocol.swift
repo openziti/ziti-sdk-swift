@@ -25,16 +25,6 @@ import Foundation
     var req:UnsafeMutablePointer<um_http_req_t>? = nil
     var resp:HTTPURLResponse?
     
-    static var _redirectSession:URLSession?
-    static var redirectSession:URLSession {
-        if _redirectSession == nil {
-            let configuration = URLSessionConfiguration.default
-            configuration.protocolClasses?.insert(ZitiUrlProtocol.self, at: 0)
-            _redirectSession = URLSession(configuration:configuration)
-        }
-        return _redirectSession!
-    }
-    
     var clientThread:Thread? // Thread that calls start/stopLoading, handles client notifications
     var modes:[String] = []
     
