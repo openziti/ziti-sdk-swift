@@ -47,13 +47,15 @@ import Foundation
     static var async_start_h = uv_async_t()
     static var async_stop_h = uv_async_t()
     
-    static let cfgType = "ziti-tunneler-client.v1".cString(using: .utf8)!
+    static let tunCfgType = "ziti-tunneler-client.v1".cString(using: .utf8)!
+    static let urlCfgType = "ziti-url-client.v1".cString(using: .utf8)!
     
     class Intercept : NSObject {
         let name:String
         let urlStr:String
         var clt:um_http_t? = nil
         var zs:um_http_src_t? = nil
+        var hdrs:[String:String]? = nil
 
         init(name:String, urlStr:String) {
             self.name = name
@@ -277,6 +279,13 @@ import Foundation
                         if (status != 0) {
                             let str = String(cString: uv_strerror(Int32(status)))
                             NSLog("ZitiUrlProtocol request header error ignored: \(str)")
+                        }
+                    }
+                    
+                    // add any headers specified via service config
+                    if let hdrs = intercept.hdrs {
+                        hdrs.forEach { hdr in
+                            um_http_req_header(zup.req, hdr.key, hdr.value)
                         }
                     }
                     
@@ -533,32 +542,56 @@ import Foundation
             ZitiUrlProtocol.intercepts = ZitiUrlProtocol.intercepts.filter { $0.value.name !=  svcName }
             ZitiUrlProtocol.interceptsLock.unlock()
         } else if status == ZITI_OK {
-            if let cfg = ziti_service_get_raw_config(&zs, ZitiUrlProtocol.cfgType) {
+            
+            // prefer urlCfgType, tunCfgType as fallback
+            var isUrlCfg = false
+            if let cfg = ziti_service_get_raw_config(&zs, ZitiUrlProtocol.urlCfgType) {
+                let data = Data(String(cString: cfg).utf8)
+                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                   let hostname = json["hostname"] as? String, let scheme = json["scheme"] as? String
+                {
+                    let port = json["port"] as? Int ?? (scheme == "https" ? 443 : 80)
+                    let urlStr = "\(scheme)://\(hostname):\(port)"
+                   
+                    ZitiUrlProtocol.interceptsLock.lock()
+                    if let curr = ZitiUrlProtocol.intercepts[urlStr] {
+                        NSLog("ZitiUrlProtocol intercept of \"\(urlStr)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
+                    }
+                    var intercept = Intercept(name: svcName, urlStr: urlStr)
+                    intercept.hdrs = json["headers"] as? [String:String]
+                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                    print("Setting URL intercept svc \(svcName): \(urlStr)")
+                    ZitiUrlProtocol.interceptsLock.unlock()
+                    isUrlCfg = true
+                } else {
+                    NSLog("ZitiUrlProtocol Unable to parse \(ZitiUrlProtocol.urlCfgType) for service \"\(svcName)\"")
+                }
+            }
+            
+            // fallback to tun config type
+            if !isUrlCfg, let cfg = ziti_service_get_raw_config(&zs, ZitiUrlProtocol.tunCfgType) {
                 let data = Data(String(cString: cfg).utf8)
                 if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                    let hostname = json["hostname"] as? String, let port = json["port"] as? Int
                 {
-                        let hostPort = "\(hostname):\(port)"
-                       
-                        ZitiUrlProtocol.interceptsLock.lock()
-                        // Keying by urlStr since that's how we intercept, and we have two possible intercepts
-                        // per service name (http and https). This can lead to 'overwriting' a service on conflict,
-                        // since that's the unique key as far as Ziti is concerned...
-                        if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-                            NSLog("ZitiUrlProtocol intercept of \"\(hostPort)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
-                        }
-                        var i = Intercept(name: svcName, urlStr: "http://\(hostPort)")
-                        ZitiUrlProtocol.intercepts[i.urlStr] = Intercept(name: svcName, urlStr: "http://\(hostPort)")
-                        i = Intercept(name: svcName, urlStr: "https://\(hostPort)")
-                        ZitiUrlProtocol.intercepts[i.urlStr] = Intercept(name: svcName, urlStr: "https://\(hostPort)")
-                        print("Setting intercept svc \(svcName): \(hostPort)")
-                        ZitiUrlProtocol.interceptsLock.unlock()
+                    let hostPort = "\(hostname):\(port)"
+                   
+                    ZitiUrlProtocol.interceptsLock.lock()
+                    // Keying by urlStr since that's how we intercept, and we have two possible intercepts
+                    // per service name (http and https). This can lead to 'overwriting' a service on conflict,
+                    // since that's the unique key as far as Ziti is concerned...
+                    if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
+                        NSLog("ZitiUrlProtocol intercept of \"\(hostPort)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
+                    }
+                    var intercept = Intercept(name: svcName, urlStr: "http://\(hostPort)")
+                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                    intercept = Intercept(name: svcName, urlStr: "https://\(hostPort)")
+                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                    print("Setting TUN intercept svc \(svcName): \(hostPort)")
+                    ZitiUrlProtocol.interceptsLock.unlock()
                 } else {
-                    NSLog("ZitiUrlProtocol Unable to parse configuration for service \"\(svcName)\"")
+                    NSLog("ZitiUrlProtocol Unable to parse \(ZitiUrlProtocol.tunCfgType) for service \"\(svcName)\"")
                 }
-            } else {
-                let ct = String(cString: ZitiUrlProtocol.cfgType)
-                print("Config type \(ct) not found for service \(svcName)")
             }
         }
     }
