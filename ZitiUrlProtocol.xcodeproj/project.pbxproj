@@ -13,6 +13,14 @@
 		5A0E4A8F24534DE500C56DCF /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8D24534DDE00C56DCF /* libsodium.a */; };
 		5A0E4A92245DE46900C56DCF /* ziti.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A0E4A91245DE46900C56DCF /* ziti.c */; };
 		5A0E4A93245DE46900C56DCF /* ziti.c in Sources */ = {isa = PBXBuildFile; fileRef = 5A0E4A91245DE46900C56DCF /* ziti.c */; };
+		5AAAEDC8246315E700C56383 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDC7246315E700C56383 /* ZitiIntercept.swift */; };
+		5AAAEDC9246315E700C56383 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDC7246315E700C56383 /* ZitiIntercept.swift */; };
+		5AAAEDCC24633F0600C56383 /* ZitiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDCB24633F0600C56383 /* ZitiConfig.swift */; };
+		5AAAEDCD24633F0600C56383 /* ZitiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDCB24633F0600C56383 /* ZitiConfig.swift */; };
+		5AAAEDCF24633F3800C56383 /* ZitiUrlConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */; };
+		5AAAEDD024633F3800C56383 /* ZitiUrlConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */; };
+		5AAAEDD224633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */; };
+		5AAAEDD324633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */; };
 		5AB6DF71244B7C6400F4B4E0 /* ZitiUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */; };
 		5AB6DF7E244B8F2000F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
@@ -48,6 +56,10 @@
 		5A0E4A8D24534DDE00C56DCF /* libsodium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsodium.a; path = "deps/ziti-sdk-c/build-os-arch/_deps/libsodium-build/lib/libsodium.a"; sourceTree = "<group>"; };
 		5A0E4A91245DE46900C56DCF /* ziti.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ziti.c; sourceTree = "<group>"; };
 		5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiUrlProtocol.swift; sourceTree = "<group>"; };
+		5AAAEDC7246315E700C56383 /* ZitiIntercept.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiIntercept.swift; sourceTree = "<group>"; };
+		5AAAEDCB24633F0600C56383 /* ZitiConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiConfig.swift; sourceTree = "<group>"; };
+		5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiUrlConfig.swift; sourceTree = "<group>"; };
+		5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiTunnelConfig.swift; sourceTree = "<group>"; };
 		5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZitiUrlProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZitiUrlProtocol-Bridging-Header.h"; sourceTree = "<group>"; };
 		5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_mbed.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/libuv_mbed.a"; sourceTree = "<group>"; };
@@ -99,6 +111,10 @@
 		5A2D83F92444D4B9008B1D32 = {
 			isa = PBXGroup;
 			children = (
+				5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */,
+				5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */,
+				5AAAEDCB24633F0600C56383 /* ZitiConfig.swift */,
+				5AAAEDC7246315E700C56383 /* ZitiIntercept.swift */,
 				5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */,
 				5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */,
 				5A0E4A91245DE46900C56DCF /* ziti.c */,
@@ -221,8 +237,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AAAEDC8246315E700C56383 /* ZitiIntercept.swift in Sources */,
+				5AAAEDCC24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DF71244B7C6400F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
 				5A0E4A92245DE46900C56DCF /* ziti.c in Sources */,
+				5AAAEDCF24633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
+				5AAAEDD224633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,8 +250,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AAAEDC9246315E700C56383 /* ZitiIntercept.swift in Sources */,
+				5AAAEDCD24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DFB6244B9A4300F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
 				5A0E4A93245DE46900C56DCF /* ziti.c in Sources */,
+				5AAAEDD024633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
+				5AAAEDD324633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

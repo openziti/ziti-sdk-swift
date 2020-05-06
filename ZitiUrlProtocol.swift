@@ -50,32 +50,8 @@ import Foundation
     static let tunCfgType = "ziti-tunneler-client.v1".cString(using: .utf8)!
     static let urlCfgType = "ziti-url-client.v1".cString(using: .utf8)!
     
-    class Intercept : NSObject {
-        let name:String
-        let urlStr:String
-        var clt:um_http_t? = nil
-        var zs:um_http_src_t? = nil
-        var hdrs:[String:String]? = nil
-
-        init(name:String, urlStr:String) {
-            self.name = name
-            self.urlStr = urlStr
-            super.init()
-        }
-        
-        func checkLinks() {
-            if clt == nil {
-                clt = um_http_t()
-                zs = um_http_src_t()
-                
-                ziti_src_init(ZitiUrlProtocol.loop, &(zs!), name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
-                um_http_init_with_src(ZitiUrlProtocol.loop, &(clt!), urlStr.cString(using: .utf8), &(zs!))
-                um_http_idle_keepalive(&(clt!), ZitiUrlProtocol.idleTime)
-            }
-        }
-    }
     static var interceptsLock = NSLock()
-    static var intercepts:[String:Intercept] = [:]
+    static var intercepts:[String:ZitiIntercept] = [:]
     
     static var idleTime:Int = 0;
     
@@ -134,7 +110,7 @@ import Foundation
                                              config_types: ziti_all_configs,
                                              init_cb: ZitiUrlProtocol.on_nf_init,
                                              service_cb: ZitiUrlProtocol.on_nf_service,
-                                             refresh_interval: 120,
+                                             refresh_interval: 30,
                                              ctx: nil)
         
         let initStatus = NF_init_opts(&(ZitiUrlProtocol.nf_opts!), ZitiUrlProtocol.loop, nil)
@@ -262,80 +238,10 @@ import Foundation
             
             ZitiUrlProtocol.interceptsLock.lock()
             if var intercept = ZitiUrlProtocol.intercepts[urlStr] {
-                intercept.checkLinks()
-                zup.req = um_http_req(&(intercept.clt!),
-                                      zup.request.httpMethod ?? "GET",
-                                      zup.getUrlPath().cString(using: .utf8),
-                                      ZitiUrlProtocol.on_http_resp,
-                                      zup.toVoidPtr())
-                zup.req?.pointee.resp.body_cb = ZitiUrlProtocol.on_http_body
-                
-                if zup.req != nil {
-                    // Add request headers 
-                    zup.request.allHTTPHeaderFields?.forEach { h in
-                        let status = um_http_req_header(zup.req,
-                                                        h.key.cString(using: .utf8),
-                                                        h.value.cString(using: .utf8))
-                        if (status != 0) {
-                            let str = String(cString: uv_strerror(Int32(status)))
-                            NSLog("ZitiUrlProtocol request header error ignored: \(str)")
-                        }
-                    }
-                    
-                    // add any headers specified via service config
-                    if let hdrs = intercept.hdrs {
-                        hdrs.forEach { hdr in
-                            um_http_req_header(zup.req, hdr.key, hdr.value)
-                        }
-                    }
-                    
-                    // if no User-Agent add it
-                    if zup.request.allHTTPHeaderFields?["User-Agent"] == nil {
-                        var zv = "(unknown)@unknown"
-                        if let nfv = NF_get_version()?.pointee {
-                            zv = "\(String(cString: nfv.version))-@\(String(cString: nfv.revision))"
-                        }
-                        um_http_req_header(zup.req,
-                                           "User-Agent".cString(using: .utf8),
-                                           "\(ZitiUrlProtocol.self); ziti-sdk-c/\(zv)".cString(using: .utf8))
-                    }
-                    
-                    // if no Accept, add it
-                    if zup.request.allHTTPHeaderFields?["Accept"] == nil {
-                        um_http_req_header(zup.req,
-                                           "Accept".cString(using: .utf8),
-                                           "*/*".cString(using: .utf8))
-                    }
-                    
-                    // Add body
-                    if let body = zup.request.httpBody {
-                        let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: body.count)
-                        var bytes:[Int8] = body.map{ Int8(bitPattern: $0) }
-                        ptr.initialize(from: bytes, count: body.count)
-                        um_http_req_data(zup.req, ptr, body.count, nil)
-                        ptr.deallocate()
-                    } else if let stream = zup.request.httpBodyStream {
-                        if let clv = zup.request.allHTTPHeaderFields?["Content-Length"], let contentLen = Int(clv) {
-                            var body = Data()
-                            let ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: contentLen)
-                            stream.open()
-                            while stream.hasBytesAvailable {
-                                let n = stream.read(ptr, maxLength: contentLen)
-                                body.append(ptr, count: n)
-                            }
-                            stream.close()
-                            
-                            _ = ptr.withMemoryRebound(to: Int8.self, capacity: body.count) {
-                                um_http_req_data(zup.req, $0, body.count, nil)
-                            }
-                            ptr.deallocate()
-                        } else {
-                            // TODO: Transfer-Encoding:chunked
-                            var encoding = zup.request.allHTTPHeaderFields?["Transfer-Encoding"] ?? ""
-                            NSLog("ZitiUrlProtocol - Content-Length required, \(encoding) encoding not yet supported :(")
-                        }
-                    }
-                }
+                zup.req = intercept.createRequest(zup, zup.getUrlPath(),
+                                                  ZitiUrlProtocol.on_http_resp,
+                                                  ZitiUrlProtocol.on_http_body,
+                                                  zup.toVoidPtr())
             }
             ZitiUrlProtocol.interceptsLock.unlock()
         }
@@ -437,7 +343,7 @@ import Foundation
         // Filter out all that are stopped and finished
         // see also on_async_stop()
         ZitiUrlProtocol.reqsLock.lock()
-        ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { $0.stopped && $0.finished }
+        ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { !($0.stopped && $0.finished) }
         ZitiUrlProtocol.reqsLock.unlock()
     }
     
@@ -459,7 +365,7 @@ import Foundation
         ZitiUrlProtocol.reqs.forEach { zup in
             if zup.started { zup.stopped = true }
         }
-        ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { $0.stopped && $0.finished }
+        ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { !($0.stopped && $0.finished) }
         ZitiUrlProtocol.reqsLock.unlock()
     }
     
@@ -544,54 +450,39 @@ import Foundation
         } else if status == ZITI_OK {
             
             // prefer urlCfgType, tunCfgType as fallback
-            var isUrlCfg = false
-            if let cfg = ziti_service_get_raw_config(&zs, ZitiUrlProtocol.urlCfgType) {
-                let data = Data(String(cString: cfg).utf8)
-                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let hostname = json["hostname"] as? String, let scheme = json["scheme"] as? String
-                {
-                    let port = json["port"] as? Int ?? (scheme == "https" ? 443 : 80)
-                    let urlStr = "\(scheme)://\(hostname):\(port)"
-                   
-                    ZitiUrlProtocol.interceptsLock.lock()
-                    if let curr = ZitiUrlProtocol.intercepts[urlStr] {
-                        NSLog("ZitiUrlProtocol intercept of \"\(urlStr)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
-                    }
-                    var intercept = Intercept(name: svcName, urlStr: urlStr)
-                    intercept.hdrs = json["headers"] as? [String:String]
-                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                    print("Setting URL intercept svc \(svcName): \(urlStr)")
-                    ZitiUrlProtocol.interceptsLock.unlock()
-                    isUrlCfg = true
-                } else {
-                    NSLog("ZitiUrlProtocol Unable to parse \(ZitiUrlProtocol.urlCfgType) for service \"\(svcName)\"")
+            var foundUrlCfg = false // TODO
+            if let cfg = ZitiIntercept.parseConfig(ZitiUrlConfig.self, &zs) {
+                let urlStr = "\(cfg.scheme)://\(cfg.hostname):\(cfg.getPort())"
+                
+                ZitiUrlProtocol.interceptsLock.lock()
+                if let curr = ZitiUrlProtocol.intercepts[urlStr] {
+                    NSLog("ZitiUrlProtocol intercept of \"\(urlStr)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
                 }
+                var intercept = ZitiIntercept(name: svcName, urlStr: urlStr)
+                intercept.hdrs = cfg.headers ?? [:]
+                ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                
+                print("Setting URL intercept svc \(svcName): \(urlStr)")
+                ZitiUrlProtocol.interceptsLock.unlock()
+                
+                foundUrlCfg = true
             }
             
             // fallback to tun config type
-            if !isUrlCfg, let cfg = ziti_service_get_raw_config(&zs, ZitiUrlProtocol.tunCfgType) {
-                let data = Data(String(cString: cfg).utf8)
-                if let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let hostname = json["hostname"] as? String, let port = json["port"] as? Int
-                {
-                    let hostPort = "\(hostname):\(port)"
+            if !foundUrlCfg, let cfg = ZitiIntercept.parseConfig(ZitiTunnelConfig.self, &zs) {
+                let hostPort = "\(cfg.hostname):\(cfg.port)"
                    
-                    ZitiUrlProtocol.interceptsLock.lock()
-                    // Keying by urlStr since that's how we intercept, and we have two possible intercepts
-                    // per service name (http and https). This can lead to 'overwriting' a service on conflict,
-                    // since that's the unique key as far as Ziti is concerned...
-                    if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-                        NSLog("ZitiUrlProtocol intercept of \"\(hostPort)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
-                    }
-                    var intercept = Intercept(name: svcName, urlStr: "http://\(hostPort)")
-                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                    intercept = Intercept(name: svcName, urlStr: "https://\(hostPort)")
-                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                    print("Setting TUN intercept svc \(svcName): \(hostPort)")
-                    ZitiUrlProtocol.interceptsLock.unlock()
-                } else {
-                    NSLog("ZitiUrlProtocol Unable to parse \(ZitiUrlProtocol.tunCfgType) for service \"\(svcName)\"")
+                ZitiUrlProtocol.interceptsLock.lock()
+                if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
+                    NSLog("ZitiUrlProtocol intercept of \"\(hostPort)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
                 }
+                var intercept = ZitiIntercept(name: svcName, urlStr: "http://\(hostPort)")
+                ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                intercept = ZitiIntercept(name: svcName, urlStr: "https://\(hostPort)")
+                ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                
+                print("Setting TUN intercept svc \(svcName): \(hostPort)")
+                ZitiUrlProtocol.interceptsLock.unlock()
             }
         }
     }
