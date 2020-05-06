@@ -351,9 +351,8 @@ import Foundation
         
         // We don't want to call um_http_close since we would rather just keep
         // using the um_http_t (e.g., for the next startLoading() for this server, especially
-        // when http keep-alive is > 0). Also, there's no close callback on um_http_close (and
-        // um_http_close does a free() on the um_http_t that's passed in, which would be bad
-        // the way we use it.
+        // when http keep-alive is > 0). Also, there's no close callback on um_http_close,
+        // so even then might be tough to know...
         //
         // Removing the ZitiUrlProtol from the reqs array here could cause an issue where
         // we keep getting callbacks from um_http after the ZitiUrlProtocol instance has
@@ -450,7 +449,7 @@ import Foundation
         } else if status == ZITI_OK {
             
             // prefer urlCfgType, tunCfgType as fallback
-            var foundUrlCfg = false // TODO
+            var foundUrlCfg = false
             if let cfg = ZitiIntercept.parseConfig(ZitiUrlConfig.self, &zs) {
                 let urlStr = "\(cfg.scheme)://\(cfg.hostname):\(cfg.getPort())"
                 

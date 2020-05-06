@@ -32,6 +32,14 @@ class ZitiIntercept : NSObject {
         super.init()
     }
     
+    deinit {
+        // this will happen when a service is updated and we stop referencing this object.
+        // those updates only happen 'on the loop' when services are udated.
+        // a little concerned that something put on the loop as part of the close
+        // will try to access the clt memory...
+        um_http_close(&clt)
+    }
+    
     static func parseConfig<T>(_ type: T.Type, _ zs: inout ziti_service) -> T? where T:Decodable, T:ZitiConfig {
         return T.parseConfig(type, &zs)
     }
