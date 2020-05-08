@@ -21,6 +21,14 @@
 		5AAAEDD024633F3800C56383 /* ZitiUrlConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */; };
 		5AAAEDD224633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */; };
 		5AAAEDD324633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */; };
+		5AAAEDD52463924600C56383 /* ZitiEnroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD42463924600C56383 /* ZitiEnroller.swift */; };
+		5AAAEDD62463924600C56383 /* ZitiEnroller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD42463924600C56383 /* ZitiEnroller.swift */; };
+		5AAAEDD92463A4EA00C56383 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD82463A4EA00C56383 /* ZitiError.swift */; };
+		5AAAEDDA2463A4EA00C56383 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDD82463A4EA00C56383 /* ZitiError.swift */; };
+		5AAAEDDC2464698900C56383 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */; };
+		5AAAEDDD2464698900C56383 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */; };
+		5AAAEDE62464D8AB00C56383 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDE52464D8AB00C56383 /* main.swift */; };
+		5AAAEDEA2464D8FB00C56383 /* libZitiUrlProtocol.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */; };
 		5AB6DF71244B7C6400F4B4E0 /* ZitiUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */; };
 		5AB6DF7E244B8F2000F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
@@ -39,7 +47,26 @@
 		5AB6DFBE244BA65400F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		5AAAEDEB2464D8FB00C56383 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5A2D83FA2444D4B9008B1D32 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5AB6DF67244B7C3C00F4B4E0;
+			remoteInfo = "ZitiUrlProtocol-macOS";
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXCopyFilesBuildPhase section */
+		5AAAEDE12464D8AB00C56383 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		5AB6DFAD244B990A00F4B4E0 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -60,6 +87,11 @@
 		5AAAEDCB24633F0600C56383 /* ZitiConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiConfig.swift; sourceTree = "<group>"; };
 		5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiUrlConfig.swift; sourceTree = "<group>"; };
 		5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiTunnelConfig.swift; sourceTree = "<group>"; };
+		5AAAEDD42463924600C56383 /* ZitiEnroller.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiEnroller.swift; sourceTree = "<group>"; };
+		5AAAEDD82463A4EA00C56383 /* ZitiError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiError.swift; sourceTree = "<group>"; };
+		5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiUnretained.swift; sourceTree = "<group>"; };
+		5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ziti-mac-enroller"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AAAEDE52464D8AB00C56383 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZitiUrlProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZitiUrlProtocol-Bridging-Header.h"; sourceTree = "<group>"; };
 		5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_mbed.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/libuv_mbed.a"; sourceTree = "<group>"; };
@@ -73,6 +105,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5AAAEDE02464D8AB00C56383 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AAAEDEA2464D8FB00C56383 /* libZitiUrlProtocol.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5AB6DF66244B7C3C00F4B4E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -111,6 +151,9 @@
 		5A2D83F92444D4B9008B1D32 = {
 			isa = PBXGroup;
 			children = (
+				5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */,
+				5AAAEDD82463A4EA00C56383 /* ZitiError.swift */,
+				5AAAEDD42463924600C56383 /* ZitiEnroller.swift */,
 				5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */,
 				5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */,
 				5AAAEDCB24633F0600C56383 /* ZitiConfig.swift */,
@@ -118,6 +161,7 @@
 				5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */,
 				5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */,
 				5A0E4A91245DE46900C56DCF /* ziti.c */,
+				5AAAEDE42464D8AB00C56383 /* ziti-mac-enroller */,
 				5A2D84062444D54C008B1D32 /* Products */,
 				5AB6DF76244B8F2000F4B4E0 /* Frameworks */,
 			);
@@ -128,8 +172,17 @@
 			children = (
 				5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */,
 				5AB6DFAF244B990A00F4B4E0 /* libZitiUrlProtocol.a */,
+				5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		5AAAEDE42464D8AB00C56383 /* ziti-mac-enroller */ = {
+			isa = PBXGroup;
+			children = (
+				5AAAEDE52464D8AB00C56383 /* main.swift */,
+			);
+			path = "ziti-mac-enroller";
 			sourceTree = "<group>";
 		};
 		5AB6DF76244B8F2000F4B4E0 /* Frameworks */ = {
@@ -161,6 +214,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		5AAAEDE22464D8AB00C56383 /* ziti-mac-enroller */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AAAEDE72464D8AB00C56383 /* Build configuration list for PBXNativeTarget "ziti-mac-enroller" */;
+			buildPhases = (
+				5AAAEDDF2464D8AB00C56383 /* Sources */,
+				5AAAEDE02464D8AB00C56383 /* Frameworks */,
+				5AAAEDE12464D8AB00C56383 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5AAAEDEC2464D8FB00C56383 /* PBXTargetDependency */,
+			);
+			name = "ziti-mac-enroller";
+			productName = "ziti-mac-enroller";
+			productReference = 5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */;
+			productType = "com.apple.product-type.tool";
+		};
 		5AB6DF67244B7C3C00F4B4E0 /* ZitiUrlProtocol-macOS */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5AB6DF6E244B7C3C00F4B4E0 /* Build configuration list for PBXNativeTarget "ZitiUrlProtocol-macOS" */;
@@ -204,6 +275,9 @@
 				LastSwiftUpdateCheck = 1140;
 				LastUpgradeCheck = 1140;
 				TargetAttributes = {
+					5AAAEDE22464D8AB00C56383 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
 					5AB6DF67244B7C3C00F4B4E0 = {
 						CreatedOnToolsVersion = 11.4.1;
 					};
@@ -228,21 +302,33 @@
 			targets = (
 				5AB6DF67244B7C3C00F4B4E0 /* ZitiUrlProtocol-macOS */,
 				5AB6DFAE244B990A00F4B4E0 /* ZitiUrlProtocol-iOS */,
+				5AAAEDE22464D8AB00C56383 /* ziti-mac-enroller */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5AAAEDDF2464D8AB00C56383 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AAAEDE62464D8AB00C56383 /* main.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5AB6DF65244B7C3C00F4B4E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AAAEDD52463924600C56383 /* ZitiEnroller.swift in Sources */,
 				5AAAEDC8246315E700C56383 /* ZitiIntercept.swift in Sources */,
 				5AAAEDCC24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DF71244B7C6400F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
+				5AAAEDD92463A4EA00C56383 /* ZitiError.swift in Sources */,
 				5A0E4A92245DE46900C56DCF /* ziti.c in Sources */,
 				5AAAEDCF24633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
 				5AAAEDD224633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
+				5AAAEDDC2464698900C56383 /* ZitiUnretained.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -250,16 +336,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AAAEDD62463924600C56383 /* ZitiEnroller.swift in Sources */,
 				5AAAEDC9246315E700C56383 /* ZitiIntercept.swift in Sources */,
 				5AAAEDCD24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DFB6244B9A4300F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
+				5AAAEDDA2463A4EA00C56383 /* ZitiError.swift in Sources */,
 				5A0E4A93245DE46900C56DCF /* ziti.c in Sources */,
 				5AAAEDD024633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
 				5AAAEDD324633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
+				5AAAEDDD2464698900C56383 /* ZitiUnretained.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		5AAAEDEC2464D8FB00C56383 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5AB6DF67244B7C3C00F4B4E0 /* ZitiUrlProtocol-macOS */;
+			targetProxy = 5AAAEDEB2464D8FB00C56383 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		5A2D83FE2444D4B9008B1D32 /* Debug */ = {
@@ -305,6 +402,129 @@
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ZitiUrlProtocol-Bridging-Header.h";
+			};
+			name = Release;
+		};
+		5AAAEDE82464D8AB00C56383 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		5AAAEDE92464D8AB00C56383 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
 		};
@@ -605,6 +825,15 @@
 			buildConfigurations = (
 				5A2D83FE2444D4B9008B1D32 /* Debug */,
 				5A2D83FF2444D4B9008B1D32 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5AAAEDE72464D8AB00C56383 /* Build configuration list for PBXNativeTarget "ziti-mac-enroller" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AAAEDE82464D8AB00C56383 /* Debug */,
+				5AAAEDE92464D8AB00C56383 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
