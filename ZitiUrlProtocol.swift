@@ -20,7 +20,7 @@ import Foundation
  *
  * Call the `ZitiUrlProtocol.start()`method to register this `URLProtocol` and start the background processing thread for `Ziti` requests.
  */
-@objc public class ZitiUrlProtocol: URLProtocol {
+@objc public class ZitiUrlProtocol: URLProtocol, ZitiUnretained {
     var started = false
     var stopped = false
     var finished = false
@@ -104,6 +104,9 @@ import Foundation
         cfgPtr.initialize(from: cfgPath, count: cfgPath.count)
         defer { cfgPtr.deallocate() } // just needs to live through call to NF_init_opts
         
+        //
+        // TODO: Get Key/Cert from keychain...
+        //
         ZitiUrlProtocol.nf_opts = nf_options(config: cfgPtr,
                                              controller: nil,
                                              tls:nil,
@@ -248,7 +251,7 @@ import Foundation
     }
     
     static private let on_http_resp:um_http_resp_cb = { resp, ctx in
-        guard let resp = resp, let mySelf = ZitiUrlProtocol.fromContext(ctx) else {
+        guard let resp = resp, let mySelf = zitiUnretained(ZitiUrlProtocol.self, ctx) else {
             NSLog("ZitiUrlProtocol.on_http_resp WTF unable to decode context")
             return
         }
@@ -268,8 +271,8 @@ import Foundation
         let code = Int(resp.pointee.code)
         guard code > 0 else {
             let str = String(cString: uv_strerror(Int32(code)))
-            let err = HttpResponseError(str, errorCode: code)
-            mySelf.notifyDidFailWithError(err)
+            let err = ZitiError(str, errorCode: code)
+            mySelf.notifyDidFailWithError(ZitiError(str, errorCode: code))
             return
         }
         
@@ -310,19 +313,8 @@ import Foundation
         }
     }
     
-    class HttpResponseError : NSError {
-        init(_ desc:String, errorCode:Int=Int(-1)) {
-            NSLog("\(errorCode) \(desc)")
-            super.init(domain: "ZitiError", code: errorCode,
-                       userInfo: [NSLocalizedDescriptionKey:NSLocalizedString(desc, comment: "")])
-        }
-        required init?(coder: NSCoder) {
-            fatalError("init(coder:) has not been implemented")
-        }
-    }
-    
     static private let on_http_body:um_http_body_cb = { req, body, len in
-        guard let req = req, let mySelf = ZitiUrlProtocol.fromContext(req.pointee.data) else {
+        guard let req = req, let mySelf = zitiUnretained(ZitiUrlProtocol.self ,req.pointee.data) else {
             NSLog("ZitiUrlProtocol.on_http_body WTF unable to decode context")
             return
         }
@@ -332,7 +324,7 @@ import Foundation
             mySelf.finished = true
         } else if len < 0 {
             let str = String(cString: uv_strerror(Int32(len)))
-            let err = HttpResponseError(str, errorCode: len)
+            let err = ZitiError(str, errorCode: len)
             mySelf.notifyDidFailWithError(err)
         } else {
             let data = Data(bytes: body!, count: len)
@@ -455,9 +447,10 @@ import Foundation
                 
                 ZitiUrlProtocol.interceptsLock.lock()
                 if let curr = ZitiUrlProtocol.intercepts[urlStr] {
-                    NSLog("ZitiUrlProtocol intercept of \"\(urlStr)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
+                    NSLog("ZitiUrlProtocol intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                    curr.close()
                 }
-                var intercept = ZitiIntercept(name: svcName, urlStr: urlStr)
+                var intercept = ZitiIntercept(loop, svcName, urlStr)
                 intercept.hdrs = cfg.headers ?? [:]
                 ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
                 
@@ -472,15 +465,28 @@ import Foundation
                 let hostPort = "\(cfg.hostname):\(cfg.port)"
                    
                 ZitiUrlProtocol.interceptsLock.lock()
-                if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-                    NSLog("ZitiUrlProtocol intercept of \"\(hostPort)\" changing from service \"\(curr.name)\" to \"\(svcName)\"")
-                }
-                var intercept = ZitiIntercept(name: svcName, urlStr: "http://\(hostPort)")
-                ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                intercept = ZitiIntercept(name: svcName, urlStr: "https://\(hostPort)")
-                ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
                 
-                print("Setting TUN intercept svc \(svcName): \(hostPort)")
+                // issues with releasing these.  mark them for future cleanup
+                if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
+                    NSLog("ZitiUrlProtocol intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                    curr.close()
+                }
+                if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
+                    NSLog("ZitiUrlProtocol intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                    curr.close()
+                }
+                
+                if let scheme = (cfg.port == 80 ? "http" : (cfg.port == 443 ? "https" : nil)) {
+                    var intercept = ZitiIntercept(loop, svcName, "\(scheme)://\(hostPort)")
+                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                    print("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)")
+                } else {
+                    var intercept = ZitiIntercept(loop, svcName, "http://\(hostPort)")
+                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                    intercept = ZitiIntercept(loop, svcName, "https://\(hostPort)")
+                    ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
+                    print("Setting TUN intercept svc \(svcName): \(hostPort)")
+                }
                 ZitiUrlProtocol.interceptsLock.unlock()
             }
         }
@@ -502,17 +508,5 @@ import Foundation
         guard let url = request.url else { return "/" }
         guard url.path.count > 0 else { return "/" }
         return url.query == nil ? url.path : "\(url.path)?\(url.query!)"
-    }
-    
-    //
-    // Helpers to translate 'self' to pointer to use as callback data
-    //
-    static private func fromContext(_ ctx:Optional<UnsafeMutableRawPointer>) -> ZitiUrlProtocol? {
-        guard ctx != nil else { return nil }
-        return Unmanaged<ZitiUrlProtocol>.fromOpaque(UnsafeMutableRawPointer(ctx!)).takeUnretainedValue()
-    }
-    private func toVoidPtr() -> UnsafeMutableRawPointer {
-        return UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
-        //return UnsafeMutableRawPointer(Unmanaged.passRetained(self).toOpaque()) // force leak until matching takeRetained
     }
 }
