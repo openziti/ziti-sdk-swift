@@ -15,29 +15,58 @@ limitations under the License.
 */
 import Foundation
 
-class ZitiIntercept : NSObject {
+class ZitiIntercept : NSObject, ZitiUnretained {
+    var loop:UnsafeMutablePointer<uv_loop_t>?
     let name:String
     let urlStr:String
     var clt = um_http_t()
     var zs = um_http_src_t()
     var hdrs:[String:String]? = nil
+    
+    static var releasePending:[ZitiIntercept] = []
+    var close_timer_h:UnsafeMutablePointer<uv_timer_t>?
 
-    init(name:String, urlStr:String) {
+    init(_ loop:UnsafeMutablePointer<uv_loop_t>?, _ name:String, _ urlStr:String) {
         self.name = name
         self.urlStr = urlStr
         ziti_src_init(ZitiUrlProtocol.loop, &zs, name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
         um_http_init_with_src(ZitiUrlProtocol.loop, &clt, urlStr.cString(using: .utf8), &zs)
         um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
         
+        close_timer_h = UnsafeMutablePointer.allocate(capacity: 1)
+        close_timer_h?.initialize(to: uv_timer_t())
+        
         super.init()
+        
+        uv_timer_init(loop, close_timer_h)
+        close_timer_h?.pointee.data = toVoidPtr()
+        close_timer_h?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_unref($0)
+        }
+    }
+    
+    static let on_close_timer:uv_timer_cb = { h in
+        guard let ctx = h?.pointee.data, let mySelf = zitiUnretained(ZitiIntercept.self, ctx) else {
+            return
+        }
+        ZitiIntercept.releasePending = ZitiIntercept.releasePending.filter { $0 != mySelf }
+    }
+    
+    func close() {
+        // This close sequence isn't great. If we release the mem, even after waiting for an
+        // iteration of the loop, we run into memory issues.  For now will set a very long
+        // timer and clean up when it expires (not that big of a deal, since intercepts usually
+        // last lifetime of the app)
+        print("close \(self)")
+        ZitiIntercept.releasePending.append(self)
+        um_http_close(&clt)
+        uv_timer_start(close_timer_h, ZitiIntercept.on_close_timer, 5000, 0)
     }
     
     deinit {
-        // this will happen when a service is updated and we stop referencing this object.
-        // those updates only happen 'on the loop' when services are udated.
-        // a little concerned that something put on the loop as part of the close
-        // will try to access the clt memory...
-        um_http_close(&clt)
+        print("deinit \(self)")
+        close_timer_h?.deinitialize(count: 1)
+        close_timer_h?.deallocate()
     }
     
     static func parseConfig<T>(_ type: T.Type, _ zs: inout ziti_service) -> T? where T:Decodable, T:ZitiConfig {
