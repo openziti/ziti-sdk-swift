@@ -39,7 +39,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
         super.init()
         
         uv_timer_init(loop, close_timer_h)
-        close_timer_h?.pointee.data = toVoidPtr()
+        close_timer_h?.pointee.data = self.toVoidPtr()
         close_timer_h?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
             uv_unref($0)
         }
@@ -57,14 +57,12 @@ class ZitiIntercept : NSObject, ZitiUnretained {
         // iteration of the loop, we run into memory issues.  For now will set a very long
         // timer and clean up when it expires (not that big of a deal, since intercepts usually
         // last lifetime of the app)
-        print("close \(self)")
         ZitiIntercept.releasePending.append(self)
         um_http_close(&clt)
         uv_timer_start(close_timer_h, ZitiIntercept.on_close_timer, 5000, 0)
     }
     
     deinit {
-        print("deinit \(self)")
         close_timer_h?.deinitialize(count: 1)
         close_timer_h?.deallocate()
     }
