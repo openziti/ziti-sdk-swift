@@ -15,27 +15,88 @@ limitations under the License.
 */
 import Foundation
 
+/**
+ * Class that enroll an identity with Ziti controller using a one-time JWT file
+ */
 @objc public class ZitiEnroller : NSObject, ZitiUnretained {
-    
-    public typealias EnrollmentCallback = (EnrollmentResponse?, ZitiError?) -> Void
-    var enrollmentCallback:EnrollmentCallback?
+    /**
+     * Class representing response to successful enrollment attempt
+     */
     @objc public class EnrollmentResponse : NSObject, Codable {
+        /**
+         * Identity portion of successful enrollment attempt
+         *
+         *  - .key: locally generated private key used for generating CSR as part of enrollment
+         *  - .cert: signed certificate created as part of CSR process
+         *  - .ca: root certificates for trusting the Ziti Controller
+         */
         public class Identity : Codable { public var key:String, cert:String, ca:String? }
+        
+        /**
+         * URL of controller returned on successful enrollment attempt
+         */
         public let ztAPI:String, id:Identity
     }
     
+    /**
+     * Type used for escaping callback closure called following an enrollment attempt
+     *
+     * - Parameters:
+     *      - resp: EnrollmentResponse returned on successful enrollment.  `nil` on failed attempt
+     *      - subj: `sub` field indicated in JWT, representing unique id for this Ziti identity. `nil on failed attempt`
+     *      - error: `ZitiError` containing error information on failed enrollment attempt
+     */
+    public typealias EnrollmentCallback = (_ resp:EnrollmentResponse?, _ subj:String?, _ error:ZitiError?) -> Void
+    var enrollmentCallback:EnrollmentCallback?
+    var subj:String?
+    
+    /**
+     * Enroll a Ziti identity using a supplied `uv_loop_t` and JWT file
+     *
+     * - Parameters:
+     *      - loop: `uv_loop_t` used for executing the enrollment
+     *      - jwtFile: file containing one-time JWT
+     *      - cb: callback called indicating status of enrollment attempt
+     */
     @objc public func enroll(loop:UnsafeMutablePointer<uv_loop_t>?, jwtFile:String, cb:@escaping EnrollmentCallback) {
+        guard let subj = getSubj(jwtFile) else {
+            cb(nil, nil, ZitiError("Unable to retrieve sub from jwt file \(jwtFile)"))
+            return
+        }
+        self.subj = subj
         enrollmentCallback = cb
         
-       // DispatchQueue(label: "ZitiEnroller").async {
-            let status = NF_enroll(jwtFile.cString(using: .utf8), loop, ZitiEnroller.on_enroll, self.toVoidPtr())
-            guard status == ZITI_OK else {
-                cb(nil, ZitiError(String(cString: ziti_errorstr(status)), errorCode: Int(status)))
-                return
-            }
-       // }
+        let status = NF_enroll(jwtFile.cString(using: .utf8), loop, ZitiEnroller.on_enroll, self.toVoidPtr())
+        guard status == ZITI_OK else {
+            cb(nil, nil, ZitiError(String(cString: ziti_errorstr(status)), errorCode: Int(status)))
+            return
+        }
     }
     
+    /**
+     * Enroll a Ziti identity using a JWT file
+     *
+     * - Parameters:
+     *      - jwtFile: file containing one-time JWT
+     *      - cb: callback called indicating status of enrollment attempt
+     */
+    @objc public func enroll(jwtFile:String, cb:@escaping EnrollmentCallback) {
+        DispatchQueue.global().async {
+            var loop = uv_loop_t()
+            
+            self.enroll(loop: &loop, jwtFile: jwtFile, cb: cb)
+            
+            let status = uv_run(&loop, UV_RUN_DEFAULT)
+            guard status == 0 else {
+                cb(nil, nil, ZitiError(String(cString: uv_strerror(status)), errorCode: Int(status)))
+                return
+            }
+        }
+    }
+    
+    //
+    // Private
+    //
     static let on_enroll:nf_enroll_cb = { json, len, errMsg, ctx in
         guard let mySelf = zitiUnretained(ZitiEnroller.self, ctx) else {
             NSLog("ZitiUrlProtocol.on_enroll WTF unable to decode context")
@@ -44,7 +105,7 @@ import Foundation
         guard let json = json, errMsg == nil else {
             var errStr = errMsg != nil ?  String(cString: errMsg!) : "Unspecified enrollment error"
             var ze = ZitiError("enroll error: \(errStr)")
-            mySelf.enrollmentCallback?(nil, ze)
+            mySelf.enrollmentCallback?(nil, nil, ze)
             return
         }
         
@@ -59,20 +120,46 @@ import Foundation
             from: Data(s.utf8))
         guard enrollResp != nil  else {
             var ze = ZitiError("enroll error: unable to parse result")
-            mySelf.enrollmentCallback?(nil, ze)
+            mySelf.enrollmentCallback?(nil, nil, ze)
             return
         }
-        
-        /*
-        if let er = enrollResp {
-            print("Identity JSON:" +
-                "\nztAPI: \(er.ztAPI)" +
-                "\nid.key: \(er.id.key)" +
-                "\nid.cert: \(er.id.cert)" +
-                "\nid.ca: \(er.id.ca ?? "")" +
-                "\n")
-        }*/
-        
-        mySelf.enrollmentCallback?(enrollResp, nil)
+        mySelf.enrollmentCallback?(enrollResp, mySelf.subj, nil)
+    }
+    
+    //
+    // Helpers...
+    //
+    func getSubj(_ jwtFile:String) -> String? {
+        do {
+            // Get the contents
+            let token = try String(contentsOfFile: jwtFile, encoding: .utf8)
+            let comps = token.components(separatedBy: ".")
+            
+            if comps.count > 1, let data = base64UrlDecode(comps[1]),
+                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                let jsonSubj = json["sub"] as? String
+            {
+                return jsonSubj
+            }
+        }
+        catch let error as NSError {
+            print("Enable to load JWT file: \(error)")
+            exit(-1)
+        }
+        return nil
+    }
+
+    func base64UrlDecode(_ value: String) -> Data? {
+        var base64 = value
+            .replacingOccurrences(of: "-", with: "+")
+            .replacingOccurrences(of: "_", with: "/")
+        let length = Double(base64.lengthOfBytes(using: String.Encoding.utf8))
+        let requiredLength = 4 * ceil(length / 4.0)
+        let paddingLength = requiredLength - length
+        if paddingLength > 0 {
+            let padding = "".padding(toLength: Int(paddingLength), withPad: "=", startingAt: 0)
+            base64 += padding
+        }
+        return Data(base64Encoded: base64, options: .ignoreUnknownCharacters)
     }
 }
