@@ -49,7 +49,7 @@ import Foundation
         guard let atag = tag.data(using: .utf8) else { return nil }
         let parameters: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
-            kSecAttrService: "Ziti",
+            kSecAttrService: tag,
             kSecAttrGeneric: atag,
             kSecAttrAccount: atag,
             kSecReturnData: kCFBooleanTrue!]
@@ -68,35 +68,26 @@ import Foundation
         return nil
     }
     
-    @objc public func storePrivateKey(fromPem pem:String, _ keyType:CFString) -> ZitiError? {
-        return storePrivateKey(fromDer: convertToDER(pem), keyType)
-    }
-    
-    func storePrivateKey(fromDer der:Data, _ keyType:CFString) -> ZitiError? {
-        let parameters: [CFString: Any] = [kSecAttrKeyType: keyType]
-        
-        var cfErr:Unmanaged<CFError>?
-        guard let secKey = SecKeyCreateFromData(parameters as CFDictionary, der as CFData, &cfErr) else {
-            return ZitiError("Unable to create key from data: \(cfErr!.takeRetainedValue() as Error)")
-        }
-        return storePrivateKey(secKey)
-    }
-    
-    func storePrivateKey(_ key:SecKey) -> ZitiError? {
-        guard let atag = tag.data(using: .utf8) else {
-            return ZitiError("\(#function): Unable to create application tag \(tag)")
-        }
+    private let keySize = 3072
+    @objc public func createPrivateKey() -> SecKey? {
+        let privateKeyParams: [CFString: Any] = [ // iOS
+            kSecAttrIsPermanent: true,
+            kSecAttrLabel: tag,
+            kSecAttrApplicationTag: atag]
         let parameters: [CFString: Any] = [
-            kSecClass: kSecClassKey,
-            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-            kSecAttrApplicationTag: atag,
-            kSecValueRef: key]
-        let status = SecItemAdd(parameters as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-            return ZitiError("Unable to store private key for \(tag): \(errStr)", errorCode: Int(status))
+            kSecAttrKeyType: kSecAttrKeyTypeRSA,
+            kSecAttrKeySizeInBits: keySize,
+            kSecReturnRef: kCFBooleanTrue as Any,
+            kSecAttrLabel: tag, //macOs
+            kSecAttrIsPermanent: true, // macOs
+            kSecAttrApplicationTag: atag, //macOs
+            kSecPrivateKeyAttrs: privateKeyParams]
+        var error: Unmanaged<CFError>?
+        guard let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error) else {
+            /* TODO: Log message return (nil, nil, ZitiError("createKeyPair: Unable to create private key for \(tag): \(error!.takeRetainedValue() as Error)"))*/
+            return nil
         }
-        return nil
+        return privateKey
     }
     
     func getKeyPair() -> (privKey:SecKey?, pubKey:SecKey?, ZitiError?) {
@@ -123,7 +114,7 @@ import Foundation
         return e == nil
     }
     
-    func getKeyPEM(_ key:SecKey, _ type:String="EC PRIVATE KEY") -> String {
+    @objc public func getKeyPEM(_ key:SecKey, _ type:String="RSA PRIVATE KEY") -> String {
         var cfErr:Unmanaged<CFError>?
         guard let derKey = SecKeyCopyExternalRepresentation(key, &cfErr) else {
             NSLog("\(#function): Unable to get external rep for key: \(cfErr!.takeRetainedValue() as Error)")

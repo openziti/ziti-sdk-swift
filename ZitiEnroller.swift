@@ -56,9 +56,14 @@ import Foundation
      * - Parameters:
      *      - loop: `uv_loop_t` used for executing the enrollment
      *      - jwtFile: file containing one-time JWT
+     *      - privatePem: private key in PEM format
      *      - cb: callback called indicating status of enrollment attempt
      */
-    @objc func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?, jwtFile:String, cb:@escaping EnrollmentCallback) {
+    @objc func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?,
+                      jwtFile:String,
+                      privatePem:String,
+                      cb:@escaping EnrollmentCallback) {
+        
         guard let subj = getSubj(jwtFile) else {
             cb(nil, nil, ZitiError("Unable to retrieve sub from jwt file \(jwtFile)"))
             return
@@ -66,7 +71,9 @@ import Foundation
         self.subj = subj
         enrollmentCallback = cb
         
-        let status = NF_enroll(jwtFile.cString(using: .utf8), loop, ZitiEnroller.on_enroll, self.toVoidPtr())
+        let status = NF_enroll_with_key(jwtFile.cString(using: .utf8),
+                               privatePem.cString(using: .utf8),
+                               loop, ZitiEnroller.on_enroll, self.toVoidPtr())
         guard status == ZITI_OK else {
             cb(nil, nil, ZitiError(String(cString: ziti_errorstr(status)), errorCode: Int(status)))
             return
@@ -78,9 +85,10 @@ import Foundation
      *
      * - Parameters:
      *      - jwtFile: file containing one-time JWT
+     *      - privatePem: private key in PEM format
      *      - cb: callback called indicating status of enrollment attempt
      */
-    @objc public func enroll(jwtFile:String, cb:@escaping EnrollmentCallback) {
+    @objc public func enroll(jwtFile:String, privatePem:String, cb:@escaping EnrollmentCallback) {
         var loop = uv_loop_t()
         
         let initStatus = uv_loop_init(&loop)
@@ -89,7 +97,7 @@ import Foundation
             return
         }
         
-        self.enroll(withLoop: &loop, jwtFile: jwtFile, cb: cb)
+        self.enroll(withLoop: &loop, jwtFile: jwtFile, privatePem: privatePem, cb: cb)
         
         let runStatus = uv_run(&loop, UV_RUN_DEFAULT)
         guard runStatus == 0 else {
@@ -103,6 +111,29 @@ import Foundation
             // NSLog("\(className): error \(closeStatus) closing uv loop \(String(cString: uv_strerror(closeStatus)))")
             return
         }
+    }
+    
+    /**
+     * Extract the sub (id) field from HWT file
+     */
+    @objc public func getSubj(_ jwtFile:String) -> String? {
+        do {
+            // Get the contents
+            let token = try String(contentsOfFile: jwtFile, encoding: .utf8)
+            let comps = token.components(separatedBy: ".")
+            
+            if comps.count > 1, let data = base64UrlDecode(comps[1]),
+                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                let jsonSubj = json["sub"] as? String
+            {
+                return jsonSubj
+            }
+        }
+        catch let error as NSError {
+            print("Enable to load JWT file: \(error)")
+            exit(-1)
+        }
+        return nil
     }
     
     //
@@ -140,26 +171,6 @@ import Foundation
     //
     // Helpers...
     //
-    func getSubj(_ jwtFile:String) -> String? {
-        do {
-            // Get the contents
-            let token = try String(contentsOfFile: jwtFile, encoding: .utf8)
-            let comps = token.components(separatedBy: ".")
-            
-            if comps.count > 1, let data = base64UrlDecode(comps[1]),
-                let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                let jsonSubj = json["sub"] as? String
-            {
-                return jsonSubj
-            }
-        }
-        catch let error as NSError {
-            print("Enable to load JWT file: \(error)")
-            exit(-1)
-        }
-        return nil
-    }
-
     func base64UrlDecode(_ value: String) -> Data? {
         var base64 = value
             .replacingOccurrences(of: "-", with: "+")

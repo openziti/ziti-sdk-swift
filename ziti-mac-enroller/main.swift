@@ -27,14 +27,30 @@ guard CommandLine.argc == 2 else {
 // some logging...
 ziti_debug_level = 3
 
+let enroller = ZitiEnroller()
+guard let subj = enroller.getSubj(args[1]) else {
+    print("Unable to extract sub from JWT file")
+    exit(-1)
+}
+
+// Create private key
+let zkc = ZitiKeychain(tag: subj)
+guard let privKey = zkc.createPrivateKey() else {
+    print("Unable to generate private key")
+    exit(-1)
+}
+let pem = zkc.getKeyPEM(privKey)
+
 // Enroll
-ZitiEnroller().enroll(jwtFile: args[1]) { resp, subj, err in
+ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
     guard let resp = resp, let subj = subj else {
         print("Invalid enrollment response, \(String(describing: err))")
         exit(-1)
     }
     
-    #if false
+    print("Enrolling id \"\(subj)\" with controller \"\(resp.ztAPI)\"")
+    
+#if false
     print("Identity JSON:" +
         "\nsubj: \(subj)" +
         "\nztAPI: \(resp.ztAPI)" +
@@ -42,25 +58,21 @@ ZitiEnroller().enroll(jwtFile: args[1]) { resp, subj, err in
         "\nid.cert: \(resp.id.cert)" +
         "\nid.ca: \(resp.id.ca ?? "")" +
         "\n")
-    #endif
+#endif
     
     // Strip leading "pem:"s
-    let key = dropFirst("pem:", resp.id.key)
+    // let key = dropFirst("pem:", resp.id.key)
     let cert = dropFirst("pem:", resp.id.cert)
     var ca = resp.id.ca
     if let idCa = resp.id.ca {
         ca = dropFirst("pem:", idCa)
     }
     
-    // Store private key
-    guard key.starts(with: "-----BEGIN EC PRIVATE KEY-----") else {
-        print("Only keys of type EC are currently supported")
-        exit(-1)
-    }
-    
     let zkc = ZitiKeychain(tag: subj)
-    guard zkc.storePrivateKey(fromPem: key, kSecAttrKeyTypeECSECPrimeRandom) == nil else {
-        print("Unable to store private key")
+    
+    // store resp.ztAPI..
+    if zkc.storeController(resp.ztAPI) != nil {
+        print("Unable to store controller in keychain")
         exit(-1)
     }
     
@@ -70,24 +82,20 @@ ZitiEnroller().enroll(jwtFile: args[1]) { resp, subj, err in
         exit(-1)
     }
     
-#if false
     // See if we need to add trust for for the CA
     if let ca = ca {
-        let certs = ZitiKeychain.extractCerts(ca)
+        let certs = zkc.extractCerts(ca)
         
         // evalTrustForCertificates requires same DispatchQueue as caller, so force that to happen.
-        // use condition to force every to block until we're ready to move on, else program will
-        // exit...
-        let dq = DispatchQueue(label: args[0])
+        // need to process the queue, block until done
+        let dq = DispatchQueue.main
+        let dg = DispatchGroup()
+        
+        dg.enter()
         dq.async {
-            let cond = NSCondition()
-            var evalComplete = false
-            
-            let status = ZitiKeychain.evalTrustForCertificates(certs, dq) { secTrust, isTrusted, err in
+            let status = zkc.evalTrustForCertificates(certs, dq) { secTrust, isTrusted, err in
                 defer {
-                    cond.lock()
-                    evalComplete = true
-                    cond.unlock()
+                    dg.leave()
                 }
                 
                 print("CA trusted: \(isTrusted)")
@@ -99,12 +107,12 @@ ZitiEnroller().enroll(jwtFile: args[1]) { resp, subj, err in
                 if !isTrusted {
                     // TODO: addTrustForCertificate is setup to only work for a Root CA, which we may
                     // not have. We could change that...
-                    guard let rootCa = ZitiKeychain.extractRootCa(ca) else {
+                    guard let rootCa = zkc.extractRootCa(ca) else {
                         print("Unable to extract CA to add trust")
                         return
                     }
                     
-                    let status = ZitiKeychain.addTrustForCertificate(rootCa)
+                    let status = zkc.addTrustForCertificate(rootCa)
                     guard status == errSecSuccess else {
                         let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
                         print("Unable to add trust for ca, err: \(status), \(errStr)")
@@ -117,44 +125,15 @@ ZitiEnroller().enroll(jwtFile: args[1]) { resp, subj, err in
                 print("Unable to evaluate trust for ca, err: \(status), \(errStr)")
                 exit(status)
             }
-            
-            cond.lock()
-            while !evalComplete {
-                if !cond.wait(until: Date(timeIntervalSinceNow: 10.0))  {
-                    print("timed-out waiting for trust evaluation")
-                    cond.unlock()
-                    break
-                }
-            }
-            cond.unlock()
-        }
-    }
-#else
-    // TODO: addTrustForCertificate is setup to only work for a Root CA, which we may
-    // not have. We could change that...
-    if let ca = ca {
-        guard let rootCa = zkc.extractRootCa(ca) else {
-            print("Unable to extract CA to add trust")
-            return
         }
         
-        let status = zkc.addTrustForCertificate(rootCa)
-        guard status == errSecSuccess else {
-            let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-            print("Unable to add trust for ca, err: \(status), \(errStr)")
-            return
+        dg.notify(queue: dq) {
+            // tell the user the application tag used to store the data in the keychain
+            print("Successfully enrolled id \"\(subj)\" with controller \"\(resp.ztAPI)\"")
+            exit(0)
         }
+        dispatchMain()
     }
-#endif
-    
-    // store resp.ztAPI somewhere in keychain..
-    if zkc.storeController(resp.ztAPI) != nil {
-        print("Unable to store controller in keychain")
-        exit(-1)
-    }
-    
-    // tell the user the application tag used to store the data in the keychain
-    print("Successfully enrolled id \"\(subj)\" with controller \"\(resp.ztAPI)\"")
 }
 
 // Helper
