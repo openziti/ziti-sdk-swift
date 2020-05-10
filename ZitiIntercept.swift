@@ -29,8 +29,8 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     init(_ loop:UnsafeMutablePointer<uv_loop_t>?, _ name:String, _ urlStr:String) {
         self.name = name
         self.urlStr = urlStr
-        ziti_src_init(ZitiUrlProtocol.loop, &zs, name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
-        um_http_init_with_src(ZitiUrlProtocol.loop, &clt, urlStr.cString(using: .utf8), &zs)
+        ziti_src_init(loop, &zs, name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
+        um_http_init_with_src(loop, &clt, urlStr.cString(using: .utf8), &zs)
         um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
         
         close_timer_h = UnsafeMutablePointer.allocate(capacity: 1)
