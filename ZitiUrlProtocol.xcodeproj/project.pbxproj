@@ -29,6 +29,10 @@
 		5AAAEDDD2464698900C56383 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */; };
 		5AAAEDE62464D8AB00C56383 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDE52464D8AB00C56383 /* main.swift */; };
 		5AAAEDEA2464D8FB00C56383 /* libZitiUrlProtocol.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */; };
+		5AAAEDF0246637EC00C56383 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */; };
+		5AAAEDF1246637EC00C56383 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */; };
+		5AAAEDF3246727C900C56383 /* Ziti.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDF2246727C900C56383 /* Ziti.swift */; };
+		5AAAEDF4246727C900C56383 /* Ziti.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDF2246727C900C56383 /* Ziti.swift */; };
 		5AB6DF71244B7C6400F4B4E0 /* ZitiUrlProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */; };
 		5AB6DF7E244B8F2000F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
@@ -92,6 +96,8 @@
 		5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiUnretained.swift; sourceTree = "<group>"; };
 		5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ziti-mac-enroller"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AAAEDE52464D8AB00C56383 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiKeychain.swift; sourceTree = "<group>"; };
+		5AAAEDF2246727C900C56383 /* Ziti.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ziti.swift; sourceTree = "<group>"; };
 		5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZitiUrlProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZitiUrlProtocol-Bridging-Header.h"; sourceTree = "<group>"; };
 		5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_mbed.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/libuv_mbed.a"; sourceTree = "<group>"; };
@@ -151,6 +157,8 @@
 		5A2D83F92444D4B9008B1D32 = {
 			isa = PBXGroup;
 			children = (
+				5AAAEDF2246727C900C56383 /* Ziti.swift */,
+				5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */,
 				5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */,
 				5AAAEDD82463A4EA00C56383 /* ZitiError.swift */,
 				5AAAEDD42463924600C56383 /* ZitiEnroller.swift */,
@@ -321,11 +329,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				5AAAEDD52463924600C56383 /* ZitiEnroller.swift in Sources */,
+				5AAAEDF0246637EC00C56383 /* ZitiKeychain.swift in Sources */,
 				5AAAEDC8246315E700C56383 /* ZitiIntercept.swift in Sources */,
 				5AAAEDCC24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DF71244B7C6400F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
 				5AAAEDD92463A4EA00C56383 /* ZitiError.swift in Sources */,
 				5A0E4A92245DE46900C56DCF /* ziti.c in Sources */,
+				5AAAEDF3246727C900C56383 /* Ziti.swift in Sources */,
 				5AAAEDCF24633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
 				5AAAEDD224633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
 				5AAAEDDC2464698900C56383 /* ZitiUnretained.swift in Sources */,
@@ -337,11 +347,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				5AAAEDD62463924600C56383 /* ZitiEnroller.swift in Sources */,
+				5AAAEDF1246637EC00C56383 /* ZitiKeychain.swift in Sources */,
 				5AAAEDC9246315E700C56383 /* ZitiIntercept.swift in Sources */,
 				5AAAEDCD24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DFB6244B9A4300F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
 				5AAAEDDA2463A4EA00C56383 /* ZitiError.swift in Sources */,
 				5A0E4A93245DE46900C56DCF /* ziti.c in Sources */,
+				5AAAEDF4246727C900C56383 /* Ziti.swift in Sources */,
 				5AAAEDD024633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
 				5AAAEDD324633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
 				5AAAEDDD2464698900C56383 /* ZitiUnretained.swift in Sources */,
