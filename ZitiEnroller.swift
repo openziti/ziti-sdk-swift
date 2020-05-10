@@ -58,7 +58,7 @@ import Foundation
      *      - jwtFile: file containing one-time JWT
      *      - cb: callback called indicating status of enrollment attempt
      */
-    @objc public func enroll(loop:UnsafeMutablePointer<uv_loop_t>?, jwtFile:String, cb:@escaping EnrollmentCallback) {
+    @objc func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?, jwtFile:String, cb:@escaping EnrollmentCallback) {
         guard let subj = getSubj(jwtFile) else {
             cb(nil, nil, ZitiError("Unable to retrieve sub from jwt file \(jwtFile)"))
             return
@@ -81,16 +81,26 @@ import Foundation
      *      - cb: callback called indicating status of enrollment attempt
      */
     @objc public func enroll(jwtFile:String, cb:@escaping EnrollmentCallback) {
-        DispatchQueue.global().async {
-            var loop = uv_loop_t()
-            
-            self.enroll(loop: &loop, jwtFile: jwtFile, cb: cb)
-            
-            let status = uv_run(&loop, UV_RUN_DEFAULT)
-            guard status == 0 else {
-                cb(nil, nil, ZitiError(String(cString: uv_strerror(status)), errorCode: Int(status)))
-                return
-            }
+        var loop = uv_loop_t()
+        
+        let initStatus = uv_loop_init(&loop)
+        guard initStatus == 0 else {
+            cb(nil, nil, ZitiError(String(cString: uv_strerror(initStatus)), errorCode: Int(initStatus)))
+            return
+        }
+        
+        self.enroll(withLoop: &loop, jwtFile: jwtFile, cb: cb)
+        
+        let runStatus = uv_run(&loop, UV_RUN_DEFAULT)
+        guard runStatus == 0 else {
+            cb(nil, nil, ZitiError(String(cString: uv_strerror(runStatus)), errorCode: Int(runStatus)))
+            return
+        }
+        
+        let closeStatus = uv_loop_close(&loop)
+        guard closeStatus == 0 else {
+            NSLog("\(className):\(#function) error \(closeStatus) closing uv loop \(String(cString: uv_strerror(runStatus)))")
+            return
         }
     }
     
@@ -99,7 +109,7 @@ import Foundation
     //
     static let on_enroll:nf_enroll_cb = { json, len, errMsg, ctx in
         guard let mySelf = zitiUnretained(ZitiEnroller.self, ctx) else {
-            NSLog("ZitiUrlProtocol.on_enroll WTF unable to decode context")
+            NSLog("\(className()).on_enroll WTF unable to decode context")
             return
         }
         guard let json = json, errMsg == nil else {
