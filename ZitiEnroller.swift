@@ -99,7 +99,8 @@ import Foundation
         
         let closeStatus = uv_loop_close(&loop)
         guard closeStatus == 0 else {
-            NSLog("\(className):\(#function) error \(closeStatus) closing uv loop \(String(cString: uv_strerror(runStatus)))")
+            // Don't bother logging as this will always return UV_EBUSY since NF_enroll is leaving stuff unclosed on the loop
+            // NSLog("\(className): error \(closeStatus) closing uv loop \(String(cString: uv_strerror(closeStatus)))")
             return
         }
     }
