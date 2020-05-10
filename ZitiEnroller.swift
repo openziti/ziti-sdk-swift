@@ -119,7 +119,7 @@ import Foundation
             return
         }
         
-        // Bad format coming back from C SDK.  Invalid jason ("\n" rather than "\\n" in values)
+        // Bad format coming back from C SDK.  Invalid json ("\n" rather than "\\n" in values)
         var s = String(cString: json)
         s = s.replacingOccurrences(of: "\n\t", with: "")
         s = s.replacingOccurrences(of: "\n}", with: "}")
