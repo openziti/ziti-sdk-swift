@@ -41,7 +41,7 @@ import Foundation
     static var nf_init_cond:NSCondition?
     static var nf_init_complete = false
     
-    static var loop = uv_default_loop()
+    static var loop:UnsafeMutablePointer<uv_loop_t>!
     
     // Usafe pointers since we need to cast 'em
     static var async_start_h = uv_async_t()
@@ -76,7 +76,17 @@ import Foundation
      */
     @objc public class func start(
         _ blocking:Bool=true, _ waitFor:TimeInterval=TimeInterval(10.0), _ idleTime:Int=10000) -> Bool {
+        
+        loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
+        loop.initialize(to: uv_loop_t())
                 
+        let iStatus = uv_loop_init(loop)
+        guard iStatus == 0 else {
+            let errStr = String(cString: uv_strerror(iStatus))
+            NSLog("ZitiUrlProtocol error starting uv loop: \(iStatus) \(errStr)")
+            return false
+        }
+        
         ZitiUrlProtocol.idleTime = idleTime
         
         // condition for blocking if requested
@@ -147,18 +157,23 @@ import Foundation
     }
     
     @objc private class func doLoop() {
-        let status = uv_run(loop, UV_RUN_DEFAULT)
         
-        if status != 0 {
-            let errStr = String(cString: uv_strerror(status))
-            NSLog("ZitiUrlProtocol error starting uv loop: \(status) \(errStr)")
-        } else {
-            let cStatus = uv_loop_close(loop)
-            if uv_loop_close(loop) != 0 {
-                let errStr = String(cString: uv_strerror(cStatus))
-                NSLog("ZitiUrlProtocol error closing uv loop: \(cStatus) \(errStr)")
-            }
+        let rStatus = uv_run(loop, UV_RUN_DEFAULT)
+        guard rStatus == 0 else {
+            let errStr = String(cString: uv_strerror(rStatus))
+            NSLog("ZitiUrlProtocol error starting uv loop: \(rStatus) \(errStr)")
+            return
         }
+        
+        let cStatus = uv_loop_close(loop)
+        if cStatus != 0 {
+            let errStr = String(cString: uv_strerror(cStatus))
+            NSLog("ZitiUrlProtocol error closing uv loop: \(cStatus) \(errStr)")
+            return
+        }
+        
+        loop.deinitialize(count: 1)
+        loop.deallocate()
     }
     
     //
