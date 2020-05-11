@@ -90,6 +90,11 @@ import Foundation
         return privateKey
     }
     
+    @objc public func getPrivateKey() -> SecKey? {
+        let (key, _, _) = getKeyPair()
+        return key
+    }
+    
     func getKeyPair() -> (privKey:SecKey?, pubKey:SecKey?, ZitiError?) {
         let parameters:[CFString:Any] = [
             kSecClass: kSecClassKey,
@@ -158,15 +163,30 @@ import Foundation
         return false
     }
     
-    @objc public func extractRootCa(_ caPool:String) -> SecCertificate? {
+    func extractRootCa(_ caPool:String) -> SecCertificate? {
         let pems = extractPEMs(caPool)
-        var cert:SecCertificate?
-        PEMstoCerts(pems).forEach { c in
-            if isRootCa(c) {
-                cert = c
-            }
+        for c in PEMstoCerts(pems) {
+            if isRootCa(c) { return c }
         }
-        return cert
+        return nil
+    }
+    
+    @objc public func addTrustFromCaPool(_ caPool:String) -> Bool {
+        guard let rootCa = extractRootCa(caPool) else {
+            print("Unable to extract CA to add trust")
+            return false
+        }
+        
+        let parameters: [CFString: Any] = [
+            kSecClass: kSecClassCertificate,
+            kSecValueRef: rootCa]
+        let status = SecItemAdd(parameters as CFDictionary, nil)
+        guard status == errSecSuccess || status == errSecDuplicateItem else {
+            //let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            // TODO: log return (nil, ZitiError("Unable to store certificate for \(tag): \(errStr)", errorCode: Int(status)))
+            return false
+        }
+        return true
     }
     
     /**
@@ -180,11 +200,6 @@ import Foundation
         let stcStatus = SecTrustCreateWithCertificates(certificates as CFTypeRef, policy, &secTrust)
         if stcStatus != errSecSuccess { return stcStatus }
         guard secTrust != nil else { return errSecBadReq }
-        /*
-        let dq = DispatchQueue(label: "evalTrustForCertificate")
-        dq.async {
-            let sceStatus = SecTrustEvaluateAsyncWithError(secTrust!, dq, result)
-        }*/
         let sceStatus = SecTrustEvaluateAsyncWithError(secTrust!, queue, result)
         return sceStatus
     }

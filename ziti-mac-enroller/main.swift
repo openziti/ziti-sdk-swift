@@ -94,9 +94,7 @@ ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
         dg.enter()
         dq.async {
             let status = zkc.evalTrustForCertificates(certs, dq) { secTrust, isTrusted, err in
-                defer {
-                    dg.leave()
-                }
+                defer { dg.leave() }
                 
                 print("CA trusted: \(isTrusted)")
                 if let err = err {
@@ -105,19 +103,11 @@ ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
                 
                 // if not trusted, prompt to addTrustForCertificate
                 if !isTrusted {
-                    // TODO: addTrustForCertificate is setup to only work for a Root CA, which we may
-                    // not have. We could change that...
-                    guard let rootCa = zkc.extractRootCa(ca) else {
-                        print("Unable to extract CA to add trust")
+                    guard zkc.addTrustFromCaPool(ca) else {
+                        print("Unable to add trust for CA")
                         return
                     }
-                    
-                    let status = zkc.addTrustForCertificate(rootCa)
-                    guard status == errSecSuccess else {
-                        let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-                        print("Unable to add trust for ca, err: \(status), \(errStr)")
-                        return
-                    }
+                    print("Added trust for CA")
                 }
             }
             guard status == errSecSuccess else {
