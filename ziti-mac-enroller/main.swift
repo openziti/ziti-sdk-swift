@@ -103,11 +103,20 @@ ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
                 
                 // if not trusted, prompt to addTrustForCertificate
                 if !isTrusted {
-                    guard zkc.addTrustFromCaPool(ca) else {
-                        print("Unable to add trust for CA")
+                    guard zkc.addCaFromPool(ca) else {
+                        print("Unable to add CA from pool")
                         return
                     }
-                    print("Added trust for CA")
+                    print("Added CA to Keychain")
+                    
+                    // Might be configured still to not trust it...
+                    if let rootCA = zkc.extractRootCa(ca) {
+                        let status = zkc.addTrustForCertificate(rootCA)
+                        if status != errSecSuccess {
+                            let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+                            print("Unable to add trust for CA: \(errStr)")
+                        }
+                    }
                 }
             }
             guard status == errSecSuccess else {

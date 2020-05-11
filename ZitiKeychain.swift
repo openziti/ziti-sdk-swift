@@ -163,7 +163,7 @@ import Foundation
         return false
     }
     
-    func extractRootCa(_ caPool:String) -> SecCertificate? {
+    @objc public func extractRootCa(_ caPool:String) -> SecCertificate? {
         let pems = extractPEMs(caPool)
         for c in PEMstoCerts(pems) {
             if isRootCa(c) { return c }
@@ -171,7 +171,7 @@ import Foundation
         return nil
     }
     
-    @objc public func addTrustFromCaPool(_ caPool:String) -> Bool {
+    @objc public func addCaFromPool(_ caPool:String) -> Bool {
         guard let rootCa = extractRootCa(caPool) else {
             print("Unable to extract CA to add trust")
             return false
@@ -186,6 +186,8 @@ import Foundation
             // TODO: log return (nil, ZitiError("Unable to store certificate for \(tag): \(errStr)", errorCode: Int(status)))
             return false
         }
+        
+        // TODO: log info message that cert was added see SecCertificateCopySubjectSummary
         return true
     }
     
