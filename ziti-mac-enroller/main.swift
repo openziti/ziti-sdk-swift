@@ -103,8 +103,8 @@ ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
                 
                 // if not trusted, prompt to addTrustForCertificate
                 if !isTrusted {
-                    guard zkc.addCaFromPool(ca) else {
-                        print("Unable to add CA from pool")
+                    guard zkc.addCaPool(ca) else {
+                        print("Unable to add CA pool to kechain")
                         return
                     }
                     print("Added CA to Keychain")
@@ -124,6 +124,7 @@ ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
                 print("Unable to evaluate trust for ca, err: \(status), \(errStr)")
                 exit(status)
             }
+            print("User added trust of CA")
         }
         
         dg.notify(queue: dq) {

@@ -171,22 +171,20 @@ import Foundation
         return nil
     }
     
-    @objc public func addCaFromPool(_ caPool:String) -> Bool {
-        guard let rootCa = extractRootCa(caPool) else {
-            print("Unable to extract CA to add trust")
-            return false
+    @objc public func addCaPool(_ caPool:String) -> Bool {
+        let certs = extractCerts(caPool)
+        for cert in certs {
+            let parameters: [CFString: Any] = [
+                kSecClass: kSecClassCertificate,
+                kSecValueRef: cert]
+            let status = SecItemAdd(parameters as CFDictionary, nil)
+            guard status == errSecSuccess || status == errSecDuplicateItem else {
+                //let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+                // TODO: log return (nil, ZitiError("Unable to store certificate for \(tag): \(errStr)", errorCode: Int(status)))
+                return false
+            }
+            // TODO: log info message that cert was added see SecCertificateCopySubjectSummar
         }
-        
-        let parameters: [CFString: Any] = [
-            kSecClass: kSecClassCertificate,
-            kSecValueRef: rootCa]
-        let status = SecItemAdd(parameters as CFDictionary, nil)
-        guard status == errSecSuccess || status == errSecDuplicateItem else {
-            //let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-            // TODO: log return (nil, ZitiError("Unable to store certificate for \(tag): \(errStr)", errorCode: Int(status)))
-            return false
-        }
-        
         // TODO: log info message that cert was added see SecCertificateCopySubjectSummary
         return true
     }
