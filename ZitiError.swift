@@ -17,7 +17,6 @@ import Foundation
 
 public class ZitiError : NSError {
     init(_ desc:String, errorCode:Int=Int(-1)) {
-        NSLog("\(errorCode) \(desc)")
         super.init(domain: "ZitiError", code: errorCode,
                    userInfo: [NSLocalizedDescriptionKey:NSLocalizedString(desc, comment: "")])
     }

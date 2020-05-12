@@ -49,6 +49,8 @@
 		5AB6DFBC244BA64B00F4B4E0 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */; };
 		5AB6DFBD244BA64F00F4B4E0 /* libuv_link.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7A244B8F2000F4B4E0 /* libuv_link.a */; };
 		5AB6DFBE244BA65400F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
+		5AE14C742469E3BD00179365 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C732469E3BD00179365 /* ZitiLog.swift */; };
+		5AE14C752469E3BD00179365 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C732469E3BD00179365 /* ZitiLog.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -108,6 +110,7 @@
 		5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_a.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libuv/libuv_a.a"; sourceTree = "<group>"; };
 		5AB6DF7D244B8F2000F4B4E0 /* libhttp-parser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libhttp-parser.a"; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libhttp-parser.a"; sourceTree = "<group>"; };
 		5AB6DFAF244B990A00F4B4E0 /* libZitiUrlProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZitiUrlProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AE14C732469E3BD00179365 /* ZitiLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiLog.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,15 +161,16 @@
 			isa = PBXGroup;
 			children = (
 				5AAAEDF2246727C900C56383 /* Ziti.swift */,
-				5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */,
-				5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */,
-				5AAAEDD82463A4EA00C56383 /* ZitiError.swift */,
 				5AAAEDD42463924600C56383 /* ZitiEnroller.swift */,
+				5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */,
+				5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */,
 				5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */,
 				5AAAEDCE24633F3800C56383 /* ZitiUrlConfig.swift */,
 				5AAAEDCB24633F0600C56383 /* ZitiConfig.swift */,
 				5AAAEDC7246315E700C56383 /* ZitiIntercept.swift */,
-				5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */,
+				5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */,
+				5AAAEDD82463A4EA00C56383 /* ZitiError.swift */,
+				5AE14C732469E3BD00179365 /* ZitiLog.swift */,
 				5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */,
 				5A0E4A91245DE46900C56DCF /* ziti.c */,
 				5AAAEDE42464D8AB00C56383 /* ziti-mac-enroller */,
@@ -338,6 +342,7 @@
 				5AAAEDF3246727C900C56383 /* Ziti.swift in Sources */,
 				5AAAEDCF24633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
 				5AAAEDD224633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
+				5AE14C742469E3BD00179365 /* ZitiLog.swift in Sources */,
 				5AAAEDDC2464698900C56383 /* ZitiUnretained.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -356,6 +361,7 @@
 				5AAAEDF4246727C900C56383 /* Ziti.swift in Sources */,
 				5AAAEDD024633F3800C56383 /* ZitiUrlConfig.swift in Sources */,
 				5AAAEDD324633F7A00C56383 /* ZitiTunnelConfig.swift in Sources */,
+				5AE14C752469E3BD00179365 /* ZitiLog.swift in Sources */,
 				5AAAEDDD2464698900C56383 /* ZitiUnretained.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -474,6 +480,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.ziti-mac-enroller";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -532,6 +539,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.ziti-mac-enroller";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;

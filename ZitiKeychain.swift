@@ -15,8 +15,11 @@ limitations under the License.
 */
 
 import Foundation
+import OSLog
 
 @objc public class ZitiKeychain : NSObject {
+    private let log = OSLog(ZitiKeychain.self)
+    
     private let tag:String
     private let atag:Data
     
@@ -28,7 +31,9 @@ import Foundation
     
     @objc public func storeController(_ controller:String) -> ZitiError? {
         guard let data = controller.data(using: .utf8) else {
-            return ZitiError("\(#function): Unable to create keychain data for \(controller)")
+            let errStr = "Unable to create keychain data for \(controller)"
+            log.error(errStr)
+            return ZitiError(errStr)
         }
         
         let parameters: [CFString: Any] = [
@@ -40,6 +45,7 @@ import Foundation
         let status = SecItemAdd(parameters as CFDictionary, nil)
         guard status == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            log.error(errStr)
             return ZitiError("Unable to store controller for \(tag): \(errStr)", errorCode: Int(status))
         }
         return nil
@@ -57,9 +63,8 @@ import Foundation
         var result:AnyObject?
         let status = SecItemCopyMatching(parameters as CFDictionary, &result)
         guard status == errSecSuccess else {
-            // TODO: Log error message
-            // let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-            // ZitiError("\(#function): Unable to get private key for \(tag): \(errStr)", errorCode: Int(status))
+            let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            log.error("Unable to get private key for \(tag): \(errStr)")
             return nil
         }
         if let data = result as? Data {
@@ -84,7 +89,7 @@ import Foundation
             kSecPrivateKeyAttrs: privateKeyParams]
         var error: Unmanaged<CFError>?
         guard let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error) else {
-            /* TODO: Log message return (nil, nil, ZitiError("createKeyPair: Unable to create private key for \(tag): \(error!.takeRetainedValue() as Error)"))*/
+            log.error("Unable to create private key for \(tag): \(error!.takeRetainedValue() as Error)")
             return nil
         }
         return privateKey
@@ -105,11 +110,14 @@ import Foundation
         let status = SecItemCopyMatching(parameters as CFDictionary, &ref)
         guard status == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-            return (nil, nil, ZitiError("\(#function): Unable to get private key for \(tag): \(errStr)", errorCode: Int(status)))
+            log.error(errStr)
+            return (nil, nil, ZitiError("Unable to get private key for \(tag): \(errStr)", errorCode: Int(status)))
         }
         let privKey = ref! as! SecKey
         guard let pubKey = SecKeyCopyPublicKey(privKey) else {
-            return (nil, nil, ZitiError("\(#function): Unable to copy public key for \(tag)"))
+            let errStr = "Unable to copy public key for \(tag)"
+            log.error(errStr)
+            return (nil, nil, ZitiError(errStr))
         }
         return (privKey, pubKey, nil)
     }
@@ -122,7 +130,7 @@ import Foundation
     @objc public func getKeyPEM(_ key:SecKey, _ type:String="RSA PRIVATE KEY") -> String {
         var cfErr:Unmanaged<CFError>?
         guard let derKey = SecKeyCopyExternalRepresentation(key, &cfErr) else {
-            NSLog("\(#function): Unable to get external rep for key: \(cfErr!.takeRetainedValue() as Error)")
+            log.error("Unable to get external rep for key: \(cfErr!.takeRetainedValue() as Error)")
             return ""
         }
         return convertToPEM(type, der: derKey as Data)
@@ -141,6 +149,7 @@ import Foundation
         let status = deleteKey(kSecAttrKeyClassPrivate)
         guard status == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            log.error(errStr)
             return ZitiError("Unable to delete key pair for \(tag): \(errStr)", errorCode: Int(status))
         }
         return nil
@@ -149,7 +158,10 @@ import Foundation
 #if os(macOS)
     // Will prompt for user creds to access keychain
     @objc public func addTrustForCertificate(_ certificate:SecCertificate) -> OSStatus {
-        return SecTrustSettingsSetTrustSettings(certificate, SecTrustSettingsDomain.user, nil) // macOS only
+        //let trustSettings:[String:Any] = [ kSecTrustSettingsPolicy : SecPolicyCreateSSL(true, nil)]
+        return SecTrustSettingsSetTrustSettings(certificate,
+                                                SecTrustSettingsDomain.user,
+                                                nil) //trustSettings as CFTypeRef)
     }
 #endif
     
@@ -179,13 +191,12 @@ import Foundation
                 kSecValueRef: cert]
             let status = SecItemAdd(parameters as CFDictionary, nil)
             guard status == errSecSuccess || status == errSecDuplicateItem else {
-                //let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-                // TODO: log return (nil, ZitiError("Unable to store certificate for \(tag): \(errStr)", errorCode: Int(status)))
+                let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+                log.error("Unable to store certificate for \(tag): \(errStr)")
                 return false
             }
-            // TODO: log info message that cert was added see SecCertificateCopySubjectSummar
+            log.info("Added cert to keychain: \(String(describing: SecCertificateCopySubjectSummary(cert)))")
         }
-        // TODO: log info message that cert was added see SecCertificateCopySubjectSummary
         return true
     }
     
@@ -205,13 +216,18 @@ import Foundation
     }
     
     @objc public func storeCertificate(fromPem pem:String) -> ZitiError? {
-         let (_, zErr) = storeCertificate(fromDer: convertToDER(pem))
+        let (_, zErr) = storeCertificate(fromDer: convertToDER(pem))
+        if zErr != nil {
+            log.error(zErr!.localizedDescription)
+        }
         return zErr
     }
     
     func storeCertificate(fromDer der:Data) -> (SecCertificate?, ZitiError?) {
         guard let certificate = SecCertificateCreateWithData(nil, der as CFData) else {
-            return (nil, ZitiError("Unable to create certificate from data for \(tag)"))
+            let errStr = "Unable to create certificate from data for \(tag)"
+            log.error(errStr)
+            return (nil, ZitiError(errStr))
         }
         let parameters: [CFString: Any] = [
             kSecClass: kSecClassCertificate,
@@ -220,6 +236,7 @@ import Foundation
         let status = SecItemAdd(parameters as CFDictionary, nil)
         guard status == errSecSuccess || status == errSecDuplicateItem else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            log.error(errStr)
             return (nil, ZitiError("Unable to store certificate for \(tag): \(errStr)", errorCode: Int(status)))
         }
         return (certificate, nil)
@@ -235,10 +252,13 @@ import Foundation
         let status = SecItemCopyMatching(params as CFDictionary, &cert)
         guard status == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            log.error(errStr)
             return (nil, ZitiError("Unable to get certificate for \(tag): \(errStr)", errorCode: Int(status)))
         }
         guard let certData = SecCertificateCopyData(cert as! SecCertificate) as Data? else {
-            return (nil, ZitiError("Unable to copy certificate data for \(tag)"))
+            let errStr = "Unable to copy certificate data for \(tag)"
+            log.error(errStr)
+            return (nil, ZitiError(errStr))
         }
         return (certData, nil)
     }
@@ -253,6 +273,7 @@ import Foundation
         let copyStatus = SecItemCopyMatching(params as CFDictionary, &cert)
         guard copyStatus == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(copyStatus, nil) as String? ?? "\(copyStatus)"
+            log.error(errStr)
             return ZitiError("Unable to find certificate for \(tag): \(errStr)", errorCode: Int(copyStatus))
         }
         
@@ -263,6 +284,7 @@ import Foundation
         let deleteStatus = SecItemDelete(delParams as CFDictionary)
         guard deleteStatus == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(deleteStatus, nil) as String? ?? "\(deleteStatus)"
+            log.error(errStr)
             return ZitiError("Unable to delete certificate for \(tag): \(errStr)", errorCode: Int(deleteStatus))
         }
         return nil

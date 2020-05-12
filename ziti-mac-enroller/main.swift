@@ -16,6 +16,9 @@ limitations under the License.
 import Foundation
 import ZitiUrlProtocol
 
+// Logs the SDK version in use
+ziti_debug_level = 3
+
 // CommandLine
 let args = CommandLine.arguments
 guard CommandLine.argc == 2 else {
@@ -24,41 +27,28 @@ guard CommandLine.argc == 2 else {
     exit(-1)
 }
 
-// some logging...
-ziti_debug_level = 3
-
-let enroller = ZitiEnroller()
-guard let subj = enroller.getSubj(args[1]) else {
-    print("Unable to extract sub from JWT file")
+let enroller = ZitiEnroller(args[1])
+guard let subj = enroller.getSubj() else {
+    fputs("Unable to extract sub from JWT file\n", stderr)
     exit(-1)
 }
 
 // Create private key
 let zkc = ZitiKeychain(tag: subj)
 guard let privKey = zkc.createPrivateKey() else {
-    print("Unable to generate private key")
+    fputs("Unable to generate private key\n", stderr)
     exit(-1)
 }
 let pem = zkc.getKeyPEM(privKey)
 
 // Enroll
-ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
+enroller.enroll(privatePem: pem) { resp, subj, err in
     guard let resp = resp, let subj = subj else {
-        print("Invalid enrollment response, \(String(describing: err))")
+        fputs("Invalid enrollment response, \(String(describing: err))\n", stderr)
         exit(-1)
     }
     
     print("Enrolling id \"\(subj)\" with controller \"\(resp.ztAPI)\"")
-    
-#if false
-    print("Identity JSON:" +
-        "\nsubj: \(subj)" +
-        "\nztAPI: \(resp.ztAPI)" +
-        "\nid.key: \(resp.id.key)" +
-        "\nid.cert: \(resp.id.cert)" +
-        "\nid.ca: \(resp.id.ca ?? "")" +
-        "\n")
-#endif
     
     // Strip leading "pem:"s
     // let key = dropFirst("pem:", resp.id.key)
@@ -72,62 +62,61 @@ ZitiEnroller().enroll(jwtFile: args[1], privatePem: pem) { resp, subj, err in
     
     // store resp.ztAPI..
     if zkc.storeController(resp.ztAPI) != nil {
-        print("Unable to store controller in keychain")
+        fputs("Unable to store controller in keychain\n", stderr)
         exit(-1)
     }
     
     // Store certificate
     guard zkc.storeCertificate(fromPem: cert) == nil else {
-        print("Unable to store certificate")
+        fputs("Unable to store certificate\n", stderr)
         exit(-1)
     }
     
-    // See if we need to add trust for for the CA
+    // Add the optional CA to keychain if not already trusted
     if let ca = ca {
         let certs = zkc.extractCerts(ca)
         
         // evalTrustForCertificates requires same DispatchQueue as caller, so force that to happen.
         // need to process the queue, block until done
-        let dq = DispatchQueue.main
-        let dg = DispatchGroup()
+        let dispQueue = DispatchQueue.main
+        let dispGroup = DispatchGroup()
         
-        dg.enter()
-        dq.async {
-            let status = zkc.evalTrustForCertificates(certs, dq) { secTrust, isTrusted, err in
-                defer { dg.leave() }
+        dispGroup.enter()
+        dispQueue.async {
+            let status = zkc.evalTrustForCertificates(certs, dispQueue) { secTrust, isTrusted, err in
+                defer { dispGroup.leave() }
                 
-                print("CA trusted: \(isTrusted)")
-                if let err = err {
-                    print("\(err as Error)")
-                }
+                print("CA already trusted: \(isTrusted)")
                 
                 // if not trusted, prompt to addTrustForCertificate
                 if !isTrusted {
                     guard zkc.addCaPool(ca) else {
-                        print("Unable to add CA pool to kechain")
+                        fputs("Unable to add CA pool to kechain\n", stderr)
                         return
                     }
-                    print("Added CA to Keychain")
+                    print("Added CA pool to Keychain")
                     
-                    // Might be configured still to not trust it...
+                    // Might be configured still to not trust rootCA. Give user
+                    // the change to mark as "Always Trust" (UI dialog will prompt for creds)
                     if let rootCA = zkc.extractRootCa(ca) {
                         let status = zkc.addTrustForCertificate(rootCA)
                         if status != errSecSuccess {
                             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-                            print("Unable to add trust for CA: \(errStr)")
+                            fputs("Unable to add trust for CA: \(errStr)\n", stderr)
+                        } else {
+                            print("User allowed trust of CA")
                         }
                     }
                 }
             }
             guard status == errSecSuccess else {
                 let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-                print("Unable to evaluate trust for ca, err: \(status), \(errStr)")
+                fputs("Unable to evaluate trust for ca, err: \(status), \(errStr)\n", stderr)
                 exit(status)
             }
-            print("User added trust of CA")
         }
         
-        dg.notify(queue: dq) {
+        dispGroup.notify(queue: dispQueue) {
             // tell the user the application tag used to store the data in the keychain
             print("Successfully enrolled id \"\(subj)\" with controller \"\(resp.ztAPI)\"")
             exit(0)

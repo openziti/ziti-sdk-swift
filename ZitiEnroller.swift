@@ -14,11 +14,15 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import OSLog
 
 /**
  * Class that enroll an identity with Ziti controller using a one-time JWT file
  */
 @objc public class ZitiEnroller : NSObject, ZitiUnretained {
+    private static let log = OSLog(ZitiEnroller.self)
+    private let log = ZitiEnroller.log
+    
     /**
      * Class representing response to successful enrollment attempt
      */
@@ -30,12 +34,26 @@ import Foundation
          *  - .cert: signed certificate created as part of CSR process
          *  - .ca: root certificates for trusting the Ziti Controller
          */
-        public class Identity : Codable { public var key:String, cert:String, ca:String? }
+        public class Identity : Codable { public var key:String?, cert:String, ca:String? }
         
         /**
          * URL of controller returned on successful enrollment attempt
          */
         public let ztAPI:String, id:Identity
+    }
+    
+    /**
+     * Name of file containing one-time JWT
+     */
+    @objc public var jwtFile:String
+
+    /**
+     * Initiaizel with a JWT file
+     * - Parameters:
+     *      - jwtFile: file containing one-time JWT
+     */
+    @objc public init(_ jwtFile:String) {
+        self.jwtFile = jwtFile
     }
     
     /**
@@ -55,17 +73,17 @@ import Foundation
      *
      * - Parameters:
      *      - loop: `uv_loop_t` used for executing the enrollment
-     *      - jwtFile: file containing one-time JWT
      *      - privatePem: private key in PEM format
      *      - cb: callback called indicating status of enrollment attempt
      */
     @objc func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?,
-                      jwtFile:String,
                       privatePem:String,
                       cb:@escaping EnrollmentCallback) {
         
-        guard let subj = getSubj(jwtFile) else {
-            cb(nil, nil, ZitiError("Unable to retrieve sub from jwt file \(jwtFile)"))
+        guard let subj = getSubj() else {
+            let errStr = "Unable to retrieve sub from jwt file \(jwtFile)"
+            ZitiEnroller.log.error(errStr)
+            cb(nil, nil, ZitiError(errStr))
             return
         }
         self.subj = subj
@@ -75,7 +93,9 @@ import Foundation
                                privatePem.cString(using: .utf8),
                                loop, ZitiEnroller.on_enroll, self.toVoidPtr())
         guard status == ZITI_OK else {
-            cb(nil, nil, ZitiError(String(cString: ziti_errorstr(status)), errorCode: Int(status)))
+            let errStr = String(cString: ziti_errorstr(status))
+            ZitiEnroller.log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
             return
         }
     }
@@ -84,31 +104,34 @@ import Foundation
      * Enroll a Ziti identity using a JWT file
      *
      * - Parameters:
-     *      - jwtFile: file containing one-time JWT
      *      - privatePem: private key in PEM format
      *      - cb: callback called indicating status of enrollment attempt
      */
-    @objc public func enroll(jwtFile:String, privatePem:String, cb:@escaping EnrollmentCallback) {
+    @objc public func enroll(privatePem:String, cb:@escaping EnrollmentCallback) {
         var loop = uv_loop_t()
         
         let initStatus = uv_loop_init(&loop)
         guard initStatus == 0 else {
-            cb(nil, nil, ZitiError(String(cString: uv_strerror(initStatus)), errorCode: Int(initStatus)))
+            let errStr = String(cString: uv_strerror(initStatus))
+            ZitiEnroller.log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(initStatus)))
             return
         }
         
-        self.enroll(withLoop: &loop, jwtFile: jwtFile, privatePem: privatePem, cb: cb)
+        self.enroll(withLoop: &loop, privatePem: privatePem, cb: cb)
         
         let runStatus = uv_run(&loop, UV_RUN_DEFAULT)
         guard runStatus == 0 else {
-            cb(nil, nil, ZitiError(String(cString: uv_strerror(runStatus)), errorCode: Int(runStatus)))
+            let errStr = String(cString: uv_strerror(runStatus))
+            ZitiEnroller.log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(runStatus)))
             return
         }
         
         let closeStatus = uv_loop_close(&loop)
         guard closeStatus == 0 else {
             // Don't bother logging as this will always return UV_EBUSY since NF_enroll is leaving stuff unclosed on the loop
-            // NSLog("\(className): error \(closeStatus) closing uv loop \(String(cString: uv_strerror(closeStatus)))")
+            // ("error \(closeStatus) closing uv loop \(String(cString: uv_strerror(closeStatus)))")
             return
         }
     }
@@ -116,7 +139,7 @@ import Foundation
     /**
      * Extract the sub (id) field from HWT file
      */
-    @objc public func getSubj(_ jwtFile:String) -> String? {
+    @objc public func getSubj() -> String? {
         do {
             // Get the contents
             let token = try String(contentsOfFile: jwtFile, encoding: .utf8)
@@ -130,8 +153,8 @@ import Foundation
             }
         }
         catch let error as NSError {
-            print("Enable to load JWT file: \(error)")
-            exit(-1)
+            log.error("Enable to load JWT file: \(error)")
+            return nil
         }
         return nil
     }
@@ -141,12 +164,13 @@ import Foundation
     //
     static let on_enroll:nf_enroll_cb = { json, len, errMsg, ctx in
         guard let mySelf = zitiUnretained(ZitiEnroller.self, ctx) else {
-            NSLog("\(className()).on_enroll WTF unable to decode context")
+            ZitiEnroller.log.wtf("unable to decode context")
             return
         }
         guard let json = json, errMsg == nil else {
-            var errStr = errMsg != nil ?  String(cString: errMsg!) : "Unspecified enrollment error"
-            var ze = ZitiError("enroll error: \(errStr)")
+            var errStr = (errMsg != nil ?  String(cString: errMsg!) : "Unspecified enrollment error")
+            ZitiEnroller.log.error(errStr)
+            var ze = ZitiError(errStr, errorCode: Int(len))
             mySelf.enrollmentCallback?(nil, nil, ze)
             return
         }
@@ -161,7 +185,9 @@ import Foundation
             EnrollmentResponse.self,
             from: Data(s.utf8))
         guard enrollResp != nil  else {
-            var ze = ZitiError("enroll error: unable to parse result")
+            let errStr = "enroll error: unable to parse result"
+            ZitiEnroller.log.error(errStr)
+            var ze = ZitiError(errStr)
             mySelf.enrollmentCallback?(nil, nil, ze)
             return
         }

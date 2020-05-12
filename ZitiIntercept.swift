@@ -14,8 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import OSLog
 
 class ZitiIntercept : NSObject, ZitiUnretained {
+    private let log = OSLog(ZitiIntercept.self)
+    
     var loop:UnsafeMutablePointer<uv_loop_t>?
     let name:String
     let urlStr:String
@@ -85,13 +88,9 @@ class ZitiIntercept : NSObject, ZitiUnretained {
         if req != nil {
             // Add request headers
             zup.request.allHTTPHeaderFields?.forEach { h in
-                let status = um_http_req_header(req,
-                                                h.key.cString(using: .utf8),
-                                                h.value.cString(using: .utf8))
-                if (status != 0) {
-                    let str = String(cString: uv_strerror(Int32(status)))
-                    NSLog("ZitiUrlProtocol request header error ignored: \(str)")
-                }
+                um_http_req_header(req,
+                                   h.key.cString(using: .utf8),
+                                   h.value.cString(using: .utf8))
             }
             
             // add any headers specified via service config
@@ -144,7 +143,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
                 } else {
                     // TODO: Transfer-Encoding:chunked
                     let encoding = zup.request.allHTTPHeaderFields?["Transfer-Encoding"] ?? ""
-                    NSLog("ZitiUrlProtocol - Content-Length required, \(encoding) encoding not yet supported :(")
+                    log.error("Content-Length required, \(encoding) encoding not yet supported :(")
                 }
             }
         }
