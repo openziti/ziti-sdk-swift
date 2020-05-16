@@ -42,8 +42,8 @@ guard let privKey = zkc.createPrivateKey() else {
 let pem = zkc.getKeyPEM(privKey)
 
 // Enroll
-enroller.enroll(privatePem: pem) { resp, subj, err in
-    guard let resp = resp, let subj = subj else {
+enroller.enroll(privatePem: pem) { resp, _, err in
+    guard let resp = resp else {
         fputs("Invalid enrollment response, \(String(describing: err))\n", stderr)
         exit(-1)
     }
@@ -57,9 +57,7 @@ enroller.enroll(privatePem: pem) { resp, subj, err in
     if let idCa = resp.id.ca {
         ca = dropFirst("pem:", idCa)
     }
-    
-    let zkc = ZitiKeychain(tag: subj)
-    
+        
     // store resp.ztAPI..
     if zkc.storeController(resp.ztAPI) != nil {
         fputs("Unable to store controller in keychain\n", stderr)
