@@ -14,7 +14,6 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
-import OSLog
 
 /**
  * URLProtocol` that intercepts `http` and `https` URL requests and routes them over the `Ziti` overlay as configured in your `Ziti` controller.
@@ -22,7 +21,7 @@ import OSLog
  * Call the `ZitiUrlProtocol.start()`method to register this `URLProtocol` and start the background processing thread for `Ziti` requests.
  */
 @objc public class ZitiUrlProtocol: URLProtocol, ZitiUnretained {
-    private static let log = OSLog(ZitiUrlProtocol.self)
+    private static let log = ZitiLog(ZitiUrlProtocol.self)
     private let log = ZitiUrlProtocol.log
     
     var started = false
@@ -113,7 +112,7 @@ import OSLog
             log.error("unable to find Ziti identity file")
             return false
         }
-        log.info("ziti id file: \(String(cString: cfgPath))")
+        log.info("ziti id file: \(String(cString: cfgPath))", function:"start()")
         
         let cfgPtr = UnsafeMutablePointer<Int8>.allocate(capacity: cfgPath.count)
         cfgPtr.initialize(from: cfgPath, count: cfgPath.count)
@@ -131,7 +130,7 @@ import OSLog
         let initStatus = NF_init_opts(&(ZitiUrlProtocol.nf_opts!), ZitiUrlProtocol.loop, nil)
         guard initStatus == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
-            log.error("unable to initialize Ziti, \(initStatus): \(errStr)")
+            log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
             return false
         }
         
@@ -148,7 +147,7 @@ import OSLog
             cond.lock()
             while blocking && !ZitiUrlProtocol.nf_init_complete {
                 if !cond.wait(until: Date(timeIntervalSinceNow: waitFor))  {
-                    log.error("timed out waiting for Ziti intialization")
+                    log.error("timed out waiting for Ziti intialization", function:"start()")
                     cond.unlock()
                     return false
                 }
@@ -436,7 +435,7 @@ import OSLog
                         
         // Register protocol
         URLProtocol.registerClass(ZitiUrlProtocol.self)
-        log.info("ZitiUrlProcol registered")
+        log.info("ZitiUrlProcol registered", function:"on_nf_init()")
         
         // set init_complete flag and wait up the blocked start() method
         ZitiUrlProtocol.nf_init_cond?.lock()
@@ -465,14 +464,14 @@ import OSLog
                 
                 ZitiUrlProtocol.interceptsLock.lock()
                 if let curr = ZitiUrlProtocol.intercepts[urlStr] {
-                    log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                    log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_nf_service()")
                     curr.close()
                 }
                 var intercept = ZitiIntercept(loop, svcName, urlStr)
                 intercept.hdrs = cfg.headers ?? [:]
                 ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
                 
-                log.info("Setting URL intercept svc \(svcName): \(urlStr)")
+                log.info("Setting URL intercept svc \(svcName): \(urlStr)", function:"on_nf_service()")
                 ZitiUrlProtocol.interceptsLock.unlock()
                 
                 foundUrlCfg = true
@@ -486,24 +485,24 @@ import OSLog
                 
                 // issues with releasing these.  mark them for future cleanup
                 if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-                    log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                    log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_nf_service()")
                     curr.close()
                 }
                 if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
-                    log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                    log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_nf_service()")
                     curr.close()
                 }
                 
                 if let scheme = (cfg.port == 80 ? "http" : (cfg.port == 443 ? "https" : nil)) {
                     var intercept = ZitiIntercept(loop, svcName, "\(scheme)://\(hostPort)")
                     ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                    log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)")
+                    log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)", function:"on_nf_service()")
                 } else {
                     var intercept = ZitiIntercept(loop, svcName, "http://\(hostPort)")
                     ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
                     intercept = ZitiIntercept(loop, svcName, "https://\(hostPort)")
                     ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                    log.info("Setting TUN intercept svc \(svcName): \(hostPort)")
+                    log.info("Setting TUN intercept svc \(svcName): \(hostPort)", function:"on_nf_service()")
                 }
                 ZitiUrlProtocol.interceptsLock.unlock()
             }

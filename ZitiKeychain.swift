@@ -15,10 +15,9 @@ limitations under the License.
 */
 
 import Foundation
-import OSLog
 
 @objc public class ZitiKeychain : NSObject {
-    private let log = OSLog(ZitiKeychain.self)
+    private let log = ZitiLog(ZitiKeychain.self)
     
     private let tag:String
     private let atag:Data

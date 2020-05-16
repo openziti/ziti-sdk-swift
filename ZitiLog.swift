@@ -16,69 +16,78 @@ limitations under the License.
 import Foundation
 import OSLog
 
-extension OSLog {
-    convenience init(_ category:String = "ziti") {
-        //self.init(subsystem: Bundle.main.bundleIdentifier ?? "", category:category)
-        self.init(subsystem: "io.netfoundry.ziti", category: category)
+// For now just implement with OSLog...
+class ZitiLog {
+    var oslog:OSLog
+    
+    init(_ category:String = "ziti") {
+        oslog = OSLog(subsystem: "io.netfoundry.ziti", category: category)
     }
-    convenience init(_ aClass:AnyClass) {
-        self.init(String(describing: aClass))
+    
+    init(_ aClass:AnyClass) {
+        oslog = OSLog(subsystem: "io.netfoundry.ziti", category:String(describing: aClass))
     }
-
-    // For now send everything though with "file:func(): line"
-    // (redundant when looking at in Console or via `log` utility...
+    
     func debug(_ msg:String,
-                          file:StaticString=#file,
-                          function:StaticString=#function, line:UInt=#line) {
-        guard isEnabled(type: .debug) else { return }
+               file:StaticString=#file,
+               function:StaticString=#function,
+               line:UInt=#line) {
+        guard oslog.isEnabled(type: .debug) else { return }
         log(.debug, msg, file, function, line)
     }
     
     func info(_ msg:String,
-                          file:StaticString=#file,
-                          function:StaticString=#function,
-                          line:UInt=#line) {
-        log(.info,  msg, file, function, line)
+              file:StaticString=#file,
+              function:StaticString=#function,
+              line:UInt=#line) {
+        log(.info, msg, file, function, line)
+    }
+    
+    func warn(_ msg:String,
+               file:StaticString=#file,
+               function:StaticString=#function,
+               line:UInt=#line) {
+        log(.error, "(warn) \(msg)", file, function, line)
     }
     
     func error(_ msg:String,
-                          file:StaticString=#file,
-                          function:StaticString=#function,
-                          line:UInt=#line) {
-        log(.error,  msg, file, function, line)
+               file:StaticString=#file,
+               function:StaticString=#function,
+               line:UInt=#line) {
+        log(.error, msg, file, function, line)
     }
     
     func wtf(_ msg:String,
-                          file:StaticString=#file,
-                          function:StaticString=#function,
-                          line:UInt=#line) {
-        log(.fault,  msg, file, function, line)
+             file:StaticString=#file,
+             function:StaticString=#function,
+             line:UInt=#line) {
+        log(.fault, msg, file, function, line)
     }
-
-    internal func typeToString(_ t:OSLogType) -> String {
+    
+    private func typeToString(_ t:OSLogType) -> String {
         var tStr = ""
         switch t {
         case .debug: tStr = "DEBUG"
-        case .info: tStr = "INFO"
+        case .info:  tStr = "INFO"
         case .error: tStr = "ERROR"
         case .fault: tStr = "WTF"
         default: tStr = ""
         }
         return tStr
     }
-    internal func log(_ type:OSLogType, _ msg:String,
+    
+    private func log(_ type:OSLogType, _ msg:String,
                                         _ file:StaticString,
                                         _ function:StaticString,
                                         _ line:UInt) {
+        
         let file = URL(fileURLWithPath: String(describing: file)).deletingPathExtension().lastPathComponent
         var function = String(describing: function)
-        if function.contains("(") && function.contains(")") {
+        if function.contains("(") {
             function.removeSubrange(function.firstIndex(of: "(")!...function.lastIndex(of: ")")!)
-        } else {
-            function = "<static>"
         }
         
         let tStr = typeToString(type)
-        os_log("%{public}@\t%{public}@.%{public}@():%ld %{public}@", log:self, type:type, tStr, file, function, line, msg)
+        os_log("%{public}@\t%{public}@.%{public}@():%ld %{public}@", log:oslog.self, type:type, tStr, file, function, line, msg)
     }
 }
