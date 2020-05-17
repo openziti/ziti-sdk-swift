@@ -266,7 +266,7 @@ import Foundation
             uv_unref($0)
         }
                 
-        // remove comiler warning on cztAPI memory living past the inti call
+        // remove compiler warning on cztAPI memory living past the inti call
         let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count)
         ctrlPtr.initialize(from: cztAPI, count: id.ztAPI.count)
         defer { ctrlPtr.deallocate() } // just needs to live through the call to NF_init_opts
