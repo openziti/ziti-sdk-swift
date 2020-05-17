@@ -28,7 +28,6 @@ import Foundation
     var onListen:ListenCallback?
     var onData:DataCallback?
     var onClient:ClientCallback?
-    var onWrite:WriteCallback?
     
     init(_ ziti:Ziti, _ nfConn:nf_connection?) {
         self.ziti = ziti
@@ -110,10 +109,10 @@ import Foundation
             log.wtf("invalid (nil) ziti reference")
             return
         }
-        self.onConn = onConn
-        self.onData = onData
-        
         ziti.perform {
+            self.onConn = onConn
+            self.onData = onData
+            
             let status = NF_dial(self.nfConn, service.cString(using: .utf8), ZitiConnection.onConn, ZitiConnection.onData)
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
@@ -136,10 +135,10 @@ import Foundation
             log.wtf("invalid (nil) ziti reference")
             return
         }
-        self.onListen = onListen
-        self.onClient = onClient
-        
         ziti.perform {
+            self.onListen = onListen
+            self.onClient = onClient
+            
             let status = NF_listen(self.nfConn, service.cString(using: .utf8), ZitiConnection.onListen, ZitiConnection.onClient)
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
@@ -162,10 +161,10 @@ import Foundation
             log.wtf("invalid (nil) ziti reference")
             return
         }
-        self.onConn = onConn
-        self.onData = onData
-        
         ziti.perform {
+            self.onConn = onConn
+            self.onData = onData
+            
             let status = NF_accept(self.nfConn, ZitiConnection.onConn, ZitiConnection.onData)
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
@@ -186,17 +185,15 @@ import Foundation
             log.wtf("invalid (nil) ziti reference")
             return
         }
-        self.onWrite = onWrite
-        
-        let writeBuf = WriteBuffer(self, data)
         ziti.perform {
-            let status = NF_write(self.nfConn, writeBuf.ptr, writeBuf.len, ZitiConnection.onWrite, writeBuf.toVoidPtr())
+            let writeReq = WriteRequest(self, onWrite, data)
+            let status = NF_write(self.nfConn, writeReq.ptr, writeReq.len, ZitiConnection.onWrite, writeReq.toVoidPtr())
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
                 onWrite(Int(status))
                 return
             }
-            self.writeBuffers.append(writeBuf)
+            self.writeRequests.append(writeReq)
         }
     }
     
@@ -258,31 +255,35 @@ import Foundation
     }
     
     static private let onWrite:nf_write_cb = { conn, len, ctx in
-        guard let ctx = ctx, let wb = zitiUnretained(WriteBuffer.self, ctx) else {
+        guard let ctx = ctx, let req = zitiUnretained(WriteRequest.self, ctx) else {
             log.wtf("invalid ctx", function:"onWrite()")
             return
         }
-        wb.zitiConn.writeBuffers = wb.zitiConn.writeBuffers.filter() { $0 !== wb }
-        wb.zitiConn.onWrite?(len)
+        if let zitiConn = req.zitiConn {
+            zitiConn.writeRequests = zitiConn.writeRequests.filter() { $0 !== req }
+        }
+        req.onWrite(len)
     }
     
     // MARK: - Helpers
-    class WriteBuffer : ZitiUnretained {
-        let zitiConn:ZitiConnection
+    class WriteRequest : ZitiUnretained {
+        weak var zitiConn:ZitiConnection?
+        let onWrite:WriteCallback
         let ptr:UnsafeMutablePointer<UInt8>
         let len:Int
-        init(_ zitiConn:ZitiConnection, _ data:Data) {
-            self.zitiConn = zitiConn
+        init(_ zitiConn:ZitiConnection, _ onWrite: @escaping WriteCallback, _ data:Data) {
             len = data.count
             ptr = UnsafeMutablePointer<UInt8>.allocate(capacity: len)
             ptr.initialize(from: [UInt8](data), count: len)
-            zitiConn.log.debug("init \(self). len: \(len)")
+            self.zitiConn = zitiConn
+            self.onWrite = onWrite
+            ZitiConnection.log.debug("init \(self). len: \(len)")
         }
         deinit {
-            zitiConn.log.debug("deinit \(self). len: \(len)")
+            ZitiConnection.log.debug("deinit \(self). len: \(len)")
             ptr.deinitialize(count: len)
             ptr.deallocate()
         }
     }
-    var writeBuffers:[WriteBuffer] = []
+    var writeRequests:[WriteRequest] = []
 }
