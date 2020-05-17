@@ -21,7 +21,7 @@ import Foundation
  
  Provides a Swift-friendly way to access the Ziti C SDK
  
- Configure `Ziti` with a `ZitiIdentity`.  A `ZitiEdentity` can be created by enrolling with `Ziti` using a one-time JWT.  See `Ziti.enroll(jwtFile:enrollCallback`.  The `ZitiIdentity` can also be configured as part of `Ziti.init?(fromFile:)`and other `Ziti`initializers.
+ Configure `Ziti` with a `ZitiIdentity`.  A `ZitiEdentity` can be created by enrolling with `Ziti` using a one-time JWT.  See `enroll(jwtFile:enrollCallback`.  The `ZitiIdentity` can also be configured as part of `init?(fromFile:)`and other `Ziti`initializers.
  
  `Ziti` uses a loop to process events, similar to`Foudation`'s `Runloop` (though implemented using `libuv`).  Start `Ziti` processing via the `run()` method, which enters
   and infinate loop processing `Ziti` events until `shutdown()` is called.  Tthe `perform()` method supports scheduling work to be run on this thread and can be called safely
@@ -314,7 +314,7 @@ import Foundation
         }
     }
     
-    /// Create a new thread for `Ziti.run()` and returns
+    /// Create a new thread for `run()` and return
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
@@ -322,7 +322,7 @@ import Foundation
         Thread(target: self, selector: #selector(Ziti.run), object: initCallback).start()
     }
     
-    /// Shutdown the Ziti processing started via `Ziti.run()`.  This will cause the loop to exit once all scheduled activity on the loop completes
+    /// Shutdown the Ziti processing started via `run()`.  This will cause the loop to exit once all scheduled activity on the loop completes
     @objc public func shutdown() {
         perform {
             self.log.info("Ziti shutdown started")
@@ -347,7 +347,7 @@ import Foundation
     
     /// Get the version of the wrapped Ziti C SDK
     ///
-    /// - Returns: tupple of version, revision, buildDate
+    /// - Returns: tuple  of version, revision, buildDate
     public func getCSDKVersion() -> (version:String, revision:String, buildDate:String) {
         guard let vPtr = NF_get_version() else {
             return ("", "", "")
@@ -359,7 +359,7 @@ import Foundation
     
     /// Get the version of the connected controller
     ///
-    /// - Returns: tupple of version, revision, buildDate or ("", "", "") if Ziti is not currently running
+    /// - Returns: tuple of version, revision, buildDate or ("", "", "") if Ziti is not currently running
     public func getControllerVersion() -> (version:String, revision:String, buildDate:String) {
         guard let nfCtx = self.nfCtx, let vPtr = NF_get_controller_version(nfCtx) else {
             return ("", "", "")
@@ -387,7 +387,6 @@ import Foundation
     /// - Parameters:
     ///     - service: the name of the service to check
     ///     - onServiceAvaialble: callback called with status `ZITI_OK` of `ZITI_SERVICE_NOT_AVAILABLE`
-    ///
     @objc public func serviceAvailable(_ service:String, _ onServiceAvailable: @escaping ServiceCallback) {
         perform {
             let req = ServiceAvailableRequest(self, onServiceAvailable)
@@ -402,7 +401,7 @@ import Foundation
     
     /// Perform an operation in the context of the Ziti run loop, potentially not until the next iteration of the loop
     ///
-    /// Ziti is not threadsafe.  All operations must run on the same thread as `Ziti.run()`.  Use the `perform()` method to execute
+    /// Ziti is not threadsafe.  All operations must run on the same thread as `run()`.  Use the `perform()` method to execute
     /// the closure on the Ziti thread
     ///
     /// - Parameters:
@@ -420,7 +419,7 @@ import Foundation
     
     /// Register a closure to be called when services are added, changed, or deletes
     ///
-    /// These callbacks should be registerd before `Ziti.run()` is execute or the intiali callbacks for the services will be missed
+    /// These callbacks should be registerd before `run()` is executed or the intiali callbacks for the services will be missed
     ///
     /// - Parameters:
     ///     - cb: The closre to be executed
