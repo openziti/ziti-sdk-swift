@@ -31,7 +31,7 @@ import Foundation
     
     /// Identity string
     ///
-    /// initialyl the `sub` field from the  one-time enrollment JWT.  Used by `Ziti` to store and retrieve identity-related items in the Keychain
+    /// Initially the `sub` field from the  one-time enrollment JWT.  Used by `Ziti` to store and retrieve identity-related items in the Keychain
     let id:String
     
     /// scheme, host, and port used to communicate with Ziti controller
