@@ -51,6 +51,10 @@
 		5AB6DFBE244BA65400F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AE14C742469E3BD00179365 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C732469E3BD00179365 /* ZitiLog.swift */; };
 		5AE14C752469E3BD00179365 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C732469E3BD00179365 /* ZitiLog.swift */; };
+		5AE14C77246CB4D300179365 /* ZitiIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C76246CB4D300179365 /* ZitiIdentity.swift */; };
+		5AE14C78246CB4D300179365 /* ZitiIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C76246CB4D300179365 /* ZitiIdentity.swift */; };
+		5AE14C7B24703ADE00179365 /* ZitiConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C7A24703ADE00179365 /* ZitiConnection.swift */; };
+		5AE14C7C24703ADE00179365 /* ZitiConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C7A24703ADE00179365 /* ZitiConnection.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -111,6 +115,8 @@
 		5AB6DF7D244B8F2000F4B4E0 /* libhttp-parser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libhttp-parser.a"; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libhttp-parser.a"; sourceTree = "<group>"; };
 		5AB6DFAF244B990A00F4B4E0 /* libZitiUrlProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZitiUrlProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AE14C732469E3BD00179365 /* ZitiLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiLog.swift; sourceTree = "<group>"; };
+		5AE14C76246CB4D300179365 /* ZitiIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiIdentity.swift; sourceTree = "<group>"; };
+		5AE14C7A24703ADE00179365 /* ZitiConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiConnection.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -161,7 +167,9 @@
 			isa = PBXGroup;
 			children = (
 				5AAAEDF2246727C900C56383 /* Ziti.swift */,
+				5AE14C76246CB4D300179365 /* ZitiIdentity.swift */,
 				5AAAEDD42463924600C56383 /* ZitiEnroller.swift */,
+				5AE14C7A24703ADE00179365 /* ZitiConnection.swift */,
 				5A2D841C2444D748008B1D32 /* ZitiUrlProtocol.swift */,
 				5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */,
 				5AAAEDD124633F7A00C56383 /* ZitiTunnelConfig.swift */,
@@ -332,8 +340,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AE14C77246CB4D300179365 /* ZitiIdentity.swift in Sources */,
 				5AAAEDD52463924600C56383 /* ZitiEnroller.swift in Sources */,
 				5AAAEDF0246637EC00C56383 /* ZitiKeychain.swift in Sources */,
+				5AE14C7B24703ADE00179365 /* ZitiConnection.swift in Sources */,
 				5AAAEDC8246315E700C56383 /* ZitiIntercept.swift in Sources */,
 				5AAAEDCC24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DF71244B7C6400F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
@@ -351,8 +361,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5AE14C78246CB4D300179365 /* ZitiIdentity.swift in Sources */,
 				5AAAEDD62463924600C56383 /* ZitiEnroller.swift in Sources */,
 				5AAAEDF1246637EC00C56383 /* ZitiKeychain.swift in Sources */,
+				5AE14C7C24703ADE00179365 /* ZitiConnection.swift in Sources */,
 				5AAAEDC9246315E700C56383 /* ZitiIntercept.swift in Sources */,
 				5AAAEDCD24633F0600C56383 /* ZitiConfig.swift in Sources */,
 				5AB6DFB6244B9A4300F4B4E0 /* ZitiUrlProtocol.swift in Sources */,
