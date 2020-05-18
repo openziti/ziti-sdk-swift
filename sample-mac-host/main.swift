@@ -17,7 +17,102 @@ limitations under the License.
 import Foundation
 import ZitiUrlProtocol
 
-// Commandline
+var ziti:Ziti?
+
+// Server callbacks
+let onListen:ZitiConnection.ListenCallback = { serv, status in
+    let statMsg = String(cString: ziti_errorstr(status))
+    if (status == ZITI_OK) {
+        print("Byte Counter is ready! \(status)(\(statMsg))")
+    }
+    else {
+        fputs("ERROR The Byte Counter could not be started: \(status)(\(statMsg))\n", stderr)
+        serv.close()
+    }
+}
+
+let onAccept:ZitiConnection.ConnCallback = { conn, status in
+    guard status == ZITI_OK else {
+        let errStr = String(cString: ziti_errorstr(status))
+        fputs("Client accept error: \(status)(\(errStr))\n", stderr)
+        return
+    }
+    
+    if var msg = String("Hello from byte counter!\n").data(using: .utf8) {
+        msg.append(0) // TODO: needed?
+        conn.write(msg) { _, len in
+            guard len >= 0 else {
+                let errStr = String(cString: ziti_errorstr(Int32(len)))
+                fputs("Connected client write error: \(len)(\(errStr)\n", stderr)
+                return
+            }
+            print("Sent \(len) bytes to connected client")
+        }
+    }
+}
+
+let onDataFromClient:ZitiConnection.DataCallback = { conn, data, len in
+    guard len > 0 else {
+        let errStr = String(cString: ziti_errorstr(Int32(len)))
+        fputs("onDataFromClient: \(len)(\(errStr)\n", stderr)
+        return 0
+    }
+    
+    let msg = data != nil ? (String(data: data!, encoding: .utf8) ?? "") : ""
+    print("client sent us \(len) bytes, msg: \(msg)")
+    
+    // write back num bytes conn.write(...)
+    if var response = String("\(len)").data(using: .utf8) {
+        response.append(0) // TODO: needed?
+        print("Responding to client with \(len)")
+        conn.write(response) { _, len in
+            guard len >= 0 else {
+                let errStr = String(cString: ziti_errorstr(Int32(len)))
+                fputs("Error writing to client: \(len)(\(errStr)\n", stderr)
+                return
+            }
+            print("Sent \(len) bytes to client")
+        }
+    }
+    return data?.count ?? 0
+}
+
+// Client callbacks
+let onDial:ZitiConnection.ConnCallback = { conn, status in
+    guard status == ZITI_OK else {
+        let errStr = String(cString: ziti_errorstr(status))
+        fputs("onDial :\(status)(\(errStr)", stderr)
+        return
+    }
+    
+    if var msg = String("hello").data(using: .utf8) {
+        msg.append(0) // TODO: needed?
+        conn.write(msg) { _, len in
+            guard len >= 0 else {
+                let errStr = String(cString: ziti_errorstr(Int32(len)))
+                fputs("Dialed connection write error: \(len)(\(errStr)\n", stderr)
+                return
+            }
+            print("Sent \(len) bytes to server")
+        }
+    }
+}
+
+let onDataFromServer:ZitiConnection.DataCallback = { conn, data, len in
+    guard len > 0 else {
+        let errStr = String(cString: ziti_errorstr(Int32(len)))
+        fputs("onDataFromServer: \(len)\(errStr)", stderr)
+        conn.close()
+        ziti?.shutdown()
+        return 0
+    }
+    
+    let msg = data != nil ? (String(data: data!, encoding: .utf8) ?? "") : ""
+    print("Server sent us \(len) bytes, msg: \(msg)")
+    return data?.count ?? 0
+}
+
+// Parse command line
 let args = CommandLine.arguments
 if CommandLine.argc != 4 {
     fputs("Usage: \(args[0]) <client|server> <config-file> <service-name>\n", stderr);
@@ -30,71 +125,19 @@ print("Running as \(isServer ? "server" : "client")")
 let zidFile = args[2]
 let service = args[3]
 
-// load ziti instance from zid file
-guard let ziti = Ziti(fromFile: zidFile) else {
+// Load ziti instance from zid file
+ziti = Ziti(fromFile: zidFile)
+guard let ziti = ziti  else {
     fputs("Unable to load Ziti from zid file \(zidFile)\n", stderr)
     exit(1)
 }
 
-// connection callbacks
-let onListen:ZitiConnection.ListenCallback = { serv, status in
-    let statMsg = String(cString: ziti_errorstr(status))
-    if (status == ZITI_OK) {
-        print("Byte Counter is ready! \(status)(\(statMsg))")
-    }
-    else {
-        fputs("ERROR The Byte Counter could not be started: \(status)(\(statMsg))\n", stderr)
-        serv.close()
-    }
-}
-
-let onClientAccept:ZitiConnection.ConnCallback = { conn, status in
-    guard status == ZITI_OK else {
-        let errStr = String(cString: ziti_errorstr(status))
-        fputs("client accept error \(status): \(errStr)", stderr)
-        return
-    }
-    
-    if var msg = String("Hello from byte counter!\n").data(using: .utf8) {
-        msg.append(0) // TODO: needed?
-        conn.write(msg) { _, len in
-            guard len >= 0 else {
-                let errStr = String(cString: ziti_errorstr(Int32(len)))
-                fputs("connected client write error \(len): \(errStr)", stderr)
-                return
-            }
-            print("sent \(len) bytes to connected client")
-        }
-    }
-}
-
-let onDial:ZitiConnection.ConnCallback = { conn, status in
-    guard status == ZITI_OK else {
-        let errStr = String(cString: ziti_errorstr(status))
-        fputs("onDial error \(status): \(errStr)", stderr)
-        return
-    }
-    
-    if var msg = String("hello").data(using: .utf8) {
-        msg.append(0) // TODO: needed?
-        conn.write(msg) { _, len in
-            guard len >= 0 else {
-                let errStr = String(cString: ziti_errorstr(Int32(len)))
-                fputs("dialed connection write error \(len): \(errStr)", stderr)
-                return
-            }
-            print("sent \(len) bytes over dialed connection")
-        }
-    }
-}
-
-// run ziti
+// Run ziti
 ziti.run { zErr in
     guard zErr == nil else {
         fputs("Unable to run ziti \(String(describing: zErr))\n", stderr)
         exit(1)
     }
-    
     guard let conn = ziti.createConnection() else {
         fputs("Unable to create connection\n", stderr)
         exit(1)
@@ -102,46 +145,13 @@ ziti.run { zErr in
     
     if isServer {
         conn.listen(service, onListen) { server, client, status in
-            client.accept(onClientAccept) { conn, data, len in
-                guard len > 0 else {
-                    let errStr = String(cString: ziti_errorstr(Int32(len)))
-                    fputs("accepted client onData \(len): \(errStr)", stderr)
-                    return 0
-                }
-                
-                let msg = data != nil ? (String(data: data!, encoding: .utf8) ?? "nil string") : "nil data"
-                print("accepted client sent us \(len) bytes, msg: \(msg)")
-                
-                // write back num bytes conn.write(...)
-                if var response = String("\(len)").data(using: .utf8) {
-                    response.append(0) // TODO: needed?
-                    print("responding to client with \(len)")
-                    conn.write(response) { _, len in
-                        guard len >= 0 else {
-                            let errStr = String(cString: ziti_errorstr(Int32(len)))
-                            fputs("write error to accepted client \(len): \(errStr)", stderr)
-                            return
-                        }
-                        print("sent \(len) bytes over accepted connection")
-                    }
-                    
-                }
-                return data?.count ?? 0
+            guard status == ZITI_OK else {
+                fputs("onClient \(status): \(String(cString: ziti_errorstr(status)))", stderr)
+                return
             }
+            client.accept(onAccept, onDataFromClient)
         }
     } else {
-        conn.dial(service, onDial) { conn, data, len in
-            guard len > 0 else {
-                let errStr = String(cString: ziti_errorstr(Int32(len)))
-                fputs("dialed client onData \(len): \(errStr)", stderr)
-                conn.close()
-                ziti.shutdown()
-                return 0
-            }
-            
-            let msg = data != nil ? (String(data: data!, encoding: .utf8) ?? "") : ""
-            print("dialed connection sent us \(len) bytes, msg: \(msg)")
-            return data?.count ?? 0
-        }
+        conn.dial(service, onDial, onDataFromServer)
     }
 }
