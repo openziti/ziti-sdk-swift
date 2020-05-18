@@ -22,18 +22,18 @@ import Foundation
     private let log = ZitiConnection.log
     
     weak var ziti:Ziti?
-    var nfConn:nf_connection?
+    var zConn:ziti_connection?
     
     var onConn:ConnCallback?
     var onListen:ListenCallback?
     var onData:DataCallback?
     var onClient:ClientCallback?
     
-    init(_ ziti:Ziti, _ nfConn:nf_connection?) {
+    init(_ ziti:Ziti, _ zConn:ziti_connection?) {
         self.ziti = ziti
-        self.nfConn = nfConn
+        self.zConn = zConn
         super.init()
-        NF_conn_set_data(nfConn, self.toVoidPtr())
+        ziti_conn_set_data(zConn, self.toVoidPtr())
         log.debug("init \(self)")
     }
     
@@ -116,7 +116,7 @@ import Foundation
             self.onConn = onConn
             self.onData = onData
             
-            let status = NF_dial(self.nfConn, service.cString(using: .utf8), ZitiConnection.onConn, ZitiConnection.onData)
+            let status = ziti_dial(self.zConn, service.cString(using: .utf8), ZitiConnection.onConn, ZitiConnection.onData)
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
                 onConn(self, status)
@@ -142,7 +142,7 @@ import Foundation
             self.onListen = onListen
             self.onClient = onClient
             
-            let status = NF_listen(self.nfConn, service.cString(using: .utf8), ZitiConnection.onListen, ZitiConnection.onClient)
+            let status = ziti_listen(self.zConn, service.cString(using: .utf8), ZitiConnection.onListen, ZitiConnection.onClient)
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
                 onListen(self, status)
@@ -168,7 +168,7 @@ import Foundation
             self.onConn = onConn
             self.onData = onData
             
-            let status = NF_accept(self.nfConn, ZitiConnection.onConn, ZitiConnection.onData)
+            let status = ziti_accept(self.zConn, ZitiConnection.onConn, ZitiConnection.onData)
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
                 onConn(self, status)
@@ -190,7 +190,7 @@ import Foundation
         }
         ziti.perform {
             let writeReq = WriteRequest(self, onWrite, data)
-            let status = NF_write(self.nfConn, writeReq.ptr, writeReq.len, ZitiConnection.onWrite, writeReq.toVoidPtr())
+            let status = ziti_write(self.zConn, writeReq.ptr, writeReq.len, ZitiConnection.onWrite, writeReq.toVoidPtr())
             guard status == ZITI_OK else {
                 self.log.error("\(status): " + String(cString: ziti_errorstr(status)))
                 onWrite(self, Int(status))
@@ -206,22 +206,22 @@ import Foundation
     /// which indicates an error situation.
     @objc public func close() {
         ziti?.perform {
-            NF_close(&self.nfConn)
+            ziti_close(&self.zConn)
             self.ziti?.releaseConnection(self)
         }
     }
     
     // MARK: - Static C callbacks
-    static private let onConn:nf_conn_cb = { conn, status in
-        guard let conn = conn, let ctx = NF_conn_data(conn), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
+    static private let onConn:ziti_conn_cb = { conn, status in
+        guard let conn = conn, let ctx = ziti_conn_data(conn), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
             log.wtf("invalid context", function:"onConn()")
             return
         }
         mySelf.onConn?(mySelf, status)
     }
     
-    static private let onData:nf_data_cb = { conn, buf, len in
-        guard let conn = conn, let ctx = NF_conn_data(conn), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
+    static private let onData:ziti_data_cb = { conn, buf, len in
+        guard let conn = conn, let ctx = ziti_conn_data(conn), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
             log.wtf("invalid context", function:"onConn()")
             return 0
         }
@@ -237,16 +237,16 @@ import Foundation
         return status
     }
     
-    static private let onListen:nf_listen_cb = { conn, status in
-        guard let conn = conn, let ctx = NF_conn_data(conn), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
+    static private let onListen:ziti_listen_cb = { conn, status in
+        guard let conn = conn, let ctx = ziti_conn_data(conn), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
             log.wtf("invalid context", function:"onListen()")
             return
         }
         mySelf.onListen?(mySelf, status)
     }
     
-    static private let onClient:nf_client_cb = { svr, client, status in
-        guard let svr = svr, let ctx = NF_conn_data(svr), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
+    static private let onClient:ziti_client_cb = { svr, client, status in
+        guard let svr = svr, let ctx = ziti_conn_data(svr), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
             log.wtf("invalid context", function:"onClient()")
             return
         }
@@ -259,7 +259,7 @@ import Foundation
         mySelf.onClient?(mySelf, zc, status)
     }
     
-    static private let onWrite:nf_write_cb = { conn, len, ctx in
+    static private let onWrite:ziti_write_cb = { conn, len, ctx in
         guard let ctx = ctx, let req = zitiUnretained(WriteRequest.self, ctx) else {
             log.wtf("invalid ctx", function:"onWrite()")
             return

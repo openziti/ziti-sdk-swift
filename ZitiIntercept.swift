@@ -31,7 +31,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     init(_ loop:UnsafeMutablePointer<uv_loop_t>?, _ name:String, _ urlStr:String) {
         self.name = name
         self.urlStr = urlStr
-        ziti_src_init(loop, &zs, name.cString(using: .utf8), ZitiUrlProtocol.nf_context)
+        ziti_src_init(loop, &zs, name.cString(using: .utf8), ZitiUrlProtocol.z_context)
         um_http_init_with_src(loop, &clt, urlStr.cString(using: .utf8), &zs)
         um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
         
@@ -102,7 +102,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
             // if no User-Agent add it
             if zup.request.allHTTPHeaderFields?["User-Agent"] == nil {
                 var zv = "unknown-@unknown"
-                if let nfv = NF_get_version()?.pointee {
+                if let nfv = ziti_get_version()?.pointee {
                     zv = "\(String(cString: nfv.version))-@\(String(cString: nfv.revision))"
                 }
                 um_http_req_header(req,

@@ -15,9 +15,9 @@ limitations under the License.
 */
 #if 1
 
-#include <nf/ziti.h>
-#include <nf/ziti_src.h>
-#include <nf/ziti_model.h>
+#include <ziti/ziti.h>
+#include <ziti/ziti_src.h>
+#include <ziti/ziti_model.h>
 #include <uv_mbed/um_http.h>
 
 extern const char** ziti_all_configs;

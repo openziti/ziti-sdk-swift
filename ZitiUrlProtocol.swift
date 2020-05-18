@@ -39,10 +39,10 @@ import Foundation
     static let reqsLock = NSLock()
     static var reqs:[ZitiUrlProtocol] = []
     
-    static var nf_opts:nf_options?
-    static var nf_context:nf_context?
-    static var nf_init_cond:NSCondition?
-    static var nf_init_complete = false
+    static var z_opts:ziti_options?
+    static var z_context:ziti_context?
+    static var z_init_cond:NSCondition?
+    static var z_init_complete = false
     static var tls_context:UnsafeMutablePointer<tls_context>?
     
     static var loop:UnsafeMutablePointer<uv_loop_t>!
@@ -94,7 +94,7 @@ import Foundation
         ZitiUrlProtocol.idleTime = idleTime
         
         // condition for blocking if requested
-        ZitiUrlProtocol.nf_init_cond = blocking ? NSCondition() : nil
+        ZitiUrlProtocol.z_init_cond = blocking ? NSCondition() : nil
         
         // Init the start/stop async send handles
         if uv_async_init(ZitiUrlProtocol.loop, &async_start_h, ZitiUrlProtocol.on_async_start) != 0 {
@@ -107,7 +107,7 @@ import Foundation
             return false
         }
         
-        // NF_init... TODO: whole enrollment dance (and use of keychain...)
+        // ziti_init... TODO: whole enrollment dance (and use of keychain...)
         guard let cfgPath = FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".netfoundry/id.json", isDirectory: false).path.cString(using: .utf8) else {
             log.error("unable to find Ziti identity file")
             return false
@@ -116,25 +116,25 @@ import Foundation
         
         let cfgPtr = UnsafeMutablePointer<Int8>.allocate(capacity: cfgPath.count)
         cfgPtr.initialize(from: cfgPath, count: cfgPath.count)
-        defer { cfgPtr.deallocate() } // just needs to live through call to NF_init_opts
+        defer { cfgPtr.deallocate() }
         
-        ZitiUrlProtocol.nf_opts = nf_options(config: cfgPtr,
+        ZitiUrlProtocol.z_opts = ziti_options(config: cfgPtr,
                                              controller: nil,
                                              tls:nil,
                                              config_types: ziti_all_configs,
-                                             init_cb: ZitiUrlProtocol.on_nf_init,
-                                             service_cb: ZitiUrlProtocol.on_nf_service,
+                                             init_cb: ZitiUrlProtocol.on_ziti_init,
+                                             service_cb: ZitiUrlProtocol.on_ziti_service,
                                              refresh_interval: 30,
                                              ctx: nil)
         
-        let initStatus = NF_init_opts(&(ZitiUrlProtocol.nf_opts!), ZitiUrlProtocol.loop, nil)
+        let initStatus = ziti_init_opts(&(ZitiUrlProtocol.z_opts!), ZitiUrlProtocol.loop, nil)
         guard initStatus == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
             log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
             return false
         }
         
-        // must be done after NF_init...
+        // must be done after ziti_init...
         //ziti_debug_level = 11
         uv_mbed_set_debug(5, stdout)
         
@@ -143,9 +143,9 @@ import Foundation
         t.name = "ziti_uv_loop"
         t.start()
         
-        if let cond = ZitiUrlProtocol.nf_init_cond {
+        if let cond = ZitiUrlProtocol.z_init_cond {
             cond.lock()
-            while blocking && !ZitiUrlProtocol.nf_init_complete {
+            while blocking && !ZitiUrlProtocol.z_init_complete {
                 if !cond.wait(until: Date(timeIntervalSinceNow: waitFor))  {
                     log.error("timed out waiting for Ziti intialization", function:"start()")
                     cond.unlock()
@@ -422,31 +422,31 @@ import Foundation
         perform(aSelector, on: clientThread!, with:arg, waitUntilDone:false, modes:modes)
     }
     
-    // MARK: NF_ziti callbacks
-    static private let on_nf_init:nf_init_cb = { nf_context, status, ctx in
+    // MARK: Static C callbacks
+    static private let on_ziti_init:ziti_init_cb = { ztx, status, ctx in
         guard status == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(status))
-            log.error("nf_init failure: \(errStr)")
+            log.error("ziti_init failure: \(errStr)")
             return
         }
         
-        // save off nf_context
-        ZitiUrlProtocol.nf_context = nf_context
+        // save off z_context
+        ZitiUrlProtocol.z_context = ztx
                         
         // Register protocol
         URLProtocol.registerClass(ZitiUrlProtocol.self)
-        log.info("ZitiUrlProcol registered", function:"on_nf_init()")
+        log.info("ZitiUrlProcol registered", function:"on_ziti_init()")
         
         // set init_complete flag and wait up the blocked start() method
-        ZitiUrlProtocol.nf_init_cond?.lock()
-        ZitiUrlProtocol.nf_init_complete = true
-        ZitiUrlProtocol.nf_init_cond?.signal()
-        ZitiUrlProtocol.nf_init_cond?.unlock()
+        ZitiUrlProtocol.z_init_cond?.lock()
+        ZitiUrlProtocol.z_init_complete = true
+        ZitiUrlProtocol.z_init_cond?.signal()
+        ZitiUrlProtocol.z_init_cond?.unlock()
     }
     
-    static private let on_nf_service:nf_service_cb = { nf, zs, status, data in
+    static private let on_ziti_service:ziti_service_cb = { nf, zs, status, data in
         guard var zs = zs?.pointee else {
-            log.wtf("unable to access service, status: \(status)")
+            log.wtf("unable to access service, status: \(status)", function:"on_ziti_service()")
             return
         }
         
@@ -464,14 +464,14 @@ import Foundation
                 
                 ZitiUrlProtocol.interceptsLock.lock()
                 if let curr = ZitiUrlProtocol.intercepts[urlStr] {
-                    log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_nf_service()")
+                    log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_ziti_service()")
                     curr.close()
                 }
                 var intercept = ZitiIntercept(loop, svcName, urlStr)
                 intercept.hdrs = cfg.headers ?? [:]
                 ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
                 
-                log.info("Setting URL intercept svc \(svcName): \(urlStr)", function:"on_nf_service()")
+                log.info("Setting URL intercept svc \(svcName): \(urlStr)", function:"on_ziti_service()")
                 ZitiUrlProtocol.interceptsLock.unlock()
                 
                 foundUrlCfg = true
@@ -485,24 +485,24 @@ import Foundation
                 
                 // issues with releasing these.  mark them for future cleanup
                 if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-                    log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_nf_service()")
+                    log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_ziti_service()")
                     curr.close()
                 }
                 if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
-                    log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_nf_service()")
+                    log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"on_ziti_service()")
                     curr.close()
                 }
                 
                 if let scheme = (cfg.port == 80 ? "http" : (cfg.port == 443 ? "https" : nil)) {
                     var intercept = ZitiIntercept(loop, svcName, "\(scheme)://\(hostPort)")
                     ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                    log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)", function:"on_nf_service()")
+                    log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)", function:"on_ziti_service()")
                 } else {
                     var intercept = ZitiIntercept(loop, svcName, "http://\(hostPort)")
                     ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
                     intercept = ZitiIntercept(loop, svcName, "https://\(hostPort)")
                     ZitiUrlProtocol.intercepts[intercept.urlStr] = intercept
-                    log.info("Setting TUN intercept svc \(svcName): \(hostPort)", function:"on_nf_service()")
+                    log.info("Setting TUN intercept svc \(svcName): \(hostPort)", function:"on_ziti_service()")
                 }
                 ZitiUrlProtocol.interceptsLock.unlock()
             }

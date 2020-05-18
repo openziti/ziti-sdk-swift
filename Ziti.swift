@@ -36,7 +36,7 @@ import Foundation
     
     var loop = uv_loop_t()
     private var runThread:Thread?
-    private var nfCtx:nf_context?
+    private var ztx:ziti_context?
     
     /// Type used for closure called for an operation to be performed on the loop
     public typealias PerformCallback = () -> Void
@@ -277,7 +277,7 @@ import Foundation
         // init NF
         self.initCallback = initCallback
         
-        var nfOpts = nf_options(config: nil,
+        var nfOpts = ziti_options(config: nil,
                                 controller: ctrlPtr,
                                 tls:tls,
                                 config_types: ziti_all_configs,
@@ -286,7 +286,7 @@ import Foundation
                                 refresh_interval: 30,
                                 ctx: self.toVoidPtr())
         
-        let initStatus = NF_init_opts(&nfOpts, &loop, self.toVoidPtr())
+        let initStatus = ziti_init_opts(&nfOpts, &loop, self.toVoidPtr())
         guard initStatus == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
             log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
@@ -294,7 +294,7 @@ import Foundation
             return
         }
         
-        // must be done after NF_init...
+        // must be done after ziti_init...
         //ziti_debug_level = 11
         //uv_mbed_set_debug(5, stdout)
         
@@ -330,7 +330,7 @@ import Foundation
     @objc public func shutdown() {
         perform {
             self.log.info("Ziti shutdown started")
-            NF_shutdown(self.nfCtx)
+            ziti_shutdown(self.ztx)
         }
     }
     
@@ -340,14 +340,14 @@ import Foundation
     ///
     /// - Returns: An intialized `ZitiConnection` or nil on error
     @objc public func createConnection() -> ZitiConnection? {
-        guard let nfCtx = self.nfCtx else {
+        guard let ztx = self.ztx else {
             log.error("invalid (nil) context")
             return nil
         }
-        var nfConn:nf_connection?
-        NF_conn_init(nfCtx, &nfConn, nil)
+        var zConn:ziti_connection?
+        ziti_conn_init(ztx, &zConn, nil)
         
-        let zc = ZitiConnection(self, nfConn)
+        let zc = ZitiConnection(self, zConn)
         retainConnection(zc)
         return zc
     }
@@ -366,7 +366,7 @@ import Foundation
     ///
     /// - Returns: tuple  of version, revision, buildDate
     public func getCSDKVersion() -> (version:String, revision:String, buildDate:String) {
-        guard let vPtr = NF_get_version() else {
+        guard let vPtr = ziti_get_version() else {
             return ("", "", "")
         }
         return (String(cString: vPtr.pointee.version),
@@ -378,7 +378,7 @@ import Foundation
     ///
     /// - Returns: tuple of version, revision, buildDate or ("", "", "") if Ziti is not currently running
     public func getControllerVersion() -> (version:String, revision:String, buildDate:String) {
-        guard let nfCtx = self.nfCtx, let vPtr = NF_get_controller_version(nfCtx) else {
+        guard let ztx = self.ztx, let vPtr = ziti_get_controller_version(ztx) else {
             return ("", "", "")
         }
         return (String(cString: vPtr.pointee.version),
@@ -391,8 +391,8 @@ import Foundation
     /// Rates are in bytes / second, calculated using 1 minute EWMA
     public func getTransferRates() -> (up:Double, down:Double) {
         var up:Double=0.0, down:Double=0.0
-        if let nfCtx = self.nfCtx {
-            NF_get_transfer_rates(nfCtx, &up, &down)
+        if let ztx = self.ztx {
+            ziti_get_transfer_rates(ztx, &up, &down)
         }
         return (up, down)
     }
@@ -407,7 +407,7 @@ import Foundation
     @objc public func serviceAvailable(_ service:String, _ onServiceAvailable: @escaping ServiceCallback) {
         perform {
             let req = ServiceAvailableRequest(self, onServiceAvailable)
-            let status = NF_service_available(self.nfCtx, service.cString(using: .utf8), Ziti.onServiceAvailable, req.toVoidPtr())
+            let status = ziti_service_available(self.ztx, service.cString(using: .utf8), Ziti.onServiceAvailable, req.toVoidPtr())
             guard status == ZITI_OK else {
                 self.log.error(String(cString: ziti_errorstr(status)))
                 return
@@ -448,7 +448,7 @@ import Foundation
         
     // MARK: - Static C Callbacks
     
-    static private let onInit:nf_init_cb = { nf_context, status, ctx in
+    static private let onInit:ziti_init_cb = { ztx, status, ctx in
         guard let mySelf = zitiUnretained(Ziti.self, ctx)  else {
             log.wtf("invalid context", function:"onInit()")
             return
@@ -459,7 +459,7 @@ import Foundation
             mySelf.initCallback?(ZitiError(errStr, errorCode: Int(status)))
             return
         }
-        mySelf.nfCtx = nf_context
+        mySelf.ztx = ztx
         mySelf.initCallback?(nil)
     }
     
@@ -479,7 +479,7 @@ import Foundation
         }
     }
     
-    static private let onService:nf_service_cb = { nf, zs, status, ctx in
+    static private let onService:ziti_service_cb = { nf, zs, status, ctx in
         guard let mySelf = zitiUnretained(Ziti.self, ctx)  else {
             log.wtf("invalid context", function:"onService()")
             return
@@ -496,7 +496,7 @@ import Foundation
         mySelf.serviceCallbacksLock.unlock()
     }
     
-    static private let onServiceAvailable:nf_service_cb = { nf, zs, status, ctx in
+    static private let onServiceAvailable:ziti_service_cb = { nf, zs, status, ctx in
         guard let req = zitiUnretained(ServiceAvailableRequest.self, ctx) else {
             log.wtf("invalid context", function:"onServiceAvaialble()")
             return
