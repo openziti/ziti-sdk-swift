@@ -32,18 +32,18 @@ import Foundation
     /// Identity string
     ///
     /// Initially the `sub` field from the  one-time enrollment JWT.  Used by `Ziti` to store and retrieve identity-related items in the Keychain
-    let id:String
+    @objc public let id:String
     
     /// scheme, host, and port used to communicate with Ziti controller
-    let ztAPI:String
+    @objc public let ztAPI:String
     
     /// name assocaited with this identity in Ziti.
     ///
     /// Note that this name is unknown until a session with Ziti is active
-    var name:String?
+    @objc public var name:String?
     
     /// CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
-    var ca:String?
+    @objc public var ca:String?
     
     /// Initialize a `ZitiIdentity` given the provided identity infomation
     ///
@@ -69,7 +69,7 @@ import Foundation
     /// - See also:
     ///     - Ziti.enroll(jwtFile:enrollCallback:)`
     @objc public func save(_ initFile:String) -> Bool {
-        guard let data = try? JSONEncoder().encode(id) else {
+        guard let data = try? JSONEncoder().encode(self) else {
             log.error("unable to encode data for id: \(id)")
             return false
         }
