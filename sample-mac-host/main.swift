@@ -38,8 +38,7 @@ let onAccept:ZitiConnection.ConnCallback = { conn, status in
         return
     }
     
-    if var msg = String("Hello from byte counter!\n").data(using: .utf8) {
-        msg.append(0) // TODO: needed?
+    if let msg = String("Hello from byte counter!\n").data(using: .utf8) {
         conn.write(msg) { _, len in
             guard len >= 0 else {
                 let errStr = String(cString: ziti_errorstr(Int32(len)))
@@ -62,8 +61,7 @@ let onDataFromClient:ZitiConnection.DataCallback = { conn, data, len in
     print("client sent us \(len) bytes, msg: \(msg)")
     
     // write back num bytes conn.write(...)
-    if var response = String("\(len)").data(using: .utf8) {
-        response.append(0) // TODO: needed?
+    if let response = String("\(len)").data(using: .utf8) {
         print("Responding to client with \(len)")
         conn.write(response) { _, len in
             guard len >= 0 else {
@@ -85,8 +83,7 @@ let onDial:ZitiConnection.ConnCallback = { conn, status in
         return
     }
     
-    if var msg = String("hello").data(using: .utf8) {
-        msg.append(0) // TODO: needed?
+    if let msg = String("hello").data(using: .utf8) {
         conn.write(msg) { _, len in
             guard len >= 0 else {
                 let errStr = String(cString: ziti_errorstr(Int32(len)))
