@@ -23,8 +23,8 @@ import Foundation
  
  Configure `Ziti` with a `ZitiIdentity`.  A `ZitiEdentity` can be created by enrolling with `Ziti` using a one-time JWT.  See `enroll(jwtFile:enrollCallback`.  The `ZitiIdentity` can also be configured as part of `init?(fromFile:)`and other `Ziti`initializers.
  
- `Ziti` uses a loop to process events, similar to`Foudation`'s `Runloop` (though implemented using `libuv`).  Start `Ziti` processing via the `run()` method, which enters
-  and infinate loop processing `Ziti` events until `shutdown()` is called.  Tthe `perform()` method supports scheduling work to be run on this thread and can be called safely
+ `Ziti` uses a loop to process events, similar to`Foudation`'s `Runloop` (though implemented using `libuv`).  Start `Ziti` processing via the `run(_:)` method, which enters
+  and infinate loop processing `Ziti` events until `shutdown()` is called.  Tthe `perform(_:)` method supports scheduling work to be run on this thread and can be called safely
   from other threads.
  
  - See also:
@@ -34,8 +34,8 @@ import Foundation
     private static let log = ZitiLog(Ziti.self)
     private let log = Ziti.log
     
+    var loop = uv_loop_t()
     private var runThread:Thread?
-    private var loop = uv_loop_t()
     private var nfCtx:nf_context?
     
     /// Type used for closure called for an operation to be performed on the loop
@@ -43,6 +43,9 @@ import Foundation
     private var opsAsyncHandle:UnsafeMutablePointer<uv_async_t>?
     private var opsQueueLock = NSLock()
     private var opsQueue:[PerformCallback] = []
+    
+    private var connections:[ZitiConnection] = []
+    private var connectionsLock = NSLock()
     
     /// Type used for closure called when changes to services are detected or a call to `serviceAvailable()` is made
     ///
@@ -236,7 +239,7 @@ import Foundation
             return
         }
         let privKeyPEM = zkc.getKeyPEM(privKey)
-                
+        
         // setup TL
         let caLen = (id.ca == nil ? 0 : id.ca!.count + 1)
         let tls = default_tls_context(id.ca?.cString(using: .utf8), caLen)
@@ -255,7 +258,7 @@ import Foundation
         // Add opsQueue async handler
         opsAsyncHandle = UnsafeMutablePointer.allocate(capacity: 1)
         opsAsyncHandle?.initialize(to: uv_async_t())
-        if uv_async_init(ZitiUrlProtocol.loop, opsAsyncHandle, Ziti.onPerformOps) != 0 {
+        if uv_async_init(&loop, opsAsyncHandle, Ziti.onPerformOps) != 0 {
             let errStr = "unable to init opsAsyncHandle"
             log.error(errStr)
             initCallback(ZitiError(errStr))
@@ -267,12 +270,13 @@ import Foundation
         }
                 
         // remove compiler warning on cztAPI memory living past the inti call
-        let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count)
-        ctrlPtr.initialize(from: cztAPI, count: id.ztAPI.count)
-        defer { ctrlPtr.deallocate() } // just needs to live through the call to NF_init_opts
+        let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
+        ctrlPtr.initialize(from: cztAPI, count: id.ztAPI.count + 1)
+        defer { ctrlPtr.deallocate() }
         
         // init NF
         self.initCallback = initCallback
+        
         var nfOpts = nf_options(config: nil,
                                 controller: ctrlPtr,
                                 tls:tls,
@@ -292,7 +296,7 @@ import Foundation
         
         // must be done after NF_init...
         //ziti_debug_level = 11
-        uv_mbed_set_debug(5, stdout) // TODO: get rid of this...
+        //uv_mbed_set_debug(5, stdout)
         
         // Save off reference to current thread and run the loop
         runThread = Thread.current
@@ -314,7 +318,7 @@ import Foundation
         }
     }
     
-    /// Create a new thread for `run()` and return
+    /// Create a new thread for `run(_:)` and return
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
@@ -322,7 +326,7 @@ import Foundation
         Thread(target: self, selector: #selector(Ziti.run), object: initCallback).start()
     }
     
-    /// Shutdown the Ziti processing started via `run()`.  This will cause the loop to exit once all scheduled activity on the loop completes
+    /// Shutdown the Ziti processing started via `run(_:)`.  This will cause the loop to exit once all scheduled activity on the loop completes
     @objc public func shutdown() {
         perform {
             self.log.info("Ziti shutdown started")
@@ -332,7 +336,7 @@ import Foundation
     
     /// Create a ZitiConnection object
     ///
-    /// This method will only be able to create connections after `Ziti` has started running (see `run()`)
+    /// This method will only be able to create connections after `Ziti` has started running (see `run(_:)`)
     ///
     /// - Returns: An intialized `ZitiConnection` or nil on error
     @objc public func createConnection() -> ZitiConnection? {
@@ -342,7 +346,20 @@ import Foundation
         }
         var nfConn:nf_connection?
         NF_conn_init(nfCtx, &nfConn, nil)
-        return ZitiConnection(self, nfConn)
+        
+        let zc = ZitiConnection(self, nfConn)
+        retainConnection(zc)
+        return zc
+    }
+    func retainConnection(_ zc:ZitiConnection) {
+        connectionsLock.lock()
+        connections.append(zc)
+        connectionsLock.unlock()
+    }
+    func releaseConnection(_ zc:ZitiConnection) {
+        connectionsLock.lock()
+        connections = connections.filter { $0 !== zc }
+        connectionsLock.unlock()
     }
     
     /// Get the version of the wrapped Ziti C SDK
@@ -401,11 +418,11 @@ import Foundation
     
     /// Perform an operation in the context of the Ziti run loop, potentially not until the next iteration of the loop
     ///
-    /// Ziti is not threadsafe.  All operations must run on the same thread as `run()`.  Use the `perform()` method to execute
+    /// Ziti is not threadsafe.  All operations must run on the same thread as `run(_:)`.  Use the `perform(_:)` method to execute
     /// the closure on the Ziti thread
     ///
     /// - Parameters:
-    ///    - op: Escaping closure that executes on the same thread as `Ziti.run()  `
+    ///    - op: Escaping closure that executes on the same thread as `run(_:)  `
     @objc public func perform(_ op: @escaping PerformCallback) {
         if Thread.current == runThread {
             op()
@@ -419,7 +436,7 @@ import Foundation
     
     /// Register a closure to be called when services are added, changed, or deletes
     ///
-    /// These callbacks should be registerd before `run()` is executed or the intiali callbacks for the services will be missed
+    /// These callbacks should be registerd before `run(_:)` is executed or the intiali callbacks for the services will be missed
     ///
     /// - Parameters:
     ///     - cb: The closre to be executed
@@ -438,7 +455,7 @@ import Foundation
         }
         guard status == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(status))
-            log.error(errStr, function:"on_nf_init()")
+            log.error(errStr, function:"onInit()")
             mySelf.initCallback?(ZitiError(errStr, errorCode: Int(status)))
             return
         }
