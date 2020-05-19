@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5AB6DFAE244B990A00F4B4E0"
-               BuildableName = "libZitiUrlProtocol.a"
+               BuildableName = "libCZiti.a"
                BlueprintName = "CZiti-iOS"
                ReferencedContainer = "container:CZiti.xcodeproj">
             </BuildableReference>
@@ -51,7 +51,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5AB6DFAE244B990A00F4B4E0"
-            BuildableName = "libZitiUrlProtocol.a"
+            BuildableName = "libCZiti.a"
             BlueprintName = "CZiti-iOS"
             ReferencedContainer = "container:CZiti.xcodeproj">
          </BuildableReference>
