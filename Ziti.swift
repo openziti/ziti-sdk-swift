@@ -34,9 +34,9 @@ import Foundation
     private static let log = ZitiLog(Ziti.self)
     private let log = Ziti.log
     
-    var loop = uv_loop_t()
+    var loop:UnsafeMutablePointer<uv_loop_t>!
+    var ztx:ziti_context?
     private var runThread:Thread?
-    private var ztx:ziti_context?
     
     /// Type used for closure called for an operation to be performed on the loop
     public typealias PerformCallback = () -> Void
@@ -81,7 +81,9 @@ import Foundation
             return nil
         }
         self.id = zid
-        uv_loop_init(&loop)
+        loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
+        loop.initialize(to: uv_loop_t())
+        uv_loop_init(loop)
         super.init()
     }
     
@@ -96,7 +98,9 @@ import Foundation
     ///     - caPool: CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
     @objc public init(_ id:String, _ ztAPI:String, name:String?, caPool:String?) {
         self.id = ZitiIdentity(id:id, ztAPI:ztAPI, name:name, ca:caPool)
-        uv_loop_init(&loop)
+        loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
+        loop.initialize(to: uv_loop_t())
+        uv_loop_init(loop)
         super.init()
     }
     
@@ -106,8 +110,15 @@ import Foundation
     ///     - zid: the `ZitiIdentity` containing the information needed to access the Keychain for stored identity information (keys and identity certificates).
     @objc public init(withId zid:ZitiIdentity) {
         self.id = zid
-        uv_loop_init(&loop)
+        loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
+        loop.initialize(to: uv_loop_t())
+        uv_loop_init(loop)
         super.init()
+    }
+    
+    deinit {
+        loop.deinitialize(count: 1)
+        loop.deallocate()
     }
     
     /// Remove keys and certificates created during `enroll()` from the keychain
@@ -258,7 +269,7 @@ import Foundation
         // Add opsQueue async handler
         opsAsyncHandle = UnsafeMutablePointer.allocate(capacity: 1)
         opsAsyncHandle?.initialize(to: uv_async_t())
-        if uv_async_init(&loop, opsAsyncHandle, Ziti.onPerformOps) != 0 {
+        if uv_async_init(loop, opsAsyncHandle, Ziti.onPerformOps) != 0 {
             let errStr = "unable to init opsAsyncHandle"
             log.error(errStr)
             initCallback(ZitiError(errStr))
@@ -286,7 +297,7 @@ import Foundation
                                 refresh_interval: 30,
                                 ctx: self.toVoidPtr())
         
-        let initStatus = ziti_init_opts(&nfOpts, &loop, self.toVoidPtr())
+        let initStatus = ziti_init_opts(&nfOpts, loop, self.toVoidPtr())
         guard initStatus == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
             log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
@@ -302,7 +313,7 @@ import Foundation
         runThread = Thread.current
         runThread?.name = "ziti_uv_loop"
         
-        let rStatus = uv_run(&loop, UV_RUN_DEFAULT)
+        let rStatus = uv_run(loop, UV_RUN_DEFAULT)
         guard rStatus == 0 else {
             let errStr = String(cString: uv_strerror(rStatus))
             log.error("error running uv loop: \(rStatus) \(errStr)")
@@ -310,7 +321,7 @@ import Foundation
             return
         }
         
-        let cStatus = uv_loop_close(&loop)
+        let cStatus = uv_loop_close(loop)
         if cStatus != 0 {
             let errStr = String(cString: uv_strerror(cStatus))
             log.error("error closing uv loop: \(cStatus) \(errStr)")
@@ -318,12 +329,24 @@ import Foundation
         }
     }
     
+    // need to wrap initCallback in NSObject to pass through selector
+    class SelectorArg : NSObject {
+        let initCallback:InitCallback
+        init(_ initCallback: @escaping InitCallback) {
+            self.initCallback = initCallback
+        }
+    }
+    @objc func runThreadWrapper(_ sa:SelectorArg) {
+        run(sa.initCallback)
+    }
+    
     /// Create a new thread for `run(_:)` and return
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
     @objc public func runAsync(_ initCallback: @escaping InitCallback) {
-        Thread(target: self, selector: #selector(Ziti.run), object: initCallback).start()
+        let arg = SelectorArg(initCallback)
+        Thread(target: self, selector: #selector(Ziti.runThreadWrapper), object: arg).start()
     }
     
     /// Shutdown the Ziti processing started via `run(_:)`.  This will cause the loop to exit once all scheduled activity on the loop completes
@@ -460,6 +483,13 @@ import Foundation
             return
         }
         mySelf.ztx = ztx
+        
+        // update zid name
+        if let czid = ziti_get_identity(ztx) {
+            let name = String(cString: czid.pointee.name)
+            log.info("zid name: \(name)", function:"onInit()")
+            mySelf.id.name = name
+        }
         mySelf.initCallback?(nil)
     }
     

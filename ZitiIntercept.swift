@@ -18,7 +18,6 @@ import Foundation
 class ZitiIntercept : NSObject, ZitiUnretained {
     private let log = ZitiLog(ZitiIntercept.self)
     
-    var loop:UnsafeMutablePointer<uv_loop_t>?
     let name:String
     let urlStr:String
     var clt = um_http_t()
@@ -28,19 +27,19 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     static var releasePending:[ZitiIntercept] = []
     var close_timer_h:UnsafeMutablePointer<uv_timer_t>?
 
-    init(_ loop:UnsafeMutablePointer<uv_loop_t>?, _ name:String, _ urlStr:String) {
+    init(_ ziti:Ziti, _ name:String, _ urlStr:String, _ idleTime:Int) {
         self.name = name
         self.urlStr = urlStr
-        ziti_src_init(loop, &zs, name.cString(using: .utf8), ZitiUrlProtocol.z_context)
-        um_http_init_with_src(loop, &clt, urlStr.cString(using: .utf8), &zs)
-        um_http_idle_keepalive(&clt, ZitiUrlProtocol.idleTime)
+        ziti_src_init(ziti.loop, &zs, name.cString(using: .utf8), ziti.ztx)
+        um_http_init_with_src(ziti.loop, &clt, urlStr.cString(using: .utf8), &zs)
+        um_http_idle_keepalive(&clt, idleTime)
         
         close_timer_h = UnsafeMutablePointer.allocate(capacity: 1)
         close_timer_h?.initialize(to: uv_timer_t())
         
         super.init()
         
-        uv_timer_init(loop, close_timer_h)
+        uv_timer_init(ziti.loop, close_timer_h)
         close_timer_h?.pointee.data = self.toVoidPtr()
         close_timer_h?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
             uv_unref($0)
@@ -51,7 +50,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
         guard let ctx = h?.pointee.data, let mySelf = zitiUnretained(ZitiIntercept.self, ctx) else {
             return
         }
-        ZitiIntercept.releasePending = ZitiIntercept.releasePending.filter { $0 != mySelf }
+        releasePending = releasePending.filter { $0 != mySelf }
     }
     
     func close() {
