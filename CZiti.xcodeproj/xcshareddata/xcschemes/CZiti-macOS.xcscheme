@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5AE14C842471D32E00179365"
-               BuildableName = "sample-mac-host"
-               BlueprintName = "sample-mac-host"
-               ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
+               BlueprintIdentifier = "5AB6DF67244B7C3C00F4B4E0"
+               BuildableName = "libZitiUrlProtocol.a"
+               BlueprintName = "CZiti-macOS"
+               ReferencedContainer = "container:CZiti.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -40,22 +40,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5AE14C842471D32E00179365"
-            BuildableName = "sample-mac-host"
-            BlueprintName = "sample-mac-host"
-            ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "client /Users/dhart/Downloads/dhbcClient.zid dh-test"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -63,16 +47,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5AE14C842471D32E00179365"
-            BuildableName = "sample-mac-host"
-            BlueprintName = "sample-mac-host"
-            ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
+            BlueprintIdentifier = "5AB6DF67244B7C3C00F4B4E0"
+            BuildableName = "libZitiUrlProtocol.a"
+            BlueprintName = "CZiti-macOS"
+            ReferencedContainer = "container:CZiti.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

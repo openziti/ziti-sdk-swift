@@ -28,7 +28,7 @@
 		5AAAEDDC2464698900C56383 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */; };
 		5AAAEDDD2464698900C56383 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */; };
 		5AAAEDE62464D8AB00C56383 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDE52464D8AB00C56383 /* main.swift */; };
-		5AAAEDEA2464D8FB00C56383 /* libZitiUrlProtocol.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */; };
+		5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
 		5AAAEDF0246637EC00C56383 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */; };
 		5AAAEDF1246637EC00C56383 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */; };
 		5AAAEDF3246727C900C56383 /* Ziti.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDF2246727C900C56383 /* Ziti.swift */; };
@@ -56,7 +56,7 @@
 		5AE14C7B24703ADE00179365 /* ZitiConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C7A24703ADE00179365 /* ZitiConnection.swift */; };
 		5AE14C7C24703ADE00179365 /* ZitiConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C7A24703ADE00179365 /* ZitiConnection.swift */; };
 		5AE14C882471D32E00179365 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C872471D32E00179365 /* main.swift */; };
-		5AE14C8C2471DDA000179365 /* libZitiUrlProtocol.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */; };
+		5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,8 +122,8 @@
 		5AAAEDE52464D8AB00C56383 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5AAAEDEF246637EC00C56383 /* ZitiKeychain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiKeychain.swift; sourceTree = "<group>"; };
 		5AAAEDF2246727C900C56383 /* Ziti.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ziti.swift; sourceTree = "<group>"; };
-		5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZitiUrlProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "ZitiUrlProtocol-Bridging-Header.h"; sourceTree = "<group>"; };
+		5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCZiti.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AB6DF74244B7DDF00F4B4E0 /* Ziti-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Ziti-Bridging-Header.h"; sourceTree = "<group>"; };
 		5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_mbed.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/libuv_mbed.a"; sourceTree = "<group>"; };
 		5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/library/libmbedx509.a"; sourceTree = "<group>"; };
 		5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/crypto/library/libmbedcrypto.a"; sourceTree = "<group>"; };
@@ -131,7 +131,7 @@
 		5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/library/libmbedtls.a"; sourceTree = "<group>"; };
 		5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_a.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libuv/libuv_a.a"; sourceTree = "<group>"; };
 		5AB6DF7D244B8F2000F4B4E0 /* libhttp-parser.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libhttp-parser.a"; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libhttp-parser.a"; sourceTree = "<group>"; };
-		5AB6DFAF244B990A00F4B4E0 /* libZitiUrlProtocol.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libZitiUrlProtocol.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCZiti.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AE14C732469E3BD00179365 /* ZitiLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiLog.swift; sourceTree = "<group>"; };
 		5AE14C76246CB4D300179365 /* ZitiIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiIdentity.swift; sourceTree = "<group>"; };
 		5AE14C7A24703ADE00179365 /* ZitiConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiConnection.swift; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5AAAEDEA2464D8FB00C56383 /* libZitiUrlProtocol.a in Frameworks */,
+				5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,7 +184,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5AE14C8C2471DDA000179365 /* libZitiUrlProtocol.a in Frameworks */,
+				5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -207,7 +207,7 @@
 				5AAAEDDB2464698900C56383 /* ZitiUnretained.swift */,
 				5AAAEDD82463A4EA00C56383 /* ZitiError.swift */,
 				5AE14C732469E3BD00179365 /* ZitiLog.swift */,
-				5AB6DF74244B7DDF00F4B4E0 /* ZitiUrlProtocol-Bridging-Header.h */,
+				5AB6DF74244B7DDF00F4B4E0 /* Ziti-Bridging-Header.h */,
 				5A0E4A91245DE46900C56DCF /* ziti.c */,
 				5AAAEDE42464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C862471D32E00179365 /* sample-mac-host */,
@@ -219,8 +219,8 @@
 		5A2D84062444D54C008B1D32 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */,
-				5AB6DFAF244B990A00F4B4E0 /* libZitiUrlProtocol.a */,
+				5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */,
+				5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */,
 				5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C852471D32E00179365 /* sample-mac-host */,
 			);
@@ -290,9 +290,9 @@
 			productReference = 5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */;
 			productType = "com.apple.product-type.tool";
 		};
-		5AB6DF67244B7C3C00F4B4E0 /* ZitiUrlProtocol-macOS */ = {
+		5AB6DF67244B7C3C00F4B4E0 /* CZiti-macOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5AB6DF6E244B7C3C00F4B4E0 /* Build configuration list for PBXNativeTarget "ZitiUrlProtocol-macOS" */;
+			buildConfigurationList = 5AB6DF6E244B7C3C00F4B4E0 /* Build configuration list for PBXNativeTarget "CZiti-macOS" */;
 			buildPhases = (
 				5AB6DF64244B7C3C00F4B4E0 /* Headers */,
 				5AB6DF65244B7C3C00F4B4E0 /* Sources */,
@@ -302,14 +302,14 @@
 			);
 			dependencies = (
 			);
-			name = "ZitiUrlProtocol-macOS";
+			name = "CZiti-macOS";
 			productName = zupmac;
-			productReference = 5AB6DF68244B7C3C00F4B4E0 /* libZitiUrlProtocol.a */;
+			productReference = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */;
 			productType = "com.apple.product-type.library.static";
 		};
-		5AB6DFAE244B990A00F4B4E0 /* ZitiUrlProtocol-iOS */ = {
+		5AB6DFAE244B990A00F4B4E0 /* CZiti-iOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5AB6DFB3244B990A00F4B4E0 /* Build configuration list for PBXNativeTarget "ZitiUrlProtocol-iOS" */;
+			buildConfigurationList = 5AB6DFB3244B990A00F4B4E0 /* Build configuration list for PBXNativeTarget "CZiti-iOS" */;
 			buildPhases = (
 				5AB6DFAB244B990A00F4B4E0 /* Sources */,
 				5AB6DFAC244B990A00F4B4E0 /* Frameworks */,
@@ -319,9 +319,9 @@
 			);
 			dependencies = (
 			);
-			name = "ZitiUrlProtocol-iOS";
+			name = "CZiti-iOS";
 			productName = zupios;
-			productReference = 5AB6DFAF244B990A00F4B4E0 /* libZitiUrlProtocol.a */;
+			productReference = 5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 		5AE14C842471D32E00179365 /* sample-mac-host */ = {
@@ -366,7 +366,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 5A2D83FD2444D4B9008B1D32 /* Build configuration list for PBXProject "ZitiUrlProtocol" */;
+			buildConfigurationList = 5A2D83FD2444D4B9008B1D32 /* Build configuration list for PBXProject "CZiti" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -379,8 +379,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				5AB6DF67244B7C3C00F4B4E0 /* ZitiUrlProtocol-macOS */,
-				5AB6DFAE244B990A00F4B4E0 /* ZitiUrlProtocol-iOS */,
+				5AB6DF67244B7C3C00F4B4E0 /* CZiti-macOS */,
+				5AB6DFAE244B990A00F4B4E0 /* CZiti-iOS */,
 				5AAAEDE22464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C842471D32E00179365 /* sample-mac-host */,
 			);
@@ -451,12 +451,12 @@
 /* Begin PBXTargetDependency section */
 		5AAAEDEC2464D8FB00C56383 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 5AB6DF67244B7C3C00F4B4E0 /* ZitiUrlProtocol-macOS */;
+			target = 5AB6DF67244B7C3C00F4B4E0 /* CZiti-macOS */;
 			targetProxy = 5AAAEDEB2464D8FB00C56383 /* PBXContainerItemProxy */;
 		};
 		5AE14C8E2471DDA000179365 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 5AB6DF67244B7C3C00F4B4E0 /* ZitiUrlProtocol-macOS */;
+			target = 5AB6DF67244B7C3C00F4B4E0 /* CZiti-macOS */;
 			targetProxy = 5AE14C8D2471DDA000179365 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -481,7 +481,7 @@
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
 				);
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ZitiUrlProtocol-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Ziti-Bridging-Header.h";
 			};
 			name = Debug;
 		};
@@ -504,7 +504,7 @@
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
 				);
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/ZitiUrlProtocol-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/Ziti-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -569,6 +569,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -628,6 +629,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
@@ -697,7 +699,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "";
-				PRODUCT_NAME = ZitiUrlProtocol;
+				PRODUCT_NAME = CZiti;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(inherited)";
@@ -762,7 +764,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_SWIFT_FLAGS = "";
-				PRODUCT_NAME = ZitiUrlProtocol;
+				PRODUCT_NAME = CZiti;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(inherited)";
@@ -838,7 +840,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = ZitiUrlProtocol;
+				PRODUCT_NAME = CZiti;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -910,7 +912,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_NAME = ZitiUrlProtocol;
+				PRODUCT_NAME = CZiti;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -982,6 +984,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -1040,6 +1043,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "$(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
@@ -1048,7 +1052,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		5A2D83FD2444D4B9008B1D32 /* Build configuration list for PBXProject "ZitiUrlProtocol" */ = {
+		5A2D83FD2444D4B9008B1D32 /* Build configuration list for PBXProject "CZiti" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5A2D83FE2444D4B9008B1D32 /* Debug */,
@@ -1066,7 +1070,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5AB6DF6E244B7C3C00F4B4E0 /* Build configuration list for PBXNativeTarget "ZitiUrlProtocol-macOS" */ = {
+		5AB6DF6E244B7C3C00F4B4E0 /* Build configuration list for PBXNativeTarget "CZiti-macOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5AB6DF6F244B7C3C00F4B4E0 /* Debug */,
@@ -1075,7 +1079,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5AB6DFB3244B990A00F4B4E0 /* Build configuration list for PBXNativeTarget "ZitiUrlProtocol-iOS" */ = {
+		5AB6DFB3244B990A00F4B4E0 /* Build configuration list for PBXNativeTarget "CZiti-iOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				5AB6DFB4244B990A00F4B4E0 /* Debug */,

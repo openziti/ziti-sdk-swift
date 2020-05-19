@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
-import ZitiUrlProtocol
+import CZiti
 
 // Logs the SDK version in use
 ziti_debug_level = 3

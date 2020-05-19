@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "5AAAEDE22464D8AB00C56383"
-               BuildableName = "ziti-mac-enroller"
-               BlueprintName = "ziti-mac-enroller"
-               ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
+               BlueprintIdentifier = "5AB6DFAE244B990A00F4B4E0"
+               BuildableName = "libZitiUrlProtocol.a"
+               BlueprintName = "CZiti-iOS"
+               ReferencedContainer = "container:CZiti.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -40,22 +40,6 @@
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5AAAEDE22464D8AB00C56383"
-            BuildableName = "ziti-mac-enroller"
-            BlueprintName = "ziti-mac-enroller"
-            ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
-         </BuildableReference>
-      </BuildableProductRunnable>
-      <CommandLineArguments>
-         <CommandLineArgument
-            argument = "/Users/dhart/Downloads/dave000.jwt"
-            isEnabled = "YES">
-         </CommandLineArgument>
-      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -63,16 +47,15 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+      <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "5AAAEDE22464D8AB00C56383"
-            BuildableName = "ziti-mac-enroller"
-            BlueprintName = "ziti-mac-enroller"
-            ReferencedContainer = "container:ZitiUrlProtocol.xcodeproj">
+            BlueprintIdentifier = "5AB6DFAE244B990A00F4B4E0"
+            BuildableName = "libZitiUrlProtocol.a"
+            BlueprintName = "CZiti-iOS"
+            ReferencedContainer = "container:CZiti.xcodeproj">
          </BuildableReference>
-      </BuildableProductRunnable>
+      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
