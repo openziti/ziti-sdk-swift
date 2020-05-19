@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "server /Users/dhart/Downloads/dhbcServer.zid dh-test"
+            argument = "client /Users/dhart/Downloads/dhbcClient.zid dh-test"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>
