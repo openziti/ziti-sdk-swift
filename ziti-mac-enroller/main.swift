@@ -14,66 +14,46 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
-import ZitiUrlProtocol
+import CZiti
 
 // Logs the SDK version in use
 ziti_debug_level = 3
 
+func usage() {
+    let nm = URL(fileURLWithPath: args[0]).lastPathComponent
+    print("Usage: \(nm) file.jwt out.zid [--trustca]")
+}
+
 // CommandLine
 let args = CommandLine.arguments
-guard CommandLine.argc == 2 else {
-    let nm = URL(fileURLWithPath: args[0]).lastPathComponent
-    print("Usage: \(nm) file.jwt")
+guard CommandLine.argc >= 3 else {
+    usage()
     exit(-1)
 }
-
-let enroller = ZitiEnroller(args[1])
-guard let subj = enroller.getSubj() else {
-    fputs("Unable to extract sub from JWT file\n", stderr)
+if CommandLine.argc == 4 && args[3] != "--trustca" {
+    usage()
     exit(-1)
 }
-
-// Create private key
-let zkc = ZitiKeychain(tag: subj)
-guard let privKey = zkc.createPrivateKey() else {
-    fputs("Unable to generate private key\n", stderr)
-    exit(-1)
-}
-let pem = zkc.getKeyPEM(privKey)
+let jwtFile = args[1]
+let outFile = args[2]
+let trustCa = (CommandLine.argc == 4)
 
 // Enroll
-enroller.enroll(privatePem: pem) { resp, subj, err in
-    guard let resp = resp, let subj = subj else {
-        fputs("Invalid enrollment response, \(String(describing: err))\n", stderr)
+Ziti.enroll(jwtFile) { zid, zErr in
+    guard let zid = zid else {
+        fputs("Invalid enrollment response, \(String(describing: zErr))\n", stderr)
+        exit(-1)
+    }
+    guard zid.save(outFile) else {
+        fputs("Unable to save to file \(outFile)\n", stderr)
         exit(-1)
     }
     
-    print("Enrolling id \"\(subj)\" with controller \"\(resp.ztAPI)\"")
-    
-    // Strip leading "pem:"s
-    // let key = dropFirst("pem:", resp.id.key)
-    let cert = dropFirst("pem:", resp.id.cert)
-    var ca = resp.id.ca
-    if let idCa = resp.id.ca {
-        ca = dropFirst("pem:", idCa)
-    }
-    
-    let zkc = ZitiKeychain(tag: subj)
-    
-    // store resp.ztAPI..
-    if zkc.storeController(resp.ztAPI) != nil {
-        fputs("Unable to store controller in keychain\n", stderr)
-        exit(-1)
-    }
-    
-    // Store certificate
-    guard zkc.storeCertificate(fromPem: cert) == nil else {
-        fputs("Unable to store certificate\n", stderr)
-        exit(-1)
-    }
-    
+    print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
+        
     // Add the optional CA to keychain if not already trusted
-    if let ca = ca {
+    if trustCa, let ca = zid.ca {
+        let zkc = ZitiKeychain(tag: zid.id)
         let certs = zkc.extractCerts(ca)
         
         // evalTrustForCertificates requires same DispatchQueue as caller, so force that to happen.
@@ -83,10 +63,11 @@ enroller.enroll(privatePem: pem) { resp, subj, err in
         
         dispGroup.enter()
         dispQueue.async {
+            print("Evaluating trust for CA")
             let status = zkc.evalTrustForCertificates(certs, dispQueue) { secTrust, isTrusted, err in
                 defer { dispGroup.leave() }
                 
-                print("CA already trusted: \(isTrusted)")
+                print("CA already trusted? \(isTrusted)")
                 
                 // if not trusted, prompt to addTrustForCertificate
                 if !isTrusted {
@@ -104,7 +85,7 @@ enroller.enroll(privatePem: pem) { resp, subj, err in
                             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
                             fputs("Unable to add trust for CA: \(errStr)\n", stderr)
                         } else {
-                            print("User allowed trust of CA")
+                            print("User has allowed trust of CA")
                         }
                     }
                 }
@@ -117,19 +98,8 @@ enroller.enroll(privatePem: pem) { resp, subj, err in
         }
         
         dispGroup.notify(queue: dispQueue) {
-            // tell the user the application tag used to store the data in the keychain
-            print("Successfully enrolled id \"\(subj)\" with controller \"\(resp.ztAPI)\"")
             exit(0)
         }
         dispatchMain()
     }
-}
-
-// Helper
-func dropFirst(_ drop:String, _ str:String) -> String {
-    var newStr = str
-    if newStr.starts(with: drop) {
-        newStr = String(newStr.dropFirst(drop.count))
-    }
-    return newStr
 }

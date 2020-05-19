@@ -13,16 +13,18 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+#if 1
 
-import Foundation
+#include <ziti/ziti.h>
+#include <ziti/ziti_src.h>
+#include <ziti/ziti_model.h>
+#include <uv_mbed/um_http.h>
 
-public class Ziti : NSObject {
-    let id:String
-    
-    init(_ id:String) {
-        self.id = id
-        super.init()
-    }
-    
-    // TODO: Move all the ziti-sdk-c stuff here
-}
+extern const char** ziti_all_configs;
+extern tls_context *default_tls_context(const char *ca, size_t ca_len);
+
+extern int ziti_debug_level;
+extern void uv_mbed_set_debug(int level, FILE *output);
+
+#endif
+

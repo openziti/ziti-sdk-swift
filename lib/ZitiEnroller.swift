@@ -14,13 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
-import OSLog
 
 /**
  * Class that enroll an identity with Ziti controller using a one-time JWT file
  */
 @objc public class ZitiEnroller : NSObject, ZitiUnretained {
-    private static let log = OSLog(ZitiEnroller.self)
+    private static let log = ZitiLog(ZitiEnroller.self)
     private let log = ZitiEnroller.log
     
     /**
@@ -82,19 +81,19 @@ import OSLog
         
         guard let subj = getSubj() else {
             let errStr = "Unable to retrieve sub from jwt file \(jwtFile)"
-            ZitiEnroller.log.error(errStr)
+            log.error(errStr)
             cb(nil, nil, ZitiError(errStr))
             return
         }
         self.subj = subj
         enrollmentCallback = cb
         
-        let status = NF_enroll_with_key(jwtFile.cString(using: .utf8),
+        let status = ziti_enroll_with_key(jwtFile.cString(using: .utf8),
                                privatePem.cString(using: .utf8),
                                loop, ZitiEnroller.on_enroll, self.toVoidPtr())
         guard status == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(status))
-            ZitiEnroller.log.error(errStr)
+            log.error(errStr)
             cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
             return
         }
@@ -113,7 +112,7 @@ import OSLog
         let initStatus = uv_loop_init(&loop)
         guard initStatus == 0 else {
             let errStr = String(cString: uv_strerror(initStatus))
-            ZitiEnroller.log.error(errStr)
+            log.error(errStr)
             cb(nil, nil, ZitiError(errStr, errorCode: Int(initStatus)))
             return
         }
@@ -123,15 +122,15 @@ import OSLog
         let runStatus = uv_run(&loop, UV_RUN_DEFAULT)
         guard runStatus == 0 else {
             let errStr = String(cString: uv_strerror(runStatus))
-            ZitiEnroller.log.error(errStr)
+            log.error(errStr)
             cb(nil, nil, ZitiError(errStr, errorCode: Int(runStatus)))
             return
         }
         
         let closeStatus = uv_loop_close(&loop)
         guard closeStatus == 0 else {
-            // Don't bother logging as this will always return UV_EBUSY since NF_enroll is leaving stuff unclosed on the loop
-            // ("error \(closeStatus) closing uv loop \(String(cString: uv_strerror(closeStatus)))")
+            // Don't bother logging as this will always return UV_EBUSY since ziti_enroll is leaving stuff unclosed on the loop
+            // log.error("error \(closeStatus) closing uv loop \(String(cString: uv_strerror(closeStatus)))")
             return
         }
     }
@@ -162,15 +161,15 @@ import OSLog
     //
     // Private
     //
-    static let on_enroll:nf_enroll_cb = { json, len, errMsg, ctx in
+    static let on_enroll:ziti_enroll_cb = { json, len, errMsg, ctx in
         guard let mySelf = zitiUnretained(ZitiEnroller.self, ctx) else {
-            ZitiEnroller.log.wtf("unable to decode context")
+            log.wtf("unable to decode context")
             return
         }
         guard let json = json, errMsg == nil else {
-            var errStr = (errMsg != nil ?  String(cString: errMsg!) : "Unspecified enrollment error")
-            ZitiEnroller.log.error(errStr)
-            var ze = ZitiError(errStr, errorCode: Int(len))
+            let errStr = (errMsg != nil ?  String(cString: errMsg!) : "Unspecified enrollment error")
+            log.error(errStr, function:"on_enroll()")
+            let ze = ZitiError(errStr, errorCode: Int(len))
             mySelf.enrollmentCallback?(nil, nil, ze)
             return
         }
@@ -186,7 +185,7 @@ import OSLog
             from: Data(s.utf8))
         guard enrollResp != nil  else {
             let errStr = "enroll error: unable to parse result"
-            ZitiEnroller.log.error(errStr)
+            log.error(errStr)
             var ze = ZitiError(errStr)
             mySelf.enrollmentCallback?(nil, nil, ze)
             return
