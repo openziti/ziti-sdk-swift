@@ -82,6 +82,7 @@ See also the documentation included in the `CZiti` module available in the `Xcod
 This repository includes a few examples of using the library:
 - [`ziti-mac-enroller`](ziti-mac-enroller/main.swift) is a utility that will enroll an identity using a supplied one-time JWT token.  It can optionally update the keychain to trust for the CA pool used by the Ziti controller
 - [`sample-mac-host`](sample-mac-host/main.swift) is a command-line utility that can operate as either a client or a server for a specified Ziti server
+- [`sample-ios`](cziti.sample-ios/README.md) exercises `ZitiUrlProtocol` to intercept `URLSesson` requests, route them over Ziti, and display the results
 - More to come (including example using Objective-C)
 
 ## Adding `CZiti` as a Dependency

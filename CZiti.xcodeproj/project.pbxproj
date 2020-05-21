@@ -55,6 +55,13 @@
 		5AB830B7247433350089AF93 /* ZitiIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8309A247432C40089AF93 /* ZitiIdentity.swift */; };
 		5AB830B8247433390089AF93 /* Ziti.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8309B247432C40089AF93 /* Ziti.swift */; };
 		5AB830B92474333D0089AF93 /* ziti.c in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8309C247432C40089AF93 /* ziti.c */; };
+		5AB830C1247489C30089AF93 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB830C0247489C30089AF93 /* AppDelegate.swift */; };
+		5AB830C3247489C30089AF93 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB830C2247489C30089AF93 /* SceneDelegate.swift */; };
+		5AB830C5247489C30089AF93 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB830C4247489C30089AF93 /* ViewController.swift */; };
+		5AB830C8247489C30089AF93 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5AB830C6247489C30089AF93 /* Main.storyboard */; };
+		5AB830CA247489C70089AF93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AB830C9247489C70089AF93 /* Assets.xcassets */; };
+		5AB830CD247489C70089AF93 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5AB830CB247489C70089AF93 /* LaunchScreen.storyboard */; };
+		5AB830D224748A1B0089AF93 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */; };
 		5AE14C882471D32E00179365 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C872471D32E00179365 /* main.swift */; };
 		5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
 /* End PBXBuildFile section */
@@ -66,6 +73,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 5AB6DF67244B7C3C00F4B4E0;
 			remoteInfo = "ZitiUrlProtocol-macOS";
+		};
+		5AB830D324748A1B0089AF93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5A2D83FA2444D4B9008B1D32 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5AB6DFAE244B990A00F4B4E0;
+			remoteInfo = "CZiti-iOS";
 		};
 		5AE14C8D2471DDA000179365 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -135,6 +149,14 @@
 		5AB8309A247432C40089AF93 /* ZitiIdentity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiIdentity.swift; sourceTree = "<group>"; };
 		5AB8309B247432C40089AF93 /* Ziti.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Ziti.swift; sourceTree = "<group>"; };
 		5AB8309C247432C40089AF93 /* ziti.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ziti.c; sourceTree = "<group>"; };
+		5AB830BE247489C30089AF93 /* cziti.sample-ios.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "cziti.sample-ios.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5AB830C0247489C30089AF93 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		5AB830C2247489C30089AF93 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		5AB830C4247489C30089AF93 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		5AB830C7247489C30089AF93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5AB830C9247489C70089AF93 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5AB830CC247489C70089AF93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5AB830CE247489C70089AF93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5AE14C852471D32E00179365 /* sample-mac-host */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "sample-mac-host"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AE14C872471D32E00179365 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -180,6 +202,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5AB830BB247489C30089AF93 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AB830D224748A1B0089AF93 /* libCZiti.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5AE14C822471D32E00179365 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -197,6 +227,7 @@
 				5AB8308D247432C40089AF93 /* lib */,
 				5AAAEDE42464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C862471D32E00179365 /* sample-mac-host */,
+				5AB830BF247489C30089AF93 /* cziti.sample-ios */,
 				5A2D84062444D54C008B1D32 /* Products */,
 				5AB6DF76244B8F2000F4B4E0 /* Frameworks */,
 			);
@@ -209,6 +240,7 @@
 				5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */,
 				5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C852471D32E00179365 /* sample-mac-host */,
+				5AB830BE247489C30089AF93 /* cziti.sample-ios.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -257,6 +289,20 @@
 				5AB8309C247432C40089AF93 /* ziti.c */,
 			);
 			path = lib;
+			sourceTree = "<group>";
+		};
+		5AB830BF247489C30089AF93 /* cziti.sample-ios */ = {
+			isa = PBXGroup;
+			children = (
+				5AB830C0247489C30089AF93 /* AppDelegate.swift */,
+				5AB830C2247489C30089AF93 /* SceneDelegate.swift */,
+				5AB830C4247489C30089AF93 /* ViewController.swift */,
+				5AB830C6247489C30089AF93 /* Main.storyboard */,
+				5AB830C9247489C70089AF93 /* Assets.xcassets */,
+				5AB830CB247489C70089AF93 /* LaunchScreen.storyboard */,
+				5AB830CE247489C70089AF93 /* Info.plist */,
+			);
+			path = "cziti.sample-ios";
 			sourceTree = "<group>";
 		};
 		5AE14C862471D32E00179365 /* sample-mac-host */ = {
@@ -332,6 +378,24 @@
 			productReference = 5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */;
 			productType = "com.apple.product-type.library.static";
 		};
+		5AB830BD247489C30089AF93 /* cziti.sample-ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5AB830D1247489C70089AF93 /* Build configuration list for PBXNativeTarget "cziti.sample-ios" */;
+			buildPhases = (
+				5AB830BA247489C30089AF93 /* Sources */,
+				5AB830BB247489C30089AF93 /* Frameworks */,
+				5AB830BC247489C30089AF93 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5AB830D424748A1B0089AF93 /* PBXTargetDependency */,
+			);
+			name = "cziti.sample-ios";
+			productName = "cziti.sample-ios";
+			productReference = 5AB830BE247489C30089AF93 /* cziti.sample-ios.app */;
+			productType = "com.apple.product-type.application";
+		};
 		5AE14C842471D32E00179365 /* sample-mac-host */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5AE14C8B2471D32E00179365 /* Build configuration list for PBXNativeTarget "sample-mac-host" */;
@@ -369,6 +433,9 @@
 						CreatedOnToolsVersion = 11.4.1;
 						LastSwiftMigration = 1140;
 					};
+					5AB830BD247489C30089AF93 = {
+						CreatedOnToolsVersion = 11.4.1;
+					};
 					5AE14C842471D32E00179365 = {
 						CreatedOnToolsVersion = 11.4.1;
 					};
@@ -391,9 +458,23 @@
 				5AB6DFAE244B990A00F4B4E0 /* CZiti-iOS */,
 				5AAAEDE22464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C842471D32E00179365 /* sample-mac-host */,
+				5AB830BD247489C30089AF93 /* cziti.sample-ios */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5AB830BC247489C30089AF93 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AB830CD247489C70089AF93 /* LaunchScreen.storyboard in Resources */,
+				5AB830CA247489C70089AF93 /* Assets.xcassets in Resources */,
+				5AB830C8247489C30089AF93 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5AAAEDDF2464D8AB00C56383 /* Sources */ = {
@@ -446,6 +527,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5AB830BA247489C30089AF93 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5AB830C5247489C30089AF93 /* ViewController.swift in Sources */,
+				5AB830C1247489C30089AF93 /* AppDelegate.swift in Sources */,
+				5AB830C3247489C30089AF93 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5AE14C812471D32E00179365 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -462,12 +553,36 @@
 			target = 5AB6DF67244B7C3C00F4B4E0 /* CZiti-macOS */;
 			targetProxy = 5AAAEDEB2464D8FB00C56383 /* PBXContainerItemProxy */;
 		};
+		5AB830D424748A1B0089AF93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5AB6DFAE244B990A00F4B4E0 /* CZiti-iOS */;
+			targetProxy = 5AB830D324748A1B0089AF93 /* PBXContainerItemProxy */;
+		};
 		5AE14C8E2471DDA000179365 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5AB6DF67244B7C3C00F4B4E0 /* CZiti-macOS */;
 			targetProxy = 5AE14C8D2471DDA000179365 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		5AB830C6247489C30089AF93 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5AB830C7247489C30089AF93 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		5AB830CB247489C70089AF93 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5AB830CC247489C70089AF93 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		5A2D83FE2444D4B9008B1D32 /* Debug */ = {
@@ -932,6 +1047,144 @@
 			};
 			name = Release;
 		};
+		5AB830CF247489C70089AF93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "cziti.sample-ios/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.cziti-sample-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5AB830D0247489C70089AF93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_FILE = "cziti.sample-ios/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.cziti-sample-ios";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		5AE14C892471D32E00179365 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1092,6 +1345,15 @@
 			buildConfigurations = (
 				5AB6DFB4244B990A00F4B4E0 /* Debug */,
 				5AB6DFB5244B990A00F4B4E0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5AB830D1247489C70089AF93 /* Build configuration list for PBXNativeTarget "cziti.sample-ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5AB830CF247489C70089AF93 /* Debug */,
+				5AB830D0247489C70089AF93 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
