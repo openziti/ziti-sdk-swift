@@ -202,7 +202,7 @@ import Foundation
     /**
      * !!You must call this method from the same dispatch queue that you specify as the queue parameter.
      */
-    @objc public func evalTrustForCertificates(_ certificates:[SecCertificate],
+    public func evalTrustForCertificates(_ certificates:[SecCertificate],
                                          _ queue:DispatchQueue,
                                          _ result: @escaping SecTrustWithErrorCallback) -> OSStatus {
         var secTrust:SecTrust?
@@ -306,7 +306,7 @@ import Foundation
         return pem + "-----END \(type)-----\n"
     }
     
-    @objc public func extractCerts(_ caPool:String) -> [SecCertificate] {
+    public func extractCerts(_ caPool:String) -> [SecCertificate] {
         return PEMstoCerts(extractPEMs(caPool))
     }
     

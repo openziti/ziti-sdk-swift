@@ -4,7 +4,6 @@
 //
 
 import UIKit
-import WebKit
 import CZiti
 
 class ViewController: UIViewController {
@@ -224,25 +223,5 @@ extension ViewController : UIDocumentPickerDelegate {
             self.present(alert, animated: true, completion: nil)
             self.runZiti()
         }
-    }
-}
-
-extension ViewController : WKNavigationDelegate {
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        let alert = UIAlertController(
-            title:"Navigation failed",
-            message: error.localizedDescription,
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default))
-        self.present(alert, animated: true, completion: nil)
-    }
-    
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        let alert = UIAlertController(
-            title:"Provisional Navigation Failed",
-            message: error.localizedDescription,
-            preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default))
-        self.present(alert, animated: true, completion: nil)
     }
 }
