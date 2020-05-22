@@ -42,7 +42,7 @@ NSString *outFile = <...>
         return;
     }
 
-    if (![zid save:[self outFile]]) {
+    if (![zid save:outFile]) {
         // Handle error
         return;
     }
