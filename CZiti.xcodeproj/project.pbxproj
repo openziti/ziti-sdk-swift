@@ -7,6 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5A0AC933247742470021E8D9 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC932247742470021E8D9 /* AppDelegate.m */; };
+		5A0AC936247742470021E8D9 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC935247742470021E8D9 /* SceneDelegate.m */; };
+		5A0AC939247742470021E8D9 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC938247742470021E8D9 /* ViewController.m */; };
+		5A0AC93C247742470021E8D9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5A0AC93A247742470021E8D9 /* Main.storyboard */; };
+		5A0AC93E2477424A0021E8D9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A0AC93D2477424A0021E8D9 /* Assets.xcassets */; };
+		5A0AC9412477424A0021E8D9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5A0AC93F2477424A0021E8D9 /* LaunchScreen.storyboard */; };
+		5A0AC9442477424A0021E8D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC9432477424A0021E8D9 /* main.m */; };
+		5A0AC9482477427F0021E8D9 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */; };
+		5A0AC94F247783440021E8D9 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC94E247783440021E8D9 /* Bridge.swift */; };
 		5A0E4A8B24530E1E00C56DCF /* libziti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8A24530E1E00C56DCF /* libziti.a */; };
 		5A0E4A8C24530E2500C56DCF /* libziti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8A24530E1E00C56DCF /* libziti.a */; };
 		5A0E4A8E24534DDE00C56DCF /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8D24534DDE00C56DCF /* libsodium.a */; };
@@ -67,6 +76,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5A0AC9492477427F0021E8D9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5A2D83FA2444D4B9008B1D32 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5AB6DFAE244B990A00F4B4E0;
+			remoteInfo = "CZiti-iOS";
+		};
 		5AAAEDEB2464D8FB00C56383 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5A2D83FA2444D4B9008B1D32 /* Project object */;
@@ -121,6 +137,19 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5A0AC92F247742470021E8D9 /* sample-ios-objc.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "sample-ios-objc.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5A0AC931247742470021E8D9 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		5A0AC932247742470021E8D9 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		5A0AC934247742470021E8D9 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		5A0AC935247742470021E8D9 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		5A0AC937247742470021E8D9 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		5A0AC938247742470021E8D9 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		5A0AC93B247742470021E8D9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5A0AC93D2477424A0021E8D9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5A0AC9402477424A0021E8D9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		5A0AC9422477424A0021E8D9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5A0AC9432477424A0021E8D9 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		5A0AC94E247783440021E8D9 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
 		5A0E4A8A24530E1E00C56DCF /* libziti.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libziti.a; path = "deps/ziti-sdk-c/build-os-arch/library/libziti.a"; sourceTree = "<group>"; };
 		5A0E4A8D24534DDE00C56DCF /* libsodium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsodium.a; path = "deps/ziti-sdk-c/build-os-arch/_deps/libsodium-build/lib/libsodium.a"; sourceTree = "<group>"; };
 		5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ziti-mac-enroller"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -162,6 +191,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5A0AC92C247742470021E8D9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A0AC9482477427F0021E8D9 /* libCZiti.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5AAAEDE02464D8AB00C56383 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -221,6 +258,25 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5A0AC930247742470021E8D9 /* sample-ios-objc */ = {
+			isa = PBXGroup;
+			children = (
+				5A0AC931247742470021E8D9 /* AppDelegate.h */,
+				5A0AC932247742470021E8D9 /* AppDelegate.m */,
+				5A0AC934247742470021E8D9 /* SceneDelegate.h */,
+				5A0AC935247742470021E8D9 /* SceneDelegate.m */,
+				5A0AC937247742470021E8D9 /* ViewController.h */,
+				5A0AC938247742470021E8D9 /* ViewController.m */,
+				5A0AC93A247742470021E8D9 /* Main.storyboard */,
+				5A0AC93D2477424A0021E8D9 /* Assets.xcassets */,
+				5A0AC93F2477424A0021E8D9 /* LaunchScreen.storyboard */,
+				5A0AC9422477424A0021E8D9 /* Info.plist */,
+				5A0AC9432477424A0021E8D9 /* main.m */,
+				5A0AC94E247783440021E8D9 /* Bridge.swift */,
+			);
+			path = "sample-ios-objc";
+			sourceTree = "<group>";
+		};
 		5A2D83F92444D4B9008B1D32 = {
 			isa = PBXGroup;
 			children = (
@@ -228,6 +284,7 @@
 				5AAAEDE42464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C862471D32E00179365 /* sample-mac-host */,
 				5AB830BF247489C30089AF93 /* cziti.sample-ios */,
+				5A0AC930247742470021E8D9 /* sample-ios-objc */,
 				5A2D84062444D54C008B1D32 /* Products */,
 				5AB6DF76244B8F2000F4B4E0 /* Frameworks */,
 			);
@@ -241,6 +298,7 @@
 				5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C852471D32E00179365 /* sample-mac-host */,
 				5AB830BE247489C30089AF93 /* cziti.sample-ios.app */,
+				5A0AC92F247742470021E8D9 /* sample-ios-objc.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -326,6 +384,24 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		5A0AC92E247742470021E8D9 /* sample-ios-objc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5A0AC9472477424B0021E8D9 /* Build configuration list for PBXNativeTarget "sample-ios-objc" */;
+			buildPhases = (
+				5A0AC92B247742470021E8D9 /* Sources */,
+				5A0AC92C247742470021E8D9 /* Frameworks */,
+				5A0AC92D247742470021E8D9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5A0AC94A2477427F0021E8D9 /* PBXTargetDependency */,
+			);
+			name = "sample-ios-objc";
+			productName = "sample-ios-objc";
+			productReference = 5A0AC92F247742470021E8D9 /* sample-ios-objc.app */;
+			productType = "com.apple.product-type.application";
+		};
 		5AAAEDE22464D8AB00C56383 /* ziti-mac-enroller */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5AAAEDE72464D8AB00C56383 /* Build configuration list for PBXNativeTarget "ziti-mac-enroller" */;
@@ -423,6 +499,10 @@
 				LastSwiftUpdateCheck = 1140;
 				LastUpgradeCheck = 1140;
 				TargetAttributes = {
+					5A0AC92E247742470021E8D9 = {
+						CreatedOnToolsVersion = 11.4.1;
+						LastSwiftMigration = 1140;
+					};
 					5AAAEDE22464D8AB00C56383 = {
 						CreatedOnToolsVersion = 11.4.1;
 					};
@@ -459,11 +539,22 @@
 				5AAAEDE22464D8AB00C56383 /* ziti-mac-enroller */,
 				5AE14C842471D32E00179365 /* sample-mac-host */,
 				5AB830BD247489C30089AF93 /* cziti.sample-ios */,
+				5A0AC92E247742470021E8D9 /* sample-ios-objc */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5A0AC92D247742470021E8D9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A0AC9412477424A0021E8D9 /* LaunchScreen.storyboard in Resources */,
+				5A0AC93E2477424A0021E8D9 /* Assets.xcassets in Resources */,
+				5A0AC93C247742470021E8D9 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5AB830BC247489C30089AF93 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -477,6 +568,18 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5A0AC92B247742470021E8D9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5A0AC94F247783440021E8D9 /* Bridge.swift in Sources */,
+				5A0AC939247742470021E8D9 /* ViewController.m in Sources */,
+				5A0AC933247742470021E8D9 /* AppDelegate.m in Sources */,
+				5A0AC9442477424A0021E8D9 /* main.m in Sources */,
+				5A0AC936247742470021E8D9 /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5AAAEDDF2464D8AB00C56383 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -548,6 +651,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5A0AC94A2477427F0021E8D9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5AB6DFAE244B990A00F4B4E0 /* CZiti-iOS */;
+			targetProxy = 5A0AC9492477427F0021E8D9 /* PBXContainerItemProxy */;
+		};
 		5AAAEDEC2464D8FB00C56383 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5AB6DF67244B7C3C00F4B4E0 /* CZiti-macOS */;
@@ -566,6 +674,22 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		5A0AC93A247742470021E8D9 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5A0AC93B247742470021E8D9 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		5A0AC93F2477424A0021E8D9 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5A0AC9402477424A0021E8D9 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 		5AB830C6247489C30089AF93 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -585,6 +709,163 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		5A0AC9452477424A0021E8D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_BITCODE = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/http-parser",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
+					"$(PROJECT_DIR)/include/$(PLATFORM_NAME)",
+				);
+				INFOPLIST_FILE = "sample-ios-objc/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.cziti.sample-ios-objc";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5A0AC9462477424A0021E8D9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/http-parser",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
+					"$(PROJECT_DIR)/include/$(PLATFORM_NAME)",
+				);
+				INFOPLIST_FILE = "sample-ios-objc/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "io.netfoundry.cziti.sample-ios-objc";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		5A2D83FE2444D4B9008B1D32 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1084,6 +1365,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_BITCODE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1156,6 +1438,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = MN5S649TXM;
+				ENABLE_BITCODE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
@@ -1313,6 +1596,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5A0AC9472477424B0021E8D9 /* Build configuration list for PBXNativeTarget "sample-ios-objc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5A0AC9452477424A0021E8D9 /* Debug */,
+				5A0AC9462477424A0021E8D9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5A2D83FD2444D4B9008B1D32 /* Build configuration list for PBXProject "CZiti" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

@@ -1,4 +1,4 @@
-## ZitiUrlProtocol Example iOS 
+## ZitiUrlProtocol, iOS example using Objective-C
 
 This is a simple app that demonstrates using the __Ziti SDK for Swift__ to intercept URL requests using `ZitiUrlProtocol`.
 
@@ -27,5 +27,4 @@ Once enrolloment is complete you should be able to access your services over Zit
 
 ![httpbin](doc/httpbin.png)
 
-The code for enrolling using the JWT and configuring `ZitiUrlProtocol` can be found in [`ViewController.swift`](ViewController.swift)
-
+The code for enrolling using the JWT and configuring `ZitiUrlProtocol` can be found in [`ViewController.m`](ViewController.m)

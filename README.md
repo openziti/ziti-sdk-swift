@@ -9,7 +9,8 @@ The `Ziti` class is the main entry point for accessing Ziti networks. An instanc
 
 A `ZitiIdentity` is created as part of the enrollment process with a Ziti network.  `Ziti` support enrollment using a one-time JWT supplied by your Ziti network administror.
 
-```
+__Swift__
+```Swift
 import CZiti
 
 let jwtFile = <...>
@@ -28,6 +29,26 @@ Ziti.enroll(jwtFile) { zid, zErr in
     print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
 }
 ```
+__Objective-C__
+```objective-c
+#import "CZiti-Swift.h"
+
+NSString *jwtFile = <...>
+NSString *outFile = <...>
+
+[Ziti enroll:jwtFile : ^(ZitiIdentity *zid, ZitiError *zErr) {
+    if (zErr != NULL) {
+        // Handle error
+        return;
+    }
+
+    if (![zid save:[self outFile]]) {
+        // Handle error
+        return;
+    }
+}];
+```
+
 The `Ziti.enroll(_:)` method validates the JWT is properly signed, creates a private key and stores it in the keychain, and initiates a Certificate Signing Request (CSR) with the controller, and stores the resultant certificate in the keychain.
 
 The identity file saved to `outfile` in the example code above contains information for contacting the Ziti controller and locally accessing the private key and certificate in the keychain.
@@ -37,7 +58,8 @@ A typical application flow would:
 2. If not present, initiate an enrollment (e.g., prompt the user for location of a one-time JWT enrollment file, or scan in a QR code)
 3. When identity file is available, use it to create an instance of `Ziti`
 
-```
+__Swift__
+```swift
 let zidFile = <...>
 
 guard let ziti = Ziti(fromFile: zidFile) else {
@@ -53,25 +75,52 @@ ziti.runAsync { zErr in
     print("Successfully initialized Ziti!")
 }
 ```
+__Objective-C__
+```objective-c
+NSString *zidFile = <...>
+
+Ziti *ziti = [[Ziti alloc] initFromFile:[self zidFile]];
+    
+if (ziti != NULL) {
+    [ziti runAsync: ^(ZitiError *zErr) {
+        if (zErr != NULL) {
+            // Handle errpr
+            return;
+        }
+        [ZitiUrlProtocol register:ziti :10000];
+    }];
+}
+```
 
 The SDK also includes `ZitiUrlProtocol`, which implements a `URLProtocol` that interceptes http and https requests for Ziti services and routes them over a Ziti network.
 
 `ZitiUrlProtocol` should be instantiated as part of the `InitCallback` of `Ziti` `run(_:)` to ensure `Ziti` is initialized before
      starting to intercept services.
 
-```
+__Swift__
+```swift
 ziti.runAsync { zErr in
     guard zErr == nil else {
-        print("Unable to run Ziti: \(String(describing: zErr!))")
+        // Handle error
         return
     }
     ZitiUrlProtocol.register(ziti)
 }
 ```
+__Objective-C__
+```objective-C
+[ziti runAsync: ^(ZitiError *zErr) {
+    if (zErr != NULL) {
+        // Handle error
+        return;
+    }
+    [ZitiUrlProtocol register:ziti :10000];
+}];
+```
 
 In some cases, `ZitiUrlProtocol` will need to be configured in your `URLSession`'s configuration ala:
      
-```
+```swift
     let configuration = URLSessionConfiguration.default
     configuration.protocolClasses?.insert(ZitiUrlProtocol.self, at: 0)
     urlSession = URLSession(configuration:configuration)
@@ -83,7 +132,7 @@ This repository includes a few examples of using the library:
 - [`ziti-mac-enroller`](ziti-mac-enroller/main.swift) is a utility that will enroll an identity using a supplied one-time JWT token.  It can optionally update the keychain to trust for the CA pool used by the Ziti controller
 - [`sample-mac-host`](sample-mac-host/main.swift) is a command-line utility that can operate as either a client or a server for a specified Ziti server
 - [`sample-ios`](cziti.sample-ios/README.md) exercises `ZitiUrlProtocol` to intercept `URLSesson` requests, route them over Ziti, and display the results
-- More to come (including example using Objective-C)
+- [`sample-ios-objc`](sample-ios-objc/README.md) demonstrates using __Objective-C__ to exercise `ZitiUrlProtocol`
 
 ## Adding `CZiti` as a Dependency
 The Swift SDK for Ziti is built into a static library (`libCZiti.a`).  Add this library to your project's **Frameworks and Libraries**, and ensure it is listed in your project's **Build Phases** under **Link Binary with Libraries**.
@@ -91,8 +140,14 @@ The Swift SDK for Ziti is built into a static library (`libCZiti.a`).  Add this 
 Your **Library Search Path** and **Swift Compiler Seatch Paths - Import Paths** should include the directory containing `libCZiti.a` and `CZiti.swiftmodule/`
 
 Be sure to import the module to your Swift files that need to access `Ziti`.
-```
+
+__Swift__
+```swift
 import CZiti
+```
+__Objective-C__
+```objective-C
+#import "CZiti-Swift.h"
 ```
 
 ## Building
