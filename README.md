@@ -156,9 +156,12 @@ __Swift__
 import CZiti
 ```
 __Objective-C__
+
 ```objective-C
 #import "CZiti-Swift.h"
 ```
+
+When this project is built, the `CZiti-Swift.h` file is copied to `$(PROJECT_ROOT)/include/$(PLATFORM)` (e.g., `./include/iphoneos`).  The directory containing `CZiti-Swift.h` in your __Search Paths - Header Search Paths__.
 
 # Building
 
@@ -176,7 +179,7 @@ The resultant `libCZiti.a` and `CZiti.swiftmode` are available in the appropriat
 
 ## Build Manually
 
-The project depends on the __Ziti C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-sdk-c`.  This project expect builds to be built in `./deps/ziti-sdk-c/build-macosx-x86_64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64` for the simulator).  See also the build instructions in the [`ziti-sdk-c`](https://github.com/netfoundry/ziti-sdk-c/blob/master/building.md) repository.
+The project depends on the __Ziti C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-sdk-c`.  This project expects builds to be built in `./deps/ziti-sdk-c/build-macosx-x86_64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64` for the simulator).  See also the build instructions in the [`ziti-sdk-c`](https://github.com/netfoundry/ziti-sdk-c/blob/master/building.md) repository.
 
 ```
 $ git clone git@github.com:netfoundry/ziti-sdk-swift.git
