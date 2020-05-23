@@ -40,7 +40,7 @@ function do_build {
    fi
 
    if [ $? -ne 0 ] ;  then
-      echo "FAILED building $scheme $sdk $arch"
+      echo "FAILED building C SDK ${c_sdk_build_dir}"
       exit 1
    fi
 
