@@ -883,6 +883,7 @@
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/libuv",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/library",
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/lib/Ziti-Bridging-Header.h";
@@ -906,6 +907,7 @@
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/libuv",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/library",
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/lib/Ziti-Bridging-Header.h";
@@ -1093,11 +1095,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/_deps/libsodium-build/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1159,11 +1157,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/_deps/libsodium-build/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
@@ -1235,11 +1229,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/_deps/libsodium-build/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1308,11 +1298,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build/_deps/libsodium-build/lib",
-				);
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "-ObjC";
