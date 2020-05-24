@@ -13,8 +13,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-#if 1
-
 #include <ziti/ziti.h>
 #include <ziti/ziti_src.h>
 #include <ziti/ziti_model.h>
@@ -25,6 +23,3 @@ extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 
 extern int ziti_debug_level;
 extern void uv_mbed_set_debug(int level, FILE *output);
-
-#endif
-
