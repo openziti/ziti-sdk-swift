@@ -75,7 +75,7 @@ import Foundation
      *      - privatePem: private key in PEM format
      *      - cb: callback called indicating status of enrollment attempt
      */
-    @objc func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?,
+    func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?,
                       privatePem:String,
                       cb:@escaping EnrollmentCallback) {
         
