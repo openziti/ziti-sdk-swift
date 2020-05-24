@@ -427,7 +427,7 @@ import Foundation
     /// - Parameters:
     ///     - service: the name of the service to check
     ///     - onServiceAvaialble: callback called with status `ZITI_OK` of `ZITI_SERVICE_NOT_AVAILABLE`
-    @objc public func serviceAvailable(_ service:String, _ onServiceAvailable: @escaping ServiceCallback) {
+    public func serviceAvailable(_ service:String, _ onServiceAvailable: @escaping ServiceCallback) {
         perform {
             let req = ServiceAvailableRequest(self, onServiceAvailable)
             let status = ziti_service_available(self.ztx, service.cString(using: .utf8), Ziti.onServiceAvailable, req.toVoidPtr())
@@ -463,7 +463,7 @@ import Foundation
     ///
     /// - Parameters:
     ///     - cb: The closre to be executed
-    @objc public func registerServiceCallback(_ cb: @escaping ServiceCallback) {
+    public func registerServiceCallback(_ cb: @escaping ServiceCallback) {
         serviceCallbacksLock.lock()
         serviceCallbacks.append(cb)
         serviceCallbacksLock.unlock()

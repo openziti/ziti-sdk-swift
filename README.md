@@ -61,7 +61,7 @@ A typical application flow would:
 2. If not present, initiate an enrollment (e.g., prompt the user for location of a one-time JWT enrollment file, or scan in a QR code)
 3. When identity file is available, use it to create and run an instance of `Ziti`
 
-`Ziti` executes an a loop, similar to the `Foundation` `Runloop`. The `run(_:_:)` method essentially enters an infinate loop processing Ziti events, and will only exit after `Ziti` is shut down.
+`Ziti` executes an a loop, similar to the `Foundation` `Runloop`. The `run(_:_:)` method essentially enters an infinite loop processing Ziti events, and will only exit after `Ziti` is shut down.
 
 The `runAsync(_:_:)` method is provided as a convenience to spawn a new thread and call `run(_:_:)`. 
 
@@ -161,7 +161,7 @@ __Objective-C__
 #import "CZiti-Swift.h"
 ```
 
-When this project is built, the `CZiti-Swift.h` file is copied to `$(PROJECT_ROOT)/include/$(PLATFORM)` (e.g., `./include/iphoneos`).  The directory containing `CZiti-Swift.h` in your __Search Paths - Header Search Paths__.
+When this project is built, the `CZiti-Swift.h` file is copied to `$(PROJECT_ROOT)/include/$(PLATFORM)` (e.g., `./include/iphoneos`).  This file is needed to use `CZiti` from Objective-C. Your  __Search Paths - Header Search Paths__ must include the directory containing `CZiti-Swift.h`.
 
 # Building
 
