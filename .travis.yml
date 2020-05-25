@@ -9,28 +9,17 @@ jobs:
       script:
         - brew install ninja
         - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
-        - cd ./deps/ziti-sdk-c/build-macosx-x86_64
-        - ninja
-        - cd ${TRAVIS_BUILD_DIR}
+        - ninja -C ./deps/ziti-sdk-c/build-macosx-x86_64
         - xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk macosx
+        - FOR="macOS" ./make_dist.sh
 
     - stage:
       script:
         - brew install ninja
         - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake
-        - cd ./deps/ziti-sdk-c/build-iphoneos-arm64
-        - ninja
-        - cd ${TRAVIS_BUILD_DIR}
+        - ninja -C ./deps/ziti-sdk-c/build-iphoneos-arm64
         - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
-
-    - stage:
-      script:
-        - brew install ninja
         - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake
-        - cd ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
-        - ninja
-        - cd ${TRAVIS_BUILD_DIR}
+        - ninja -C ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
         - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
-
-    - stage: dist
-      script: ./make_dist.sh
+        - FOR="iOS" ./make_dist.sh
