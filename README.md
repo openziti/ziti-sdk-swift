@@ -1,5 +1,5 @@
 # Ziti SDK for Swift
-[![Build Status](https://travis-ci.com/netfoundry/ziti-sdk-swift.svg?branch=master)](https://travis-ci.xom/netfoundry/ziti-sdk-swift)
+[![Build Status](https://travis-ci.com/netfoundry/ziti-sdk-swift.svg?branch=master)](https://travis-ci.com/netfoundry/ziti-sdk-swift)
 
 An SDK for accessing Ziti from macOS and iOS applications using the Swift programming language.
 
