@@ -2,28 +2,23 @@ language: swift
 os: osx
 osx_image: xcode11.4
 compiler: gcc
-addons:
-  homebrew:
-    packages:
-      - ninja
-    update: true
 
 jobs:
   include:
     - stage: build
       script:
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
-        - xcodebuild build -configuration Release -scheme Ziti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk macosx
+        - cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
+        - xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk macosx
 
     - stage: build
       script:
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64 -DCMAKE_TOOLCHAIN_FILE=./deps/ziti-sdk-c/toolchains/iOS-arm64.cmake
-        - xcodebuild build -configuration Release -scheme Ziti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
+        - cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake
+        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
 
     - stage: build
       script:
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 -DCMAKE_TOOLCHAIN_FILE=./deps/ziti-sdk-c/toolchains/iOS-x86_64.cmake
-        - xcodebuild build -configuration Release -scheme Ziti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
+        - cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake
+        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
 
     - stage: dist
       script: ./make_dist.sh
