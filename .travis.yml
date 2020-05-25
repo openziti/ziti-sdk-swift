@@ -1,0 +1,14 @@
+language: swift
+os: osx
+osx_image: xcode11.4
+compiler: gcc
+addons:
+  homebrew:
+    packages:
+      - ninja
+    update: true
+
+before_script:
+   - env
+
+script: ./build_all.sh
