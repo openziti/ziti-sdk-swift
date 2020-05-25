@@ -2,6 +2,7 @@
 
 PROJECT_ROOT=$(cd `dirname $0` && pwd)
 BUILD_DIR="${PROJECT_ROOT}/DerivedData/CZiti/Build/Products"
+DERIVED_BUILD_DIR="${PROJECT_ROOT}/DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build"
 DIST_DIR="${PROJECT_ROOT}/dist"
 
 PROJECT_NAME="CZiti"
@@ -46,12 +47,14 @@ if [ $? -ne 0 ] ; then
    exit 1
 fi
 
-derived_sources_dir=`xcodebuild -showBuildSettings -configuration ${CONFIGURATION} -scheme CZiti-iOS -sdk iphoneos | grep DERIVED_SOURCES_DIR | cut -d= -f2`
-if [ $? -ne 0 ] ; then
-   echo "Unable to find DERIVED_SOURCE_DIR for iOS"
-   exit 1
-fi
+#derived_sources_dir=`xcodebuild -showBuildSettings -configuration ${CONFIGURATION} -scheme CZiti-iOS -sdk iphoneos | grep DERIVED_SOURCES_DIR | cut -d= -f2`
 
+#if [ $? -ne 0 ] ; then
+#   echo "Unable to find DERIVED_SOURCE_DIR for iOS"
+#   exit 1
+#fi
+
+derived_sources_dir=${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources
 cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_ios}/${PROJECT_NAME}.framework
 if [ $? -ne 0 ] ; then
    echo "Unable to copy -Swift.h file for iOS"
@@ -88,12 +91,13 @@ if [ $? -ne 0 ] ; then
    exit 1
 fi
 
-derived_sources_dir=`xcodebuild -showBuildSettings -configuration ${CONFIGURATION} -scheme CZiti-macOS -sdk macosx | grep DERIVED_SOURCES_DIR | cut -d= -f2`
-if [ $? -ne 0 ] ; then
-   echo "Unable to find DERIVED_SOURCE_DIR for macOS"
-   exit 1
-fi
+#derived_sources_dir=`xcodebuild -showBuildSettings -configuration ${CONFIGURATION} -scheme CZiti-macOS -sdk macosx | grep DERIVED_SOURCES_DIR | cut -d= -f2`
+#if [ $? -ne 0 ] ; then
+#   echo "Unable to find DERIVED_SOURCE_DIR for macOS"
+#   exit 1
+#fi
 
+derived_sources_dir=${DERIVED_BUILD_DIR}/${CONFIGURATION}/CZiti-macOS.build/DerivedSources
 cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_macos}/${PROJECT_NAME}.framework
 if [ $? -ne 0 ] ; then
    echo "Unable to copy -Swift.h file for macOS"
