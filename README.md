@@ -8,8 +8,14 @@ This SDK provides a Swift-friendly wrapper of the [Ziti C SDK](https://netfoundr
 # Usage
 The `Ziti` class is the main entry point for accessing Ziti networks. An instance of `Ziti` requires a `ZitiIdentity` at time of initialization.
 
+Use `Ziti.createConnection()` to create instances of `ZitiConnection` to `ZitiConnection.dial(_:_:_:)` services or `ZitiConnection.listen(_:_:_:)`  for service connections.
+
+Use `ZitiUrlProtocol` to intercept HTTP and HTTPS connections and route them over a Ziti network.
+
 ## Enrollment
 A `ZitiIdentity` is created as part of the enrollment process with a Ziti network.  `Ziti` support enrollment using a one-time JWT supplied by your Ziti network administror.
+
+The `Ziti.enroll(_:_:)` method validates the JWT is properly signed, creates a private key and stores it in the keychain, initiates a Certificate Signing Request (CSR) with the controller, and stores the resultant certificate in the keychain.
 
 __Swift__
 ```Swift
@@ -51,8 +57,6 @@ NSString *outFile = <...>
 }];
 ```
 
-The `Ziti.enroll(_:)` method validates the JWT is properly signed, creates a private key and stores it in the keychain, initiates a Certificate Signing Request (CSR) with the controller, and stores the resultant certificate in the keychain.
-
 The identity file saved to `outfile` in the example code above contains information for contacting the Ziti controller and locally accessing the private key and certificate in the keychain.
 
 ## Running Ziti
@@ -62,9 +66,9 @@ A typical application flow would:
 2. If not present, initiate an enrollment (e.g., prompt the user for location of a one-time JWT enrollment file, or scan in a QR code)
 3. When identity file is available, use it to create and run an instance of `Ziti`
 
-`Ziti` executes on a loop, similar to `Foundation`'s `Runloop`. The `run(_:_:)` method essentially enters an infinite loop processing Ziti events, and will only exit after `Ziti` is shut down.
+`Ziti` executes on a loop, similar to `Foundation`'s `Runloop`. The `Ziti.run(_:)` method essentially enters an infinite loop processing Ziti events, and will only exit after `Ziti` is shut down.
 
-The `runAsync(_:_:)` method is provided as a convenience to spawn a new thread and call `run(_:_:)`. 
+The `Ziti.runAsync(_:)` method is provided as a convenience to spawn a new thread and call `Ziti.run(_:)`. 
 
 __Swift__
 ```swift
@@ -105,7 +109,7 @@ To execute code on the thread running Ziti use the `perform(_:)` method.
 
 The SDK also includes `ZitiUrlProtocol`, which implements a `URLProtocol` that interceptes HTTP and HTTPS requests for Ziti services and routes them over a Ziti network.
 
-`ZitiUrlProtocol` should be instantiated as part of the `InitCallback` of `Ziti` `run(_:_:)` to ensure `Ziti` is initialized before
+`ZitiUrlProtocol` should be instantiated as part of the `Ziti.InitCallback` of `Ziti.run(_:)` to ensure `Ziti` is initialized before
      starting to intercept services.
 
 __Swift__

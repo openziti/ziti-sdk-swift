@@ -2,13 +2,24 @@ language: swift
 os: osx
 osx_image: xcode11.4
 compiler: gcc
-addons:
-  homebrew:
-    packages:
-      - ninja
-    update: true
 
-before_script:
-   - env
+jobs:
+  include:
+    - stage: build
+      script:
+        - brew install ninja
+        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
+        - ninja -C ./deps/ziti-sdk-c/build-macosx-x86_64
+        - xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk macosx
+        - FOR="macOS" ./make_dist.sh
 
-script: ./build_all.sh
+    - stage:
+      script:
+        - brew install ninja
+        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake
+        - ninja -C ./deps/ziti-sdk-c/build-iphoneos-arm64
+        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
+        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake
+        - ninja -C ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
+        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
+        - FOR="iOS" ./make_dist.sh

@@ -26,14 +26,17 @@ import Foundation
      * Class representing response to successful enrollment attempt
      */
     @objc public class EnrollmentResponse : NSObject, Codable {
-        /**
-         * Identity portion of successful enrollment attempt
-         *
-         *  - .key: locally generated private key used for generating CSR as part of enrollment
-         *  - .cert: signed certificate created as part of CSR process
-         *  - .ca: root certificates for trusting the Ziti Controller
-         */
-        public class Identity : Codable { public var key:String?, cert:String, ca:String? }
+        /// Identity portion of successful enrollment attempt
+        public class Identity : Codable {
+            ///locally generated private key used for generating CSR as part of enrollmen
+            public var key:String?,
+            
+            /// signed certificate created as part of CSR process
+            cert:String,
+            
+            /// root certificates for trusting the Ziti Controller
+            ca:String?
+        }
         
         /**
          * URL of controller returned on successful enrollment attempt
@@ -60,7 +63,7 @@ import Foundation
      *
      * - Parameters:
      *      - resp: EnrollmentResponse returned on successful enrollment.  `nil` on failed attempt
-     *      - subj: `sub` field indicated in JWT, representing unique id for this Ziti identity. `nil on failed attempt`
+     *      - subj: `sub` field indicated in JWT, representing unique id for this Ziti identity. `nil` on failed attempt
      *      - error: `ZitiError` containing error information on failed enrollment attempt
      */
     public typealias EnrollmentCallback = (_ resp:EnrollmentResponse?, _ subj:String?, _ error:ZitiError?) -> Void

@@ -44,7 +44,7 @@ import Foundation
     
     /// Connection callback
     ///
-    /// This callback is invoked after `dial()` or `accept()` is completed. The result of the function may be an error condition so it is
+    /// This callback is invoked after `dial(_:_:_:)` or `accept(_:_:)` is completed. The result of the function may be an error condition so it is
     /// important to verify the status code in this callback. If successful the status will be set to `ZITI_OK`
     ///
     /// - Parameters:
@@ -54,12 +54,12 @@ import Foundation
     
     /// Listen callback
     ///
-    /// This callback is invoked after `listen()` and is aliased to `ConnCallback` as a convenience for human readability
+    /// This callback is invoked after `listen(_:_:_:)` and is aliased to `ConnCallback` as a convenience for human readability
     public typealias ListenCallback = ConnCallback
     
     /// Data callback
     ///
-    /// This callback is invoked when data arrives from `Ziti`, either as a response from `dial()` or from `accept()`
+    /// This callback is invoked when data arrives from `Ziti`, either as a response from `dial(_:_:_:)` or from `accept(_:_:)`
     /// Return value should indicate how much data was consumed by the application. This callback will be called again at some later
     /// time and as many times as needed for application to accept the all of the data
     ///
@@ -71,7 +71,7 @@ import Foundation
     
     /// Client callback
     ///
-    /// This callback is invoked when a client connects to the service specified in `listen()` call. The result of the status may be an error condition so it is
+    /// This callback is invoked when a client connects to the service specified in `listen(_:_:_:)` call. The result of the status may be an error condition so it is
     /// important to verify the status code in this callback. If successful the status will be set to `ZITI_OK`
     ///
     /// Generally this callback is used for any preparations necessary before accepting incoming data from the Ziti network.
@@ -85,10 +85,10 @@ import Foundation
     
     /// Write callback
     ///
-    /// This callback is invoked after a call the `write()` completes. The result of the `write()` may be an error condition so it is
+    /// This callback is invoked after a call the `write(_:_:)` completes. The result of the `write(_:_:)` may be an error condition so it is
     /// important to verify the provided status code in this callback.
     ///
-    /// This callback is often used to free or reinitialize the buffer associated with the `write()`. It is important to not free this memory
+    /// This callback is often used to free or reinitialize the buffer associated with the `write(_:_:)`. It is important to not free this memory
     /// until after data has been written to the wire else the results of the write operation may be unexpected.
     ///
     /// - Parameters:
@@ -100,13 +100,13 @@ import Foundation
     /// Before any bytes can be sent over a `Ziti`service a connection must be established. This method will attempt to establish a connection
     /// by dialiing the service with the given name. The result of the `dial()` attempt is included in the specified `ConnCallback`.
     ///
-    /// If the `dial()` succeeds, the provided `DataCallback` is invoked to handle data returned from the service. If the `dial()` fails, only
+    /// If the `dial` succeeds, the provided `DataCallback` is invoked to handle data returned from the service. If the `dial` fails, only
     /// the `ConnCallback` will be invoked with the corresponding error code
     ///
     /// - Parameters:
     ///     - service: name of the service to dial
-    ///     - onConn: callback invoked after `dial()` attempt completes
-    ///     - onData: callback invoked after a successful `dial()` attempt with data received over the connection
+    ///     - onConn: callback invoked after `dial` attempt completes
+    ///     - onData: callback invoked after a successful `dial` attempt with data received over the connection
     @objc public func dial(_ service:String, _ onConn: @escaping ConnCallback, _ onData: @escaping DataCallback) {
         guard let ziti = self.ziti else {
             log.wtf("invalid (nil) ziti reference")
@@ -127,11 +127,11 @@ import Foundation
     
     /// Start accepting `Ziti` client connections
     ///
-    /// This function is invoked to tell the `Ziti`to  accept connections from other `Ziti` clients for the provided service name.
+    /// This function is invoked to tell the `Ziti` to  accept connections from other `Ziti` clients for the provided service name.
     ///
     /// - Parameters:
     ///     - service: name of the service to be hosted
-    ///     - onListen: callback invoked indicating success or failure of `listen()` attempt
+    ///     - onListen: callback invoked indicating success or failure of `listen` attempt
     ///     - onClient: callback invoked when client attempts to dial this service
     @objc public func listen(_ service:String, _ onListen: @escaping ListenCallback, _ onClient: @escaping ClientCallback) {
         guard let ziti = self.ziti else {
@@ -157,7 +157,7 @@ import Foundation
     /// the callbacks necessary to send data to the connecting client or to process data sent by the client.
     ///
     /// - Parameters:
-    ///     - onConn:invoked when `accept()` completes indicating status of the attempt
+    ///     - onConn:invoked when `accept` completes indicating status of the attempt
     ///     - onData: invoked each time the client sends data
     @objc public func accept(_ onConn: @escaping ConnCallback, _ onData: @escaping DataCallback) {
         guard let ziti = self.ziti else {
@@ -181,7 +181,7 @@ import Foundation
     ///
     /// - Parameters:
     ///     - data: the data to send
-    ///     - onWrite:callback invoked after the `write()` completes
+    ///     - onWrite:callback invoked after the `write` completes
     ///
     @objc public func write(_ data:Data, _ onWrite: @escaping WriteCallback) {
         guard let ziti = self.ziti else {
