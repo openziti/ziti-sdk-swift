@@ -1,9 +1,9 @@
 # Ziti SDK for Swift
-[![Build Status](https://travis-ci.com/netfoundry/ziti-sdk-swift.svg?branch=master)](https://travis-ci.com/netfoundry/ziti-sdk-swift)
+[![Build Status](https://travis-ci.com/openziti/ziti-sdk-swift.svg?branch=master)](https://travis-ci.com/openziti/ziti-sdk-swift)
 
 An SDK for accessing Ziti from macOS and iOS applications using the Swift programming language.
 
-This SDK provides a Swift-friendly wrapper of the [Ziti C SDK](https://netfoundry.github.io/ziti-doc/api/clang/api/index.html), an implementation of `URLProtocol` for intercepting HTTP and HTTPS traffic, and examples of using the SDK in an application.
+This SDK provides a Swift-friendly wrapper of the [Ziti C SDK](https://openziti.github.io/ziti-doc/api/clang/api/index.html), an implementation of `URLProtocol` for intercepting HTTP and HTTPS traffic, and examples of using the SDK in an application.
 
 # Usage
 The `Ziti` class is the main entry point for accessing Ziti networks. An instance of `Ziti` requires a `ZitiIdentity` at time of initialization.
@@ -165,7 +165,7 @@ The scripts require the following executables to be on the caller's path:
 * `ninja` also used for building the __Ziti C SDK__. (Can be installed via `brew install ninja`)
 
 ```bash
-$ git clone --recurse-submodules git@github.com:netfoundry/ziti-sdk-swift.git
+$ git clone --recurse-submodules git@github.com:openziti/ziti-sdk-swift.git
 $ cd ziti-sdk-swift
 $ /bin/sh build_all.sh
 ```
@@ -181,10 +181,10 @@ Tthe resultant `CZiti.framework` is available in the approprate sub-directory of
 
 ## Build Manually
 
-The project depends on the __Ziti C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-sdk-c`.  This project expects builds to be built in `./deps/ziti-sdk-c/build-macosx-x86_64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64` for the simulator).  See also the build instructions in the [`ziti-sdk-c`](https://github.com/netfoundry/ziti-sdk-c/blob/master/building.md) repository.
+The project depends on the __Ziti C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-sdk-c`.  This project expects builds to be built in `./deps/ziti-sdk-c/build-macosx-x86_64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64` for the simulator).  See also the build instructions in the [`ziti-sdk-c`](https://github.com/openziti/ziti-sdk-c/blob/master/building.md) repository.
 
 ```
-$ git clone git@github.com:netfoundry/ziti-sdk-swift.git
+$ git clone git@github.com:openziti/ziti-sdk-swift.git
 $ cd ziti-sdk-swift
 $ git submodule update --init --recursive
 $ cd deps/ziti-sdk-c
@@ -234,11 +234,11 @@ When this project is built from `Xcode`, the `CZiti-Swift.h` file is copied to `
 
 # Getting Help
 
-Please use these community resources for getting help. We use GitHub [issues](https://github.com/netfoundry/ziti-url-protocol/issues) 
+Please use these community resources for getting help. We use GitHub [issues](https://github.com/openziti/ziti-url-protocol/issues) 
 for tracking bugs and feature requests.
 
-- Read the [docs](https://netfoundry.github.io/ziti-doc/ziti/overview.html)
-- Join our [Developer Community](https://ziti.dev)
+- Read the [docs](https://openziti.github.io/ziti-doc/ziti/overview.html)
+- Join our [Developer Community](https://openziti.org)
 - Participate in discussion on [Discourse](https://netfoundry.discourse.group/)
 
 Copyright&copy; 2020. NetFoundry, Inc.
