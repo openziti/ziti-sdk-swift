@@ -19,10 +19,10 @@ import Foundation
 /**
  Identity information for interacting with Ziti
  
- Objects of these types are `Codable` so can easiliy be converted to/from JSON and stored on disk.  A `ZitiIdentity` is created as part of `Ziti.enroll(jwtFile:enrollCallback:)`, and can be used to initialiaze on instance of `Ziti`.
+ Objects of these types are `Codable` so can easiliy be converted to/from JSON and stored on disk.  A `ZitiIdentity` is created as part of `Ziti.enroll(_:_:)`, and can be used to initialiaze on instance of `Ziti`.
  
  - See Also:
-    - `Ziti.enroll(jwtFile:enrollCallback:)`
+    - `Ziti.enroll(_:_:)`
     - `Ziti.init(fromFile:)`
  */
 @objc public class ZitiIdentity : NSObject, Codable {
@@ -67,7 +67,7 @@ import Foundation
     ///     - initFile: file containing JSON-encoded data representing this object
     ///
     /// - See also:
-    ///     - Ziti.enroll(jwtFile:enrollCallback:)`
+    ///     - `Ziti.enroll(_:_:)`
     @objc public func save(_ initFile:String) -> Bool {
         guard let data = try? JSONEncoder().encode(self) else {
             log.error("unable to encode data for id: \(id)")

@@ -15,7 +15,13 @@ limitations under the License.
 */
 import Foundation
 
+/// Class used for passing information about error conditions encountered while using Ziti
 public class ZitiError : NSError {
+    /// Initialize a ZitiError instance
+    /// - Parameters:
+    ///     - desc: error description
+    ///     - errorCode: error code
+    ///     - userInfo: user info dictionary
     init(_ desc:String, errorCode:Int=Int(-1)) {
         super.init(domain: "ZitiError", code: errorCode,
                    userInfo: [NSLocalizedDescriptionKey:NSLocalizedString(desc, comment: "")])

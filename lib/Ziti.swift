@@ -17,17 +17,17 @@ limitations under the License.
 import Foundation
  
 /**
- This is the main entry point for interacting with Ziti.
+ This is the main entry point for interacting with Ziti, and provides a Swift-friendly way to access the Ziti C SDK
  
- Provides a Swift-friendly way to access the Ziti C SDK
+ Configure `Ziti` with a `ZitiIdentity`.  A `ZitiIdentity` can be created by enrolling with using a one-time JWT.  See `Ziti.enroll(_:_:)`.  The `ZitiIdentity` can also be configured as part of `Ziti.init(fromFile:)`and other `Ziti`initializers.
  
- Configure `Ziti` with a `ZitiIdentity`.  A `ZitiEdentity` can be created by enrolling with `Ziti` using a one-time JWT.  See `enroll(jwtFile:enrollCallback`.  The `ZitiIdentity` can also be configured as part of `init?(fromFile:)`and other `Ziti`initializers.
- 
- `Ziti` uses a loop to process events, similar to`Foudation`'s `Runloop` (though implemented using `libuv`).  Start `Ziti` processing via the `run(_:)` method, which enters
-  and infinate loop processing `Ziti` events until `shutdown()` is called.  Tthe `perform(_:)` method supports scheduling work to be run on this thread and can be called safely
-  from other threads.
+ `Ziti` uses a loop to process events, similar to`Foudation`'s `Runloop` (though implemented using `libuv`).  Start `Ziti` processing via the `Ziti.run(_:)` method, which enters an infinate loop processing `Ziti` events until `Ziti.shutdown()` is called.  Tthe `Ziti.perform(_:)` method supports scheduling work to be run on this thread and can be called safely from other threads.
  
  - See also:
+    - `ZitiIdentity` required to configure Ziti access
+    - `Ziti.enroll(_:_:)` create a `ZitiIdentity` by enrolling using a one-time JWT
+    - `Ziti.init(fromFile:)` create a `ZitiIdentity` by loading from a JSON file.
+    - `ZitiConnection` for accessing or providing Ziti services
     - `ZitiUrlProtocol` for registering a `URLProtocol` for intercepting HTTP and HTTPS calls make using the `URLSession` framework and routing them over a `Ziti` network.
  */
 @objc public class Ziti : NSObject, ZitiUnretained {
@@ -38,6 +38,22 @@ import Foundation
     var ztx:ziti_context?
     private var runThread:Thread?
     
+    /// Type used for escaping  closure called follwing initialize of Ziti connectivity
+    ///
+    /// - Parameters:
+    ///      - error: `ZitiError` containing error information on failed initialization attempt
+    public typealias InitCallback = (ZitiError?) -> Void
+    private var initCallback:InitCallback?
+    
+    /// Type used for closure called when changes to services are detected or a call to `serviceAvailable(_:_:)` is made
+    ///
+    /// - Parameters:
+    ///      - svc: the `ziti-sdk-c`'s `ziti_service` that has changed, or nil on error condition
+    ///      - status: ZITI_OK, ZITI_SERVICE_UNAVAILABLE, or errorCode on nil `ziti_service`
+    public typealias ServiceCallback = (_ svc: UnsafeMutablePointer<ziti_service>?, _ status:Int32) -> Void
+    private var serviceCallbacksLock = NSLock()
+    private var serviceCallbacks:[ServiceCallback] = []
+    
     /// Type used for closure called for an operation to be performed on the loop
     public typealias PerformCallback = () -> Void
     private var opsAsyncHandle:UnsafeMutablePointer<uv_async_t>?
@@ -47,22 +63,13 @@ import Foundation
     private var connections:[ZitiConnection] = []
     private var connectionsLock = NSLock()
     
-    /// Type used for closure called when changes to services are detected or a call to `serviceAvailable()` is made
-    ///
-    /// - Parameters:
-    ///      - svc: the `ziti-sdk-c`'s `ziti_service` that has changed, or nil on error condition
-    ///      - status: ZITI_OK, ZITI_SERVICE_UNAVAILABLE, or errorCode on nil `ziti_service`
-    public typealias ServiceCallback = (_ svc: UnsafeMutablePointer<ziti_service>?, _ status:Int32) -> Void
-    private var serviceCallbacksLock = NSLock()
-    private var serviceCallbacks:[ServiceCallback] = []
-    
     private var id:ZitiIdentity
     
     // MARK: - Initializers
     
     /// Initialize `Ziti` with a `ZitiIdentity` stored in a JSON file.
     ///
-    /// A typical usage of `Ziti` is to enroll using `Ziti.enroll(jwtFile:,enrollCallback)`, store the resulting file on disk,
+    /// A typical usage of `Ziti` is to enroll using `Ziti.enroll(_:_:)`, store the resulting file on disk,
     /// and use that file for subsequent creations of objects of class `Ziti`.  The `ZitiIdentity` contains the information needed
     /// to access the Keychain for stored identity information (keys and identity certificates).
     ///
@@ -87,7 +94,7 @@ import Foundation
         super.init()
     }
     
-    /// Initialize `Ziti` with information needed for a`ZitiIdentity`.
+    /// Initialize `Ziti` with information needed for a `ZitiIdentity`.
     ///
     /// The `ZitiIdentity` contains the information needed to access the Keychain for stored identity information (keys and identity certificates).
     ///
@@ -104,7 +111,7 @@ import Foundation
         super.init()
     }
     
-    /// Initialize `Ziti` with a`ZitiIdentity`.
+    /// Initialize `Ziti` with a `ZitiIdentity`.
     ///
     /// - Parameters:
     ///     - zid: the `ZitiIdentity` containing the information needed to access the Keychain for stored identity information (keys and identity certificates).
@@ -204,25 +211,18 @@ import Foundation
         }
     }
     
-    // MARK: Ziti operational methods
-    
-    /// Type used for escaping  closure called follwing initialize of Ziti connectivity
-    ///
-    /// - Parameters:
-    ///      - error: `ZitiError` containing error information on failed initialization attempt
-    public typealias InitCallback = (ZitiError?) -> Void
-    private var initCallback:InitCallback?
+    // MARK: Ziti Operational Methods
     
     /// Execute a permanant loop processing data from all attached sources (including Ziti)
     ///
     ///  Start `Ziti` processing via this method.  All Ziti processing occurs in the same thread as this call and all callbacks run on this thread.
-    ///  Use the `perform()` to schedule work to be run on this thread.   `perform()` can be called safely from other threads.
+    ///  Use the `perform(_:)` to schedule work to be run on this thread.   `perform(_:)` can be called safely from other threads.
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
     ///
     /// - See also:
-    ///     - runAsync()
+    ///     - `runAsync(_:)`
     @objc public func run(_ initCallback: @escaping InitCallback) {
         guard let cztAPI = id.ztAPI.cString(using: .utf8) else {
             let errStr = "unable to convert controller URL (ztAPI) to C string"
@@ -357,7 +357,7 @@ import Foundation
         }
     }
     
-    /// Create a ZitiConnection object
+    /// Create a `ZitiConnection` object
     ///
     /// This method will only be able to create connections after `Ziti` has started running (see `run(_:)`)
     ///
@@ -442,7 +442,7 @@ import Foundation
     /// Perform an operation in the context of the Ziti run loop, potentially not until the next iteration of the loop
     ///
     /// Ziti is not threadsafe.  All operations must run on the same thread as `run(_:)`.  Use the `perform(_:)` method to execute
-    /// the closure on the Ziti thread
+    /// the operation on the Ziti thread
     ///
     /// - Parameters:
     ///    - op: Escaping closure that executes on the same thread as `run(_:)  `

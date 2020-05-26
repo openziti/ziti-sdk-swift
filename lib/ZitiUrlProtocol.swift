@@ -16,9 +16,9 @@ limitations under the License.
 import Foundation
 
 /**
- * URLProtocol` that intercepts `http` and `https` URL requests and routes them over the `Ziti` overlay as configured in your `Ziti` controller.
+ * `URLProtocol` that intercepts `HTTP` and `HTTPS` URL requests and routes them over the Ziti overlay as configured in your Ziti controller.
  *
- * Call the `ZitiUrlProtocol.start()`method to register this `URLProtocol` and start the background processing thread for `Ziti` requests.
+ * `ZitiUrlProtocol` should be instantiated as part of the `InitCallback` of `Ziti.run(_:_:)` to ensure Ziti is initialized before starting to intercept services.
  */
 @objc public class ZitiUrlProtocol: URLProtocol, ZitiUnretained {
     private static let log = ZitiLog(ZitiUrlProtocol.self)
@@ -157,6 +157,12 @@ import Foundation
         log.debug("deinit \(self), Thread: \(String(describing: Thread.current.name))")
     }
     
+    /// Determines whether Ziti is configured to handle the specified request.
+    ///
+    /// - Parameters:
+    ///     - request: The request to be handled
+    ///
+    /// - Returns: true if the request will be routed over Ziti, otherwise false
     public override class func canInit(with request: URLRequest) -> Bool {
         var canIntercept = false;
         if let url = request.url, let scheme = url.scheme, let host = url.host {
@@ -174,10 +180,17 @@ import Foundation
         return canIntercept
     }
     
+    /// Returns a canonical version of the specified request.
+    ///
+    /// - Parameters:
+    ///     - request: The request whose canonical version is desired.
+    ///
+    /// - Returns: The canonical form of request.
     public override class func canonicalRequest(for request: URLRequest) -> URLRequest {
         return request
     }
     
+    /// Starts loading the request
     public override func startLoading() {
         guard let ziti = ZitiUrlProtocol.ziti else {
             log.wtf("Invalid ziti reference")
@@ -211,6 +224,7 @@ import Foundation
         }
     }
     
+    /// Stops loading of the request
     public override func stopLoading() {
         guard let ziti = ZitiUrlProtocol.ziti else {
             log.wtf("Invalid ziti reference")

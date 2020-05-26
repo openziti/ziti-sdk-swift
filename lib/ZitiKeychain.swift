@@ -16,19 +16,29 @@ limitations under the License.
 
 import Foundation
 
-@objc public class ZitiKeychain : NSObject {
+/// This class manages access to the Keychain, creating and storing keys and certificates needed to access a Ziti network.
+///
+/// This is primarily an internally used class, though certain methods are marked public in order to support senarios where the enrollment is
+/// provided by an application other than the one that needs to access Ziti using this identity (which will require the end user to provide their credentials
+/// to configure the keychain to allow the application access to the keys and certificates).
+///
+public class ZitiKeychain : NSObject {
     private let log = ZitiLog(ZitiKeychain.self)
     
     private let tag:String
     private let atag:Data
     
+    /// Initialize an instance of `ZitiKeychain`
+    ///
+    /// - Parameters:
+    ///     - tag: a `String` used to identify the application in the keychain.  This is usually set to the `sub` field of the one-time JWT used during enrollment
     public init(tag:String) {
         self.tag = tag
         self.atag = tag.data(using: .utf8)!
         super.init()
     }
     
-    @objc public func storeController(_ controller:String) -> ZitiError? {
+    func storeController(_ controller:String) -> ZitiError? {
         guard let data = controller.data(using: .utf8) else {
             let errStr = "Unable to create keychain data for \(controller)"
             log.error(errStr)
@@ -50,7 +60,7 @@ import Foundation
         return nil
     }
     
-    @objc public func getController() -> String? {
+    func getController() -> String? {
         guard let atag = tag.data(using: .utf8) else { return nil }
         let parameters: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -73,7 +83,7 @@ import Foundation
     }
     
     private let keySize = 3072
-    @objc public func createPrivateKey() -> SecKey? {
+    func createPrivateKey() -> SecKey? {
         let privateKeyParams: [CFString: Any] = [ // iOS
             kSecAttrIsPermanent: true,
             kSecAttrLabel: tag,
@@ -94,7 +104,7 @@ import Foundation
         return privateKey
     }
     
-    @objc public func getPrivateKey() -> SecKey? {
+    func getPrivateKey() -> SecKey? {
         let (key, _, _) = getKeyPair()
         return key
     }
@@ -126,7 +136,7 @@ import Foundation
         return e == nil
     }
     
-    @objc public func getKeyPEM(_ key:SecKey, _ type:String="RSA PRIVATE KEY") -> String {
+    func getKeyPEM(_ key:SecKey, _ type:String="RSA PRIVATE KEY") -> String {
         var cfErr:Unmanaged<CFError>?
         guard let derKey = SecKeyCopyExternalRepresentation(key, &cfErr) else {
             log.error("Unable to get external rep for key: \(cfErr!.takeRetainedValue() as Error)")
@@ -155,8 +165,12 @@ import Foundation
     }
     
 #if os(macOS)
-    // Will prompt for user creds to access keychain
-    @objc public func addTrustForCertificate(_ certificate:SecCertificate) -> OSStatus {
+    /// __macOS only__
+    /// This method will prompt for user creds to access keychain to mark the provided certificate as `Trusted`
+    ///
+    /// - Parameters:
+    ///     - certificate: The certificate for which to add trust
+    public func addTrustForCertificate(_ certificate:SecCertificate) -> OSStatus {
         //let trustSettings:[String:Any] = [ kSecTrustSettingsPolicy : SecPolicyCreateSSL(true, nil)]
         return SecTrustSettingsSetTrustSettings(certificate,
                                                 SecTrustSettingsDomain.user,
@@ -174,7 +188,13 @@ import Foundation
         return false
     }
     
-    @objc public func extractRootCa(_ caPool:String) -> SecCertificate? {
+    /// Extract the Root CA certificate from the provided pool
+    ///
+    /// - Parameters:
+    ///     - caPool: PEM-formatted pool of CA certificates
+    ///
+    /// - Returns:the Root CA certificate, or `nil` if not found
+    public func extractRootCa(_ caPool:String) -> SecCertificate? {
         let pems = extractPEMs(caPool)
         for c in PEMstoCerts(pems) {
             if isRootCa(c) { return c }
@@ -182,7 +202,13 @@ import Foundation
         return nil
     }
     
-    @objc public func addCaPool(_ caPool:String) -> Bool {
+    /// Add the provided Root CA pool to the keychain
+    ///
+    /// - Parameters:
+    ///     - caPool:PEM-formatted pool of CA certificates
+    ///
+    /// - Returns: `true` if the certificates are successfully added to the keychain, otherwise `false`
+    public func addCaPool(_ caPool:String) -> Bool {
         let certs = extractCerts(caPool)
         for cert in certs {
             let parameters: [CFString: Any] = [
@@ -200,7 +226,14 @@ import Foundation
     }
     
     /**
-     * !!You must call this method from the same dispatch queue that you specify as the queue parameter.
+     * Evaluates a trust object asynchronously on the specified dispatch queue.
+     *
+     * - Parameters:
+     *      - certificates: The certificate to be verified, plus any other certificates that might be useful for verifying the certificate.
+     *      - queue: The dispatch queue on which the result block should execute. You must call the method from the same queue.
+     *      - result: A closure that the method calls to report the result of trust evaluation.
+     *
+     * You must call this method from the same dispatch queue that you specify as the queue parameter.
      */
     public func evalTrustForCertificates(_ certificates:[SecCertificate],
                                          _ queue:DispatchQueue,
@@ -214,7 +247,7 @@ import Foundation
         return sceStatus
     }
     
-    @objc public func storeCertificate(fromPem pem:String) -> ZitiError? {
+    func storeCertificate(fromPem pem:String) -> ZitiError? {
         let (_, zErr) = storeCertificate(fromDer: convertToDER(pem))
         if zErr != nil {
             log.error(zErr!.localizedDescription)
@@ -306,6 +339,12 @@ import Foundation
         return pem + "-----END \(type)-----\n"
     }
     
+    /// Extract certificates from a PEM-formatted CA pool and return an array of `SecCertificate` objects
+    ///
+    /// - Parameters:
+    ///     - caPool: PEM-formatted pool of CA certificates
+    ///
+    /// - Returns: an array of `SecCertificate` objects
     public func extractCerts(_ caPool:String) -> [SecCertificate] {
         return PEMstoCerts(extractPEMs(caPool))
     }
