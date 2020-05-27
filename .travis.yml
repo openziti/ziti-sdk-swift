@@ -34,4 +34,8 @@ jobs:
   - stage: after_build
     script:
       - aws s3 sync s3://ziti-sdk-swift/DerivedData .
-      - ls -lart
+      - ./make_dist.sh
+      - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER"
+      - gem install jazzy
+      - jazzy
+      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER"
