@@ -33,6 +33,8 @@ jobs:
 
   - stage: after_build
     script:
+      - pip install -U pip
+      - pip install awscli
       - aws s3 sync s3://ziti-sdk-swift/DerivedData .
       - ./make_dist.sh
       - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER"
