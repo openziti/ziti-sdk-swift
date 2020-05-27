@@ -31,13 +31,13 @@ jobs:
       MYCFGSDK="Release-iphonesimulator"
     script: *1
 
-  - stage: after_build
+  - stage: frameworks and docs
     script:
       - pip install -U pip
       - pip install awscli
       - aws s3 sync s3://ziti-sdk-swift/DerivedData ./DerivedData
       - ./make_dist.sh
-      - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER"
+      - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
       - gem install jazzy
       - jazzy
-      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER"
+      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
