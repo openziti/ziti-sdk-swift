@@ -13,7 +13,7 @@ _shared_script:
   - xcodebuild build -configuration Release -scheme ${MYSCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${MYARCH} -sdk ${MYSDK}
   - MYLIBDIR="DerivedData/CZiti/Build/Products/${MYCFGSDK}"
   - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYLIBDIR}" s3://ziti-sdk-swift/${MYLIBDIR} --delete
-  - MYDSDIR="DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build/${MFCFGSDK}/${MYSCHEME}/DerivedSoures"
+  - MYDSDIR="DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build/${MFCFGSDK}/${MYSCHEME}.build/DerivedSoures"
   - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYDSDIR}" s3://ziti-sdk-swift/${MYDSDIR} --delete
 
 jobs:
