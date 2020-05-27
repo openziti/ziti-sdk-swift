@@ -5,6 +5,8 @@ compiler: gcc
 
 _shared_script:
   script: &1
+  - pip install -U pip
+  - pip install awscli
   - brew install ninja
   - cmake -GNinja ${MYTOOLCHAIN} -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
   - ninja -C ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
