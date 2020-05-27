@@ -3,23 +3,20 @@ os: osx
 osx_image: xcode11.4
 compiler: gcc
 
+env:
+- MYSCHEME="CZiti-macOS" MYARCH="x86_64" MYSDK="macosx" MYTOOLCHAIN=""
+- MYSCHEME="CZiti-iOS" MYARCH="arm64" MYSDK="iphoneos" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake"
+- MYSCHEME="CZiti-iOS" MYARCH="x86_64" MYSDK="iphonesimulator" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake"
+
 jobs:
   include:
     - stage: build
+      before_script: env
       script:
         - brew install ninja
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
-        - ninja -C ./deps/ziti-sdk-c/build-macosx-x86_64
-        - xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk macosx
-        - FOR="macOS" ./make_dist.sh
-
-    - stage:
-      script:
-        - brew install ninja
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake
-        - ninja -C ./deps/ziti-sdk-c/build-iphoneos-arm64
-        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake
-        - ninja -C ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
-        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
-        - FOR="iOS" ./make_dist.sh
+        - cmake -GNinja ${MYTOOLCHAIN} -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
+        - ninja -C ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
+        - xcodebuild build -configuration Release -scheme ${MYSCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${MYARCH} -sdk ${MYSDK}
+    - stage: after_build
+      before_script: env
+      script: echo "after_build stage"
