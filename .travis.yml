@@ -7,24 +7,32 @@ _shared_script: &shared_script
   before_script: env
   script:
     - brew install ninja
+    - ls -l ${TRAVIS_BUILD_DIR}/DerivedData/CZiti/Build
+    - rm -rf ${TRAVIS_BUILD_DIR}/DerivedData/CZiti/Build
     - cmake -GNinja ${MYTOOLCHAIN} -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
     - ninja -C ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
     - xcodebuild build -configuration Release -scheme ${MYSCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${MYARCH} -sdk ${MYSDK}
+  cache:
+    directories:
+      ${TRAVIS_BUILD_DIR}/DerivedData/CZiti/Build/Products/${MYCFGSDK}
+      ${TRAVIS_BUILD_DIR}/DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build/${MYCFGSDK}/CZiti-iOS.build/DerivedSources
 
 jobs:
   include:
     - stage: build
-      env: MYSCHEME="CZiti-macOS" MYARCH="x86_64" MYSDK="macosx" MYTOOLCHAIN=""
+      env: MYSCHEME="CZiti-macOS" MYARCH="x86_64" MYSDK="macosx" MYTOOLCHAIN="" MYCFGSDK="Release"
       <<: *shared_script
 
     - stage: build
-      env: MYSCHEME="CZiti-iOS" MYARCH="arm64" MYSDK="iphoneos" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake"
+      env: MYSCHEME="CZiti-iOS" MYARCH="arm64" MYSDK="iphoneos" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" MYCFGSDK="Release-iphoneos"
       <<: *shared_script
 
     - stage: build
-      env: MYSCHEME="CZiti-iOS" MYARCH="x86_64" MYSDK="iphonesimulator" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake"
+      env: MYSCHEME="CZiti-iOS" MYARCH="x86_64" MYSDK="iphonesimulator" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" MYCFGSDK="Release-iphonesimulator"
       <<: *shared_script
 
     - stage: after_build
       before_script: env
-      script: echo "after_build stage"
+      script:
+        - ls -l ${TRAVIS_BUILD_DIR}/DerivedData/CZiti/Build/Products
+        - ls -l ${TRAVIS_BUILD_DIR}/DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build
