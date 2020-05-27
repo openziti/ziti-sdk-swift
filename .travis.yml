@@ -14,7 +14,7 @@ _shared_script:
   - MYLIBDIR="DerivedData/CZiti/Build/Products/${MYCFGSDK}"
   - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYLIBDIR}" s3://ziti-sdk-swift/${MYLIBDIR} --delete
   - MYDSDIR="DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build/${MFCFGSDK}/${MYSCHEME}/DerivedSoures"
-  - aws s3 sync "${TRAVIS_BILD_DIR}/${MYDSDIR}" s3://ziti-sdk-swift/${MYDSDIR} --delete
+  - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYDSDIR}" s3://ziti-sdk-swift/${MYDSDIR} --delete
 
 jobs:
   include:
