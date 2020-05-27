@@ -35,7 +35,7 @@ jobs:
     script:
       - pip install -U pip
       - pip install awscli
-      - aws s3 sync s3://ziti-sdk-swift/DerivedData .
+      - aws s3 sync s3://ziti-sdk-swift/DerivedData ./DerivedData
       - ./make_dist.sh
       - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER"
       - gem install jazzy
