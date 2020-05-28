@@ -21,7 +21,7 @@ jobs:
   - stage:
     script:
       - gem install jazzy
-      - jazzy
+      - jazzy --clean --no-objc
       - cat /var/folders/z3/_825pg0s3jvf0hb_q8kzmg5h0000gn/T/xcodebuild-*.log
 
   - stage: build
