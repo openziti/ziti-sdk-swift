@@ -24,7 +24,7 @@ jobs:
     after_script:
       - gem install jazzy
       - jazzy
-      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/
+      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
   - stage: 
     env: MYSCHEME="CZiti-iOS" MYARCH="arm64" MYSDK="iphoneos" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" MYCFGSDK="Release-iphoneos"
@@ -36,4 +36,9 @@ jobs:
     script: *1
 
   - stage: dist
-    script: echo "TODO"
+    script: 
+      - pip install -U pip
+      - pip install awscli
+      - aws s3 sync s3://ziti-sdk-swift/DerivedData ./DerivedData
+      - ./make_dist.sh
+      - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
