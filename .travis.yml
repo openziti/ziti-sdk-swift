@@ -8,8 +8,7 @@ _shared_script:
   - pip install -U pip
   - pip install awscli
   - brew install ninja
-  - cmake -GNinja ${MYTOOLCHAIN} -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
-  - ninja -C ./deps/ziti-sdk-c/build-${MYSDK}-${MYARCH}
+  - ./ci_deps_cache.sh ${MYSDK} ${MYARCH} ${MYTOOLCHAIN}
   - xcodebuild build -configuration Release -scheme ${MYSCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${MYARCH} -sdk ${MYSDK}
   - MYLIBDIR="DerivedData/CZiti/Build/Products/${MYCFGSDK}"
   - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYLIBDIR}" s3://ziti-sdk-swift/${MYLIBDIR} --delete
