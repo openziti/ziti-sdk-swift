@@ -22,7 +22,7 @@ jobs:
     script:
       - gem install jazzy
       - jazzy
-      - cat /var/folders/z3/_825pg0s3jvf0hb_q8kzmg5h0000gn/T/xcodebuild-B3842EDA-F250-40B9-94B6-704DD136FA93.log
+      - cat cat /var/folders/z3/_825pg0s3jvf0hb_q8kzmg5h0000gn/T/xcodebuild-*.log
 
   - stage: build
     env: MYSCHEME="CZiti-macOS" MYARCH="x86_64" MYSDK="macosx" MYTOOLCHAIN="" MYCFGSDK="Release"
