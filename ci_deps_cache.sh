@@ -29,7 +29,7 @@ aws s3 cp s3://${BUCKET}/${TGZ_FILE} .
 if [ -f "${TGZ_FILE}" ] ; then
    echo "${TGZ_FILE} from cache"
 
-   tar -xvf ${TGZ_FILE}
+   tar -xf ${TGZ_FILE}
 else
    echo "Cached build ${TGZ_FILE} not found"
 fi
@@ -51,7 +51,7 @@ if [ ! -f "${LIBZITI_FILE}" ] ; then
       exit 1
    fi
 
-   tar -czvf ${TGZ_FILE} ${C_SDK_BUILD_DIR}
+   tar -czf ${TGZ_FILE} ${C_SDK_BUILD_DIR}
    if [ $? -ne 0 ] ; then
       echo "Error creating ${TGZ_FILE}"
       exit 1
