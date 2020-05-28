@@ -6,8 +6,7 @@
 # This scripts caches the build to S3 and only rebuilds if the submodule hash changs
 #
 
-PROJECT_ROOT=$(cd `dirname $0` && pwd)
-C_SDK_ROOT="${PROJECT_ROOT}/deps/ziti-sdk-c"
+C_SDK_ROOT="./deps/ziti-sdk-c"
 
 BUCKET="ziti-sdk-swift"
 SDK=$1
@@ -40,7 +39,7 @@ if [ ! -f "${LIBZITI_FILE}" ] ; then
 
    echo "${LIBZITI_FILE} not found.  Starting build"
 
-   cmake -GNinja ${TOOLCHAIN} -S ./deps/ziti-sdk-c -B ${C_SDK_BUILD_DIR}
+   cmake -GNinja ${TOOLCHAIN} -S ${C_SDK_ROOT} -B ${C_SDK_BUILD_DIR}
    if [ $? -ne 0 ] ; then
       echo "Error on cmake -GNinja"
       exit 1
