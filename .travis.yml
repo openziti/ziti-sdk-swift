@@ -18,15 +18,13 @@ _shared_script:
 
 jobs:
   include:
-  - stage:
-    script:
-      - gem install jazzy
-      - jazzy --clean --no-objc
-      - cat /var/folders/z3/_825pg0s3jvf0hb_q8kzmg5h0000gn/T/xcodebuild-*.log
-
   - stage: build
     env: MYSCHEME="CZiti-macOS" MYARCH="x86_64" MYSDK="macosx" MYTOOLCHAIN="" MYCFGSDK="Release"
     script: *1
+    after_script:
+      - gem install jazzy
+      - jazzy
+      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/
 
   - stage: 
     env: MYSCHEME="CZiti-iOS" MYARCH="arm64" MYSDK="iphoneos" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" MYCFGSDK="Release-iphoneos"
@@ -37,13 +35,5 @@ jobs:
       MYCFGSDK="Release-iphonesimulator"
     script: *1
 
-  - stage: frameworks and docs
-    script:
-      - pip install -U pip
-      - pip install awscli
-      - aws s3 sync s3://ziti-sdk-swift/DerivedData ./DerivedData
-      - ./make_dist.sh
-      - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/
-      - gem install jazzy
-      - jazzy
-      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/
+  - stage: dist
+    script: echo "TODO"
