@@ -3,6 +3,21 @@ os: osx
 osx_image: xcode11.4
 compiler: gcc
 
+install:
+  - echo ${gh_ci_key} | base64 --decode > github_deploy_key
+  - chmod 600 github_deploy_key
+  - md5sum github_deploy_key
+  - git config user.name ziti-ci
+  - git config user.email ziti-ci@netfoundry.io
+  - git config core.sshCommand "ssh -i github_deploy_key"
+  - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
+
+stages:
+  - name: build
+  - name: make dist
+  - name: tag and publish
+    if: branch = master and type != pull_request
+
 _shared_script:
   script: &1
   - pip install -U pip
@@ -30,14 +45,22 @@ jobs:
     script: *1
 
   - stage: 
-    env: MYSCHEME="CZiti-iOS" MYARCH="x86_64" MYSDK="iphonesimulator" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake"
-      MYCFGSDK="Release-iphonesimulator"
+    env: MYSCHEME="CZiti-iOS" MYARCH="x86_64" MYSDK="iphonesimulator" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" MYCFGSDK="Release-iphonesimulator"
     script: *1
 
-  - stage: dist
+  - stage: make dist
     script: 
       - pip install -U pip
       - pip install awscli
       - aws s3 sync s3://ziti-sdk-swift/DerivedData ./DerivedData
       - ./make_dist.sh
+      - aws s3 rm --recursive s3://ziti-sdk-swift/DerivedData
       - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
+
+  - stage: tag and publish
+    script:
+      - ./tagIfNeeded.sh
+      - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER ./dist
+      - ls -lat ./dist
+      - echo "TODO publish and rm --recursive s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}"
+      - git push --tags --verbose
