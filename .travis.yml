@@ -3,23 +3,64 @@ os: osx
 osx_image: xcode11.4
 compiler: gcc
 
+install:
+  - echo ${gh_ci_key} | base64 --decode > github_deploy_key
+  - chmod 600 github_deploy_key
+  - md5sum github_deploy_key
+  - git config user.name ziti-ci
+  - git config user.email ziti-ci@netfoundry.io
+  - git config core.sshCommand "ssh -i github_deploy_key"
+  - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
+
+stages:
+  - name: build
+  - name: make dist
+  - name: tag and publish
+    if: branch = master and type != pull_request
+
+_shared_script:
+  script: &1
+  - pip install -U pip
+  - pip install awscli
+  - brew install ninja
+  - ./ci_deps_cache.sh ${MYSDK} ${MYARCH} ${MYTOOLCHAIN}
+  - xcodebuild build -configuration Release -scheme ${MYSCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${MYARCH} -sdk ${MYSDK}
+  - MYLIBDIR="DerivedData/CZiti/Build/Products/${MYCFGSDK}"
+  - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYLIBDIR}" s3://ziti-sdk-swift/${MYLIBDIR} --delete
+  - MYDSDIR="DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build/${MYCFGSDK}/${MYSCHEME}.build/DerivedSources"
+  - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYDSDIR}" s3://ziti-sdk-swift/${MYDSDIR} --delete
+
 jobs:
   include:
-    - stage: build
-      script:
-        - brew install ninja
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
-        - ninja -C ./deps/ziti-sdk-c/build-macosx-x86_64
-        - xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk macosx
-        - FOR="macOS" ./make_dist.sh
+  - stage: build
+    env: MYSCHEME="CZiti-macOS" MYARCH="x86_64" MYSDK="macosx" MYTOOLCHAIN="" MYCFGSDK="Release"
+    script: *1
+    after_script:
+      - gem install jazzy
+      - jazzy
+      - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
-    - stage:
-      script:
-        - brew install ninja
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake
-        - ninja -C ./deps/ziti-sdk-c/build-iphoneos-arm64
-        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
-        - cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake
-        - ninja -C ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
-        - xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
-        - FOR="iOS" ./make_dist.sh
+  - stage: 
+    env: MYSCHEME="CZiti-iOS" MYARCH="arm64" MYSDK="iphoneos" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" MYCFGSDK="Release-iphoneos"
+    script: *1
+
+  - stage: 
+    env: MYSCHEME="CZiti-iOS" MYARCH="x86_64" MYSDK="iphonesimulator" MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" MYCFGSDK="Release-iphonesimulator"
+    script: *1
+
+  - stage: make dist
+    script: 
+      - pip install -U pip
+      - pip install awscli
+      - aws s3 sync s3://ziti-sdk-swift/DerivedData ./DerivedData
+      - ./make_dist.sh
+      - aws s3 rm --recursive s3://ziti-sdk-swift/DerivedData
+      - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
+
+  - stage: tag and publish
+    script:
+      - ./tagIfNeeded.sh
+      - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER ./dist
+      - ls -lat ./dist
+      - echo "TODO publish and rm --recursive s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}"
+      - git push --tags --verbose
