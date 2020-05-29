@@ -23,6 +23,7 @@ cache:
     - /home/travis/.rvm/
 
 stages:
+  - name: prepare cache
   - name: build
   - name: make dist
   - name: tag and publish
@@ -39,6 +40,8 @@ _shared_script:
 
 jobs:
   include:
+  - stage: prepare cache
+    script: true
   - stage: build
     env: 
       - MYSDK="macosx" 
