@@ -54,13 +54,12 @@ jobs:
       - pip install awscli
       - aws s3 sync s3://ziti-sdk-swift/DerivedData ./DerivedData
       - ./make_dist.sh
-      - aws s3 rm --recursive s3://ziti-sdk-swift/DerivedData
       - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
 
   - stage: tag and publish
     script:
       - ./tagIfNeeded.sh
-      - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER ./dist
+      - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER} ./dist
       - ls -lat ./dist
       - echo "TODO publish and rm --recursive s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}"
       - git push --tags --verbose
