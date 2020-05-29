@@ -9,6 +9,7 @@ install:
   - ./awscli-bundle/install -b ~/bin/aws
   - brew install ninja
   - gem install jazzy
+  - which jazzy
   - export PATH=~/bin:$PATH
   - echo ${gh_ci_key} | base64 --decode > github_deploy_key
   - chmod 600 github_deploy_key
