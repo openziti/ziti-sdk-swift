@@ -16,6 +16,10 @@ install:
   - git config core.sshCommand "ssh -i github_deploy_key"
   - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
 
+cache:
+  directories:
+    - /home/travis/.rvm/
+
 stages:
   - name: build
   - name: make dist
