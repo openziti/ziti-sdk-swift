@@ -58,6 +58,8 @@ jobs:
 
   - stage: tag and publish
     script:
+      - pip install -U pip
+      - pip install awscli
       - ./tagIfNeeded.sh
       - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER} ./dist
       - ls -lat ./dist
