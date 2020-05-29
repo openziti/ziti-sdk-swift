@@ -43,34 +43,34 @@ jobs:
   - stage: prepare cache
     script: true
   - stage: build
-    env: 
-      - MYSDK="macosx" 
+    script: 
       - MYSCHEME="CZiti-macOS" 
+      - MYSDK="macosx" 
       - MYARCH="x86_64" 
       - MYTOOLCHAIN="" 
       - MYCFGSDK="Release"
-    script: *1
+      - << *1
     after_script:
       - jazzy
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
   - stage: 
-    env: 
-      - MYSDK="iphoneos" 
+    script: 
       - MYSCHEME="CZiti-iOS" 
+      - MYSDK="iphoneos" 
       - MYARCH="arm64" 
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" 
       - MYCFGSDK="Release-iphoneos"
-    script: *1
+      - << *1
 
   - stage: 
-    env: 
-      - MYSDK="iphonesimulator" 
+    script: 
       - MYSCHEME="CZiti-iOS" 
+      - MYSDK="iphonesimulator" 
       - MYARCH="x86_64" 
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" 
       - MYCFGSDK="Release-iphonesimulator"
-    script: *1
+      - << *1
 
   - stage: make dist
     script: 
