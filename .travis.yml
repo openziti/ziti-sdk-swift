@@ -7,6 +7,8 @@ install:
   - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
   - unzip awscli-bundle.zip
   - ./awscli-bundle/install -b ~/bin/aws
+  - brew install ninja
+  - gem install jazzy
   - export PATH=~/bin:$PATH
   - echo ${gh_ci_key} | base64 --decode > github_deploy_key
   - chmod 600 github_deploy_key
@@ -28,7 +30,6 @@ stages:
 
 _shared_script:
   script: &1
-  - brew install ninja
   - ./ci_deps_cache.sh ${MYSDK} ${MYARCH} ${MYTOOLCHAIN}
   - xcodebuild build -configuration Release -scheme ${MYSCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${MYARCH} -sdk ${MYSDK}
   - MYLIBDIR="DerivedData/CZiti/Build/Products/${MYCFGSDK}"
@@ -41,8 +42,6 @@ jobs:
   - stage: build
     env: MYSCHEME="CZiti-macOS" MYARCH="x86_64" MYSDK="macosx" MYTOOLCHAIN="" MYCFGSDK="Release"
     script: *1
-    before_cache:
-      - gem install jazzy
     after_script:
       - jazzy
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
