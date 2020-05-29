@@ -83,6 +83,8 @@ jobs:
     script:
       - ./tagIfNeeded.sh
       - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER} ./dist
-      - ls -lat ./dist
+      - MYREV=`git rev-parse --short HEAD`
+      - tar -czf ./ziti-sdk-swift-docs-${MYREV}.tgz ./dist/docs
+      - aws s3 cp ./ziti-sdk-swift-docs-${MYREV}.tgz s3://ziti-sdk-swift/
       - echo "TODO publish and rm --recursive s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}"
       - git push --tags --verbose
