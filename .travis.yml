@@ -7,9 +7,9 @@ install:
   - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
   - unzip awscli-bundle.zip
   - ./awscli-bundle/install -b ~/bin/aws
+  - export PATH=~/bin:$PATH
   - brew install ninja
   - gem install jazzy
-  - export PATH=~/bin:$PATH
 
 cache:
   directories:
@@ -26,6 +26,7 @@ jobs:
   include:
   - stage: prepare cache
     script: true
+
   - stage: build
     script: 
       - ./ci_deps_cache.sh CZiti-macOS macosx x86_64 Release
