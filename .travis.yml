@@ -29,7 +29,6 @@ jobs:
   - stage: build
     script: 
       - ./ci_deps_cache.sh CZiti-macOS macosx x86_64 Release
-    after_script:
       - jazzy
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
