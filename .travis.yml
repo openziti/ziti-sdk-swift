@@ -35,7 +35,7 @@ jobs:
     script: true
   - stage: build
     script: 
-      - ./ci_deps_cache.sh CZiti-macOS macosx macosx Release
+      - ./ci_deps_cache.sh CZiti-macOS macosx x86_64 Release
     after_script:
       - jazzy
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
@@ -44,13 +44,13 @@ jobs:
     script: 
       - MYCFGSDK="Release-iphoneos"
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" 
-      - ./ci_deps_cache.sh CZiti-iOS iphoneos arm64 ${MYCFGDIR} ${MYTOOLCHAIN}
+      - ./ci_deps_cache.sh CZiti-iOS iphoneos arm64 "${MYCFGDIR}" "${MYTOOLCHAIN}"
 
   - stage: 
     script: 
       - MYCFGSDK="Release-iphonesimulator"
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" 
-      - ./ci_deps_cache.sh CZiti-iOS iphonesimulator x86_64 ${MYCFGDIR} ${MYTOOLCHAIN}
+      - ./ci_deps_cache.sh CZiti-iOS iphonesimulator x86_64 "${MYCFGDIR}" $"{MYTOOLCHAIN}"
 
   - stage: make dist
     script: 
