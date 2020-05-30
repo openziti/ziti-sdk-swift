@@ -10,13 +10,6 @@ install:
   - brew install ninja
   - gem install jazzy
   - export PATH=~/bin:$PATH
-  - echo ${gh_ci_key} | base64 --decode > github_deploy_key
-  - chmod 600 github_deploy_key
-  - md5sum github_deploy_key
-  - git config user.name ziti-ci
-  - git config user.email ziti-ci@netfoundry.io
-  - git config core.sshCommand "ssh -i github_deploy_key"
-  - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
 
 cache:
   directories:
@@ -60,6 +53,14 @@ jobs:
       - aws s3 rm --recursive s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}
 
   - stage: tag and publish
+    before_script:
+      - echo ${gh_ci_key} | base64 --decode > github_deploy_key
+      - chmod 600 github_deploy_key
+      - md5sum github_deploy_key
+      - git config user.name ziti-ci
+      - git config user.email ziti-ci@netfoundry.io
+      - git config core.sshCommand "ssh -i github_deploy_key"
+      - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
     script:
       - ./tagIfNeeded.sh
       - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER} ./dist
