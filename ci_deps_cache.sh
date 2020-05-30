@@ -5,13 +5,18 @@
 #
 # This scripts caches the build to S3 and only rebuilds if the submodule hash changs
 #
+# We then go ahead and build the related Xcode project and stach the DerivedData
+# for future assembly into .framework
+#
 
 C_SDK_ROOT="./deps/ziti-sdk-c"
 
 BUCKET="ziti-sdk-swift"
-SDK=$1
-ARCH=$2
-TOOLCHAIN=$3
+SCHEME=$1
+SDK=$2
+ARCH=$3
+CFGSDK=$4
+TOOLCHAIN=$5
 
 C_SDK_BUILD_DIR="${C_SDK_ROOT}/build-${SDK}-${ARCH}"
 
@@ -59,6 +64,26 @@ if [ ! -f "${LIBZITI_FILE}" ] ; then
 
    echo "Uploading build cache to S3"
    aws s3 cp ${TGZ_FILE} s3://${BUCKET}/${TGZ_FILE}
+fi
+
+xcodebuild build -configuration Release -scheme ${SCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${ARCH} -sdk ${SDK}
+if [ $? -ne 0 ] ; then
+   echo "xcodebuild failed"
+   exit 1
+fi
+
+MYLIBDIR="DerivedData/CZiti/Build/Products/${CFGSDK}"
+aws s3 sync "${TRAVIS_BUILD_DIR}/${MYLIBDIR}" s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/${MYLIBDIR}
+if [ $? -ne 0 ] ; then
+   echo "aws sync of ${MYLIBDIR} failed"
+   exit 1
+fi
+
+MYDSDIR="DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build/${CFGSDK}/${SCHEME}.build/DerivedSources"
+aws s3 sync "${TRAVIS_BUILD_DIR}/${MYDSDIR}" s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/${MYDSDIR}
+if [ $? -ne 0 ] ; then
+   echo "aws sync of ${MYDSDIR} failed"
+   exit 1
 fi
 
 exit 0

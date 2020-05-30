@@ -29,48 +29,28 @@ stages:
   - name: tag and publish
     if: branch = master and type != pull_request
 
-_shared_script:
-  script: &1
-  - ./ci_deps_cache.sh ${MYSDK} ${MYARCH} ${MYTOOLCHAIN}
-  - xcodebuild build -configuration Release -scheme ${MYSCHEME} -derivedDataPath ./DerivedData/CZiti -arch ${MYARCH} -sdk ${MYSDK}
-  - MYLIBDIR="DerivedData/CZiti/Build/Products/${MYCFGSDK}"
-  - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYLIBDIR}" s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/${MYLIBDIR} --delete
-  - MYDSDIR="DerivedData/CZiti/Build/Intermediates.noindex/CZiti.build/${MYCFGSDK}/${MYSCHEME}.build/DerivedSources"
-  - aws s3 sync "${TRAVIS_BUILD_DIR}/${MYDSDIR}" s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/${MYDSDIR} --delete
-
 jobs:
   include:
   - stage: prepare cache
     script: true
   - stage: build
     script: 
-      - MYSCHEME="CZiti-macOS" 
-      - MYSDK="macosx" 
-      - MYARCH="x86_64" 
-      - MYTOOLCHAIN="" 
-      - MYCFGSDK="Release"
-      - << *1
+      - ./ci_deps_cache.sh CZiti-macOS macosx macosx Release
     after_script:
       - jazzy
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
   - stage: 
     script: 
-      - MYSCHEME="CZiti-iOS" 
-      - MYSDK="iphoneos" 
-      - MYARCH="arm64" 
-      - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" 
       - MYCFGSDK="Release-iphoneos"
-      - << *1
+      - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" 
+      - ./ci_deps_cache.sh CZiti-iOS iphoneos arm64 ${MYCFGDIR} ${MYTOOLCHAIN}
 
   - stage: 
     script: 
-      - MYSCHEME="CZiti-iOS" 
-      - MYSDK="iphonesimulator" 
-      - MYARCH="x86_64" 
-      - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" 
       - MYCFGSDK="Release-iphonesimulator"
-      - << *1
+      - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" 
+      - ./ci_deps_cache.sh CZiti-iOS iphonesimulator x86_64 ${MYCFGDIR} ${MYTOOLCHAIN}
 
   - stage: make dist
     script: 
@@ -84,7 +64,7 @@ jobs:
       - ./tagIfNeeded.sh
       - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER} ./dist
       - MYREV=`git rev-parse --short HEAD`
-      - tar -czf ./ziti-sdk-swift-docs-${MYREV}.tgz ./dist/docs
+      - tar -czf ./ziti-sdk-swift-docs-${MYREV}.tgz -C ./dist/docs .
       - aws s3 cp ./ziti-sdk-swift-docs-${MYREV}.tgz s3://ziti-sdk-swift/
       - echo "TODO publish and rm --recursive s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}"
       - git push --tags --verbose
