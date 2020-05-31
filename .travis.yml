@@ -28,7 +28,9 @@ _uncached_install:
 jobs:
   include:
   - stage: prepare cache
-    script: pod --help
+    script: 
+      - pod --help
+      - git describe --long
 
   - stage: build
     before_install: *uncached_install
