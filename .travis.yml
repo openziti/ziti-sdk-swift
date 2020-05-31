@@ -4,11 +4,6 @@ osx_image: xcode11.4
 compiler: gcc
 
 install:
-  - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-  - unzip awscli-bundle.zip
-  - ./awscli-bundle/install -b ~/bin/aws
-  - export PATH=~/bin:$PATH
-  - brew install ninja
   - gem install jazzy
 
 cache:
@@ -22,30 +17,42 @@ stages:
   - name: tag and publish
     if: branch = master and type != pull_request
 
+_uncached_install:
+  before_install: &uncached_install
+  - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+  - unzip awscli-bundle.zip
+  - ./awscli-bundle/install -b ~/bin/aws
+  - export PATH=~/bin:$PATH
+  - brew install ninja
+
 jobs:
   include:
   - stage: prepare cache
     script: true
 
   - stage: build
+    before_install: *uncached_install
     script: 
       - ./ci_deps_cache.sh CZiti-macOS macosx x86_64 Release
       - jazzy
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
   - stage: 
+    before_install: *uncached_install
     script: 
       - MYCFGSDK="Release-iphoneos"
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" 
       - ./ci_deps_cache.sh CZiti-iOS iphoneos arm64 "${MYCFGSDK}" "${MYTOOLCHAIN}"
 
   - stage: 
+    before_install: *uncached_install
     script: 
       - MYCFGSDK="Release-iphonesimulator"
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" 
       - ./ci_deps_cache.sh CZiti-iOS iphonesimulator x86_64 "${MYCFGSDK}" $"{MYTOOLCHAIN}"
 
   - stage: make dist
+    before_install: *uncached_install
     script: 
       - aws s3 sync s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/DerivedData ./DerivedData
       - ./make_dist.sh
@@ -53,6 +60,7 @@ jobs:
       - aws s3 rm --recursive s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}
 
   - stage: tag and publish
+    before_install: *uncached_install
     before_script:
       - echo ${gh_ci_key} | base64 --decode > github_deploy_key
       - chmod 600 github_deploy_key
