@@ -28,9 +28,7 @@ _uncached_install:
 jobs:
   include:
   - stage: prepare cache
-    script: 
-      - pod --help
-      - git describe --long
+    script: true
 
   - stage: build
     before_install: *uncached_install
@@ -56,6 +54,7 @@ jobs:
   - stage: make dist
     before_install: *uncached_install
     script: 
+      - git describe --long
       - aws s3 sync s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/DerivedData ./DerivedData
       - ./make_dist.sh
       - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
