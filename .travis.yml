@@ -28,7 +28,7 @@ _uncached_install:
 jobs:
   include:
   - stage: prepare cache
-    script: true
+    script: pod --help
 
   - stage: build
     before_install: *uncached_install
@@ -75,5 +75,5 @@ jobs:
       - MYREV=`git rev-parse --short HEAD`
       - tar -czf ./ziti-sdk-swift-docs-${MYREV}.tgz -C ./dist/docs .
       - aws s3 cp ./ziti-sdk-swift-docs-${MYREV}.tgz s3://ziti-sdk-swift/
-      - echo "TODO publish and rm --recursive s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}"
+      - echo "TODO publish"
       - git push --tags --verbose
