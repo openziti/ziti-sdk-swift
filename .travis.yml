@@ -28,7 +28,15 @@ _uncached_install:
 jobs:
   include:
   - stage: prepare cache
-    script: true
+    script:
+      - echo ${gh_ci_key} | base64 --decode > github_deploy_key
+      - chmod 600 github_deploy_key
+      - md5sum github_deploy_key
+      - git config user.name ziti-ci
+      - git config user.email ziti-ci@netfoundry.io
+      - git config core.sshCommand "ssh -i github_deploy_key"
+      - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
+      - git describe --long
 
   - stage: build
     before_install: *uncached_install
@@ -54,7 +62,6 @@ jobs:
   - stage: make dist
     before_install: *uncached_install
     script: 
-      - git describe --long
       - aws s3 sync s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/DerivedData ./DerivedData
       - ./make_dist.sh
       - aws s3 sync ./dist s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}
