@@ -28,15 +28,7 @@ _uncached_install:
 jobs:
   include:
   - stage: prepare cache
-    script:
-      - echo ${gh_ci_key} | base64 --decode > github_deploy_key
-      - chmod 600 github_deploy_key
-      - md5sum github_deploy_key
-      - git config user.name ziti-ci
-      - git config user.email ziti-ci@netfoundry.io
-      - git config core.sshCommand "ssh -i github_deploy_key"
-      - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
-      - git describe --long
+    script: true
 
   - stage: build
     before_install: *uncached_install
