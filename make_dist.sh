@@ -27,9 +27,15 @@ if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
       exit 1
    fi
 
-   mkdir -p ${dist_dir_ios}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
+   mkdir -p ${dist_dir_ios}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}
    if [ $? -ne 0 ] ; then
-      echo "Unable to create iOS ditribution dir"
+      echo "Unable to create iOS ditribution dir = Modules"
+      exit 1
+   fi
+
+   mkdir -p ${dist_dir_ios}/${PROJECT_NAME}.framework/Headers
+   if [ $? -ne 0 ] ; then
+      echo "Unable to create iOS ditribution dir - Headers"
       exit 1
    fi
 
@@ -44,7 +50,7 @@ if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
 
    cp -r ${BUILD_DIR}/${CONFIGURATION}-iphoneos/${SWIFTMODULE_NAME}/* \
       ${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${SWIFTMODULE_NAME}/* \
-      ${dist_dir_ios}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
+      ${dist_dir_ios}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}
 
    if [ $? -ne 0 ] ; then
       echo "Unable to copy swiftmodule for iOS"
@@ -52,7 +58,7 @@ if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    fi
 
    derived_sources_dir=${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources
-   cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_ios}/${PROJECT_NAME}.framework
+   cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_ios}/${PROJECT_NAME}.framework/Headers
    if [ $? -ne 0 ] ; then
       echo "Unable to copy -Swift.h file for iOS"
       exit 1
@@ -72,7 +78,13 @@ if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
       exit 1
    fi
 
-   mkdir -p ${dist_dir_macos}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
+   mkdir -p ${dist_dir_macos}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}
+   if [ $? -ne 0 ] ; then
+      echo "Unable to create macOS ditribution dir - Modules"
+      exit 1
+   fi
+
+   mkdir -p ${dist_dir_macos}/${PROJECT_NAME}.framework/Headers
    if [ $? -ne 0 ] ; then
       echo "Unable to create macOS ditribution dir"
       exit 1
@@ -84,14 +96,14 @@ if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
       exit 1
    fi
 
-   cp -r ${BUILD_DIR}/${CONFIGURATION}/${SWIFTMODULE_NAME}/* ${dist_dir_macos}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
+   cp -r ${BUILD_DIR}/${CONFIGURATION}/${SWIFTMODULE_NAME}/* ${dist_dir_macos}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}
    if [ $? -ne 0 ] ; then
       echo "Unable to copy swiftmodule for macOS"
       exit 1
    fi
 
    derived_sources_dir=${DERIVED_BUILD_DIR}/${CONFIGURATION}/CZiti-macOS.build/DerivedSources
-   cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_macos}/${PROJECT_NAME}.framework
+   cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_macos}/${PROJECT_NAME}.framework/Headers
    if [ $? -ne 0 ] ; then
       echo "Unable to copy -Swift.h file for macOS"
       exit 1

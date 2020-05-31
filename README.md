@@ -217,10 +217,8 @@ Note that that `libCZiti.a` is not built for Bitcode, and when building for a de
 * Ensure the framework is shown under **General - Frameworks, Libraries, and Embedded Content**. If not present, click the "+" button to add it manually.  The "Embedded" entry should be set to "Do Not Embed".
 * Ensure the framework is shown under **Build Phases - Link Binary with Libraries**.  The "Status" entry should be set to "Required"
 * **Build Settings - Frameworks** should include an entry of the directory containing `CZiti.framework` in your project
-* For __Swift__ projects, **Build Settings - Swift Compiler - Search Paths - Import Paths** should include `CZiti.framework`
-* For __Objective-C__ projets, **Build Settings - Header Search Paths** should include `CZiti.framework`, allowing your __Objective-C__ files to `import `CZiti-Swift.h` successfully.
 
-Wnen including `CZiti` in an __Objective-C__ project, addind (an empty) Swift file to your project will help ensure your project is setup correctly for accessing __Swift__ from __Objective-C__
+Wnen including `CZiti` in an __Objective-C__ project, adding (an empty) Swift file to your project will help ensure your project is setup correctly for accessing __Swift__ from __Objective-C__
 
 Coming soon: Distribution via `CocoaPods`
 
