@@ -207,28 +207,43 @@ The [`make_dist.sh`](make_dist.sh) script will package the static library, swift
 
 # Adding `CZiti` as a Dependency
 
-`CZiti` is built into a static library (`libCZiti.a`) and packaged as a static Framework (`CZiti.framework`).
+`CZiti` is built into a static library (`libCZiti.a`) and is packaged as a static Framework (`CZiti.framework`).
  
-Note that that `libCZiti.a` is not built for Bitcode, and when building for a device the __Build Settings - Build Options__ should set `Enable Bitcode` to `No`. 
+Note that that `CZiti` is not built for Bitcode, and when building for a device the __Build Settings - Build Options__ should set `Enable Bitcode` to `No`. 
+
+## Via `CocoaPods`
+
+```ruby
+target 'Some-macOS-Target'
+  use_frameworks!
+  platform :macos, '10.15'
+  pod 'CZiti-macOS', '~> 0.1'
+end
+
+target 'SomeTarget-iOS-Target'
+  use_frameworks!
+  platform :ios, '13.4'
+  pod 'CZiti-iOS', '~> 0.1'
+end
+```
 
 ## Via `CZiti.framework`
 
+* Obtain `CZiti.framework` following the build steps above or by downloading from [Artifactory](https://netfoundry.jfrog.io/artifactory/ziti-sdk-swift/)
 * Drag the appropriate `CZiti.framework` into your project, selecting "Copy items if needed", "Create groups", and your target checked under "Add to targets:".
 * Ensure the framework is shown under **General - Frameworks, Libraries, and Embedded Content**. If not present, click the "+" button to add it manually.  The "Embedded" entry should be set to "Do Not Embed".
 * Ensure the framework is shown under **Build Phases - Link Binary with Libraries**.  The "Status" entry should be set to "Required"
 * **Build Settings - Frameworks** should include an entry of the directory containing `CZiti.framework` in your project
 
-Wnen including `CZiti` in an __Objective-C__ project, adding (an empty) Swift file to your project will help ensure your project is setup correctly for accessing __Swift__ from __Objective-C__
-
-Coming soon: Distribution via `CocoaPods`
+Wnen including `CZiti` in an __Objective-C__ project, adding a Swift file that imports `Foundation` to your project will help ensure your project is setup correctly for accessing __Swift__ from __Objective-C__
 
 ## Via `libCZiti.a`
 
-Add `libCZiti.a` library to your project's **Frameworks and Libraries**, and ensure it is listed in your project's **Build Phases** under **Link Binary with Libraries**.
-
-Your **Library Search Path** and **Swift Compiler Seatch Paths - Import Paths** should include the directory containing `libCZiti.a` and `CZiti.swiftmodule/`
-
-When this project is built from `Xcode`, the `CZiti-Swift.h` file is copied to `$(PROJECT_ROOT)/include/$(PLATFORM)` (e.g., `./include/iphoneos`).  `CZiti-Swift.h` can also be found the the `DerivedSources` directory under `./DerivedData` following a build from either `Xcode` or via `build_all.sh`.  This file is needed to use `CZiti` from Objective-C. Your  __Search Paths - Header Search Paths__ must include the directory containing `CZiti-Swift.h`.
+* Follow the build steps above to create `libCZiti.a`
+* Add `libCZiti.a` library to your project's **Frameworks and Libraries**, and ensure it is listed in your project's **Build Phases** under **Link Binary with Libraries**.
+* Your **Library Search Path** and **Swift Compiler Seatch Paths - Import Paths** should include the directory containing `libCZiti.a` and `CZiti.swiftmodule/`
+* When this project is built from `Xcode`, the `CZiti-Swift.h` file is copied to `$(PROJECT_ROOT)/include/$(PLATFORM)` (e.g., `./include/iphoneos`).  `CZiti-Swift.h` can also be found the the `DerivedSources` directory under `./DerivedData` following a build from either `Xcode` or via `build_all.sh`.  This file is needed to use `CZiti` from Objective-C. Your  __Search Paths - Header Search Paths__ must include the directory containing `CZiti-Swift.h`.
+* Inspect the sample apps' configurations in this repository for relevant build settings for libraries and paths
 
 # Getting Help
 

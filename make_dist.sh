@@ -14,12 +14,13 @@ SWIFTMODULE_NAME="CZiti.swiftmodule"
 : ${FOR:="All"}
 
 function create_framework {
-   dist_dir="$1"
-   derived_sources_dir="$2"
-   lib1="$3"
-   lib2="$4"
-   module1="$5"
-   module2="$6"
+   pod_name="$1"
+   dist_dir="$2"
+   derived_sources_dir="$3"
+   lib1="$4"
+   lib2="$5"
+   module1="$6"
+   module2="$7"
 
    echo "creating framework in ${dist_dir}"
 
@@ -69,6 +70,35 @@ function create_framework {
       exit 1
    fi
 
+   # Create the pod dir (will be tgz'd on publish)
+   pod_dir="${dist_dir}/Pods/${pod_name}"
+   mkdir -p "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to create pod dir"
+      exit 1
+   fi
+
+   cp -r "${dist_dir}/${PROJECT_NAME}.framework" "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy framework to pod dir"
+      exit 1
+   fi
+
+   cp LICENSE "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy LICENSE to pod dir"
+      exit 1
+   fi
+
+   cp ${dist_dir}/${PROJECT_NAME}.framework/Headers/CZiti-Swift.h "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy CZiti-Swift.h to pod dir"
+      exit 1
+   fi
+
+   touch "${pod_dir}/SFile.swift"
+   touch "${pod_dir}/OFile.m"
+
    echo "Done creating ${dist_dir}/${PROJECT_NAME}.framework"
 }
 
@@ -76,7 +106,7 @@ function create_framework {
 # iOS
 #
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
-   create_framework \
+   create_framework "CZiti-iOS" \
       "${DIST_DIR}/iOS/${CONFIGURATION}" \
       "${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources" \
       "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${LIB_NAME}" \
@@ -94,7 +124,7 @@ fi
 # macOS
 #
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
-   create_framework \
+   create_framework "CZiti-macOS" \
       "${DIST_DIR}/macOS/${CONFIGURATION}" \
       "${DERIVED_BUILD_DIR}/${CONFIGURATION}/CZiti-macOS.build/DerivedSources" \
       "${BUILD_DIR}/${CONFIGURATION}/${LIB_NAME}" \
