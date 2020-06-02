@@ -13,48 +13,109 @@ SWIFTMODULE_NAME="CZiti.swiftmodule"
 # make for iOS, macOS, or All
 : ${FOR:="All"}
 
+function create_framework {
+   pod_name="$1"
+   dist_dir="$2"
+   derived_sources_dir="$3"
+   lib1="$4"
+   lib2="$5"
+   module1="$6"
+   module2="$7"
+
+   echo "creating framework in ${dist_dir}"
+
+   rm -rf ${dist_dir}
+   if [ $? -ne 0 ] ; then
+      echo "Unable to clean ${dist_dirs}"
+      exit 1
+   fi
+
+   mkdir -p ${dist_dir}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}
+   if [ $? -ne 0 ] ; then
+      echo "Unable to create ditribution dir - Modules"
+      exit 1
+   fi
+
+   mkdir -p ${dist_dir}/${PROJECT_NAME}.framework/Headers
+   if [ $? -ne 0 ] ; then
+      echo "Unable to create ditribution dir - Headers"
+      exit 1
+   fi
+
+   if [ -z "${module2}" ] ; then
+      lipo -create "${lib1}" -o ${dist_dir}/${PROJECT_NAME}.framework/${PROJECT_NAME}
+   else
+      lipo -create "${lib1}" "${lib2}" -o ${dist_dir}/${PROJECT_NAME}.framework/${PROJECT_NAME}
+   fi
+
+   if [ $? -ne 0 ] ; then
+      echo "Unable to lipo create"
+      exit 1
+   fi
+
+   if [ -z "${module2}" ] ; then
+      cp -r "${module1}"/* ${dist_dir}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}
+   else
+      cp -r "${module1}"/* "${module2}"/* ${dist_dir}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}
+   fi
+
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy swiftmodule"
+      exit 1
+   fi
+
+   cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir}/${PROJECT_NAME}.framework/Headers
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy -Swift.h file"
+      exit 1
+   fi
+
+   # Create the pod dir (will be tgz'd on publish)
+   pod_dir="${dist_dir}/Pods/${pod_name}"
+   mkdir -p "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to create pod dir"
+      exit 1
+   fi
+
+   cp -r "${dist_dir}/${PROJECT_NAME}.framework" "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy framework to pod dir"
+      exit 1
+   fi
+
+   cp LICENSE "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy LICENSE to pod dir"
+      exit 1
+   fi
+
+   cp ${dist_dir}/${PROJECT_NAME}.framework/Headers/CZiti-Swift.h "${pod_dir}"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to copy CZiti-Swift.h to pod dir"
+      exit 1
+   fi
+
+   touch "${pod_dir}/SFile.swift"
+   touch "${pod_dir}/OFile.m"
+
+   echo "Done creating ${dist_dir}/${PROJECT_NAME}.framework"
+}
 
 #
 # iOS
 #
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
-   dist_dir_ios="${DIST_DIR}/iOS/${CONFIGURATION}"
-   echo "creating iOS universal framework in ${dist_dir_ios}"
-
-   rm -rf ${dist_dir_ios}
-   if [ $? -ne 0 ] ; then
-      echo "Unable to clean ${dist_dir_ios}"
-      exit 1
-   fi
-
-   mkdir -p ${dist_dir_ios}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
-   if [ $? -ne 0 ] ; then
-      echo "Unable to create iOS ditribution dir"
-      exit 1
-   fi
-
-   lipo -create ${BUILD_DIR}/${CONFIGURATION}-iphoneos/${LIB_NAME} \
-      ${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${LIB_NAME} \
-      -o ${dist_dir_ios}/${PROJECT_NAME}.framework/${PROJECT_NAME}
+   create_framework "CZiti-iOS" \
+      "${DIST_DIR}/iOS/${CONFIGURATION}" \
+      "${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources" \
+      "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${LIB_NAME}" \
+      "${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${LIB_NAME}" \
+      "${BUILD_DIR}/${CONFIGURATION}-iphoneos/${SWIFTMODULE_NAME}" \
+      "${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${SWIFTMODULE_NAME}"
 
    if [ $? -ne 0 ] ; then
-      echo "Unable to lipo create iOS"
-      exit 1
-   fi
-
-   cp -r ${BUILD_DIR}/${CONFIGURATION}-iphoneos/${SWIFTMODULE_NAME}/* \
-      ${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${SWIFTMODULE_NAME}/* \
-      ${dist_dir_ios}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
-
-   if [ $? -ne 0 ] ; then
-      echo "Unable to copy swiftmodule for iOS"
-      exit 1
-   fi
-
-   derived_sources_dir=${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources
-   cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_ios}/${PROJECT_NAME}.framework
-   if [ $? -ne 0 ] ; then
-      echo "Unable to copy -Swift.h file for iOS"
+      echo "Unable to create framework for iOS"
       exit 1
    fi
 fi
@@ -63,37 +124,17 @@ fi
 # macOS
 #
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
-   dist_dir_macos="${DIST_DIR}/macOS/${CONFIGURATION}"
-   echo "creating macOS framework in ${dist_dir_macos}"
+   create_framework "CZiti-macOS" \
+      "${DIST_DIR}/macOS/${CONFIGURATION}" \
+      "${DERIVED_BUILD_DIR}/${CONFIGURATION}/CZiti-macOS.build/DerivedSources" \
+      "${BUILD_DIR}/${CONFIGURATION}/${LIB_NAME}" \
+      "" \
+      "${BUILD_DIR}/${CONFIGURATION}/${SWIFTMODULE_NAME}" \
+      ""
 
-   rm -rf ${dist_dir_macos}
    if [ $? -ne 0 ] ; then
-      echo "Unable to clean ${dist_dir_macos}"
-      exit 1
-   fi
-
-   mkdir -p ${dist_dir_macos}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
-   if [ $? -ne 0 ] ; then
-      echo "Unable to create macOS ditribution dir"
-      exit 1
-   fi
-
-   lipo -create ${BUILD_DIR}/${CONFIGURATION}/${LIB_NAME} -o ${dist_dir_macos}/${PROJECT_NAME}.framework/${PROJECT_NAME}
-   if [ $? -ne 0 ] ; then
-      echo "Unable to lipo create macOS"
-      exit 1
-   fi
-
-   cp -r ${BUILD_DIR}/${CONFIGURATION}/${SWIFTMODULE_NAME}/* ${dist_dir_macos}/${PROJECT_NAME}.framework/${SWIFTMODULE_NAME}
-   if [ $? -ne 0 ] ; then
-      echo "Unable to copy swiftmodule for macOS"
-      exit 1
-   fi
-
-   derived_sources_dir=${DERIVED_BUILD_DIR}/${CONFIGURATION}/CZiti-macOS.build/DerivedSources
-   cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir_macos}/${PROJECT_NAME}.framework
-   if [ $? -ne 0 ] ; then
-      echo "Unable to copy -Swift.h file for macOS"
+      echo "Unable to create framework for macOS"
       exit 1
    fi
 fi
+

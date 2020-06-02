@@ -4,12 +4,7 @@ osx_image: xcode11.4
 compiler: gcc
 
 install:
-  - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
-  - unzip awscli-bundle.zip
-  - ./awscli-bundle/install -b ~/bin/aws
-  - brew install ninja
   - gem install jazzy
-  - export PATH=~/bin:$PATH
 
 cache:
   directories:
@@ -22,29 +17,43 @@ stages:
   - name: tag and publish
     if: branch = master and type != pull_request
 
+_uncached_install:
+  before_install: &uncached_install
+  - curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" -o "awscli-bundle.zip"
+  - unzip awscli-bundle.zip
+  - ./awscli-bundle/install -b ~/bin/aws
+  - export PATH=~/bin:$PATH
+  - brew install ninja
+
 jobs:
   include:
   - stage: prepare cache
     script: true
+
   - stage: build
+    before_install: *uncached_install
     script: 
       - ./ci_deps_cache.sh CZiti-macOS macosx x86_64 Release
-      - jazzy
+      - rm *.podspec
+      - jazzy --hide-documentation-coverage
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
   - stage: 
+    before_install: *uncached_install
     script: 
       - MYCFGSDK="Release-iphoneos"
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake" 
       - ./ci_deps_cache.sh CZiti-iOS iphoneos arm64 "${MYCFGSDK}" "${MYTOOLCHAIN}"
 
   - stage: 
+    before_install: *uncached_install
     script: 
       - MYCFGSDK="Release-iphonesimulator"
       - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake" 
       - ./ci_deps_cache.sh CZiti-iOS iphonesimulator x86_64 "${MYCFGSDK}" $"{MYTOOLCHAIN}"
 
   - stage: make dist
+    before_install: *uncached_install
     script: 
       - aws s3 sync s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}/DerivedData ./DerivedData
       - ./make_dist.sh
@@ -52,6 +61,7 @@ jobs:
       - aws s3 rm --recursive s3://ziti-sdk-swift/DerivedData-${TRAVIS_BUILD_NUMBER}
 
   - stage: tag and publish
+    before_install: *uncached_install
     before_script:
       - echo ${gh_ci_key} | base64 --decode > github_deploy_key
       - chmod 600 github_deploy_key
@@ -60,11 +70,20 @@ jobs:
       - git config user.email ziti-ci@netfoundry.io
       - git config core.sshCommand "ssh -i github_deploy_key"
       - git remote set-url origin git@github.com:${TRAVIS_REPO_SLUG}
+      - brew install jfrog-cli-go
     script:
       - ./tagIfNeeded.sh
       - aws s3 sync s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER} ./dist
       - MYREV=`git rev-parse --short HEAD`
       - tar -czf ./ziti-sdk-swift-docs-${MYREV}.tgz -C ./dist/docs .
       - aws s3 cp ./ziti-sdk-swift-docs-${MYREV}.tgz s3://ziti-sdk-swift/
-      - echo "TODO publish and rm --recursive s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}"
+      - NEWVERS=`git describe --long | cut -d- -f1`
+      - echo ${NEWVERS}
+      - echo ${NEWVERS} > version
+      - tar -cvzf CZiti-iOS.framework.tgz -C ./dist/iOS/Release/Pods/CZiti-iOS/ .
+      - tar -cvzf CZiti-macOS.framework.tgz -C ./dist/macOS/Release/Pods/CZiti-macOS/ .
+      - jfrog rt u CZiti-iOS.framework.tgz ziti-sdk-swift/${NEWVERS}/ --apikey ${JFROG_API_KEY} --url "https://netfoundry.jfrog.io/netfoundry"
+      - jfrog rt u CZiti-macOS.framework.tgz ziti-sdk-swift/${NEWVERS}/ --apikey ${JFROG_API_KEY} --url "https://netfoundry.jfrog.io/netfoundry"
+      - pod trunk push CZiti-iOS.podspec
+      - pod trunk push CZiti-macOS.podspec
       - git push --tags --verbose
