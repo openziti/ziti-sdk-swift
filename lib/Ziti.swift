@@ -205,7 +205,7 @@ import Foundation
             }
             
             let zid = ZitiIdentity(id: subj, ztAPI: resp.ztAPI, ca: ca)
-            log.info("Enrolled id:\(subj) with controller:\(zid.ztAPI)", function:"enroll()")
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
