@@ -142,6 +142,10 @@ import Foundation
      * Extract the sub (id) field from HWT file
      */
     @objc public func getSubj() -> String? {
+        return getClaims()?.sub
+    }
+    
+    public func getClaims() -> ZitiClaims? {
         do {
             // Get the contents
             let token = try String(contentsOfFile: jwtFile, encoding: .utf8)
@@ -151,12 +155,17 @@ import Foundation
                 let json = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                 let jsonSubj = json["sub"] as? String
             {
-                return jsonSubj
+                return ZitiClaims(jsonSubj,
+                                  json["iss"] as? String,
+                                  json["em"] as? String,
+                                  json["exp"] as? Int,
+                                  json["jti"] as? String)
+            } else {
+                log.error("Enable to parse JWT file: \(jwtFile)")
             }
         }
         catch let error as NSError {
-            log.error("Enable to load JWT file: \(error)")
-            return nil
+            log.error("Enable to load JWT file \(jwtFile): \(error)")
         }
         return nil
     }
