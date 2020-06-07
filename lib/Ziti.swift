@@ -35,7 +35,7 @@ import Foundation
     private let log = Ziti.log
     
     var loop:UnsafeMutablePointer<uv_loop_t>!
-    var privateLoop = false
+    var privateLoop:Bool
     var ztx:ziti_context?
     private var runThread:Thread?
     
@@ -127,7 +127,7 @@ import Foundation
         super.init()
     }
     
-    @objc public init(zid:ZitiIdentity, loop:UnsafeMutablePointer<uv_loop_t>) {
+    public init(zid:ZitiIdentity, loop:UnsafeMutablePointer<uv_loop_t>) {
         self.id = zid
         self.privateLoop = false
         self.loop = loop
