@@ -35,6 +35,7 @@ import Foundation
     private let log = Ziti.log
     
     var loop:UnsafeMutablePointer<uv_loop_t>!
+    var privateLoop = false
     var ztx:ziti_context?
     private var runThread:Thread?
     
@@ -88,6 +89,7 @@ import Foundation
             return nil
         }
         self.id = zid
+        privateLoop = true
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
@@ -105,6 +107,7 @@ import Foundation
     ///     - caPool: CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
     @objc public init(_ id:String, _ ztAPI:String, name:String?, caPool:String?) {
         self.id = ZitiIdentity(id:id, ztAPI:ztAPI, name:name, ca:caPool)
+        privateLoop = true
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
@@ -117,15 +120,24 @@ import Foundation
     ///     - zid: the `ZitiIdentity` containing the information needed to access the Keychain for stored identity information (keys and identity certificates).
     @objc public init(withId zid:ZitiIdentity) {
         self.id = zid
+        privateLoop = true
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
         super.init()
     }
     
+    @objc public init(zid:ZitiIdentity, loop:UnsafeMutablePointer<uv_loop_t>) {
+        self.id = zid
+        self.privateLoop = false
+        self.loop = loop
+    }
+    
     deinit {
-        loop.deinitialize(count: 1)
-        loop.deallocate()
+        if privateLoop {
+            loop.deinitialize(count: 1)
+            loop.deallocate()
+        }
     }
     
     /// Remove keys and certificates created during `enroll()` from the keychain

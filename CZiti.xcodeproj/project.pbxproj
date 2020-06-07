@@ -333,22 +333,22 @@
 		5AB8308D247432C40089AF93 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				5AB8308E247432C40089AF93 /* Ziti-Bridging-Header.h */,
-				5AB8308F247432C40089AF93 /* ZitiError.swift */,
+				5AB8309B247432C40089AF93 /* Ziti.swift */,
+				5AB8309A247432C40089AF93 /* ZitiIdentity.swift */,
+				5AF0C4102489987500CD4DAE /* ZitiClaims.swift */,
+				5AB83099247432C40089AF93 /* ZitiEnroller.swift */,
+				5AB83097247432C40089AF93 /* ZitiConnection.swift */,
+				5AB83096247432C40089AF93 /* ZitiUrlProtocol.swift */,
 				5AB83090247432C40089AF93 /* ZitiIntercept.swift */,
 				5AB83091247432C40089AF93 /* ZitiKeychain.swift */,
 				5AB83092247432C40089AF93 /* ZitiConfig.swift */,
-				5AB83093247432C40089AF93 /* ZitiUnretained.swift */,
-				5AB83094247432C40089AF93 /* ZitiLog.swift */,
 				5AB83095247432C40089AF93 /* ZitiUrlConfig.swift */,
-				5AB83096247432C40089AF93 /* ZitiUrlProtocol.swift */,
-				5AB83097247432C40089AF93 /* ZitiConnection.swift */,
 				5AB83098247432C40089AF93 /* ZitiTunnelConfig.swift */,
-				5AB83099247432C40089AF93 /* ZitiEnroller.swift */,
-				5AB8309A247432C40089AF93 /* ZitiIdentity.swift */,
-				5AB8309B247432C40089AF93 /* Ziti.swift */,
-				5AF0C4102489987500CD4DAE /* ZitiClaims.swift */,
+				5AB8308F247432C40089AF93 /* ZitiError.swift */,
+				5AB83094247432C40089AF93 /* ZitiLog.swift */,
+				5AB83093247432C40089AF93 /* ZitiUnretained.swift */,
 				5AB8309C247432C40089AF93 /* ziti.c */,
+				5AB8308E247432C40089AF93 /* Ziti-Bridging-Header.h */,
 			);
 			path = lib;
 			sourceTree = "<group>";
