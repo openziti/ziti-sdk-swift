@@ -255,6 +255,6 @@ for tracking bugs and feature requests.
 
 - Read the [docs](https://openziti.github.io/ziti-doc/ziti/overview.html)
 - Join our [Developer Community](https://openziti.org)
-- Participate in discussion on [Discourse](https://netfoundry.discourse.group/)
+- Participate in discussion on [Discourse](https://openziti.discourse.group/)
 
 Copyright&copy; 2020. NetFoundry, Inc.
