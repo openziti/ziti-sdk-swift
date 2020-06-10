@@ -239,7 +239,7 @@ import Foundation
     /// Start `Ziti` processing via this method.  All Ziti processing occurs in the same thread as this call and all callbacks run on this thread.
     /// Use the `perform(_:)` to schedule work to be run on this thread.   `perform(_:)` can be called safely from other threads.
     ///
-    /// Note that if a `uv_loop` is specified during `Ziti` initializations, running the loop is expected to occur outside of this call.  In this scenario,
+    /// Note that if a `uv_loop` is specified during `Ziti` initialization, running the loop is expected to occur outside of this call.  In this scenario,
     /// this method initializes Ziti for connections using the configured `ZitiIdentity`
     ///
     /// - Parameters:
