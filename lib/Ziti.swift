@@ -49,9 +49,10 @@ import Foundation
     /// Type used for closure called when changes to services are detected or a call to `serviceAvailable(_:_:)` is made
     ///
     /// - Parameters:
-    ///      - svc: the `ziti-sdk-c`'s `ziti_service` that has changed, or nil on error condition
-    ///      - status: ZITI_OK, ZITI_SERVICE_UNAVAILABLE, or errorCode on nil `ziti_service`
-    public typealias ServiceCallback = (_ svc: UnsafeMutablePointer<ziti_service>?, _ status:Int32) -> Void
+    ///     - ztx: Ziti context
+    ///     - svc: the `ziti-sdk-c`'s `ziti_service` that has changed, or nil on error condition
+    ///     - status: ZITI_OK, ZITI_SERVICE_UNAVAILABLE, or errorCode on nil `ziti_service`
+    public typealias ServiceCallback = (_ ztx:ziti_context? , _ svc: UnsafeMutablePointer<ziti_service>?, _ status:Int32) -> Void
     private var serviceCallbacksLock = NSLock()
     private var serviceCallbacks:[ServiceCallback] = []
     
@@ -542,7 +543,7 @@ import Foundation
         }
     }
     
-    static private let onService:ziti_service_cb = { nf, zs, status, ctx in
+    static private let onService:ziti_service_cb = { ztx, zs, status, ctx in
         guard let mySelf = zitiUnretained(Ziti.self, ctx)  else {
             log.wtf("invalid context", function:"onService()")
             return
@@ -554,12 +555,12 @@ import Foundation
         
         mySelf.serviceCallbacksLock.lock()
         mySelf.serviceCallbacks.forEach { cb in
-            cb(zs, status)
+            cb(ztx, zs, status)
         }
         mySelf.serviceCallbacksLock.unlock()
     }
     
-    static private let onServiceAvailable:ziti_service_cb = { nf, zs, status, ctx in
+    static private let onServiceAvailable:ziti_service_cb = { ztx, zs, status, ctx in
         guard let req = zitiUnretained(ServiceAvailableRequest.self, ctx) else {
             log.wtf("invalid context", function:"onServiceAvaialble()")
             return
@@ -567,7 +568,7 @@ import Foundation
         if let ziti = req.ziti {
             ziti.serviceAvaialbleRequests = ziti.serviceAvaialbleRequests.filter { $0 !== req }
         }
-        req.cb(zs, status)
+        req.cb(ztx, zs, status)
     }
     
     // MARK: - Helpers

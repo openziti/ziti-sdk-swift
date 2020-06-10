@@ -76,7 +76,7 @@ import Foundation
         }
         
         // Register service changed callback
-        ziti.registerServiceCallback { [weak ziti] zs, status in
+        ziti.registerServiceCallback { [weak ziti] _, zs, status in
             onService(ziti, zs, status, idleTime)
         }
     }
