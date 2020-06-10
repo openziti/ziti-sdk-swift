@@ -127,6 +127,15 @@ import Foundation
         super.init()
     }
     
+    /// Initilize `Ziti` with an externally supplied `uv_loop`.
+    ///
+    /// This can be useful when an application needs to manage multiple `ZitiIdentity`s and share a single `uv_loop`
+    /// In this scenario, the loop is expected to execute outside of the `run(:_)` method.
+    ///
+    /// - Parameters:
+    ///     - zid: the `ZitiIdentity` containing the information needed to access the Keychain for stored identity information (keys and identity certificates).
+    ///     - loop: the externanally supplied `uv_loop`
+    ///
     public init(zid:ZitiIdentity, loop:UnsafeMutablePointer<uv_loop_t>) {
         self.id = zid
         self.privateLoop = false
@@ -227,8 +236,11 @@ import Foundation
     
     /// Execute a permanant loop processing data from all attached sources (including Ziti)
     ///
-    ///  Start `Ziti` processing via this method.  All Ziti processing occurs in the same thread as this call and all callbacks run on this thread.
-    ///  Use the `perform(_:)` to schedule work to be run on this thread.   `perform(_:)` can be called safely from other threads.
+    /// Start `Ziti` processing via this method.  All Ziti processing occurs in the same thread as this call and all callbacks run on this thread.
+    /// Use the `perform(_:)` to schedule work to be run on this thread.   `perform(_:)` can be called safely from other threads.
+    ///
+    /// Note that if a `uv_loop` is specified during `Ziti` initialization, running the loop is expected to occur outside of this call.  In this scenario,
+    /// this method initializes Ziti for connections using the configured `ZitiIdentity`
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
@@ -325,19 +337,21 @@ import Foundation
         runThread = Thread.current
         runThread?.name = "ziti_uv_loop"
         
-        let rStatus = uv_run(loop, UV_RUN_DEFAULT)
-        guard rStatus == 0 else {
-            let errStr = String(cString: uv_strerror(rStatus))
-            log.error("error running uv loop: \(rStatus) \(errStr)")
-            initCallback(ZitiError(errStr, errorCode: Int(rStatus)))
-            return
-        }
-        
-        let cStatus = uv_loop_close(loop)
-        if cStatus != 0 {
-            let errStr = String(cString: uv_strerror(cStatus))
-            log.error("error closing uv loop: \(cStatus) \(errStr)")
-            return
+        if privateLoop {
+            let rStatus = uv_run(loop, UV_RUN_DEFAULT)
+            guard rStatus == 0 else {
+                let errStr = String(cString: uv_strerror(rStatus))
+                log.error("error running uv loop: \(rStatus) \(errStr)")
+                initCallback(ZitiError(errStr, errorCode: Int(rStatus)))
+                return
+            }
+            
+            let cStatus = uv_loop_close(loop)
+            if cStatus != 0 {
+                let errStr = String(cString: uv_strerror(cStatus))
+                log.error("error closing uv loop: \(cStatus) \(errStr)")
+                return
+            }
         }
     }
     
@@ -352,13 +366,20 @@ import Foundation
         run(sa.initCallback)
     }
     
-    /// Create a new thread for `run(_:)` and return
+    /// `run(_:)` and return, creating a new thread for execution if needed
+    ///
+    /// If `Ziti` is initialied with an external `uv_loop`, the `run(_:)` method is non-blocking.  If `Ziti` creates and manages its own loop
+    /// the `run(_:)` method blocks, and this method will create and start a new thread for execution
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
     @objc public func runAsync(_ initCallback: @escaping InitCallback) {
-        let arg = SelectorArg(initCallback)
-        Thread(target: self, selector: #selector(Ziti.runThreadWrapper), object: arg).start()
+        if privateLoop {
+            let arg = SelectorArg(initCallback)
+            Thread(target: self, selector: #selector(Ziti.runThreadWrapper), object: arg).start()
+        } else {
+            run(initCallback)
+        }
     }
     
     /// Shutdown the Ziti processing started via `run(_:)`.  This will cause the loop to exit once all scheduled activity on the loop completes
