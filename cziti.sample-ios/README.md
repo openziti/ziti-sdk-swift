@@ -5,7 +5,7 @@ This is a simple app that demonstrates using the __Ziti SDK for Swift__ to inter
 ## Running the app
 You will need access to an operational Ziti network.  You could:
 * Build your own [from scratch](https://github.com/openziti/ziti-cmd/blob/master/doc/003-local-deploy.md)
-* Follow one of these one these [quickstart guides](https://openziti.github.io/ziti-doc/ziti/quickstarts/networks-overview.html)to deploy _Ziti Edge Developer Edition_ to your AWS or Azure account 
+* Follow one of these one these [quickstart guides](https://openziti.github.io/ziti/quickstarts/networks-overview.html)to deploy _Ziti Edge Developer Edition_ to your AWS or Azure account 
 * Subscribe to a [free trial](https://nfconsole.io/login) of NetFoundry's managed service
 
 You will need to configure a service to intercept, such as

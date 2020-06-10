@@ -3,7 +3,7 @@
 
 An SDK for accessing Ziti from macOS and iOS applications using the Swift programming language.
 
-This SDK provides a Swift-friendly wrapper of the [Ziti C SDK](https://openziti.github.io/ziti-doc/api/clang/api/index.html), an implementation of `URLProtocol` for intercepting HTTP and HTTPS traffic, and examples of using the SDK in an application.
+This SDK provides a Swift-friendly wrapper of the [Ziti C SDK](https://openziti.github.io/api/clang/api/index.html), an implementation of `URLProtocol` for intercepting HTTP and HTTPS traffic, and examples of using the SDK in an application.
 
 # Usage
 The `Ziti` class is the main entry point for accessing Ziti networks. An instance of `Ziti` requires a `ZitiIdentity` at time of initialization.
@@ -253,8 +253,8 @@ The [`make_dist.sh`](make_dist.sh) script will package the static library, swift
 Please use these community resources for getting help. We use GitHub [issues](https://github.com/openziti/ziti-url-protocol/issues) 
 for tracking bugs and feature requests.
 
-- Read the [docs](https://openziti.github.io/ziti-doc/ziti/overview.html)
+- Read the [docs](https://openziti.github.io/ziti/overview.html)
 - Join our [Developer Community](https://openziti.org)
-- Participate in discussion on [Discourse](https://netfoundry.discourse.group/)
+- Participate in discussion on [Discourse](https://openziti.discourse.group/)
 
 Copyright&copy; 2020. NetFoundry, Inc.
