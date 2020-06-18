@@ -353,6 +353,10 @@ import Foundation
                 log.error("error closing uv loop: \(cStatus) \(errStr)")
                 return
             }
+        } else {
+            while !(runThread?.isCancelled ?? true) {
+                Thread.sleep(forTimeInterval: TimeInterval(1))
+            }
         }
     }
     
