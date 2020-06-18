@@ -241,7 +241,7 @@ import Foundation
     /// Use the `perform(_:)` to schedule work to be run on this thread.   `perform(_:)` can be called safely from other threads.
     ///
     /// Note that if a `uv_loop` is specified during `Ziti` initialization, running the loop is expected to occur outside of this call.  In this scenario,
-    /// this method initializes Ziti for connections using the configured `ZitiIdentity`
+    /// this method initializes Ziti for connections using the configured `ZitiIdentity` and blocks until the calling thread is cancelled.
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
@@ -371,20 +371,13 @@ import Foundation
         run(sa.initCallback)
     }
     
-    /// `run(_:)` and return, creating a new thread for execution if needed
-    ///
-    /// If `Ziti` is initialied with an external `uv_loop`, the `run(_:)` method is non-blocking.  If `Ziti` creates and manages its own loop
-    /// the `run(_:)` method blocks, and this method will create and start a new thread for execution
+    /// `Create a new thread for `run(_:)` and return
     ///
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
     @objc public func runAsync(_ initCallback: @escaping InitCallback) {
-        if privateLoop {
-            let arg = SelectorArg(initCallback)
-            Thread(target: self, selector: #selector(Ziti.runThreadWrapper), object: arg).start()
-        } else {
-            run(initCallback)
-        }
+        let arg = SelectorArg(initCallback)
+        Thread(target: self, selector: #selector(Ziti.runThreadWrapper), object: arg).start()
     }
     
     /// Shutdown the Ziti processing started via `run(_:)`.  This will cause the loop to exit once all scheduled activity on the loop completes
