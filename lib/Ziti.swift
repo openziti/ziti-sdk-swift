@@ -470,7 +470,7 @@ import Foundation
         }
     }
     
-    /// Perform an operation in the context of the Ziti run loop, potentially not until the next iteration of the loop
+    /// Perform an operation in an upcoming iteration of the loop
     ///
     /// Ziti is not threadsafe.  All operations must run on the same thread as `run(_:)`.  Use the `perform(_:)` method to execute
     /// the operation on the Ziti thread
@@ -478,14 +478,10 @@ import Foundation
     /// - Parameters:
     ///    - op: Escaping closure that executes on the same thread as `run(_:)  `
     @objc public func perform(_ op: @escaping PerformCallback) {
-        if Thread.current == runThread {
-            op()
-        } else {
-            opsQueueLock.lock()
-            opsQueue.append(op)
-            opsQueueLock.unlock()
-            uv_async_send(opsAsyncHandle)
-        }
+        opsQueueLock.lock()
+        opsQueue.append(op)
+        opsQueueLock.unlock()
+        uv_async_send(opsAsyncHandle)
     }
     
     /// Register a closure to be called when services are added, changed, or deletes
