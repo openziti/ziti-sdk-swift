@@ -261,11 +261,12 @@ import Foundation
             log.wtf("unable to determine request URL")
             return
         }
-        
+                
         var hdrMap:[String:String] = [:]
-        for i in 0..<resp.pointee.nh {
-            let hdr = resp.pointee.headers[Int(i)]
-            hdrMap[String(cString: hdr.name)] = String(cString: hdr.value)
+        var curr = resp.pointee.headers.lh_first
+        while curr != nil {
+            hdrMap[String(cString: curr!.pointee.name)] = String(cString: curr!.pointee.value)
+            curr = curr!.pointee._next.le_next
         }
                         
         // On TLS handshake error getting a negative response code (-53), notifyDidReceive
