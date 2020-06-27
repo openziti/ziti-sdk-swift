@@ -332,7 +332,6 @@ import Foundation
         } else {
             let data = Data(bytes: body!, count: len)
             mySelf.notifyDidLoad(data)
-            mySelf.finished = true
         }
         
         // Filter out all that are stopped and finished
