@@ -37,7 +37,12 @@ import Foundation
     var loop:UnsafeMutablePointer<uv_loop_t>!
     var privateLoop:Bool
     var ztx:ziti_context?
-    private var runThread:Thread?
+    
+    // This memory is held onto an used by C-SDK.  If not using a private loop we need to make sure these three things
+    // stay in memory
+    private var tls: UnsafeMutablePointer<tls_context>?
+    private var ctrlPtr: UnsafeMutablePointer<Int8>?
+    private var nfOpts: ziti_options?
     
     /// Type used for escaping  closure called follwing initialize of Ziti connectivity
     ///
@@ -278,7 +283,7 @@ import Foundation
         
         // setup TL
         let caLen = (id.ca == nil ? 0 : id.ca!.count + 1)
-        let tls = default_tls_context(id.ca?.cString(using: .utf8), caLen)
+        tls = default_tls_context(id.ca?.cString(using: .utf8), caLen)
         let tlsStat = tls?.pointee.api.pointee.set_own_cert(tls?.pointee.ctx,
                                               certPEM.cString(using: .utf8),
                                               certPEM.count + 1,
@@ -306,14 +311,13 @@ import Foundation
         }
                 
         // remove compiler warning on cztAPI memory living past the inti call
-        let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
-        ctrlPtr.initialize(from: cztAPI, count: id.ztAPI.count + 1)
-        defer { ctrlPtr.deallocate() }
+        ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
+        ctrlPtr!.initialize(from: cztAPI, count: id.ztAPI.count + 1)
         
         // init NF
         self.initCallback = initCallback
         
-        var nfOpts = ziti_options(config: nil,
+        nfOpts = ziti_options(config: nil,
                                 controller: ctrlPtr,
                                 tls:tls,
                                 config_types: ziti_all_configs,
@@ -323,7 +327,7 @@ import Foundation
                                 router_keepalive: 0,
                                 ctx: self.toVoidPtr())
         
-        let initStatus = ziti_init_opts(&nfOpts, loop, self.toVoidPtr())
+        let initStatus = ziti_init_opts(&(nfOpts!), loop, self.toVoidPtr())
         guard initStatus == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
             log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
@@ -336,10 +340,9 @@ import Foundation
         //uv_mbed_set_debug(5, stdout)
         
         // Save off reference to current thread and run the loop
-        runThread = Thread.current
-        runThread?.name = "ziti_uv_loop"
-        
         if privateLoop {
+            Thread.current.name = "ziti_uv_loop"
+            
             let rStatus = uv_run(loop, UV_RUN_DEFAULT)
             guard rStatus == 0 else {
                 let errStr = String(cString: uv_strerror(rStatus))
@@ -347,16 +350,13 @@ import Foundation
                 initCallback(ZitiError(errStr, errorCode: Int(rStatus)))
                 return
             }
+            log.info("uv loop complete with status 0")
             
             let cStatus = uv_loop_close(loop)
             if cStatus != 0 {
                 let errStr = String(cString: uv_strerror(cStatus))
                 log.error("error closing uv loop: \(cStatus) \(errStr)")
                 return
-            }
-        } else {
-            while !(runThread?.isCancelled ?? true) {
-                Thread.sleep(forTimeInterval: TimeInterval(1))
             }
         }
     }
