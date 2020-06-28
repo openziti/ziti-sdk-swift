@@ -341,7 +341,7 @@ import Foundation
         
         // Save off reference to current thread and run the loop
         if privateLoop {
-            Thread.current.name = "ziti_uv_loop"
+            Thread.current.name = "ziti_uv_loop_private"
             
             let rStatus = uv_run(loop, UV_RUN_DEFAULT)
             guard rStatus == 0 else {
