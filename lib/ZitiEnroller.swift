@@ -129,13 +129,6 @@ import Foundation
             cb(nil, nil, ZitiError(errStr, errorCode: Int(runStatus)))
             return
         }
-        
-        let closeStatus = uv_loop_close(&loop)
-        guard closeStatus == 0 else {
-            // Don't bother logging as this will always return UV_EBUSY since ziti_enroll is leaving stuff unclosed on the loop
-            // log.error("error \(closeStatus) closing uv loop \(String(cString: uv_strerror(closeStatus)))")
-            return
-        }
     }
     
     /**
