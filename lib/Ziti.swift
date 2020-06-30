@@ -452,6 +452,13 @@ import Foundation
         return (up, down)
     }
     
+    /// Output debugging information to standard out
+    ///
+    /// This method must be called in an interation of the loop
+    @objc public func dump() {
+        ziti_dump(ztx)
+    }
+    
     /// Checks availability of service
     ///
     /// The supplied name is case sensitive. Note that this function is not synchronous
