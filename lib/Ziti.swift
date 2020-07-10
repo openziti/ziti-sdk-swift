@@ -324,6 +324,7 @@ import Foundation
                                 init_cb: Ziti.onInit,
                                 service_cb: Ziti.onService,
                                 refresh_interval: 30,
+                                metrics_type: EWMA_1m,
                                 router_keepalive: 0,
                                 ctx: self.toVoidPtr())
         
