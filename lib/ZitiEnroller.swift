@@ -36,12 +36,22 @@ import Foundation
             
             /// root certificates for trusting the Ziti Controller
             ca:String?
+            
+            init(cert:String, key:String?, ca:String?) {
+                self.cert = cert
+                self.key = key
+                self.ca = ca
+            }
         }
         
         /**
          * URL of controller returned on successful enrollment attempt
          */
         public let ztAPI:String, id:Identity
+        init(ztAPI:String, id:Identity) {
+            self.ztAPI = ztAPI
+            self.id = id
+        }
     }
     
     /**
@@ -67,8 +77,18 @@ import Foundation
      *      - error: `ZitiError` containing error information on failed enrollment attempt
      */
     public typealias EnrollmentCallback = (_ resp:EnrollmentResponse?, _ subj:String?, _ error:ZitiError?) -> Void
-    var enrollmentCallback:EnrollmentCallback?
-    var subj:String?
+    
+    class EnrollmentRequestData : NSObject, ZitiUnretained {
+        var subj:String?
+        var enrollmentCallback:EnrollmentCallback?
+        var jwtFile_c:UnsafeMutablePointer<Int8>?
+        var privatePem_c:UnsafeMutablePointer<Int8>?
+        
+        deinit {
+            jwtFile_c?.deallocate()
+            privatePem_c?.deallocate()
+        }
+    }
     
     /**
      * Enroll a Ziti identity using a supplied `uv_loop_t` and JWT file
@@ -88,12 +108,20 @@ import Foundation
             cb(nil, nil, ZitiError(errStr))
             return
         }
-        self.subj = subj
-        enrollmentCallback = cb
+                        
+        let enrollData = UnsafeMutablePointer<EnrollmentRequestData>.allocate(capacity: 1)
+        enrollData.initialize(to: EnrollmentRequestData())
+        enrollData.pointee.enrollmentCallback = cb
+        enrollData.pointee.subj = subj
+        enrollData.pointee.jwtFile_c = UnsafeMutablePointer<Int8>.allocate(capacity: jwtFile.count + 1)
+        enrollData.pointee.jwtFile_c!.initialize(from: jwtFile.cString(using: .utf8)!, count: jwtFile.count + 1)
+        enrollData.pointee.privatePem_c = UnsafeMutablePointer<Int8>.allocate(capacity: privatePem.count + 1)
+        enrollData.pointee.privatePem_c!.initialize(from: privatePem.cString(using: .utf8)!, count: privatePem.count + 1)
         
-        let status = ziti_enroll_with_key(jwtFile.cString(using: .utf8),
-                               privatePem.cString(using: .utf8),
-                               loop, ZitiEnroller.on_enroll, self.toVoidPtr())
+        var enroll_opts = ziti_enroll_opts(jwt: enrollData.pointee.jwtFile_c,
+                                           enroll_key: enrollData.pointee.privatePem_c,
+                                           enroll_cert: nil)
+        let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
         guard status == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(status))
             log.error(errStr)
@@ -166,36 +194,53 @@ import Foundation
     //
     // Private
     //
-    static let on_enroll:ziti_enroll_cb = { json, len, errMsg, ctx in
-        guard let mySelf = zitiUnretained(ZitiEnroller.self, ctx) else {
-            log.wtf("unable to decode context")
+    static let on_enroll:ziti_enroll_cb = { zc, status, errMsg, ctx in
+        guard let enrollData = ctx?.assumingMemoryBound(to: EnrollmentRequestData.self) else {
+            log.wtf("unable to decode context", function:"on_enroll()")
             return
         }
-        guard let json = json, errMsg == nil else {
-            let errStr = (errMsg != nil ?  String(cString: errMsg!) : "Unspecified enrollment error")
+        guard errMsg == nil else {
+            let errStr = String(cString: errMsg!)
             log.error(errStr, function:"on_enroll()")
-            let ze = ZitiError(errStr, errorCode: Int(len))
-            mySelf.enrollmentCallback?(nil, nil, ze)
+            let ze = ZitiError(errStr, errorCode: Int(status))
+            enrollData.pointee.enrollmentCallback?(nil, nil, ze)
+            return
+        }
+        guard status == ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(status))
+            log.error(errStr, function:"on_enroll()")
+            let ze = ZitiError(errStr, errorCode: Int(status))
+            enrollData.pointee.enrollmentCallback?(nil, nil, ze)
+            return
+        }
+        guard let zc = zc?.pointee else {
+            log.wtf("invalid config", function:"on_enroll()")
+            return
+        }
+        guard let cert = String(cString: zc.id.cert, encoding: .utf8) else {
+            let errStr = "Unable to convert cert to string"
+            log.error(errStr, function:"on_enroll()")
+            let ze = ZitiError(errStr, errorCode: -1)
+            enrollData.pointee.enrollmentCallback?(nil, nil, ze)
             return
         }
         
-        // Bad format coming back from C SDK.  Invalid json ("\n" rather than "\\n" in values)
-        var s = String(cString: json)
-        s = s.replacingOccurrences(of: "\n\t", with: "")
-        s = s.replacingOccurrences(of: "\n}", with: "}")
-        s = s.replacingOccurrences(of: "\n", with: "\\n")
-                
-        let enrollResp = try? JSONDecoder().decode(
-            EnrollmentResponse.self,
-            from: Data(s.utf8))
-        guard enrollResp != nil  else {
-            let errStr = "enroll error: unable to parse result"
-            log.error(errStr)
-            var ze = ZitiError(errStr)
-            mySelf.enrollmentCallback?(nil, nil, ze)
+        guard let ztAPI = String(cString: zc.controller_url, encoding: .utf8) else {
+            let errStr = "Invaid ztAPI response"
+            log.error(errStr, function:"on_enroll()")
+            let ze = ZitiError(errStr, errorCode: -1)
+            enrollData.pointee.enrollmentCallback?(nil, nil, ze)
             return
         }
-        mySelf.enrollmentCallback?(enrollResp, mySelf.subj, nil)
+        
+        let id = EnrollmentResponse.Identity(cert: cert,
+                                             key: String(cString: zc.id.key, encoding: .utf8),
+                                             ca: String(cString: zc.id.ca, encoding: .utf8))
+        let enrollResp = EnrollmentResponse(ztAPI: ztAPI, id: id)
+        
+        enrollData.pointee.enrollmentCallback?(enrollResp, enrollData.pointee.subj, nil)
+        enrollData.deinitialize(count: 1)
+        enrollData.deallocate()
     }
     
     //
