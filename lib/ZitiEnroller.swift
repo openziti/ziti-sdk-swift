@@ -199,6 +199,12 @@ import Foundation
             log.wtf("unable to decode context", function:"on_enroll()")
             return
         }
+        
+        defer {
+            enrollData.deinitialize(count: 1)
+            enrollData.deallocate()
+        }
+        
         guard errMsg == nil else {
             let errStr = String(cString: errMsg!)
             log.error(errStr, function:"on_enroll()")
@@ -224,7 +230,6 @@ import Foundation
             enrollData.pointee.enrollmentCallback?(nil, nil, ze)
             return
         }
-        
         guard let ztAPI = String(cString: zc.controller_url, encoding: .utf8) else {
             let errStr = "Invaid ztAPI response"
             log.error(errStr, function:"on_enroll()")
@@ -237,10 +242,7 @@ import Foundation
                                              key: String(cString: zc.id.key, encoding: .utf8),
                                              ca: String(cString: zc.id.ca, encoding: .utf8))
         let enrollResp = EnrollmentResponse(ztAPI: ztAPI, id: id)
-        
         enrollData.pointee.enrollmentCallback?(enrollResp, enrollData.pointee.subj, nil)
-        enrollData.deinitialize(count: 1)
-        enrollData.deallocate()
     }
     
     //
