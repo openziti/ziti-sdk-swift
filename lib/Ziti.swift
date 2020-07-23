@@ -200,6 +200,7 @@ import Foundation
         
         // Create private key
         let zkc = ZitiKeychain(tag: subj)
+        _ = zkc.deleteKeyPair(silent:true) // certain failure/retry scenarios can cause the key & cert to already exist
         guard let privKey = zkc.createPrivateKey() else {
             let errStr = "unable to generate private key"
             log.error(errStr, function:"enroll()")
@@ -218,6 +219,7 @@ import Foundation
             
             // Store certificate
             let cert = dropFirst("pem:", resp.id.cert)
+            _ = zkc.deleteCertificate(silent: true)
             guard zkc.storeCertificate(fromPem: cert) == nil else {
                 let errStr = "Unable to store certificate\n"
                 log.error(errStr, function:"enroll()")
@@ -281,7 +283,7 @@ import Foundation
         }
         let privKeyPEM = zkc.getKeyPEM(privKey)
         
-        // setup TL
+        // setup TLS
         let caLen = (id.ca == nil ? 0 : id.ca!.count + 1)
         tls = default_tls_context(id.ca?.cString(using: .utf8), caLen)
         let tlsStat = tls?.pointee.api.pointee.set_own_cert(tls?.pointee.ctx,
