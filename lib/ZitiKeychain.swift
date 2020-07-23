@@ -114,12 +114,12 @@ public class ZitiKeychain : NSObject {
         return SecItemDelete(deleteQuery as CFDictionary)
     }
     
-    func deleteKeyPair() -> ZitiError? {
+    func deleteKeyPair(silent:Bool=false) -> ZitiError? {
         _ = deleteKey(kSecAttrKeyClassPublic)
         let status = deleteKey(kSecAttrKeyClassPrivate)
         guard status == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-            log.error(errStr)
+            if !silent { log.error(errStr) }
             return ZitiError("Unable to delete key pair for \(tag): \(errStr)", errorCode: Int(status))
         }
         return nil
@@ -258,7 +258,7 @@ public class ZitiKeychain : NSObject {
         return (certData, nil)
     }
     
-    func deleteCertificate() -> ZitiError? {
+    func deleteCertificate(silent:Bool=false) -> ZitiError? {
         let params: [CFString: Any] = [
             kSecClass: kSecClassCertificate,
             kSecReturnRef: kCFBooleanTrue!,
@@ -269,7 +269,7 @@ public class ZitiKeychain : NSObject {
         let copyStatus = SecItemCopyMatching(params as CFDictionary, &cert)
         guard copyStatus == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(copyStatus, nil) as String? ?? "\(copyStatus)"
-            log.error(errStr)
+            if !silent { log.error(errStr) }
             return ZitiError("Unable to find certificate for \(tag): \(errStr)", errorCode: Int(copyStatus))
         }
         
@@ -281,7 +281,7 @@ public class ZitiKeychain : NSObject {
         let deleteStatus = SecItemDelete(delParams as CFDictionary)
         guard deleteStatus == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(deleteStatus, nil) as String? ?? "\(deleteStatus)"
-            log.error(errStr)
+            if !silent { log.error(errStr) }
             return ZitiError("Unable to delete certificate for \(tag): \(errStr)", errorCode: Int(deleteStatus))
         }
         return nil
