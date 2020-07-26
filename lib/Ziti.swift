@@ -327,7 +327,7 @@ import Foundation
                                 service_cb: Ziti.onService,
                                 refresh_interval: 30,
                                 metrics_type: EWMA_1m,
-                                router_keepalive: 0,
+                                router_keepalive: 5,
                                 ctx: self.toVoidPtr())
         
         let initStatus = ziti_init_opts(&(nfOpts!), loop, self.toVoidPtr())
