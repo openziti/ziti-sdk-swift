@@ -15,26 +15,22 @@
 		5A0AC9412477424A0021E8D9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5A0AC93F2477424A0021E8D9 /* LaunchScreen.storyboard */; };
 		5A0AC9442477424A0021E8D9 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC9432477424A0021E8D9 /* main.m */; };
 		5A0AC9482477427F0021E8D9 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */; };
-		5A0AC94F247783440021E8D9 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC94E247783440021E8D9 /* Bridge.swift */; };
 		5A0E4A8B24530E1E00C56DCF /* libziti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8A24530E1E00C56DCF /* libziti.a */; };
 		5A0E4A8C24530E2500C56DCF /* libziti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8A24530E1E00C56DCF /* libziti.a */; };
 		5A0E4A8E24534DDE00C56DCF /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8D24534DDE00C56DCF /* libsodium.a */; };
 		5A0E4A8F24534DE500C56DCF /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8D24534DDE00C56DCF /* libsodium.a */; };
+		5A411E0B251FE40B005EE351 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC94E247783440021E8D9 /* Bridge.swift */; };
 		5AAAEDE62464D8AB00C56383 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDE52464D8AB00C56383 /* main.swift */; };
 		5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
 		5AB6DF7E244B8F2000F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
 		5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */; };
-		5AB6DF81244B8F2000F4B4E0 /* libuv_link.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7A244B8F2000F4B4E0 /* libuv_link.a */; };
 		5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
 		5AB6DF83244B8F2000F4B4E0 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */; };
-		5AB6DF84244B8F2000F4B4E0 /* libhttp-parser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7D244B8F2000F4B4E0 /* libhttp-parser.a */; };
-		5AB6DFB8244BA63B00F4B4E0 /* libhttp-parser.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7D244B8F2000F4B4E0 /* libhttp-parser.a */; };
 		5AB6DFB9244BA63F00F4B4E0 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */; };
 		5AB6DFBA244BA64300F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
 		5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
 		5AB6DFBC244BA64B00F4B4E0 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */; };
-		5AB6DFBD244BA64F00F4B4E0 /* libuv_link.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7A244B8F2000F4B4E0 /* libuv_link.a */; };
 		5AB6DFBE244BA65400F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB8309F247432C40089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
@@ -219,10 +215,8 @@
 				5AB6DF7E244B8F2000F4B4E0 /* libuv_mbed.a in Frameworks */,
 				5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */,
 				5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */,
-				5AB6DF81244B8F2000F4B4E0 /* libuv_link.a in Frameworks */,
 				5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */,
 				5AB6DF83244B8F2000F4B4E0 /* libuv_a.a in Frameworks */,
-				5AB6DF84244B8F2000F4B4E0 /* libhttp-parser.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,9 +229,7 @@
 				5AB6DFB9244BA63F00F4B4E0 /* libmbedcrypto.a in Frameworks */,
 				5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */,
 				5AB6DFBA244BA64300F4B4E0 /* libmbedtls.a in Frameworks */,
-				5AB6DFBD244BA64F00F4B4E0 /* libuv_link.a in Frameworks */,
 				5A0E4A8F24534DE500C56DCF /* libsodium.a in Frameworks */,
-				5AB6DFB8244BA63B00F4B4E0 /* libhttp-parser.a in Frameworks */,
 				5A0E4A8C24530E2500C56DCF /* libziti.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -576,7 +568,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5A0AC94F247783440021E8D9 /* Bridge.swift in Sources */,
+				5A411E0B251FE40B005EE351 /* Bridge.swift in Sources */,
 				5A0AC939247742470021E8D9 /* ViewController.m in Sources */,
 				5A0AC933247742470021E8D9 /* AppDelegate.m in Sources */,
 				5A0AC9442477424A0021E8D9 /* main.m in Sources */,
@@ -771,11 +763,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/http-parser",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
+					"$(inherited)",
 					"$(PROJECT_DIR)/include/$(PLATFORM_NAME)",
 				);
 				INFOPLIST_FILE = "sample-ios-objc/Info.plist";
@@ -847,11 +835,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/http-parser",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
+					"$(inherited)",
 					"$(PROJECT_DIR)/include/$(PLATFORM_NAME)",
 				);
 				INFOPLIST_FILE = "sample-ios-objc/Info.plist";
@@ -876,18 +860,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/http-parser",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv_link-src/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/mbedtls/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/mbedtls/crypto/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/libuv",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/library",
 				);
@@ -900,18 +883,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/http-parser",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/deps/uv-mbed/deps/libuv/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv_link-src/include",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/mbedtls/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/mbedtls/crypto/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/deps/uv-mbed/deps/libuv",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
 					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/library",
 				);
