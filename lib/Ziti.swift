@@ -38,6 +38,9 @@ import Foundation
     var privateLoop:Bool
     var ztx:ziti_context?
     
+    // temporary until user data available for posture checks
+    static var postureContexts:[ziti_context:Ziti?] = [:]
+    
     // This memory is held onto an used by C-SDK.  If not using a private loop we need to make sure these three things
     // stay in memory
     private var tls: UnsafeMutablePointer<tls_context>?
@@ -50,6 +53,7 @@ import Foundation
     ///      - error: `ZitiError` containing error information on failed initialization attempt
     public typealias InitCallback = (ZitiError?) -> Void
     private var initCallback:InitCallback?
+    private var postureChecks:ZitiPostureChecks?
     
     /// Type used for closure called when changes to services are detected or a call to `serviceAvailable(_:_:)` is made
     ///
@@ -242,6 +246,18 @@ import Foundation
     
     // MARK: Ziti Operational Methods
     
+    /// Convienience method for calling `run(_:_)` with `nil` posture check support
+    ///
+    /// - Parameters:
+    ///     - initCallback: called when intialization with the Ziti controller is complete
+    ///
+    /// - See also:
+    ///     - `run(_:_)`
+    ///     - `runAsync(_:)`
+    @objc public func run(_ initCallback: @escaping InitCallback) {
+        run(nil,  initCallback)
+    }
+    
     /// Execute a permanant loop processing data from all attached sources (including Ziti)
     ///
     /// Start `Ziti` processing via this method.  All Ziti processing occurs in the same thread as this call and all callbacks run on this thread.
@@ -251,11 +267,12 @@ import Foundation
     /// this method initializes Ziti for connections using the configured `ZitiIdentity` and blocks until the calling thread is cancelled.
     ///
     /// - Parameters:
+    ///     - postureChecks: provide (optional) support for posture checks
     ///     - initCallback: called when intialization with the Ziti controller is complete
     ///
     /// - See also:
     ///     - `runAsync(_:)`
-    @objc public func run(_ initCallback: @escaping InitCallback) {
+    @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
         guard let cztAPI = id.ztAPI.cString(using: .utf8) else {
             let errStr = "unable to convert controller URL (ztAPI) to C string"
             log.error(errStr)
@@ -318,6 +335,7 @@ import Foundation
         
         // init NF
         self.initCallback = initCallback
+        self.postureChecks = postureChecks
         
         nfOpts = ziti_options(config: nil,
                                 controller: ctrlPtr,
@@ -328,7 +346,11 @@ import Foundation
                                 refresh_interval: 30,
                                 metrics_type: EWMA_1m,
                                 router_keepalive: 5,
-                                ctx: self.toVoidPtr())
+                                ctx: self.toVoidPtr(),
+                                pq_mac_cb: Ziti.onMacQuery,
+                                pq_os_cb:  Ziti.onOsQuery,
+                                pq_process_cb: Ziti.onProcessQuery,
+                                pq_domain_cb: Ziti.onDomainQuery)
         
         let initStatus = ziti_init_opts(&(nfOpts!), loop, self.toVoidPtr())
         guard initStatus == ZITI_OK else {
@@ -367,12 +389,14 @@ import Foundation
     // need to wrap initCallback in NSObject to pass through selector
     class SelectorArg : NSObject {
         let initCallback:InitCallback
-        init(_ initCallback: @escaping InitCallback) {
+        var postureChecks:ZitiPostureChecks?
+        init(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
+            self.postureChecks = postureChecks
             self.initCallback = initCallback
         }
     }
     @objc func runThreadWrapper(_ sa:SelectorArg) {
-        run(sa.initCallback)
+        run(sa.postureChecks, sa.initCallback)
     }
     
     /// `Create a new thread for `run(_:)` and return
@@ -380,7 +404,17 @@ import Foundation
     /// - Parameters:
     ///     - initCallback: called when intialization with the Ziti controller is complete
     @objc public func runAsync(_ initCallback: @escaping InitCallback) {
-        let arg = SelectorArg(initCallback)
+        let arg = SelectorArg(nil, initCallback)
+        Thread(target: self, selector: #selector(Ziti.runThreadWrapper), object: arg).start()
+    }
+    
+    /// `Create a new thread for `run(_:)` and return
+    ///
+    /// - Parameters:
+    ///     - postureChecks:provide (optional) support for posture checking
+    ///     - initCallback: called when intialization with the Ziti controller is complete
+    @objc public func runAsync(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
+        let arg = SelectorArg(postureChecks, initCallback)
         Thread(target: self, selector: #selector(Ziti.runThreadWrapper), object: arg).start()
     }
     
@@ -521,6 +555,7 @@ import Foundation
             return
         }
         mySelf.ztx = ztx
+        Ziti.postureContexts[ztx!] = mySelf
         
         // update zid name
         if let czid = ziti_get_identity(ztx) {
@@ -529,6 +564,117 @@ import Foundation
             mySelf.id.name = name
         }
         mySelf.initCallback?(nil)
+    }
+    
+    static private let onMacQuery:ziti_pq_mac_cb = { ztx, id, cb in
+        guard let ztx = ztx, let id = id, let cb = cb, let mySelf = Ziti.postureContexts[ztx] else {
+            log.wtf("invalid context", function:"onMacQuery()")
+            return
+        }
+        guard let query = mySelf?.postureChecks?.macQuery else {
+            log.warn("query not configured", function: "onMacQuery()")
+            cb(ztx, id, nil, 0)
+            return
+        }
+        query(ZitiMacContext(ztx, id, cb), Ziti.onMacResponse)
+    }
+    
+    static private let onMacResponse:ZitiPostureChecks.MacResponse = { ctx, macArray in
+        let macCtx = ctx as! ZitiMacContext
+        //log.info("MAC posture response: \(macArray)",function:"onMacResponse()")
+        withArrayOfCStrings(macArray) { arr in
+            let cp = copyStringArray(arr, Int32(arr.count))
+            macCtx.cb(macCtx.ztx, ctx.id, cp, Int32(macArray.count))
+            freeStringArray(cp)
+        }
+    }
+    
+    static private let onOsQuery:ziti_pq_os_cb = { ztx, id, cb in
+        guard let ztx = ztx, let id = id, let cb = cb, let mySelf = Ziti.postureContexts[ztx] else {
+            log.wtf("invalid context", function:"onOsQuery()")
+            return
+        }
+        guard let query = mySelf?.postureChecks?.osQuery else {
+            log.warn("query not configured", function: "onOsQuery()")
+            cb(ztx, id, nil, nil, nil)
+            return
+        }
+        query(ZitiOsContext(ztx, id, cb), Ziti.onOsResponse)
+    }
+    
+    static private let onOsResponse:ZitiPostureChecks.OsResponse = { ctx, type, version, build in
+        let osCtx = ctx as! ZitiOsContext
+        
+        //log.info("OS posture response: type=\(type), version=\(version), build=\(build)", function:"onOsResponse()")
+        
+        // C SDK didn't use `const` for strings, so need to copy 'em
+        let cType = copyString(type.cString(using: .utf8))
+        let cVersion = copyString(version.cString(using: .utf8))
+        let cBuild = copyString(build.cString(using: .utf8))
+        
+        osCtx.cb(osCtx.ztx, osCtx.id, cType, cVersion,  cBuild)
+        
+        freeString(cType)
+        freeString(cVersion)
+        freeString(cBuild)
+    }
+    
+    static private let onProcessQuery:ziti_pq_process_cb = { ztx, id, path, cb in
+        guard let ztx = ztx, let id = id, let cb = cb, let mySelf = Ziti.postureContexts[ztx] else {
+            log.wtf("invalid context", function:"onProcessQuery()")
+            return
+        }
+        guard let query = mySelf?.postureChecks?.processQuery else {
+            log.warn("query not configured", function: "onProcessQuery()")
+            cb(ztx, id, nil, false, nil, nil, 0)
+            return
+        }
+        
+        let strPath = path != nil ? String(cString: path!) : ""
+        query(ZitiProcessContext(ztx, id, cb), strPath, Ziti.onProcessResponse)
+    }
+    
+    static private let onProcessResponse:ZitiPostureChecks.ProcessResponse = { ctx, path, isRunning, hash, signers in
+        let pCtx = ctx as! ZitiProcessContext
+        
+        //log.info("OS process response: path=\(path), isRunning=\(isRunning), hash=\(hash), signers=\(signers)", function:"onProcessResponse()")
+        
+        // C SDK didn't use `const` for strings, so need to copy 'em
+        let cPath = copyString(path.cString(using: .utf8))
+        let cHash = copyString(hash.cString(using: .utf8))
+        
+        withArrayOfCStrings(signers) { arr in
+            let cp = copyStringArray(arr, Int32(arr.count))
+            pCtx.cb(pCtx.ztx, ctx.id, cPath, isRunning, cHash, cp, Int32(signers.count))
+            freeStringArray(cp)
+        }
+                
+        freeString(cPath)
+        freeString(cHash)
+    }
+    
+    static private let onDomainQuery:ziti_pq_domain_cb = { ztx, id, cb in
+        guard let ztx = ztx, let id = id, let cb = cb, let mySelf = Ziti.postureContexts[ztx] else {
+            log.wtf("invalid context", function:"onDomainQuery()")
+            return
+        }
+        guard let query = mySelf?.postureChecks?.domainQuery else {
+            log.warn("query not configured", function: "onDomainQuery()")
+            cb(ztx, id, nil)
+            return
+        }
+        query(ZitiDomainContext(ztx, id, cb), Ziti.onDomainResponse)
+    }
+    
+    static private let onDomainResponse:ZitiPostureChecks.DomainResponse = { ctx, domain in
+        let dCtx = ctx as! ZitiDomainContext
+        
+        //log.info("Domain posture response: domain=\(domain)", function:"onDomainResponse()")
+        
+        // C SDK didn't use `const` for strings, so need to copy 'em
+        let cDomain = copyString(domain.cString(using: .utf8))
+        dCtx.cb(dCtx.ztx, dCtx.id, cDomain)
+        freeString(cDomain)
     }
     
     static private let onPerformOps:uv_async_cb = { h in
@@ -594,4 +740,44 @@ import Foundation
         }
     }
     var serviceAvaialbleRequests:[ServiceAvailableRequest] = []
+}
+
+// from: https://github.com/apple/swift/blob/dfc3933a05264c0c19f7cd43ea0dca351f53ed48/stdlib/private/SwiftPrivate/SwiftPrivate.swift#L68
+func withArrayOfCStrings<R>(
+  _ args: [String],
+  _ body: ([UnsafeMutablePointer<CChar>?]) -> R
+) -> R {
+  let argsCounts = Array(args.map { $0.utf8.count + 1 })
+  let argsOffsets = [ 0 ] + scan(argsCounts, 0, +)
+  let argsBufferSize = argsOffsets.last!
+
+  var argsBuffer: [UInt8] = []
+  argsBuffer.reserveCapacity(argsBufferSize)
+  for arg in args {
+    argsBuffer.append(contentsOf: arg.utf8)
+    argsBuffer.append(0)
+  }
+
+  return argsBuffer.withUnsafeMutableBufferPointer {
+    (argsBuffer) in
+    let ptr = UnsafeMutableRawPointer(argsBuffer.baseAddress!).bindMemory(
+      to: CChar.self, capacity: argsBuffer.count)
+    var cStrings: [UnsafeMutablePointer<CChar>?] = argsOffsets.map { ptr + $0 }
+    cStrings[cStrings.count - 1] = nil
+    return body(cStrings)
+  }
+}
+
+// from: https://github.com/apple/swift/blob/dfc3933a05264c0c19f7cd43ea0dca351f53ed48/stdlib/private/SwiftPrivate/SwiftPrivate.swift#L28
+func scan<
+  S : Sequence, U
+>(_ seq: S, _ initial: U, _ combine: (U, S.Iterator.Element) -> U) -> [U] {
+  var result: [U] = []
+  result.reserveCapacity(seq.underestimatedCount)
+  var runningResult = initial
+  for element in seq {
+    runningResult = combine(runningResult, element)
+    result.append(runningResult)
+  }
+  return result
 }

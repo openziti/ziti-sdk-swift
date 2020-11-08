@@ -14,9 +14,30 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 static const char* _ziti_all[] = {
    "all", NULL
 };
 
 const char** ziti_all_configs = _ziti_all;
+
+char **copyStringArray(char *const arr[], int count) {
+    size_t sz = sizeof(char (**));
+    char **arrCpy = calloc((count + 1), sz);
+    memcpy(arrCpy, arr, count * sz);
+    return arrCpy;
+}
+
+void freeStringArray(char **arr) {
+    free(arr);
+}
+
+char *copyString(const char *str) {
+    return strdup(str);
+}
+
+void freeString(char *str) {
+    free(str);
+}
