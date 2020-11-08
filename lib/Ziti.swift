@@ -581,7 +581,11 @@ import Foundation
     
     static private let onMacResponse:ZitiPostureChecks.MacResponse = { ctx, macArray in
         let macCtx = ctx as! ZitiMacContext
-        //log.info("MAC posture response: \(macArray)",function:"onMacResponse()")
+        guard let macArray = macArray else {
+            macCtx.cb(macCtx.ztx, ctx.id, nil, 0)
+            return
+        }
+        
         withArrayOfCStrings(macArray) { arr in
             let cp = copyStringArray(arr, Int32(arr.count))
             macCtx.cb(macCtx.ztx, ctx.id, cp, Int32(macArray.count))
@@ -604,13 +608,11 @@ import Foundation
     
     static private let onOsResponse:ZitiPostureChecks.OsResponse = { ctx, type, version, build in
         let osCtx = ctx as! ZitiOsContext
-        
-        //log.info("OS posture response: type=\(type), version=\(version), build=\(build)", function:"onOsResponse()")
-        
+                
         // C SDK didn't use `const` for strings, so need to copy 'em
-        let cType = copyString(type.cString(using: .utf8))
-        let cVersion = copyString(version.cString(using: .utf8))
-        let cBuild = copyString(build.cString(using: .utf8))
+        let cType = type != nil ? copyString(type!.cString(using: .utf8)) : nil
+        let cVersion = version != nil ? copyString(version!.cString(using: .utf8)) : nil
+        let cBuild = build != nil ? copyString(build!.cString(using: .utf8)) : nil
         
         osCtx.cb(osCtx.ztx, osCtx.id, cType, cVersion,  cBuild)
         
@@ -636,17 +638,19 @@ import Foundation
     
     static private let onProcessResponse:ZitiPostureChecks.ProcessResponse = { ctx, path, isRunning, hash, signers in
         let pCtx = ctx as! ZitiProcessContext
-        
-        //log.info("OS process response: path=\(path), isRunning=\(isRunning), hash=\(hash), signers=\(signers)", function:"onProcessResponse()")
-        
+                
         // C SDK didn't use `const` for strings, so need to copy 'em
         let cPath = copyString(path.cString(using: .utf8))
-        let cHash = copyString(hash.cString(using: .utf8))
+        let cHash = hash != nil ? copyString(hash!.cString(using: .utf8)) : nil
         
-        withArrayOfCStrings(signers) { arr in
-            let cp = copyStringArray(arr, Int32(arr.count))
-            pCtx.cb(pCtx.ztx, ctx.id, cPath, isRunning, cHash, cp, Int32(signers.count))
-            freeStringArray(cp)
+        if let signers = signers {
+            withArrayOfCStrings(signers) { arr in
+                let cp = copyStringArray(arr, Int32(arr.count))
+                pCtx.cb(pCtx.ztx, ctx.id, cPath, isRunning, cHash, cp, Int32(signers.count))
+                freeStringArray(cp)
+            }
+        } else {
+            pCtx.cb(pCtx.ztx, pCtx.id, cPath, isRunning, cHash, nil, 0)
         }
                 
         freeString(cPath)
@@ -668,11 +672,9 @@ import Foundation
     
     static private let onDomainResponse:ZitiPostureChecks.DomainResponse = { ctx, domain in
         let dCtx = ctx as! ZitiDomainContext
-        
-        //log.info("Domain posture response: domain=\(domain)", function:"onDomainResponse()")
-        
+                
         // C SDK didn't use `const` for strings, so need to copy 'em
-        let cDomain = copyString(domain.cString(using: .utf8))
+        let cDomain = domain != nil ? copyString(domain!.cString(using: .utf8)) : nil
         dCtx.cb(dCtx.ztx, dCtx.id, cDomain)
         freeString(cDomain)
     }
