@@ -35,7 +35,7 @@ import Foundation
     /// - Parameters:
     ///     - ctx: posture context
     ///     - macAddresses: array of the mac addresses the host currently can access. Values should be hex strings. `nil` signifies not supported.
-    public typealias MacResponse = (_ ctx:ZitiPostureContext, _ macAddresses:[String]) -> Void
+    public typealias MacResponse = (_ ctx:ZitiPostureContext, _ macAddresses:[String]?) -> Void
     
     /// Postture query for MAC address
     ///
@@ -49,7 +49,7 @@ import Foundation
     /// - Parameters:
     ///     - ctx: posture context
     ///     - domain: Host domain. `nil` signifies not supported.
-    public typealias DomainResponse = (_ ctx:ZitiPostureContext, _ domain:String) -> Void
+    public typealias DomainResponse = (_ ctx:ZitiPostureContext, _ domain:String?) -> Void
     
     /// Postture query for Domain
     ///
@@ -65,7 +65,7 @@ import Foundation
     ///     - type: type of operating sytem (e.g., "macOS", "iOS")
     ///     - version: OS version
     ///     - build: OS build. `nil` signifies not supported
-    public typealias OsResponse = (_ ctx:ZitiPostureContext, _ type:String, _ version:String, _ build:String) -> Void
+    public typealias OsResponse = (_ ctx:ZitiPostureContext, _ type:String?, _ version:String?, _ build:String?) -> Void
     
     /// Postture query for Operating System
     ///
@@ -83,7 +83,7 @@ import Foundation
     ///     - hash: sha512 hash of the process's binary file
     ///     - signers: sha1 hex string fingerprints of the binary or `nil` if not supported
     public typealias ProcessResponse =
-        (_ ctx:ZitiPostureContext, _ path:String, _ isRunning:Bool, _ hash:String, _ signers:[String]) -> Void
+        (_ ctx:ZitiPostureContext, _ path:String, _ isRunning:Bool, _ hash:String?, _ signers:[String]?) -> Void
     
     /// Postture query for process information
     ///
