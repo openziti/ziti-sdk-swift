@@ -24,14 +24,16 @@ static const char* _ziti_all[] = {
 const char** ziti_all_configs = _ziti_all;
 
 char **copyStringArray(char *const arr[], int count) {
-    size_t sz = sizeof(char (**));
+    if (count == 0) return 0;
+        
+    size_t sz = sizeof(char**);
     char **arrCpy = calloc((count + 1), sz);
     memcpy(arrCpy, arr, count * sz);
     return arrCpy;
 }
 
 void freeStringArray(char **arr) {
-    free(arr);
+    if (arr) free(arr);
 }
 
 char *copyString(const char *str) {
@@ -39,5 +41,5 @@ char *copyString(const char *str) {
 }
 
 void freeString(char *str) {
-    free(str);
+    if (str) free(str);
 }
