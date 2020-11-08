@@ -23,3 +23,9 @@ extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 
 extern int ziti_debug_level;
 extern void uv_mbed_set_debug(int level, FILE *output);
+
+char **copyStringArray(char *const arr[], int count);
+void freeStringArray(char **arr);
+
+char *copyString(const char *str);
+void freeString(char *str);
