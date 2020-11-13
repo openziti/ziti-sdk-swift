@@ -35,7 +35,7 @@ jobs:
     script: 
       - ./ci_deps_cache.sh CZiti-macOS macosx x86_64 Release
       - rm *.podspec
-      - jazzy --hide-documentation-coverage
+      - jazzy --hide-documentation-coverage -x -arch,x86_64
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs
 
   - stage: 
