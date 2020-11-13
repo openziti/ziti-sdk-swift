@@ -1,6 +1,6 @@
 language: swift
 os: osx
-osx_image: xcode12
+osx_image: xcode12.2
 compiler: gcc
 
 install:
