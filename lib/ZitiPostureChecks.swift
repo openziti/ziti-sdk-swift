@@ -42,7 +42,7 @@ import Foundation
     /// - Parameters:
     ///     - ctx: posture context
     ///     - responseCallback: callback to invoke in response to this query
-    public typealias MacQuery = (_ ctx:ZitiPostureContext, _ responseCallback:MacResponse) -> Void
+    public typealias MacQuery = (_ ctx:ZitiPostureContext, _ responseCallback: @escaping MacResponse) -> Void
     
     /// Postture response for host domain query
     ///
@@ -56,7 +56,7 @@ import Foundation
     /// - Parameters:
     ///     - ctx: posture context
     ///     - responseCallback: callback to invoke in response to this query
-    public typealias DomainQuery = (_ ctx:ZitiPostureContext, _ responseCallback:DomainResponse) -> Void
+    public typealias DomainQuery = (_ ctx:ZitiPostureContext, _ responseCallback: @escaping DomainResponse) -> Void
     
     /// Postture response for host domain query
     ///
@@ -72,7 +72,7 @@ import Foundation
     /// - Parameters:
     ///     - ctx: posture context
     ///     - responseCallback: callback to invoke in response to this query
-    public typealias OsQuery = (_ ctx:ZitiPostureContext, _ responseCallback:OsResponse) -> Void
+    public typealias OsQuery = (_ ctx:ZitiPostureContext, _ responseCallback: @escaping OsResponse) -> Void
     
     /// Postture response for process query
     ///
@@ -90,7 +90,7 @@ import Foundation
     /// - Parameters:
     ///     - ctx: posture context
     ///     - responseCallback: callback to invoke in response to this query
-    public typealias ProcessQuery = (_ ctx:ZitiPostureContext, _ path:String,  _ responseCallback:ProcessResponse) -> Void
+    public typealias ProcessQuery = (_ ctx:ZitiPostureContext, _ path:String,  _ responseCallback: @escaping ProcessResponse) -> Void
     
     /// Optional support for query of MAC addresses
     @objc public var macQuery:MacQuery? = nil
