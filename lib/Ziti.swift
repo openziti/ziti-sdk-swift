@@ -581,15 +581,24 @@ import Foundation
     
     static private let onMacResponse:ZitiPostureChecks.MacResponse = { ctx, macArray in
         let macCtx = ctx as! ZitiMacContext
+        
+        guard let mySelf = Ziti.postureContexts[ctx.ztx] else {
+            log.wtf("invalid context", function:"onMacResponse()")
+            return
+        }
         guard let macArray = macArray else {
-            macCtx.cb(macCtx.ztx, ctx.id, nil, 0)
+            mySelf?.perform {
+                macCtx.cb(macCtx.ztx, ctx.id, nil, 0)
+            }
             return
         }
         
         withArrayOfCStrings(macArray) { arr in
-            let cp = copyStringArray(arr, Int32(arr.count))
-            macCtx.cb(macCtx.ztx, ctx.id, cp, Int32(macArray.count))
-            freeStringArray(cp)
+            mySelf?.perform {
+                let cp = copyStringArray(arr, Int32(arr.count))
+                macCtx.cb(macCtx.ztx, ctx.id, cp, Int32(macArray.count))
+                freeStringArray(cp)
+            }
         }
     }
     
@@ -608,17 +617,23 @@ import Foundation
     
     static private let onOsResponse:ZitiPostureChecks.OsResponse = { ctx, type, version, build in
         let osCtx = ctx as! ZitiOsContext
-                
-        // C SDK didn't use `const` for strings, so need to copy 'em
-        let cType = type != nil ? copyString(type!.cString(using: .utf8)) : nil
-        let cVersion = version != nil ? copyString(version!.cString(using: .utf8)) : nil
-        let cBuild = build != nil ? copyString(build!.cString(using: .utf8)) : nil
+        guard let mySelf = Ziti.postureContexts[ctx.ztx] else {
+            log.wtf("invalid context", function:"onOsResponse()")
+            return
+        }
         
-        osCtx.cb(osCtx.ztx, osCtx.id, cType, cVersion,  cBuild)
-        
-        freeString(cType)
-        freeString(cVersion)
-        freeString(cBuild)
+        mySelf?.perform {
+            // C SDK didn't use `const` for strings, so need to copy 'em
+            let cType = type != nil ? copyString(type!.cString(using: .utf8)) : nil
+            let cVersion = version != nil ? copyString(version!.cString(using: .utf8)) : nil
+            let cBuild = build != nil ? copyString(build!.cString(using: .utf8)) : nil
+            
+            osCtx.cb(osCtx.ztx, osCtx.id, cType, cVersion,  cBuild)
+            
+            freeString(cType)
+            freeString(cVersion)
+            freeString(cBuild)
+        }
     }
     
     static private let onProcessQuery:ziti_pq_process_cb = { ztx, id, path, cb in
@@ -638,23 +653,29 @@ import Foundation
     
     static private let onProcessResponse:ZitiPostureChecks.ProcessResponse = { ctx, path, isRunning, hash, signers in
         let pCtx = ctx as! ZitiProcessContext
-                
-        // C SDK didn't use `const` for strings, so need to copy 'em
-        let cPath = copyString(path.cString(using: .utf8))
-        let cHash = hash != nil ? copyString(hash!.cString(using: .utf8)) : nil
-        
-        if let signers = signers {
-            withArrayOfCStrings(signers) { arr in
-                let cp = copyStringArray(arr, Int32(arr.count))
-                pCtx.cb(pCtx.ztx, ctx.id, cPath, isRunning, cHash, cp, Int32(signers.count))
-                freeStringArray(cp)
-            }
-        } else {
-            pCtx.cb(pCtx.ztx, pCtx.id, cPath, isRunning, cHash, nil, 0)
+        guard let mySelf = Ziti.postureContexts[ctx.ztx] else {
+            log.wtf("invalid context", function:"onProcessResponse()")
+            return
         }
                 
-        freeString(cPath)
-        freeString(cHash)
+        mySelf?.perform {
+            // C SDK didn't use `const` for strings, so need to copy 'em
+            let cPath = copyString(path.cString(using: .utf8))
+            let cHash = hash != nil ? copyString(hash!.cString(using: .utf8)) : nil
+            
+            if let signers = signers {
+                withArrayOfCStrings(signers) { arr in
+                    let cp = copyStringArray(arr, Int32(arr.count))
+                    pCtx.cb(pCtx.ztx, ctx.id, cPath, isRunning, cHash, cp, Int32(signers.count))
+                    freeStringArray(cp)
+                }
+            } else {
+                pCtx.cb(pCtx.ztx, pCtx.id, cPath, isRunning, cHash, nil, 0)
+            }
+                    
+            freeString(cPath)
+            freeString(cHash)
+        }
     }
     
     static private let onDomainQuery:ziti_pq_domain_cb = { ztx, id, cb in
@@ -672,11 +693,17 @@ import Foundation
     
     static private let onDomainResponse:ZitiPostureChecks.DomainResponse = { ctx, domain in
         let dCtx = ctx as! ZitiDomainContext
+        guard let mySelf = Ziti.postureContexts[ctx.ztx] else {
+            log.wtf("invalid context", function:"onDomainResponse()")
+            return
+        }
                 
-        // C SDK didn't use `const` for strings, so need to copy 'em
-        let cDomain = domain != nil ? copyString(domain!.cString(using: .utf8)) : nil
-        dCtx.cb(dCtx.ztx, dCtx.id, cDomain)
-        freeString(cDomain)
+        mySelf?.perform {
+            // C SDK didn't use `const` for strings, so need to copy 'em
+            let cDomain = domain != nil ? copyString(domain!.cString(using: .utf8)) : nil
+            dCtx.cb(dCtx.ztx, dCtx.id, cDomain)
+            freeString(cDomain)
+        }
     }
     
     static private let onPerformOps:uv_async_cb = { h in
