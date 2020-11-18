@@ -33,7 +33,8 @@ jobs:
   - stage: build
     before_install: *uncached_install
     script: 
-      - ./ci_deps_cache.sh CZiti-macOS macosx x86_64 Release
+      - MYTOOLCHAIN="-DCMAKE_TOOLCHAIN_FILE=../toolchains/macOS-arm64.cmake" 
+      - ./ci_deps_cache.sh CZiti-macOS macosx "x86_64,arm64" Release
       - rm *.podspec
       - jazzy --hide-documentation-coverage -x -arch,x86_64
       - aws s3 sync ./docs s3://ziti-sdk-swift/${TRAVIS_BUILD_NUMBER}/docs

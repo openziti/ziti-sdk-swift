@@ -20,37 +20,49 @@ function do_build {
    sdk=$3
    toolchain=$4
 
-   c_sdk_build_dir=${C_SDK_ROOT}/build-${sdk}-${arch}
+   xcode_arch_arg=""
+   IFS=', ' read -r -a array <<< "$arch"
+   for a in "${array[@]}" ; do
+      c_sdk_build_dir=${C_SDK_ROOT}/build-${sdk}-${a}
 
-   # nuke C SDK build dir and re-create it
-   rm -rf ${c_sdk_build_dir}
-   if [ $? -ne 0 ] ;  then
-      echo "Unable to delete directory ${c_sdk_build_dir}"
-      exit 1
+      # nuke C SDK build dir and re-create it
+      rm -rf ${c_sdk_build_dir}
+      if [ $? -ne 0 ] ;  then
+         echo "Unable to delete directory ${c_sdk_build_dir}"
+         exit 1
+      fi
+
+      mkdir -p ${c_sdk_build_dir}
+      if [ $? -ne 0 ] ;  then
+         echo "Unable to create directory ${c_sdk_build_dir}"
+         exit 1
+      fi
+
+      cd ${c_sdk_build_dir}
+      if [[ "${toolchain}" =~ "${a}" ]] ; then
+         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../toolchains/${toolchain} .. && ninja
+      else
+         cmake -GNinja .. && ninja
+      fi
+
+      if [ $? -ne 0 ] ;  then
+         echo "FAILED building C SDK ${c_sdk_build_dir}"
+         exit 1
+      fi
+
+      xcode_arch_arg="${xcode_arch_arg} -arch ${a}"
+   done
+
+   n_arch="${#array[@]}"
+   if [ $n_arch -gt 1 ] ; then
+      xcode_arch_arg="${xcode_arch_arg} ONLY_ACTIVE_ARCH=NO"
    fi
 
-   mkdir -p ${c_sdk_build_dir}
-   if [ $? -ne 0 ] ;  then
-      echo "Unable to create directory ${c_sdk_build_dir}"
-      exit 1
-   fi
-
-   cd ${c_sdk_build_dir}
-   if [ -z "${toolchain}" ] ; then
-      cmake -GNinja .. && ninja
-   else
-      cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../toolchains/${toolchain} .. && ninja
-   fi
-
-   if [ $? -ne 0 ] ;  then
-      echo "FAILED building C SDK ${c_sdk_build_dir}"
-      exit 1
-   fi
 
    cd ${PROJECT_ROOT}
-   xcodebuild build -configuration ${CONFIGURATION} -scheme ${scheme} -derivedDataPath ${DERIVED_DATA_PATH} -arch ${arch} -sdk ${sdk}
+   xcodebuild build -configuration ${CONFIGURATION} -scheme ${scheme} -derivedDataPath ${DERIVED_DATA_PATH} ${xcode_arch_arg} -sdk ${sdk}
    if [ $? -ne 0 ] ;  then
-      echo "FAILED building ${scheme} ${CONFIGURATION} ${sdk} ${arch}"
+      echo "FAILED building ${scheme} ${CONFIGURATION} ${sdk} ${xcode_arch_arg}"
       exit 1
    fi
 }
@@ -62,7 +74,7 @@ if [ $? -ne 0 ] ; then
    exit 1
 fi
 
-do_build CZiti-macOS x86_64 macosx
+do_build CZiti-macOS "x86_64,arm64" macosx macOS-arm64.cmake
 do_build CZiti-iOS arm64 iphoneos iOS-arm64.cmake
 do_build CZiti-iOS x86_64 iphonesimulator iOS-x86_64.cmake
 
