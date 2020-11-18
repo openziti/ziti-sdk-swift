@@ -22,7 +22,7 @@ xcode_arch_arg=""
 IFS=', ' read -r -a array <<< "$ARCH"
 for a in "${array[@]}" ; do
 
-   C_SDK_BUILD_DIR="${C_SDK_ROOT}/build-${a}-${ARCH}"
+   C_SDK_BUILD_DIR="${C_SDK_ROOT}/build-${SDK}-${a}"
 
    C_SDK_REV=`git submodule status ${C_SDK_ROOT} | cut -d' ' -f2`
    C_SDK_REV_SHORT=`git rev-parse --short ${C_SDK_REV}`
