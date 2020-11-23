@@ -593,8 +593,8 @@ import Foundation
             return
         }
         
-        withArrayOfCStrings(macArray) { arr in
-            mySelf?.perform {
+        mySelf?.perform {
+            withArrayOfCStrings(macArray) { arr in
                 let cp = copyStringArray(arr, Int32(arr.count))
                 macCtx.cb(macCtx.ztx, ctx.id, cp, Int32(macArray.count))
                 freeStringArray(cp)
