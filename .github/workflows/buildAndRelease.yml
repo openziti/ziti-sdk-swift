@@ -97,6 +97,8 @@ jobs:
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
+      with:
+        xcode-version: '12.2'
 
     - name: Get Jazzy
       run: gem install jazzy
