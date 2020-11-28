@@ -97,6 +97,7 @@ jobs:
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
+        submodules: true
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
