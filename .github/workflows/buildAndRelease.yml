@@ -117,7 +117,7 @@ jobs:
 
   release:
     runs-on: macos-latest
-    needs: [ docs ]
+    needs: [ build-iOS, build-macOS, build-docs ]
     if: github.ref == 'refs/heads/master'
     steps:
     - name: Checkout Project
