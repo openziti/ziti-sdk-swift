@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
     s.license   = { :type => 'Apache-2.0', :file => 'LICENSE' }
 
     s.platform  = :ios
-    s.source    = { :http => "https://netfoundry.jfrog.io/artifactory/ziti-sdk-swift/#{s.version}/CZiti-iOS.framework.tgz" }
+    s.source    = { :http => "https://github.com/openziti/ziti-sdk-swift/releases/download/#{s.version}/CZiti-iOS.framework.tgz" }
 
     s.source_files  = '*.{swift,h,m}'
     s.swift_version = '5.0'
