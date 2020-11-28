@@ -1,5 +1,5 @@
 # Ziti SDK for Swift
-[![Build Status](https://travis-ci.com/openziti/ziti-sdk-swift.svg?branch=master)](https://travis-ci.com/openziti/ziti-sdk-swift)
+![Build Status](https://github.com/openziti/ziti-sdk-swift/workflows/CI/badge.svg?branch=master)
 
 An SDK for accessing Ziti from macOS and iOS applications using the Swift programming language.
 

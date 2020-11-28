@@ -1,4 +1,4 @@
-name: build and release
+name: CI
 on: push
 
 jobs:
