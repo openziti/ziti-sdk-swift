@@ -105,6 +105,11 @@ jobs:
     - name: Get Jazzy
       run: gem install jazzy
 
+    - name: Build C SDK
+      run: |
+        cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
+        cmake --build ./deps/ziti-sdk-c/build-macosx-x86_64 --target ziti
+
     - name: Gen Docs
       run: |
         rm *.podspec
