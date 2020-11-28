@@ -1,0 +1,211 @@
+name: CI
+on: push
+
+jobs:
+  build-iOS:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '12.2'
+
+    - name: Show Xcode CLI Version
+      run: xcode-select -p
+
+    - name: Show Build Settings
+      run: xcodebuild -showBuildSettings
+
+    - name: Show Build SDK
+      run: xcodebuild -showsdks
+
+    - name: Build iphoneos
+      run: |
+        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64
+        cmake --build ./deps/ziti-sdk-c/build-iphoneos-arm64 --target ziti
+        xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
+
+    - name: Build iphonesimulator
+      run: |
+        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
+        cmake --build ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 --target ziti
+        xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
+
+    - name: Create Framework
+      run: |
+        FOR=iOS ./make_dist.sh
+        tar -cvzf CZiti-iOS.framework.tgz -C ./dist/iOS/Release/Pods/CZiti-iOS/ .
+
+    - name: Upload Framework
+      uses: actions/upload-artifact@v2
+      with:
+        name: CZiti-iOS
+        path: CZiti-iOS.framework.tgz
+
+  build-macOS:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '12.2'
+
+    - name: Show Xcode CLI Version
+      run: xcode-select -p
+
+    - name: Show Build Settings
+      run: xcodebuild -showBuildSettings
+
+    - name: Show Build SDK
+      run: xcodebuild -showsdks
+
+    - name: Build x86_64
+      run: |
+        cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
+        cmake --build ./deps/ziti-sdk-c/build-macosx-x86_64 --target ziti
+
+    - name: Build arm64
+      run: |
+        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/macOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-arm64
+        cmake --build ./deps/ziti-sdk-c/build-macosx-arm64 --target ziti
+
+    - name: Build Universal Framework
+      run: |
+        xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO -sdk macosx
+
+    - name: Create Framework
+      run: |
+        FOR=macOS ./make_dist.sh
+        tar -cvzf CZiti-macOS.framework.tgz -C ./dist/macOS/Release/Pods/CZiti-macOS/ .
+
+    - name: Upload Framework
+      uses: actions/upload-artifact@v2
+      with:
+        name: CZiti-macOS
+        path: CZiti-macOS.framework.tgz
+
+  build-docs:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v2
+      with:
+        submodules: true
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '12.2'
+
+    - name: Get Jazzy
+      run: gem install jazzy
+
+    - name: Build C SDK
+      run: |
+        cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
+        cmake --build ./deps/ziti-sdk-c/build-macosx-x86_64 --target ziti
+
+    - name: Gen Docs
+      run: |
+        rm *.podspec
+        jazzy --hide-documentation-coverage -x '-arch,x86_64,-scheme,CZiti-macOS,-sdk,macosx'
+
+    - name: Tar files
+      run: tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
+
+    - name: Upload Docs
+      uses: actions/upload-artifact@v2
+      with:
+        name: docs
+        path: ziti-sdk-swift-docs.tgz
+
+  release:
+    runs-on: macos-latest
+    needs: [ build-iOS, build-macOS, build-docs ]
+    if: github.ref == 'refs/heads/master'
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Download Docs
+      uses: actions/download-artifact@v2
+      with:
+        name: docs
+
+    - name: Download CZiti-iOS
+      uses: actions/download-artifact@v2
+      with:
+        name: CZiti-iOS
+
+    - name: Download CZiti-macOS
+      uses: actions/download-artifact@v2
+      with:
+        name: CZiti-macOS
+
+    - name: Update Tag
+      id: tagger
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        ./tagIfNeeded.sh
+        NEWVERS=`git describe --long | cut -d- -f1`
+        echo ::set-output name=version::${NEWVERS}
+        git push --tags --verbose
+
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tagger.outputs.version }}
+        release_name: Release ${{ steps.tagger.outputs.version }}
+        draft: false
+        prerelease: false
+
+    - name: Upload Docs
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./ziti-sdk-swift-docs.tgz
+        asset_name: ziti-sdk-swift-docs.tgz
+        asset_content_type: application/tgz
+
+    - name: Upload CZiti-iOS
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./CZiti-iOS.framework.tgz
+        asset_name: CZiti-iOS.framework.tgz
+        asset_content_type: application/tgz
+
+    - name: Upload CZiti-macOS
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./CZiti-macOS.framework.tgz
+        asset_name: CZiti-macOS.framework.tgz
+        asset_content_type: application/tgz
+
+    - name: Push Podspecs
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      run: |
+        echo ${{ steps.tagger.outputs.version }} > version 
+        pod trunk push CZiti-iOS.podspec
+        pod trunk push CZiti-macOS.podspec
