@@ -92,7 +92,7 @@ jobs:
         name: CZiti-macOS
         path: CZiti-macOS.framework.tgz
 
-  docs:
+  build-docs:
     runs-on: macos-latest
     steps:
     - name: Checkout Project
@@ -104,7 +104,7 @@ jobs:
     - name: Gen Docs
       run: |
         rm *.podspec
-        jazzy --hide-documentation-coverage
+        jazzy --hide-documentation-coverage -x -arch,x86_64
 
     - name: Tar files
       run: tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
