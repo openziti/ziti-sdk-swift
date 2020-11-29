@@ -137,7 +137,7 @@ jobs:
       id: tagger
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      uses: smilindave26/tagger@v1.2
+      uses: smilindave26/tagger@v1
 
     - name: Create Release
       id: create_release
