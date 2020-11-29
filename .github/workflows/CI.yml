@@ -14,15 +14,6 @@ jobs:
       with:
         xcode-version: '12.2'
 
-    - name: Show Xcode CLI Version
-      run: xcode-select -p
-
-    - name: Show Build Settings
-      run: xcodebuild -showBuildSettings
-
-    - name: Show Build SDK
-      run: xcodebuild -showsdks
-
     - name: Build iphoneos
       run: |
         cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64
@@ -58,15 +49,6 @@ jobs:
       with:
         xcode-version: '12.2'
 
-    - name: Show Xcode CLI Version
-      run: xcode-select -p
-
-    - name: Show Build Settings
-      run: xcodebuild -showBuildSettings
-
-    - name: Show Build SDK
-      run: xcodebuild -showsdks
-
     - name: Build x86_64
       run: |
         cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
@@ -77,7 +59,7 @@ jobs:
         cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/macOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-arm64
         cmake --build ./deps/ziti-sdk-c/build-macosx-arm64 --target ziti
 
-    - name: Build Universal Framework
+    - name: Build Universal Lib
       run: |
         xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO -sdk macosx
 
@@ -155,11 +137,7 @@ jobs:
       id: tagger
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        ./tagIfNeeded.sh
-        NEWVERS=`git describe --long | cut -d- -f1`
-        echo ::set-output name=version::${NEWVERS}
-        git push --tags --verbose
+      uses: smilindave26/tagger@v1
 
     - name: Create Release
       id: create_release
