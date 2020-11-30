@@ -2,8 +2,8 @@ name: CI
 on:
   pull_request:
     branches: [ master ]
-  release:
-    types: [ published ]
+  push:
+    branches: [ master ]
 
 jobs:
   build-iOS:
@@ -112,10 +112,10 @@ jobs:
         name: ziti-sdk-swift-docs
         path: ziti-sdk-swift-docs.tgz
 
-  release:
-    runs-on: macos-latest
+  draft-release:
+    runs-on: ubuntu-latest
     needs: [ build-iOS, build-macOS, build-docs ]
-    if: github.event_name == 'release' && github.event.action == 'published'
+    if: github.event_name == 'push' && && github.ref  == 'refs/heads/master'
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
@@ -137,46 +137,41 @@ jobs:
       with:
         name: CZiti-macOS.framework
 
-    - name: Get Release
-      id: get_release
-      uses: bruceadams/get-release@v1.2.2
+    - name: Draft Release
+      id: release_drafter
+      uses: release-drafter/release-drafter@v5
       env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload Docs
-      uses: actions/upload-release-asset@v1
+      uses: shogo82148/actions-upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        upload_url: ${{ steps.release_drafter.outputs.upload_url }}
         asset_path: ./ziti-sdk-swift-docs.tgz
         asset_name: ziti-sdk-swift-docs.tgz
         asset_content_type: application/tgz
+        overwrite: true
 
     - name: Upload iOS Framework
-      uses: actions/upload-release-asset@v1
+      uses: shogo82148/actions-upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        upload_url: ${{ steps.release_drafter.outputs.upload_url }}
         asset_path: ./CZiti-iOS.framework.tgz
         asset_name: CZiti-iOS.framework.tgz
         asset_content_type: application/tgz
+        overwrite: true
 
     - name: Upload macOS Framework
-      uses: actions/upload-release-asset@v1
+      uses: shogo82148/actions-upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        upload_url: ${{ steps.get_release.outputs.upload_url }}
+        upload_url: ${{ steps.release_drafter.outputs.upload_url }}
         asset_path: ./CZiti-macOS.framework.tgz
         asset_name: CZiti-macOS.framework.tgz
         asset_content_type: application/tgz
-
-    - name: Push Podspecs
-      env:
-        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-      run: |
-        echo ${{ steps.get_release.outputs.tag_name }} > version 
-        pod trunk push CZiti-iOS.podspec
-        pod trunk push CZiti-macOS.podspec
+        overwrite: true
