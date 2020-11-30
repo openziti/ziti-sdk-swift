@@ -138,10 +138,10 @@ jobs:
         name: CZiti-macOS.framework
 
     - name: Get Release
-        id: get_release
-        uses: bruceadams/get-release@v1.2.2
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
+      id: get_release
+      uses: bruceadams/get-release@v1.2.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Upload Docs
       uses: actions/upload-release-asset@v1
