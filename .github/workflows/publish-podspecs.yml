@@ -1,0 +1,27 @@
+name: publish podspecs
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: Get Release
+      id: get_release
+      uses: bruceadams/get-release@v1.2.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Push Podspecs
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      run: |
+        echo ${{ steps.get_release.outputs.tag_name }} > version 
+        pod trunk push CZiti-iOS.podspec
+        pod trunk push CZiti-macOS.podspec
