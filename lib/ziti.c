@@ -20,26 +20,21 @@ limitations under the License.
 static const char* _ziti_all[] = {
    "all", NULL
 };
+extern void
+ziti_logger(int level, const char *file, unsigned int line, const char *func, const char *fmt, ...);
+
+void ziti_logger_wrapper(int level, const char *file, unsigned int line, const char *func, const char *msg) {
+    ziti_logger(level, file, line,  func, "%s", msg);
+}
 
 const char** ziti_all_configs = _ziti_all;
 
-char **copyStringArray(char *const arr[], int count) {
+char **castStringArray(char *const arr[], int count) {
     if (count == 0) return 0;
-        
-    size_t sz = sizeof(char**);
-    char **arrCpy = calloc((count + 1), sz);
-    memcpy(arrCpy, arr, count * sz);
-    return arrCpy;
+    return (char **)arr;
 }
 
-void freeStringArray(char **arr) {
-    if (arr) free(arr);
+char *castString(const char *str) {
+    return (char *)str;
 }
 
-char *copyString(const char *str) {
-    return strdup(str);
-}
-
-void freeString(char *str) {
-    if (str) free(str);
-}

@@ -20,12 +20,13 @@ limitations under the License.
 
 extern const char** ziti_all_configs;
 extern tls_context *default_tls_context(const char *ca, size_t ca_len);
+extern void init_debug(uv_loop_t *loop);
+
+typedef void (*log_writer)(int level, const char *loc, const char *msg, size_t msglen);
+extern void ziti_set_log(log_writer log, uv_loop_t *loop);
 
 extern int ziti_debug_level;
-extern void uv_mbed_set_debug(int level, FILE *output);
+extern void ziti_logger_wrapper(int level, const char *file, unsigned int line, const char *func, const char *msg);
 
-char **copyStringArray(char *const arr[], int count);
-void freeStringArray(char **arr);
-
-char *copyString(const char *str);
-void freeString(char *str);
+char **castStringArray(char *const arr[], int count);
+char *castString(const char *str);
