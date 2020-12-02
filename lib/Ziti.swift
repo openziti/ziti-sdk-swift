@@ -360,9 +360,8 @@ import Foundation
             return
         }
         
-        // must be done after ziti_init...
-        //ziti_debug_level = 11
-        //uv_mbed_set_debug(5, stdout)
+        // set log level
+        ZitiLog.setLogLevel(.INFO)
         
         // Save off reference to current thread and run the loop
         if privateLoop {
@@ -595,9 +594,8 @@ import Foundation
         
         mySelf?.perform {
             withArrayOfCStrings(macArray) { arr in
-                let cp = copyStringArray(arr, Int32(arr.count))
+                let cp = castStringArray(arr, Int32(arr.count))
                 macCtx.cb(macCtx.ztx, ctx.id, cp, Int32(macArray.count))
-                freeStringArray(cp)
             }
         }
     }
@@ -624,15 +622,11 @@ import Foundation
         
         mySelf?.perform {
             // C SDK didn't use `const` for strings, so need to copy 'em
-            let cType = type != nil ? copyString(type!.cString(using: .utf8)) : nil
-            let cVersion = version != nil ? copyString(version!.cString(using: .utf8)) : nil
-            let cBuild = build != nil ? copyString(build!.cString(using: .utf8)) : nil
+            let cType = type != nil ? castString(type!.cString(using: .utf8)) : nil
+            let cVersion = version != nil ? castString(version!.cString(using: .utf8)) : nil
+            let cBuild = build != nil ? castString(build!.cString(using: .utf8)) : nil
             
             osCtx.cb(osCtx.ztx, osCtx.id, cType, cVersion,  cBuild)
-            
-            freeString(cType)
-            freeString(cVersion)
-            freeString(cBuild)
         }
     }
     
@@ -643,12 +637,12 @@ import Foundation
         }
         guard let query = mySelf?.postureChecks?.processQuery else {
             log.warn("query not configured", function: "onProcessQuery()")
-            cb(ztx, id, nil, false, nil, nil, 0)
+            cb(ztx, castString(id), nil, false, nil, nil, 0)
             return
         }
         
         let strPath = path != nil ? String(cString: path!) : ""
-        query(ZitiProcessContext(ztx, id, cb), strPath, Ziti.onProcessResponse)
+        query(ZitiProcessContext(ztx, castString(id), cb), strPath, Ziti.onProcessResponse)
     }
     
     static private let onProcessResponse:ZitiPostureChecks.ProcessResponse = { ctx, path, isRunning, hash, signers in
@@ -660,21 +654,17 @@ import Foundation
                 
         mySelf?.perform {
             // C SDK didn't use `const` for strings, so need to copy 'em
-            let cPath = copyString(path.cString(using: .utf8))
-            let cHash = hash != nil ? copyString(hash!.cString(using: .utf8)) : nil
+            let cPath = castString(path.cString(using: .utf8))
+            let cHash = hash != nil ? castString(hash!.cString(using: .utf8)) : nil
             
             if let signers = signers {
                 withArrayOfCStrings(signers) { arr in
-                    let cp = copyStringArray(arr, Int32(arr.count))
+                    let cp = castStringArray(arr, Int32(arr.count))
                     pCtx.cb(pCtx.ztx, ctx.id, cPath, isRunning, cHash, cp, Int32(signers.count))
-                    freeStringArray(cp)
                 }
             } else {
                 pCtx.cb(pCtx.ztx, pCtx.id, cPath, isRunning, cHash, nil, 0)
             }
-                    
-            freeString(cPath)
-            freeString(cHash)
         }
     }
     
@@ -700,9 +690,8 @@ import Foundation
                 
         mySelf?.perform {
             // C SDK didn't use `const` for strings, so need to copy 'em
-            let cDomain = domain != nil ? copyString(domain!.cString(using: .utf8)) : nil
+            let cDomain = domain != nil ? castString(domain!.cString(using: .utf8)) : nil
             dCtx.cb(dCtx.ztx, dCtx.id, cDomain)
-            freeString(cDomain)
         }
     }
     

@@ -88,7 +88,7 @@ import Foundation
         }
         
         let svcName = String(cString: zs.name)
-        if status == ZITI_SERVICE_UNAVAILABLE || ((zs.perm_flags & ZITI_CAN_DIAL) == 0) {
+        if status == ZITI_SERVICE_UNAVAILABLE || ((zs.perm_flags & Int32(ZITI_CAN_DIAL)) == 0) {
             interceptsLock.lock()
             intercepts = intercepts.filter { $0.value.name !=  svcName }
             interceptsLock.unlock()
