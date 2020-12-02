@@ -14,19 +14,20 @@ jobs:
       with:
         submodules: true
 
+    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '12.2'
 
     - name: Build iphoneos
       run: |
-        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64
+        cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphoneos-arm64
         cmake --build ./deps/ziti-sdk-c/build-iphoneos-arm64 --target ziti
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
 
     - name: Build iphonesimulator
       run: |
-        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
+        cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../toolchains/iOS-x86_64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-iphonesimulator-x86_64
         cmake --build ./deps/ziti-sdk-c/build-iphonesimulator-x86_64 --target ziti
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
 
@@ -49,18 +50,19 @@ jobs:
       with:
         submodules: true
 
+    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '12.2'
 
     - name: Build x86_64
       run: |
-        cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
+        cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
         cmake --build ./deps/ziti-sdk-c/build-macosx-x86_64 --target ziti
 
     - name: Build arm64
       run: |
-        cmake -DCMAKE_TOOLCHAIN_FILE=../toolchains/macOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-arm64
+        cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../toolchains/macOS-arm64.cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-arm64
         cmake --build ./deps/ziti-sdk-c/build-macosx-arm64 --target ziti
 
     - name: Build Universal Lib
@@ -86,6 +88,7 @@ jobs:
       with:
         submodules: true
 
+    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '12.2'
@@ -95,7 +98,7 @@ jobs:
 
     - name: Build C SDK
       run: |
-        cmake -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
+        cmake -GNinja -S ./deps/ziti-sdk-c -B ./deps/ziti-sdk-c/build-macosx-x86_64
         cmake --build ./deps/ziti-sdk-c/build-macosx-x86_64 --target ziti
 
     - name: Gen Docs
