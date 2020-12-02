@@ -14,7 +14,7 @@ jobs:
       with:
         submodules: true
 
-    - uses: seanmiddleditch/gha-setup-ninja@master
+    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '12.2'
@@ -50,7 +50,7 @@ jobs:
       with:
         submodules: true
 
-    - uses: seanmiddleditch/gha-setup-ninja@master
+    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '12.2'
@@ -88,7 +88,7 @@ jobs:
       with:
         submodules: true
 
-    - uses: seanmiddleditch/gha-setup-ninja@master
+    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '12.2'
