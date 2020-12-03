@@ -105,9 +105,7 @@ jobs:
       run: |
         rm *.podspec
         jazzy --hide-documentation-coverage -x '-arch,x86_64,-scheme,CZiti-macOS,-sdk,macosx'
-
-    - name: Tar files
-      run: tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
+        tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
 
     - name: Upload Docs
       uses: actions/upload-artifact@v2
