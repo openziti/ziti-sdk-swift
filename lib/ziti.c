@@ -20,12 +20,6 @@ limitations under the License.
 static const char* _ziti_all[] = {
    "all", NULL
 };
-extern void
-ziti_logger(int level, const char *file, unsigned int line, const char *func, const char *fmt, ...);
-
-void ziti_logger_wrapper(int level, const char *file, unsigned int line, const char *func, const char *msg) {
-    ziti_logger(level, file, line,  func, "%s", msg);
-}
 
 const char** ziti_all_configs = _ziti_all;
 
@@ -49,4 +43,3 @@ char *copyString(const char *str) {
 void freeString(char *str) {
     if (str) free(str);
 }
-

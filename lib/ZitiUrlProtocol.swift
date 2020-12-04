@@ -273,8 +273,8 @@ import Foundation
         // nothing, so we end up waiting for timeout. So notifyDidFailWithError instead...
         let code = Int(resp.pointee.code)
         guard code > 0 else {
-            let str = String(cString: uv_strerror(Int32(code)))
-            log.error(str)
+            let str = String(cString: ziti_errorstr(Int32(code)))
+            log.error("\(code) str")
             let err = ZitiError(str, errorCode: code)
             mySelf.notifyDidFailWithError(ZitiError(str, errorCode: code))
             return
@@ -326,7 +326,7 @@ import Foundation
             mySelf.notifyDidFinishLoading()
             mySelf.finished = true
         } else if len < 0 {
-            let str = String(cString: uv_strerror(Int32(len)))
+            let str = String(cString: ziti_errorstr(Int32(len)))
             let err = ZitiError(str, errorCode: len)
             mySelf.notifyDidFailWithError(err)
         } else {

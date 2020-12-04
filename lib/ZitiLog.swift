@@ -15,61 +15,49 @@ limitations under the License.
 */
 import Foundation
 
-/// Logger class the uses Ziti C SDK's logging feature
+/// Logger class that mirrors the Ziti C SDK's logging feature
 public class ZitiLog {
     var category:String
-    static var needDebugInit = true
+    let df = DateFormatter()
     
     /// Maps to Ziti CSDK log levels, which cannot be imported directly
-    public enum DebugLevel : Int32 {
-        case NONE = 0, ERROR, WARN, INFO, DEBUG, VERBOSE, TRACE
+    public enum LogLevel : Int32 {
+        case WTF = -2, DEFAULT = -1, NONE, ERROR, WARN, INFO, DEBUG, VERBOSE, TRACE
+        func toStr() -> String {
+            let tStr:String
+            switch self {
+            case .WTF:     tStr = "    WTF"
+            case .DEFAULT: tStr = "    WTF"
+            case .NONE:    tStr = "    WTF"
+            case .ERROR:   tStr = "  ERROR"
+            case .WARN:    tStr = "   WARN"
+            case .INFO:    tStr = "   INFO"
+            case .DEBUG:   tStr = "  DEBUG"
+            case .VERBOSE: tStr = "VERBOSE"
+            case .TRACE:   tStr = "  TRACE"
+            }
+            return tStr
+        }
     }
     
-    /// Initial logger
+    /// Initialize logger
     ///
     /// - Parameters:
     ///     - category: descriptive name to differentiate unique logging areas
-    ///     - loop: uv_loop for logger
-    public init(_ category:String = "CZiti", _ loop:UnsafeMutablePointer<uv_loop_t>! = uv_default_loop()) {
+    public init(_ category:String = "CZiti") {
         self.category = category
-        if ZitiLog.needDebugInit {
-            ZitiLog.needDebugInit = false
-            setenv("ZITI_TIME_FORMAT", "utc", 1)
-            init_debug(loop)
-        }
+        df.timeZone = TimeZone(abbreviation: "UTC") 
+        df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss:SSS'Z'"
+        setenv("ZITI_TIME_FORMAT", "utc", 1)
     }
     
-    /// Initial logger
+    /// Initialize logger
     ///
     /// - Parameters:
     ///     - aClass: use name of this class as the loggng categy
-    ///     - loop: uv_loop for logger
-    public init(_ aClass:AnyClass, _ loop:UnsafeMutablePointer<uv_loop_t>! = uv_default_loop()) {
-        //category = String(describing: aClass)
-        category = "CZiti"
-        if ZitiLog.needDebugInit {
-            ZitiLog.needDebugInit = false
-            setenv("ZITI_TIME_FORMAT", "utc", 1)
-            init_debug(loop)
-        }
-    }
-    
-    /// Set the system-wide log level
-    ///
-    /// - Parameters:
-    ///     - level: only log messages at this level or higher (more severe)
-    public class func setLogLevel(_ level:DebugLevel) {
-        ziti_debug_level = level.rawValue
-    }
-    
-    /// Set a custom logger
-    ///
-    /// - Parameters:
-    ///     - logger: customer logging function
-    ///     - loop: uv_loop for logger
-    public class func setCustomerLogger(_ logger: @escaping log_writer, _ loop:UnsafeMutablePointer<uv_loop_t>! = uv_default_loop()) {
-        // - TODO: Swiftify when updating for upcoming C SDK logging PR
-        ziti_set_log(logger, loop)
+    public convenience init(_ aClass:AnyClass) {
+        //self.init(String(describing: aClass))
+        self.init("CZiti")
     }
     
     /// Log a message at `.TRACE` level
@@ -84,6 +72,14 @@ public class ZitiLog {
                function:StaticString=#function,
                line:UInt=#line) {
         log(.TRACE, msg, file, function, line)
+    }
+    
+    /// Set the system-wide log level
+    ///
+    /// - Parameters:
+    ///     - level: only log messages at this level or higher severity
+    public class func setLogLevel(_ level:LogLevel) {
+        ziti_log_set_level(level.rawValue);
     }
     
     /// Log a message at `.VERBOSE` level
@@ -156,7 +152,7 @@ public class ZitiLog {
         log(.ERROR, msg, file, function, line)
     }
     
-    /// Log a message at `.ERROR` level with "what a terrible failure" designation
+    /// Log a message at `.WTF` level ("what a terrible failure")
     ///
     /// - Parameters:
     ///     - msg: message to log
@@ -167,41 +163,22 @@ public class ZitiLog {
              file:StaticString=#file,
              function:StaticString=#function,
              line:UInt=#line) {
-        log(.ERROR, "(WTF) \(msg)", file, function, line)
+        log(.WTF, msg, file, function, line)
     }
     
-    private func levelToString(_ t:DebugLevel) -> String {
-        var tStr = ""
-        switch t {
-        case .NONE:    tStr = "NONE   "
-        case .ERROR:   tStr = "ERROR  "
-        case .WARN:    tStr = "WARN   "
-        case .INFO:    tStr = "INFO   "
-        case .DEBUG:   tStr = "DEBUG  "
-        case .VERBOSE: tStr = "VERBOSE"
-        case .TRACE:   tStr = "TRACE  "
-        }
-        return tStr
-    }
-    
-    private func log(_ level:DebugLevel, _ msg:String,
-                                        _ file:StaticString,
-                                        _ function:StaticString,
-                                        _ line:UInt) {
+    private func log(_ lvl:LogLevel,
+                     _ msg:String,
+                     _ file:StaticString,
+                     _ function:StaticString,
+                     _ line:UInt) {
         let file = "\(category):" + URL(fileURLWithPath: String(describing: file)).lastPathComponent
         var function = String(describing: function)
         if function.contains("(") {
             function.removeSubrange(function.firstIndex(of: "(")!...function.lastIndex(of: ")")!)
         }
         
-        //let tStr = levelToString(type)
-        //fputs("[\(Date())] \(tStr) \(category):\(file):\(line) \(function)(): \(msg)\n", stderr)
-        if level.rawValue <= ziti_debug_level {
-            ziti_logger_wrapper(level.rawValue,
-                                file.cString(using: .utf8),
-                                UInt32(line),
-                                function.cString(using: .utf8),
-                                msg.cString(using: .utf8))
+        if lvl.rawValue <= ziti_log_level {
+            fputs("[\(df.string(from: Date()))] \(lvl.toStr()) \(file):\(line) \(function)() \(msg)\n", stderr)
         }
     }
 }
