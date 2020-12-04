@@ -28,5 +28,8 @@ extern void ziti_set_log(log_writer log, uv_loop_t *loop);
 extern int ziti_debug_level;
 extern void ziti_logger_wrapper(int level, const char *file, unsigned int line, const char *func, const char *msg);
 
-char **castStringArray(char *const arr[], int count);
-char *castString(const char *str);
+char **copyStringArray(char *const arr[], int count);
+void freeStringArray(char **arr);
+
+char *copyString(const char *str);
+void freeString(char *str);

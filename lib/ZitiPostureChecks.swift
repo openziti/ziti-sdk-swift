@@ -132,8 +132,13 @@ class ZitiOsContext : ZitiPostureContext {
 
 class ZitiProcessContext : ZitiPostureContext {
     let cb:ziti_pr_process_cb
-    init(_ ztx:OpaquePointer, _ id:UnsafeMutablePointer<Int8>?, _ cb: @escaping ziti_pr_process_cb) {
+    let cId:UnsafeMutablePointer<Int8>?
+    init(_ ztx:OpaquePointer, _ id:UnsafePointer<Int8>, _ cb: @escaping ziti_pr_process_cb) {
         self.cb = cb
-        super.init(ztx, id)
+        cId = copyString(id)
+        super.init(ztx, cId)
+    }
+    deinit {
+        freeString(cId)
     }
 }

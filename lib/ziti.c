@@ -29,12 +29,24 @@ void ziti_logger_wrapper(int level, const char *file, unsigned int line, const c
 
 const char** ziti_all_configs = _ziti_all;
 
-char **castStringArray(char *const arr[], int count) {
+char **copyStringArray(char *const arr[], int count) {
     if (count == 0) return 0;
-    return (char **)arr;
+        
+    size_t sz = sizeof(char*);
+    char **arrCpy = calloc((count + 1), sz);
+    memcpy(arrCpy, arr, count * sz);
+    return arrCpy;
 }
 
-char *castString(const char *str) {
-    return (char *)str;
+void freeStringArray(char **arr) {
+    if (arr) free(arr);
+}
+
+char *copyString(const char *str) {
+    return str ? strdup(str) : NULL;
+}
+
+void freeString(char *str) {
+    if (str) free(str);
 }
 
