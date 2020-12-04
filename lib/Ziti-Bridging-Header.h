@@ -24,5 +24,8 @@ extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 extern int ziti_log_level;
 extern void ziti_log_set_level(int level);
 
-char **castStringArray(char *const arr[], int count);
-char *castString(const char *str);
+char **copyStringArray(char *const arr[], int count);
+void freeStringArray(char **arr);
+
+char *copyString(const char *str);
+void freeString(char *str);
