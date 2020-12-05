@@ -60,6 +60,21 @@ public class ZitiLog {
         self.init("CZiti")
     }
     
+    /// Set the system-wide log level
+    ///
+    /// - Parameters:
+    ///     - level: only log messages at this level or higher severity
+    public class func setLogLevel(_ level:LogLevel) {
+        ziti_log_set_level(level.rawValue);
+    }
+    
+    /// Get the system-wide log level
+    public class func getLogLevel() -> LogLevel {
+        if ziti_log_level < LogLevel.WTF.rawValue { return .WTF }
+        if ziti_log_level > LogLevel.TRACE.rawValue { return .TRACE }
+        return LogLevel(rawValue: ziti_log_level) ?? .WTF
+    }
+    
     /// Log a message at `.TRACE` level
     ///
     /// - Parameters:
@@ -74,13 +89,6 @@ public class ZitiLog {
         log(.TRACE, msg, file, function, line)
     }
     
-    /// Set the system-wide log level
-    ///
-    /// - Parameters:
-    ///     - level: only log messages at this level or higher severity
-    public class func setLogLevel(_ level:LogLevel) {
-        ziti_log_set_level(level.rawValue);
-    }
     
     /// Log a message at `.VERBOSE` level
     ///
