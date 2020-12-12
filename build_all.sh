@@ -40,7 +40,7 @@ function do_build {
 
       cd ${c_sdk_build_dir}
       if [[ "${toolchain}" =~ "${a}" ]] ; then
-         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../build-macosx-x86_64/_deps/ziti-sdk-c-src/toolchains/${toolchain} .. && ninja
+         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../../toolchains/${toolchain} .. && ninja
       else
          cmake -GNinja .. && ninja
       fi
