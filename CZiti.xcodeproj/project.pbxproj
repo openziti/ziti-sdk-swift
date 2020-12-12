@@ -866,19 +866,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv_link-src/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv_link-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/library",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-build/library",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib",
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/lib/Ziti-Bridging-Header.h";
@@ -889,19 +891,21 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv_link-src/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/includes",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv_link-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
-					"$(PROJECT_DIR)/deps/ziti-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/library",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libsodium-build/lib",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-build/library",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib",
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/lib/Ziti-Bridging-Header.h";
