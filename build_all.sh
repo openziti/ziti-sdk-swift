@@ -11,7 +11,7 @@
 
 PROJECT_ROOT=$(cd `dirname $0` && pwd)
 DERIVED_DATA_PATH="${PROJECT_ROOT}/DerivedData/CZiti"
-C_SDK_ROOT="${PROJECT_ROOT}/deps/ziti-sdk-c"
+C_SDK_ROOT="${PROJECT_ROOT}/deps/ziti-tunnel-sdk-c"
 : ${CONFIGURATION:="Release"}
 
 function do_build {
@@ -40,7 +40,7 @@ function do_build {
 
       cd ${c_sdk_build_dir}
       if [[ "${toolchain}" =~ "${a}" ]] ; then
-         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../toolchains/${toolchain} .. && ninja
+         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../../toolchains/${toolchain} .. && ninja
       else
          cmake -GNinja .. && ninja
       fi
