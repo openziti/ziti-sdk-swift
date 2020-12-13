@@ -22,13 +22,13 @@ jobs:
     - name: Build iphoneos
       run: |
         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64 --target ziti
+        cmake --build ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64 
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
 
     - name: Build iphonesimulator
       run: |
         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64 --target ziti
+        cmake --build ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64 
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
 
     - name: Create Framework
@@ -58,12 +58,12 @@ jobs:
     - name: Build x86_64
       run: |
         cmake -GNinja -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 --target ziti
+        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
 
     - name: Build arm64
       run: |
         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-arm64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-arm64 --target ziti
+        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-arm64 
 
     - name: Build Universal Lib
       run: |
@@ -99,7 +99,7 @@ jobs:
     - name: Build C SDK
       run: |
         cmake -GNinja -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 --target ziti
+        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
 
     - name: Gen Docs
       run: |
