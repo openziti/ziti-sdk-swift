@@ -17,9 +17,14 @@ limitations under the License.
 #include <ziti/ziti_src.h>
 #include <ziti/ziti_model.h>
 #include <uv_mbed/um_http.h>
+#include "ziti/ziti_tunnel.h"
+#include "ziti/ziti_tunnel_cbs.h"
+#include "ziti/netif_driver.h"
 
 extern const char** ziti_all_configs;
 extern tls_context *default_tls_context(const char *ca, size_t ca_len);
+
+void ziti_sdk_c_host_v1_wrapper(void *ziti_ctx, uv_loop_t *loop, const char *service_id, const char *proto, const char *hostname, int port);
 
 extern int ziti_log_level;
 extern void ziti_log_set_level(int level);

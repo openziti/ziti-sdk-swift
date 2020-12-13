@@ -16,12 +16,17 @@ limitations under the License.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "ziti/ziti_tunnel_cbs.h"
 
 static const char* _ziti_all[] = {
    "all", NULL
 };
 
 const char** ziti_all_configs = _ziti_all;
+
+void ziti_sdk_c_host_v1_wrapper(void *ziti_ctx, uv_loop_t *loop, const char *service_id, const char *proto, const char *hostname, int port) {
+    ziti_sdk_c_host_v1(ziti_ctx, loop, service_id, proto, hostname, port);
+}
 
 char **copyStringArray(char *const arr[], int count) {
     if (count == 0) return 0;
