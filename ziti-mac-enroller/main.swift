@@ -16,9 +16,6 @@ limitations under the License.
 import Foundation
 import CZiti
 
-// Logs the SDK version in use
-ziti_debug_level = 3
-
 func usage() {
     let nm = URL(fileURLWithPath: args[0]).lastPathComponent
     print("Usage: \(nm) file.jwt out.zid [--trustca]")
