@@ -45,15 +45,18 @@ public class ZitiKeychain : NSObject {
             kSecAttrIsPermanent: true,
             kSecAttrLabel: tag,
             kSecAttrApplicationTag: atag]
-        let parameters: [CFString: Any] = [
+        
+        var parameters: [CFString: Any] = [
             kSecAttrKeyType: kSecAttrKeyTypeRSA,
             kSecAttrKeySizeInBits: keySize,
             kSecReturnRef: kCFBooleanTrue as Any,
             kSecAttrLabel: tag, //macOs
             kSecAttrIsPermanent: true, // macOs
             kSecAttrApplicationTag: atag, //macOs
-            kSecUseDataProtectionKeychain: true,
             kSecPrivateKeyAttrs: privateKeyParams]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            parameters[kSecUseDataProtectionKeychain] = true
+        }
         
         var error: Unmanaged<CFError>?
         guard let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error) else {
@@ -69,12 +72,15 @@ public class ZitiKeychain : NSObject {
     }
     
     func getKeyPair() -> (privKey:SecKey?, pubKey:SecKey?, ZitiError?) {
-        let parameters:[CFString:Any] = [
+        var parameters:[CFString:Any] = [
             kSecClass: kSecClassKey,
             kSecAttrKeyClass: kSecAttrKeyClassPrivate,
             kSecAttrApplicationTag: atag,
-            kSecUseDataProtectionKeychain: true,
             kSecReturnRef: kCFBooleanTrue!]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            parameters[kSecUseDataProtectionKeychain] = true
+        }
+        
         var ref: AnyObject?
         let status = SecItemCopyMatching(parameters as CFDictionary, &ref)
         guard status == errSecSuccess else {
@@ -106,11 +112,13 @@ public class ZitiKeychain : NSObject {
     }
     
     private func deleteKey(_ keyClass:CFString) -> OSStatus {
-        let deleteQuery:[CFString:Any] = [
+        var deleteQuery:[CFString:Any] = [
             kSecClass: kSecClassKey,
             kSecAttrKeyClass: keyClass,
-            kSecUseDataProtectionKeychain: true,
             kSecAttrApplicationTag: atag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            deleteQuery[kSecUseDataProtectionKeychain] = true
+        }
         return SecItemDelete(deleteQuery as CFDictionary)
     }
     
@@ -172,10 +180,12 @@ public class ZitiKeychain : NSObject {
     public func addCaPool(_ caPool:String) -> Bool {
         let certs = extractCerts(caPool)
         for cert in certs {
-            let parameters: [CFString: Any] = [
+            var parameters: [CFString: Any] = [
                 kSecClass: kSecClassCertificate,
-                kSecUseDataProtectionKeychain: true,
                 kSecValueRef: cert]
+            if #available(iOS 13.0, OSX 10.15, *) {
+                parameters[kSecUseDataProtectionKeychain] = true
+            }
             let status = SecItemAdd(parameters as CFDictionary, nil)
             guard status == errSecSuccess || status == errSecDuplicateItem else {
                 let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
@@ -187,6 +197,7 @@ public class ZitiKeychain : NSObject {
         return true
     }
     
+#if os(macOS) // if #available(iOS 13.0, OSX 10.15, *)
     /**
      * Evaluates a trust object asynchronously on the specified dispatch queue.
      *
@@ -208,6 +219,7 @@ public class ZitiKeychain : NSObject {
         let sceStatus = SecTrustEvaluateAsyncWithError(secTrust!, queue, result)
         return sceStatus
     }
+#endif
     
     func storeCertificate(fromPem pem:String) -> ZitiError? {
         let (_, zErr) = storeCertificate(fromDer: convertToDER(pem))
@@ -223,11 +235,13 @@ public class ZitiKeychain : NSObject {
             log.error(errStr)
             return (nil, ZitiError(errStr))
         }
-        let parameters: [CFString: Any] = [
+        var parameters: [CFString: Any] = [
             kSecClass: kSecClassCertificate,
             kSecValueRef: certificate,
-            kSecUseDataProtectionKeychain: true,
             kSecAttrLabel: tag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            parameters[kSecUseDataProtectionKeychain] = true
+        }
         let status = SecItemAdd(parameters as CFDictionary, nil)
         guard status == errSecSuccess || status == errSecDuplicateItem else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
@@ -259,11 +273,13 @@ public class ZitiKeychain : NSObject {
     }
     
     func deleteCertificate(silent:Bool=false) -> ZitiError? {
-        let params: [CFString: Any] = [
+        var params: [CFString: Any] = [
             kSecClass: kSecClassCertificate,
             kSecReturnRef: kCFBooleanTrue!,
-            kSecUseDataProtectionKeychain: true,
             kSecAttrLabel: tag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            params[kSecUseDataProtectionKeychain] = true
+        }
         
         var cert: CFTypeRef?
         let copyStatus = SecItemCopyMatching(params as CFDictionary, &cert)
@@ -273,11 +289,13 @@ public class ZitiKeychain : NSObject {
             return ZitiError("Unable to find certificate for \(tag): \(errStr)", errorCode: Int(copyStatus))
         }
         
-        let delParams: [CFString:Any] = [
+        var delParams: [CFString:Any] = [
             kSecClass: kSecClassCertificate,
             kSecValueRef: cert!,
-            kSecUseDataProtectionKeychain: true,
             kSecAttrLabel: tag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            delParams[kSecUseDataProtectionKeychain] = true
+        }
         let deleteStatus = SecItemDelete(delParams as CFDictionary)
         guard deleteStatus == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(deleteStatus, nil) as String? ?? "\(deleteStatus)"
