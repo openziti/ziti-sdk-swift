@@ -17,14 +17,4 @@ import Foundation
 
 protocol ZitiConfig {
     static var configType:String { get }
-    static func parseConfig<T>(_ type: T.Type, _ zs: inout ziti_service) -> T? where T:Decodable, T:ZitiConfig
-}
-
-extension ZitiConfig {
-    static func parseConfig<T>(_ type: T.Type, _ zs: inout ziti_service) -> T? where T:Decodable, T:ZitiConfig {
-        if let cfg = ziti_service_get_raw_config(&zs, type.configType.cString(using: .utf8)) {
-            return try? JSONDecoder().decode(type, from: Data(String(cString: cfg).utf8))
-        }
-        return nil
-    }
 }

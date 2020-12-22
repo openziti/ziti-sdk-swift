@@ -21,7 +21,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     let name:String
     let urlStr:String
     var clt = um_http_t()
-    var zs = um_http_src_t()
+    var zs = um_src_t()
     var hdrs:[String:String]? = nil
     
     static var releasePending:[ZitiIntercept] = []
@@ -66,10 +66,6 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     deinit {
         close_timer_h?.deinitialize(count: 1)
         close_timer_h?.deallocate()
-    }
-    
-    static func parseConfig<T>(_ type: T.Type, _ zs: inout ziti_service) -> T? where T:Decodable, T:ZitiConfig {
-        return T.parseConfig(type, &zs)
     }
     
     func createRequest(_ zup:ZitiUrlProtocol, _ urlPath:String,

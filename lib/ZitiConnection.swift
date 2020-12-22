@@ -28,6 +28,7 @@ import Foundation
     var onListen:ListenCallback?
     var onData:DataCallback?
     var onClient:ClientCallback?
+    var onClose:CloseCallback?
     
     init(_ ziti:Ziti, _ zConn:ziti_connection?) {
         self.ziti = ziti
@@ -94,6 +95,14 @@ import Foundation
     /// - Parameters:
     ///     - status: amount of data written or Ziti error code
     public typealias WriteCallback = (_ conn:ZitiConnection, _ status:Int) -> Void
+    
+    /// Close callback
+    ///
+    /// This callback is invoked after a call the `close(_:)` completes.
+    ///
+    /// - Parameters:
+    ///     - status: amount of data written or Ziti error code
+    public typealias CloseCallback = () -> Void
     
     /// Established a connection to a `Ziti` service.
     ///
@@ -204,9 +213,14 @@ import Foundation
     ///
     /// When no longer needed the connection should be closed to gracefully disconnect. This method should be invoked after any status is returned
     /// which indicates an error situation.
-    @objc public func close() {
+    ///
+    /// - Parameters:
+    ///     - onClose: called when connection is completely closed
+    ///
+    @objc public func close(_ onClose: CloseCallback? = nil) {
         ziti?.perform {
-            ziti_close(&self.zConn)
+            self.onClose = onClose
+            ziti_close(self.zConn, ZitiConnection.onClose)
             self.ziti?.releaseConnection(self)
         }
     }
@@ -218,6 +232,14 @@ import Foundation
             return
         }
         mySelf.onConn?(mySelf, status)
+    }
+    
+    static private let onClose:ziti_close_cb = { conn in
+        guard let conn = conn, let ctx = ziti_conn_data(conn), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
+            log.wtf("invalid context", function:"onClose()")
+            return
+        }
+        mySelf.onClose?()
     }
     
     static private let onData:ziti_data_cb = { conn, buf, len in

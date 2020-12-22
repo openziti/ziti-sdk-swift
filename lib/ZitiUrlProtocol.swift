@@ -75,73 +75,82 @@ import Foundation
             log.info("ZitiUrlProtocol registered", function:"register()")
         }
         
-        // Register service changed callback
-        ziti.registerServiceCallback { [weak ziti] _, zs, status in
-            onService(ziti, zs, status, idleTime)
-        }
+        // Register event callback
+        ziti.registerEventCallback(
+            { onEvent($0, idleTime) },
+            ZitiEvent.EventType.Service.rawValue)
     }
     
-    class func onService(_ ziti:Ziti?, _ zs:UnsafeMutablePointer<ziti_service>?, _ status:Int32, _ idleTime:Int) {
-        guard let ziti = ziti, var zs = zs?.pointee else {
-            log.wtf("unable to access ziti and/or service, status: \(status)", function:"onService()")
-            return
-        }
-        
-        let svcName = String(cString: zs.name)
-        if status == ZITI_SERVICE_UNAVAILABLE || ((zs.perm_flags & Int32(ZITI_CAN_DIAL)) == 0) {
+    class func onEvent(_ event:ZitiEvent?, _ idleTime:Int) {
+        event?.serviceEvent?.removed.forEach { removeService($0) }
+        event?.serviceEvent?.added.forEach   { addOrUpdateService($0, event?.ziti, idleTime) }
+        event?.serviceEvent?.changed.forEach { addOrUpdateService($0, event?.ziti, idleTime) }
+    }
+    
+    class func removeService(_ svc:ZitiService) {
+        if let svcName = svc.name {
+            log.debug("Removing service \(svcName)")
             interceptsLock.lock()
             intercepts = intercepts.filter { $0.value.name !=  svcName }
             interceptsLock.unlock()
-        } else if status == ZITI_OK {
+        }
+    }
+    
+    class func addOrUpdateService(_ svc:ZitiService, _ ziti:Ziti?, _ idleTime:Int) {
+        guard let ziti = ziti, let svcName = svc.name else {
+            log.wtf("invalid ziti reference or service name")
+            return
+        }
+        
+        // Don't include unless CAN_DIAL
+        guard UInt32(svc.permFlags ?? 0x0) & ZITI_CAN_DIAL != 0 else {
+            removeService(svc)
+            return
+        }
+        
+        // Prefer UrlClientConfig, fallback to TunnelClientConfig
+        if let cfg = svc.urlClientConfigV1 {
+            let urlStr = "\(cfg.scheme)://\(cfg.hostname):\(cfg.getPort())"
             
-            // prefer urlCfgType, tunCfgType as fallback
-            var foundUrlCfg = false
-            if let cfg = ZitiIntercept.parseConfig(ZitiUrlConfig.self, &zs) {
-                let urlStr = "\(cfg.scheme)://\(cfg.hostname):\(cfg.getPort())"
-                
-                interceptsLock.lock()
-                if let curr = ZitiUrlProtocol.intercepts[urlStr] {
-                    log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
-                    curr.close()
-                }
-                let intercept = ZitiIntercept(ziti, svcName, urlStr, idleTime)
-                intercept.hdrs = cfg.headers ?? [:]
+            interceptsLock.lock()
+            if let curr = ZitiUrlProtocol.intercepts[urlStr] {
+                log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
+                curr.close()
+            }
+            let intercept = ZitiIntercept(ziti, svcName, urlStr, idleTime)
+            intercept.hdrs = cfg.headers ?? [:]
+            intercepts[intercept.urlStr] = intercept
+            
+            log.info("Setting URL intercept svc \(svcName): \(urlStr)")
+            interceptsLock.unlock()
+        } else if let cfg = svc.tunnelClientConfigV1 {
+            let hostPort = "\(cfg.hostname):\(cfg.port)"
+               
+            interceptsLock.lock()
+            
+            if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
+                log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
+                curr.close()
+            }
+            if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
+                log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
+                curr.close()
+            }
+            
+            if let scheme = (cfg.port == 80 ? "http" : (cfg.port == 443 ? "https" : nil)) {
+                let intercept = ZitiIntercept(ziti, svcName, "\(scheme)://\(hostPort)", idleTime)
                 intercepts[intercept.urlStr] = intercept
-                
-                log.info("Setting URL intercept svc \(svcName): \(urlStr)")
-                interceptsLock.unlock()
-                
-                foundUrlCfg = true
+                log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)", function:"onService()()")
+            } else {
+                var intercept = ZitiIntercept(ziti, svcName, "http://\(hostPort)", idleTime)
+                intercepts[intercept.urlStr] = intercept
+                intercept = ZitiIntercept(ziti, svcName, "https://\(hostPort)", idleTime)
+                intercepts[intercept.urlStr] = intercept
+                log.info("Setting TUN intercept svc \(svcName): \(hostPort)", function:"onService()()")
             }
-            
-            // fallback to tun config type
-            if !foundUrlCfg, let cfg = ZitiIntercept.parseConfig(ZitiTunnelConfig.self, &zs) {
-                let hostPort = "\(cfg.hostname):\(cfg.port)"
-                   
-                interceptsLock.lock()
-                
-                if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-                    log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
-                    curr.close()
-                }
-                if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
-                    log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
-                    curr.close()
-                }
-                
-                if let scheme = (cfg.port == 80 ? "http" : (cfg.port == 443 ? "https" : nil)) {
-                    let intercept = ZitiIntercept(ziti, svcName, "\(scheme)://\(hostPort)", idleTime)
-                    intercepts[intercept.urlStr] = intercept
-                    log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)", function:"onService()()")
-                } else {
-                    var intercept = ZitiIntercept(ziti, svcName, "http://\(hostPort)", idleTime)
-                    intercepts[intercept.urlStr] = intercept
-                    intercept = ZitiIntercept(ziti, svcName, "https://\(hostPort)", idleTime)
-                    intercepts[intercept.urlStr] = intercept
-                    log.info("Setting TUN intercept svc \(svcName): \(hostPort)", function:"onService()()")
-                }
-                interceptsLock.unlock()
-            }
+            interceptsLock.unlock()
+        } else {
+            log.warn("Ignoring service \(svcName). Unrecognized configuration")
         }
     }
     
