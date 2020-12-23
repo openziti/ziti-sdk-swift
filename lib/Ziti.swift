@@ -585,7 +585,7 @@ import Foundation
         mySelf.eventCallbacksLock.lock()
         mySelf.eventCallbacks.forEach { listener in
             let mask = listener.mask
-            if mask & event.type != 0 {
+            if mask & event.type.rawValue != 0 {
                 listener.cb(event)
             }
         }

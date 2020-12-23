@@ -20,15 +20,17 @@ import Foundation
     public weak var ziti:Ziti?
     
     @objc public enum EventType : UInt32 {
+        case Invalid = 0x0
         case Context = 0x01 // ZitiContextEvent.rawValue
         case Router  = 0x02 // ZitiRouterEvent.rawValue
         case Service = 0x04 // ZitiServiceEvent.rawValue
         
-        var debug: String {
+        public var debug: String {
             switch self {
             case .Context: return ".Context"
             case .Router:  return ".Router"
             case .Service: return ".Service"
+            case .Invalid: return ".Invalid"
             @unknown default: return "unknown \(self.rawValue)"
             }
         }
@@ -49,7 +51,7 @@ import Foundation
     
     @objc public enum RouterStatus : UInt32 {
         case Connected, Disconnected, Removed, Unavailable
-        var debug: String {
+        public var debug: String {
             switch self {
             case .Connected:    return ".Connected"
             case .Disconnected: return ".Disconnected"
@@ -92,30 +94,28 @@ import Foundation
         }
     }
     
-    @objc public let type:UInt32
+    @objc public let type:EventType
     @objc public var contextEvent:ContextEvent?
     @objc public var routerEvent:RouterEvent?
     @objc public var serviceEvent:ServiceEvent?
     
     init(_ ziti:Ziti, _ cEvent:UnsafePointer<ziti_event_t>) {
         self.ziti = ziti
-        type = cEvent.pointee.type.rawValue        
-        if cEvent.pointee.type.rawValue == ZitiEvent.EventType.Context.rawValue {
+        type = EventType(rawValue: cEvent.pointee.type.rawValue) ?? .Invalid
+        if type == .Context {
             contextEvent = ContextEvent(cEvent.pointee.event.ctx)
-        } else if cEvent.pointee.type.rawValue == ZitiEvent.EventType.Service.rawValue {
+        } else if type == .Service {
             serviceEvent = ServiceEvent(cEvent.pointee.event.service)
-        } else if cEvent.pointee.type.rawValue == ZitiEvent.EventType.Router.rawValue {
+        } else if type == .Router {
             routerEvent = RouterEvent(cEvent.pointee.event.router)
+        } else {
+            log.error("unrecognized event type \(cEvent.pointee.type.rawValue)")
         }
     }
     
     public override var debugDescription: String {
         var str = "\(String(describing: self)):\n"
-        if let t = EventType(rawValue: type) {
-            str += "   type: \(t.debug)\n"
-        } else {
-            str += "   type: unrecognized. rawValue: \(type)\n"
-        }
+        str += "   type: \(type.debug)\n"
         
         if let e = contextEvent {
             str += "   status: \(e.status)\n"
