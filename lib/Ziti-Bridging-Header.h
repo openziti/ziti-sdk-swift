@@ -26,7 +26,7 @@ extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 
 void ziti_sdk_c_host_v1_wrapper(void *ziti_ctx, uv_loop_t *loop, const char *service_id, const char *proto, const char *hostname, int port);
 
-extern int ziti_log_level;
+extern int ziti_log_level();
 extern void ziti_log_set_level(int level);
 
 char **copyStringArray(char *const arr[], int count);

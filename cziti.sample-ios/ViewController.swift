@@ -18,6 +18,7 @@ class ViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         print("zidFile=\(zidFile)")
         urlTextField.addTarget(self, action: #selector(onTextFieldDidEndOnExit), for: .editingDidEndOnExit)
         
@@ -36,6 +37,7 @@ class ViewController: UIViewController {
                     return
                 }
                 
+                ZitiLog.setLogLevel(.DEBUG)
                 ZitiUrlProtocol.register(ziti)
             }
         } else {

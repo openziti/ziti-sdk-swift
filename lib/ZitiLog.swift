@@ -70,9 +70,10 @@ public class ZitiLog {
     
     /// Get the system-wide log level
     public class func getLogLevel() -> LogLevel {
-        if ziti_log_level < LogLevel.WTF.rawValue { return .WTF }
-        if ziti_log_level > LogLevel.TRACE.rawValue { return .TRACE }
-        return LogLevel(rawValue: ziti_log_level) ?? .WTF
+        let zll = ziti_log_level()
+        if zll < LogLevel.WTF.rawValue { return .WTF }
+        if zll > LogLevel.TRACE.rawValue { return .TRACE }
+        return LogLevel(rawValue: zll) ?? .WTF
     }
     
     /// Log a message at `.TRACE` level
@@ -185,7 +186,7 @@ public class ZitiLog {
             function.removeSubrange(function.firstIndex(of: "(")!...function.lastIndex(of: ")")!)
         }
         
-        if lvl.rawValue <= ziti_log_level {
+        if lvl.rawValue <= ziti_log_level() {
             fputs("[\(df.string(from: Date()))] \(lvl.toStr()) \(file):\(line) \(function)() \(msg)\n", stderr)
         }
     }

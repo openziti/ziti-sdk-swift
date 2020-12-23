@@ -36,7 +36,7 @@ import Foundation
     
     var loop:UnsafeMutablePointer<uv_loop_t>!
     var privateLoop:Bool
-    var ztx:ziti_context?
+    public var ztx:ziti_context?
     
     // temporary until user data available for posture checks
     static var postureContexts:[ziti_context:Ziti?] = [:]
@@ -47,23 +47,30 @@ import Foundation
     private var ctrlPtr: UnsafeMutablePointer<Int8>?
     private var nfOpts: ziti_options?
     
+    
     /// Type used for escaping  closure called follwing initialize of Ziti connectivity
     ///
     /// - Parameters:
     ///      - error: `ZitiError` containing error information on failed initialization attempt
-    public typealias InitCallback = (ZitiError?) -> Void
+    public typealias InitCallback = (_ error:ZitiError?) -> Void
     private var initCallback:InitCallback?
     private var postureChecks:ZitiPostureChecks?
     
-    /// Type used for closure called when changes to services are detected or a call to `serviceAvailable(_:_:)` is made
+    /// Type used for escaping  closure called when ZitiEvent is received
+    ///
+    /// - Parameters:
+    ///      - event: `ZitiEvent` containing event information
+    public typealias EventCallback = (_ event: ZitiEvent?) -> Void
+    private var eventCallbacksLock = NSLock()
+    private var eventCallbacks:[(cb:EventCallback, mask:UInt32)] = []
+    
+    /// Type used for closure called when a call to `serviceAvailable(_:_:)` is made
     ///
     /// - Parameters:
     ///     - ztx: Ziti context
     ///     - svc: the `ziti-sdk-c`'s `ziti_service` that has changed, or nil on error condition
     ///     - status: ZITI_OK, ZITI_SERVICE_UNAVAILABLE, or errorCode on nil `ziti_service`
     public typealias ServiceCallback = (_ ztx:ziti_context? , _ svc: UnsafeMutablePointer<ziti_service>?, _ status:Int32) -> Void
-    private var serviceCallbacksLock = NSLock()
-    private var serviceCallbacks:[ServiceCallback] = []
     
     /// Type used for closure called for an operation to be performed on the loop
     public typealias PerformCallback = () -> Void
@@ -104,6 +111,7 @@ import Foundation
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
         super.init()
+        initOpsHandle()
     }
     
     /// Initialize `Ziti` with information needed for a `ZitiIdentity`.
@@ -122,6 +130,7 @@ import Foundation
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
         super.init()
+        initOpsHandle()
     }
     
     /// Initialize `Ziti` with a `ZitiIdentity`.
@@ -135,6 +144,7 @@ import Foundation
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
         super.init()
+        initOpsHandle()
     }
     
     /// Initilize `Ziti` with an externally supplied `uv_loop`.
@@ -150,6 +160,18 @@ import Foundation
         self.id = zid
         self.privateLoop = false
         self.loop = loop
+        super.init()
+        initOpsHandle()
+    }
+    
+    private func initOpsHandle() {
+        opsAsyncHandle = UnsafeMutablePointer.allocate(capacity: 1)
+        opsAsyncHandle?.initialize(to: uv_async_t())
+        uv_async_init(loop, opsAsyncHandle, Ziti.onPerformOps)
+        opsAsyncHandle?.pointee.data = self.toVoidPtr()
+        opsAsyncHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_unref($0)
+        }
     }
     
     deinit {
@@ -157,6 +179,8 @@ import Foundation
             loop.deinitialize(count: 1)
             loop.deallocate()
         }
+        opsAsyncHandle?.deinitialize(count: 1)
+        opsAsyncHandle?.deallocate()
     }
     
     /// Remove keys and certificates created during `enroll()` from the keychain
@@ -314,20 +338,6 @@ import Foundation
             initCallback(ZitiError(errStr, errorCode: Int(tlsStat ?? 0)))
             return
         }
-        
-        // Add opsQueue async handler
-        opsAsyncHandle = UnsafeMutablePointer.allocate(capacity: 1)
-        opsAsyncHandle?.initialize(to: uv_async_t())
-        if uv_async_init(loop, opsAsyncHandle, Ziti.onPerformOps) != 0 {
-            let errStr = "unable to init opsAsyncHandle"
-            log.error(errStr)
-            initCallback(ZitiError(errStr))
-            return
-        }
-        opsAsyncHandle?.pointee.data = self.toVoidPtr()
-        opsAsyncHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
-            uv_unref($0)
-        }
                 
         // remove compiler warning on cztAPI memory living past the inti call
         ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
@@ -341,16 +351,16 @@ import Foundation
                                 controller: ctrlPtr,
                                 tls:tls,
                                 config_types: ziti_all_configs,
-                                init_cb: Ziti.onInit,
-                                service_cb: Ziti.onService,
                                 refresh_interval: 30,
                                 metrics_type: EWMA_1m,
                                 router_keepalive: 5,
-                                ctx: self.toVoidPtr(),
                                 pq_mac_cb: Ziti.onMacQuery,
                                 pq_os_cb:  Ziti.onOsQuery,
                                 pq_process_cb: Ziti.onProcessQuery,
-                                pq_domain_cb: Ziti.onDomainQuery)
+                                pq_domain_cb: Ziti.onDomainQuery,
+                                app_ctx: self.toVoidPtr(),
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue,
+                                event_cb: Ziti.onEvent)
         
         let initStatus = ziti_init_opts(&(nfOpts!), loop, self.toVoidPtr())
         guard initStatus == ZITI_OK else {
@@ -528,41 +538,58 @@ import Foundation
         uv_async_send(opsAsyncHandle)
     }
     
-    /// Register a closure to be called when services are added, changed, or deletes
+    /// Register a closure to be called when events are received
     ///
-    /// These callbacks should be registerd before `run(_:)` is executed or the intiali callbacks for the services will be missed
+    /// These callbacks should be registerd before `run(_:)` is executed or the intiali events will be missed
     ///
     /// - Parameters:
     ///     - cb: The closre to be executed
-    public func registerServiceCallback(_ cb: @escaping ServiceCallback) {
-        serviceCallbacksLock.lock()
-        serviceCallbacks.append(cb)
-        serviceCallbacksLock.unlock()
+    public func registerEventCallback(_ cb: @escaping EventCallback, _ mask:UInt32=0xffff) {
+        eventCallbacksLock.lock()
+        eventCallbacks.append((cb:cb, mask:mask))
+        eventCallbacksLock.unlock()
     }
         
     // MARK: - Static C Callbacks
     
-    static private let onInit:ziti_init_cb = { ztx, status, ctx in
-        guard let mySelf = zitiUnretained(Ziti.self, ctx)  else {
-            log.wtf("invalid context", function:"onInit()")
+    static private let onEvent:ziti_event_cb = { ztx, cEvent in
+        guard let ctx = ziti_app_ctx(ztx), let mySelf = zitiUnretained(Ziti.self, ctx) else {
+            log.wtf("invalid context", function:"onEvent()")
             return
         }
-        guard status == ZITI_OK else {
-            let errStr = String(cString: ziti_errorstr(status))
-            log.error(errStr, function:"onInit()")
-            mySelf.initCallback?(ZitiError(errStr, errorCode: Int(status)))
+        guard let cEvent = cEvent else {
+            log.wtf("invalid event", function:"onEvent()")
             return
         }
-        mySelf.ztx = ztx
-        Ziti.postureContexts[ztx!] = mySelf
         
-        // update zid name
+        // always update zid name...
         if let czid = ziti_get_identity(ztx) {
             let name = String(cString: czid.pointee.name)
-            log.info("zid name: \(name)", function:"onInit()")
-            mySelf.id.name = name
+            if mySelf.id.name != name {
+                log.info("zid name: \(name)", function:"onEvent()")
+                mySelf.id.name = name
+            }
         }
-        mySelf.initCallback?(nil)
+        
+        // first time..
+        if let ztx = ztx, mySelf.ztx == nil {
+            mySelf.ztx = ztx
+            Ziti.postureContexts[ztx] = mySelf
+            mySelf.initCallback?(nil)
+        }
+        
+        // send the event...
+        let event = ZitiEvent(mySelf, cEvent)
+        log.debug(event.debugDescription, function:"onEvent()")
+        
+        mySelf.eventCallbacksLock.lock()
+        mySelf.eventCallbacks.forEach { listener in
+            let mask = listener.mask
+            if mask & event.type != 0 {
+                listener.cb(event)
+            }
+        }
+        mySelf.eventCallbacksLock.unlock()
     }
     
     static private let onMacQuery:ziti_pq_mac_cb = { ztx, id, cb in
@@ -721,23 +748,6 @@ import Foundation
         opsQueue.forEach { op in
             op()
         }
-    }
-    
-    static private let onService:ziti_service_cb = { ztx, zs, status, ctx in
-        guard let mySelf = zitiUnretained(Ziti.self, ctx)  else {
-            log.wtf("invalid context", function:"onService()")
-            return
-        }
-        
-        if status != ZITI_OK && status != ZITI_SERVICE_UNAVAILABLE {
-            log.warn("received status \(status): \(String(cString: ziti_errorstr(status)))", function:"onService()")
-        }
-        
-        mySelf.serviceCallbacksLock.lock()
-        mySelf.serviceCallbacks.forEach { cb in
-            cb(ztx, zs, status)
-        }
-        mySelf.serviceCallbacksLock.unlock()
     }
     
     static private let onServiceAvailable:ziti_service_cb = { ztx, zs, status, ctx in

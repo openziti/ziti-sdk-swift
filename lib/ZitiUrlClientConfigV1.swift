@@ -15,9 +15,13 @@ limitations under the License.
 */
 import Foundation
 
-class ZitiTunnelConfig : Codable, ZitiConfig {
-    static var configType = "ziti-tunneler-client.v1"
+public class ZitiUrlClientConfigV1 : Codable, ZitiConfig {
+    static var configType = "ziti-url-client.v1"
     
-    let hostname:String
-    let port:Int
+    public let scheme:String
+    public let hostname:String
+    public var port:Int?
+    public var headers: [String: String]?
+    
+    public func getPort() -> Int { return port ?? (scheme == "https" ? 443 : 80) }
 }
