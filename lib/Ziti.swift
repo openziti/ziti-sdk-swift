@@ -580,8 +580,6 @@ import Foundation
         
         // send the event...
         let event = ZitiEvent(mySelf, cEvent)
-        log.debug(event.debugDescription, function:"onEvent()")
-        
         mySelf.eventCallbacksLock.lock()
         mySelf.eventCallbacks.forEach { listener in
             let mask = listener.mask
