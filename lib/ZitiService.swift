@@ -20,6 +20,7 @@ import Foundation
     enum CodingKeys: String, CodingKey {
         case name, id, encrypted, permFlags
         case tunnelClientConfigV1 = "ziti-tunneler-client.v1"
+        case tunnelServerConfigV1 = "ziti-tunneler-server.v1"
         case urlClientConfigV1    = "ziti-url-client.v1"
     }
     
