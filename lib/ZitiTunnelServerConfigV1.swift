@@ -23,7 +23,7 @@ public class ZitiTunnelServerConfigV1 : Codable, ZitiConfig {
             case proto = "protocol"
         }
     
-    let hostname:String
-    let port:Int
-    let proto:String // `protocol` is a reserved word...
+    public let hostname:String
+    public let port:Int
+    public let proto:String // `protocol` is a reserved word...
 }
