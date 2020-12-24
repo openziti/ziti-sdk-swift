@@ -30,6 +30,7 @@ import Foundation
     public var encrypted:Bool?
     public var permFlags:Int32?
     public var tunnelClientConfigV1:ZitiTunnelClientConfigV1?
+    public var tunnelServerConfigV1:ZitiTunnelServerConfigV1?
     public var urlClientConfigV1:ZitiUrlClientConfigV1?
     
     init(_ cService:UnsafeMutablePointer<ziti_service>) {
@@ -41,6 +42,9 @@ import Foundation
         
         if let cfg = ZitiService.parseConfig(ZitiTunnelClientConfigV1.self, &(cService.pointee)) {
             tunnelClientConfigV1 = cfg
+        }
+        if let cfg = ZitiService.parseConfig(ZitiTunnelServerConfigV1.self, &(cService.pointee)) {
+            tunnelServerConfigV1 = cfg
         }
         if let cfg = ZitiService.parseConfig(ZitiUrlClientConfigV1.self, &(cService.pointee)) {
             urlClientConfigV1 = cfg

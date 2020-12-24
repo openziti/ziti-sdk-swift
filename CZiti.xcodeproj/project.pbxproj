@@ -26,6 +26,8 @@
 		5A8B0B67258EDD1100182437 /* ZitiEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B65258EDD1100182437 /* ZitiEvent.swift */; };
 		5A8B0B81258FEA9A00182437 /* ZitiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B80258FEA9900182437 /* ZitiService.swift */; };
 		5A8B0B82258FEA9A00182437 /* ZitiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B80258FEA9900182437 /* ZitiService.swift */; };
+		5A8B0C1D2594119900182437 /* ZitiTunnelServerConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */; };
+		5A8B0C1E2594119900182437 /* ZitiTunnelServerConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */; };
 		5AA2988E25857758001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2988A25857758001F7502 /* libziti-tunnel-cbs-c.a */; };
 		5AA2988F25857758001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2988B25857758001F7502 /* libziti-tunnel-sdk-c.a */; };
 		5AA2989025857758001F7502 /* liblwipunixarch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2988C25857758001F7502 /* liblwipunixarch.a */; };
@@ -171,6 +173,7 @@
 		5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiPostureChecks.swift; sourceTree = "<group>"; };
 		5A8B0B65258EDD1100182437 /* ZitiEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiEvent.swift; sourceTree = "<group>"; };
 		5A8B0B80258FEA9900182437 /* ZitiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiService.swift; sourceTree = "<group>"; };
+		5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiTunnelServerConfigV1.swift; sourceTree = "<group>"; };
 		5AA2988A25857758001F7502 /* libziti-tunnel-cbs-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libziti-tunnel-cbs-c.a"; path = "deps/ziti-tunnel-sdk-c/build-os-arch/lib/libziti-tunnel-cbs-c.a"; sourceTree = "<group>"; };
 		5AA2988B25857758001F7502 /* libziti-tunnel-sdk-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libziti-tunnel-sdk-c.a"; path = "deps/ziti-tunnel-sdk-c/build-os-arch/lib/libziti-tunnel-sdk-c.a"; sourceTree = "<group>"; };
 		5AA2988C25857758001F7502 /* liblwipunixarch.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = liblwipunixarch.a; path = "deps/ziti-tunnel-sdk-c/build-os-arch/lib/liblwipunixarch.a"; sourceTree = "<group>"; };
@@ -385,6 +388,7 @@
 				5AB83092247432C40089AF93 /* ZitiConfig.swift */,
 				5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */,
 				5AB83098247432C40089AF93 /* ZitiTunnelClientConfigV1.swift */,
+				5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */,
 				5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */,
 				5AB8308F247432C40089AF93 /* ZitiError.swift */,
 				5AB83094247432C40089AF93 /* ZitiLog.swift */,
@@ -656,6 +660,7 @@
 				5AB830AB247432C50089AF93 /* ziti.c in Sources */,
 				5AB830A2247432C40089AF93 /* ZitiUnretained.swift in Sources */,
 				5AA298AD2585935F001F7502 /* ZitiTunnel.swift in Sources */,
+				5A8B0C1D2594119900182437 /* ZitiTunnelServerConfigV1.swift in Sources */,
 				5A8B0B66258EDD1100182437 /* ZitiEvent.swift in Sources */,
 				5AB830A6247432C40089AF93 /* ZitiConnection.swift in Sources */,
 				5AB8309F247432C40089AF93 /* ZitiIntercept.swift in Sources */,
@@ -683,6 +688,7 @@
 				5AB830B92474333D0089AF93 /* ziti.c in Sources */,
 				5AB830B02474331C0089AF93 /* ZitiUnretained.swift in Sources */,
 				5AA298AE2585935F001F7502 /* ZitiTunnel.swift in Sources */,
+				5A8B0C1E2594119900182437 /* ZitiTunnelServerConfigV1.swift in Sources */,
 				5A8B0B67258EDD1100182437 /* ZitiEvent.swift in Sources */,
 				5AB830B42474332B0089AF93 /* ZitiConnection.swift in Sources */,
 				5AB830AD247433110089AF93 /* ZitiIntercept.swift in Sources */,
