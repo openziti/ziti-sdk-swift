@@ -63,19 +63,6 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         log.warn("consumed \(len) bytes")
     }
     
-    static let xziti_sdk_c_write_wrapper:ziti_sdk_write_cb = { io_ctx, write_ctx, data, len in
-        let _ziti_io_ctx = io_ctx?.assumingMemoryBound(to: ziti_io_context.self)
-        var _data = data?.assumingMemoryBound(to: UnsafeMutablePointer<UInt8>.self)
-        log.warn("writing \(len)")
-        return Int(ziti_write(_ziti_io_ctx!.pointee.ziti_conn, _data!.pointee, len, ZitiTunnel.on_ziti_write, write_ctx))
-    }
-    
-    static let on_ziti_write:ziti_write_cb = { ziti_conn, len, ctx in
-        let _ctx = ctx?.assumingMemoryBound(to: OpaquePointer.self)
-        ziti_tunneler_ack(_ctx?.pointee)
-        log.warn("wrote \(len)")
-    }
-    
     public func queuePacket(_ data:Data) {
         netifDriver.queuePacket(data)
     }
