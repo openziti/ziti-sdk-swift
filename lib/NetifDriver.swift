@@ -34,7 +34,7 @@ class NetifDriver : NSObject, ZitiUnretained {
     private static let log = ZitiLog(NetifDriver.self)
     private let log = NetifDriver.log
     
-    var packetWriter:ZitiTunnelPacketWriter?
+    var tunnelProvider:ZitiTunnelProvider?
     
     var driver:UnsafeMutablePointer<netif_driver_t>!
     var packetCallback:packet_cb?
@@ -44,8 +44,8 @@ class NetifDriver : NSObject, ZitiUnretained {
     var queueLock = NSLock()
     var asyncHandle:uv_async_t?
     
-    init(packetWriter:ZitiTunnelPacketWriter) {
-        self.packetWriter = packetWriter
+    init(tunnelProvider:ZitiTunnelProvider) {
+        self.tunnelProvider = tunnelProvider
         driver = UnsafeMutablePointer<netif_driver_t>.allocate(capacity: 1)
         driver.initialize(to: netif_driver_t())
         super.init()
@@ -124,14 +124,14 @@ class NetifDriver : NSObject, ZitiUnretained {
             log.wtf("invalid handle", function: "write_cb()")
             return -1
         }
-        guard let packetWriter = mySelf.packetWriter else {
-            log.wtf("invalid packetWriter", function: "write_cb()")
+        guard let tunnelProvider = mySelf.tunnelProvider else {
+            log.wtf("invalid tunnelProvider", function: "write_cb()")
             return -1
         }
         autoreleasepool {
             if let ptr = UnsafeMutableRawPointer(mutating: buf) {
                 let data = Data(bytesNoCopy: ptr, count: len, deallocator: .none)
-                packetWriter.writePacket(data)
+                tunnelProvider.writePacket(data)
             }
         }
         return len

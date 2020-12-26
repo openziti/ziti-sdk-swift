@@ -15,8 +15,9 @@ limitations under the License.
 */
 import Foundation
 
-public protocol ZitiTunnelPacketWriter {
+public protocol ZitiTunnelProvider {
     func writePacket(_ data:Data)
+    func readCompleteCallback(_ len:Int)
 }
 
 public class ZitiTunnel : NSObject, ZitiUnretained {
@@ -27,21 +28,39 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
     let netifDriver:NetifDriver
     
-    public init(_ packetWriter:ZitiTunnelPacketWriter, _ loop:UnsafeMutablePointer<uv_loop_t>) {
-        netifDriver = NetifDriver(packetWriter: packetWriter)
+    var bcc:UnsafeMutablePointer<bytes_consumed_cb_context>!
+    
+    public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>) {
+        netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         tunneler_opts = UnsafeMutablePointer<tunneler_sdk_options>.allocate(capacity: 1)
         tunneler_opts.initialize(to: tunneler_sdk_options(
             netif_driver: self.netifDriver.open(),
             ziti_dial: ziti_sdk_c_dial,
             ziti_close: ziti_sdk_c_close,
-            ziti_write: ziti_sdk_c_write,
+            ziti_write: ziti_sdk_c_write_wrapper,
             ziti_host_v1: ziti_sdk_c_host_v1_wrapper))
         tnlr_ctx = ziti_tunneler_init(tunneler_opts, loop)
+        super.init()
+        
+        // Hack until tunnel-sdk-c supports throttling uploads
+        bcc = UnsafeMutablePointer<bytes_consumed_cb_context>.allocate(capacity: 1)
+        bcc.initialize(to: bytes_consumed_cb_context(cb: ZitiTunnel.bcCallback, user_data: self.toVoidPtr()))
+        set_bytes_consumed_cb(bcc)
     }
     
     deinit {
         tunneler_opts.deinitialize(count: 1)
         tunneler_opts.deallocate()
+        bcc.deinitialize(count: 1)
+        bcc.deallocate()
+    }
+    
+    static let bcCallback:bytes_consumed_cb = { len, ctx in
+        guard let mySelf = zitiUnretained(ZitiTunnel.self, ctx) else {
+            log.wtf("invalid ctx")
+            return
+        }
+        log.warn("consumed \(len) bytes")
     }
     
     public func queuePacket(_ data:Data) {
