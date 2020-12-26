@@ -17,7 +17,9 @@ import Foundation
 
 public protocol ZitiTunnelProvider {
     func writePacket(_ data:Data)
-    func readCompleteCallback(_ len:Int)
+    
+    func onBytesPending(_ len:Int)
+    func onBytesConsumed(_ len:Int)
 }
 
 public class ZitiTunnel : NSObject, ZitiUnretained {
@@ -44,7 +46,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         
         // Hack until tunnel-sdk-c supports throttling uploads
         bcc = UnsafeMutablePointer<bytes_consumed_cb_context>.allocate(capacity: 1)
-        bcc.initialize(to: bytes_consumed_cb_context(cb: ZitiTunnel.bcCallback, user_data: self.toVoidPtr()))
+        bcc.initialize(to: bytes_consumed_cb_context(
+                        pending_cb: ZitiTunnel.onBytesPending,
+                        consumed_cb: ZitiTunnel.onBytesConsumed,
+                        user_data: self.toVoidPtr()))
         set_bytes_consumed_cb(bcc)
     }
     
@@ -55,12 +60,20 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         bcc.deallocate()
     }
     
-    static let bcCallback:bytes_consumed_cb = { len, ctx in
+    static let onBytesPending:bytes_pending_cb = { len, ctx in
         guard let mySelf = zitiUnretained(ZitiTunnel.self, ctx) else {
             log.wtf("invalid ctx")
             return
         }
-        log.warn("consumed \(len) bytes")
+        mySelf.netifDriver.tunnelProvider?.onBytesPending(len)
+    }
+    
+    static let onBytesConsumed:bytes_consumed_cb = { len, ctx in
+        guard let mySelf = zitiUnretained(ZitiTunnel.self, ctx) else {
+            log.wtf("invalid ctx")
+            return
+        }
+        mySelf.netifDriver.tunnelProvider?.onBytesConsumed(len)
     }
     
     public func queuePacket(_ data:Data) {
