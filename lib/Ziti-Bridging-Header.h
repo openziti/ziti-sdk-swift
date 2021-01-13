@@ -25,17 +25,6 @@ extern const char** ziti_all_configs;
 extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 
 void ziti_sdk_c_host_v1_wrapper(void *ziti_ctx, uv_loop_t *loop, const char *service_id, const char *proto, const char *hostname, int port);
-ssize_t ziti_sdk_c_write_wrapper(const void *ziti_io_ctx, void *write_ctx, const void *data, size_t len);
-
-// hack until ziti-tunnel-sdk-c supports throttling
-typedef void (*bytes_pending_cb)(size_t len, void *user_data);
-typedef void (*bytes_consumed_cb)(size_t len, void *user_data);
-typedef struct bytes_consumed_cb_context_s {
-    bytes_pending_cb pending_cb;
-    bytes_consumed_cb consumed_cb;
-    void *user_data;
-} bytes_consumed_cb_context;
-void set_bytes_consumed_cb(bytes_consumed_cb_context *bcc);
 
 extern int ziti_log_level(void);
 extern void ziti_log_set_level(int level);
