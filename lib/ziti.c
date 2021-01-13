@@ -29,24 +29,6 @@ void ziti_sdk_c_host_v1_wrapper(void *ziti_ctx, uv_loop_t *loop, const char *ser
     ziti_sdk_c_host_v1(ziti_ctx, loop, service_id, proto, hostname, port);
 }
 
-static bytes_consumed_cb_context *bc_context = NULL;
-void set_bytes_consumed_cb(bytes_consumed_cb_context *bcc) {
-    bc_context = bcc;
-}
-static void my_on_ziti_write(ziti_connection ziti_conn, ssize_t len, void *ctx) {
-    if (bc_context != NULL) {
-        bc_context->consumed_cb(len, bc_context->user_data);
-    }
-    ziti_tunneler_ack(ctx);
-}
-ssize_t ziti_sdk_c_write_wrapper(const void *ziti_io_ctx, void *write_ctx, const void *data, size_t len) {
-    if (bc_context != NULL) {
-        bc_context->pending_cb(len, bc_context->user_data);
-    }
-    struct ziti_io_ctx_s *_ziti_io_ctx = (struct ziti_io_ctx_s *)ziti_io_ctx;
-    return ziti_write(_ziti_io_ctx->ziti_conn, (void *)data, len, my_on_ziti_write, write_ctx);
-}
-
 char **copyStringArray(char *const arr[], int count) {
     if (count == 0) return 0;
         

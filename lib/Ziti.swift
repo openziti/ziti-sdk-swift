@@ -351,7 +351,7 @@ import Foundation
                                 controller: ctrlPtr,
                                 tls:tls,
                                 config_types: ziti_all_configs,
-                                refresh_interval: 30,
+                                refresh_interval: 60,
                                 metrics_type: EWMA_1m,
                                 router_keepalive: 5,
                                 pq_mac_cb: Ziti.onMacQuery,
@@ -362,7 +362,7 @@ import Foundation
                                 events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
-        let initStatus = ziti_init_opts(&(nfOpts!), loop, self.toVoidPtr())
+        let initStatus = ziti_init_opts(&(nfOpts!), loop)
         guard initStatus == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
             log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")

@@ -17,9 +17,6 @@ import Foundation
 
 public protocol ZitiTunnelProvider {
     func writePacket(_ data:Data)
-    
-    func onBytesPending(_ len:Int)
-    func onBytesConsumed(_ len:Int)
 }
 
 public class ZitiTunnel : NSObject, ZitiUnretained {
@@ -29,9 +26,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tnlr_ctx:tunneler_context?
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
     let netifDriver:NetifDriver
-    
-    var bcc:UnsafeMutablePointer<bytes_consumed_cb_context>!
-    
+        
     public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>) {
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         tunneler_opts = UnsafeMutablePointer<tunneler_sdk_options>.allocate(capacity: 1)
@@ -39,41 +34,16 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             netif_driver: self.netifDriver.open(),
             ziti_dial: ziti_sdk_c_dial,
             ziti_close: ziti_sdk_c_close,
-            ziti_write: ziti_sdk_c_write_wrapper,
+            ziti_close_write: ziti_sdk_c_close_write,
+            ziti_write: ziti_sdk_c_write,
             ziti_host_v1: ziti_sdk_c_host_v1_wrapper))
         tnlr_ctx = ziti_tunneler_init(tunneler_opts, loop)
         super.init()
-        
-        // Hack until tunnel-sdk-c supports throttling uploads
-        bcc = UnsafeMutablePointer<bytes_consumed_cb_context>.allocate(capacity: 1)
-        bcc.initialize(to: bytes_consumed_cb_context(
-                        pending_cb: ZitiTunnel.onBytesPending,
-                        consumed_cb: ZitiTunnel.onBytesConsumed,
-                        user_data: self.toVoidPtr()))
-        set_bytes_consumed_cb(bcc)
     }
     
     deinit {
         tunneler_opts.deinitialize(count: 1)
         tunneler_opts.deallocate()
-        bcc.deinitialize(count: 1)
-        bcc.deallocate()
-    }
-    
-    static let onBytesPending:bytes_pending_cb = { len, ctx in
-        guard let mySelf = zitiUnretained(ZitiTunnel.self, ctx) else {
-            log.wtf("invalid ctx")
-            return
-        }
-        mySelf.netifDriver.tunnelProvider?.onBytesPending(len)
-    }
-    
-    static let onBytesConsumed:bytes_consumed_cb = { len, ctx in
-        guard let mySelf = zitiUnretained(ZitiTunnel.self, ctx) else {
-            log.wtf("invalid ctx")
-            return
-        }
-        mySelf.netifDriver.tunnelProvider?.onBytesConsumed(len)
     }
     
     public func queuePacket(_ data:Data) {
