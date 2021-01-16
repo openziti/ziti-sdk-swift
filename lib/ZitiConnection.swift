@@ -267,7 +267,7 @@ import Foundation
         mySelf.onListen?(mySelf, status)
     }
     
-    static private let onClient:ziti_client_cb = { svr, client, status in
+    static private let onClient:ziti_client_cb = { svr, client, status, _ in
         guard let svr = svr, let ctx = ziti_conn_data(svr), let mySelf = zitiUnretained(ZitiConnection.self, ctx) else {
             log.wtf("invalid context", function:"onClient()")
             return
