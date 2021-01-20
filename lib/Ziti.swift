@@ -196,6 +196,15 @@ import Foundation
         }
     }
     
+    /// Provide app information to Ziti Controller
+    ///
+    /// - Parameters:
+    ///     - appId: Name (e.g., BundleIdentifier) of application
+    ///     - appVersion: Version of application
+    @objc public static func setAppInfo(_ appId:String, _ appVersion:String) {
+        ziti_set_app_info(appId.cString(using: .utf8), appVersion.cString(using: .utf8))
+    }
+    
     // MARK: - Enrollment
     
     /// Type used for escaping  closure called following an enrollment attempt
