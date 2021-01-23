@@ -513,7 +513,9 @@ import Foundation
     ///
     /// This method must be called in an interation of the loop
     @objc public func dump() {
-        ziti_dump(ztx)
+        // TODO: updated `ziti_dump`: void ziti_dump(ziti_context ztx, int (*printer)(void *, const char *, ...), void *ctx)
+        // ziti_dump(ztx)
+        log.error("TODO")
     }
     
     /// Checks availability of service
