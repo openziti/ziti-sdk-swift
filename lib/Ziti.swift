@@ -491,9 +491,11 @@ import Foundation
         guard let ztx = self.ztx, let vPtr = ziti_get_controller_version(ztx) else {
             return ("", "", "")
         }
-        return (String(cString: vPtr.pointee.version),
-                String(cString: vPtr.pointee.revision),
-                String(cString: vPtr.pointee.build_date))
+        let vers = vPtr.pointee.version != nil ? String(cString: vPtr.pointee.version) : ""
+        let rev = vPtr.pointee.revision != nil ? String(cString: vPtr.pointee.revision) : ""
+        let bd = vPtr.pointee.build_date != nil ? String(cString: vPtr.pointee.build_date) : ""
+        
+        return (vers, rev, bd)
     }
     
     /// Retrieve current transfer rates
