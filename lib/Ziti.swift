@@ -491,9 +491,11 @@ import Foundation
         guard let ztx = self.ztx, let vPtr = ziti_get_controller_version(ztx) else {
             return ("", "", "")
         }
-        return (String(cString: vPtr.pointee.version),
-                String(cString: vPtr.pointee.revision),
-                String(cString: vPtr.pointee.build_date))
+        let vers = vPtr.pointee.version != nil ? String(cString: vPtr.pointee.version) : ""
+        let rev = vPtr.pointee.revision != nil ? String(cString: vPtr.pointee.revision) : ""
+        let bd = vPtr.pointee.build_date != nil ? String(cString: vPtr.pointee.build_date) : ""
+        
+        return (vers, rev, bd)
     }
     
     /// Retrieve current transfer rates
@@ -511,7 +513,9 @@ import Foundation
     ///
     /// This method must be called in an interation of the loop
     @objc public func dump() {
-        ziti_dump(ztx)
+        // TODO: updated `ziti_dump`: void ziti_dump(ziti_context ztx, int (*printer)(void *, const char *, ...), void *ctx)
+        // ziti_dump(ztx)
+        log.error("TODO")
     }
     
     /// Checks availability of service
