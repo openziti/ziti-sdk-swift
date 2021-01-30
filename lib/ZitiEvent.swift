@@ -67,8 +67,8 @@ import Foundation
         @objc public let version:String
         init(_ cEvent:ziti_router_event) {
             status = RouterStatus(rawValue: cEvent.status.rawValue) ?? RouterStatus.Unavailable
-            name = String(cString: cEvent.name)
-            version = String(cString: cEvent.version)
+            name = cEvent.name != nil ? String(cString: cEvent.name) : ""
+            version = cEvent.version != nil ? String(cString: cEvent.version) : ""
         }
     }
     
