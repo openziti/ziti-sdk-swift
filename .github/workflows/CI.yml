@@ -1,9 +1,9 @@
 name: CI
 on:
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
   push:
-    branches: [ master ]
+    branches: [ main ]
 
 jobs:
   build-iOS:
@@ -116,7 +116,7 @@ jobs:
   draft-release:
     runs-on: ubuntu-latest
     needs: [ build-iOS, build-macOS, build-docs ]
-    if: github.event_name == 'push' && github.ref  == 'refs/heads/master'
+    if: github.event_name == 'push' && github.ref  == 'refs/heads/main'
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
