@@ -360,7 +360,7 @@ import Foundation
                                 controller: ctrlPtr,
                                 tls:tls,
                                 config_types: ziti_all_configs,
-                                refresh_interval: 60,
+                                refresh_interval: 15,
                                 metrics_type: EWMA_1m,
                                 router_keepalive: 5,
                                 pq_mac_cb: Ziti.onMacQuery,
