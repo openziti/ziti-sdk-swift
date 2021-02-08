@@ -33,6 +33,7 @@ import Foundation
     public var tunnelClientConfigV1:ZitiTunnelClientConfigV1?
     public var tunnelServerConfigV1:ZitiTunnelServerConfigV1?
     public var urlClientConfigV1:ZitiUrlClientConfigV1?
+    public var interceptConfigV1:ZitiInterceptConfigV1?
     
     init(_ cService:UnsafeMutablePointer<ziti_service>) {
         self.cService = cService
@@ -49,6 +50,9 @@ import Foundation
         }
         if let cfg = ZitiService.parseConfig(ZitiUrlClientConfigV1.self, &(cService.pointee)) {
             urlClientConfigV1 = cfg
+        }
+        if let cfg = ZitiService.parseConfig(ZitiInterceptConfigV1.self, &(cService.pointee)) {
+            interceptConfigV1 = cfg
         }
     }
     

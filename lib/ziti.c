@@ -25,8 +25,8 @@ static const char* _ziti_all[] = {
 
 const char** ziti_all_configs = _ziti_all;
 
-void ziti_sdk_c_host_v1_wrapper(void *ziti_ctx, uv_loop_t *loop, const char *service_id, const char *proto, const char *hostname, int port) {
-    ziti_sdk_c_host_v1(ziti_ctx, loop, service_id, proto, hostname, port);
+tunneled_service_t *ziti_sdk_c_on_service_wrapper(ziti_context ziti_ctx, ziti_service *service, int status, tunneler_context tnlr_ctx) {
+    return ziti_sdk_c_on_service(ziti_ctx, service, status, tnlr_ctx);
 }
 
 char **copyStringArray(char *const arr[], int count) {
