@@ -16,6 +16,11 @@ limitations under the License.
 import Foundation
 
 public protocol ZitiTunnelProvider {
+    func addRoute(_ dest:String) -> Int32
+    func deleteRoute(_ dest:String) -> Int32
+    
+    func applyDns(_ host:String, _ ip:String) -> Int32
+    
     func writePacket(_ data:Data)
 }
 
@@ -25,10 +30,13 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     var tnlr_ctx:tunneler_context?
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
+    var dns:UnsafeMutablePointer<dns_manager>!
     let netifDriver:NetifDriver
         
     public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>) {
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
+        super.init()
+        
         tunneler_opts = UnsafeMutablePointer<tunneler_sdk_options>.allocate(capacity: 1)
         tunneler_opts.initialize(to: tunneler_sdk_options(
             netif_driver: self.netifDriver.open(),
@@ -36,12 +44,19 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             ziti_close: ziti_sdk_c_close,
             ziti_close_write: ziti_sdk_c_close_write,
             ziti_write: ziti_sdk_c_write,
-            ziti_host_v1: ziti_sdk_c_host_v1_wrapper))
+            ziti_host: ziti_sdk_c_host))
         tnlr_ctx = ziti_tunneler_init(tunneler_opts, loop)
-        super.init()
+        
+        dns = UnsafeMutablePointer<dns_manager>.allocate(capacity: 1)
+        dns.initialize(to: dns_manager(
+                        apply: ZitiTunnel.apply_dns_cb,
+                        data: self.toVoidPtr()))
+        ziti_tunneler_set_dns(tnlr_ctx, dns)
     }
     
     deinit {
+        dns.deinitialize(count: 1)
+        dns.deallocate()
         tunneler_opts.deinitialize(count: 1)
         tunneler_opts.deallocate()
     }
@@ -50,15 +65,18 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         netifDriver.queuePacket(data)
     }
     
-    public func v1Host(_ ziti_ctx: ziti_context?, _ service_name: UnsafePointer<Int8>!, _ proto: UnsafePointer<Int8>!, _ hostname: UnsafePointer<Int8>!, _ port: Int32) -> Int32 {
-        return ziti_tunneler_host_v1(tnlr_ctx, UnsafeRawPointer(ziti_ctx), service_name, proto, hostname, port)
+    public func onService(_ ztx:ziti_context, _ svc: inout ziti_service, _ status:Int32) {
+        _ = ziti_sdk_c_on_service_wrapper(ztx, &svc, status, tnlr_ctx)
     }
     
-    public func v1Intercept(_ ziti_ctx: ziti_context?, _ service_id: UnsafePointer<Int8>!, _ service_name: UnsafePointer<Int8>!, _ hostname: UnsafePointer<Int8>!, _ port: Int32) -> Int32 {
-        return ziti_tunneler_intercept_v1(tnlr_ctx, UnsafeRawPointer(ziti_ctx), service_id, service_name, hostname, port)
-    }
-    
-    public func v1StopIntercepting(_ service_id: UnsafePointer<Int8>!) {
-        ziti_tunneler_stop_intercepting(tnlr_ctx, service_id)
+    static let apply_dns_cb:apply_cb = { dns, host, ip in
+        guard let mySelf = zitiUnretained(ZitiTunnel.self, dns?.pointee.data) else {
+            log.wtf("invalid context", function: "apply_dns_cb()")
+            return -1
+        }
+        
+        let hostStr = host != nil ? String(cString: host!) : ""
+        let ipStr = ip != nil ? String(cString: ip!) : ""
+        return mySelf.netifDriver.tunnelProvider?.applyDns(hostStr, ipStr) ?? -1
     }
 }
