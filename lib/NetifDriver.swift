@@ -61,7 +61,9 @@ class NetifDriver : NSObject, ZitiUnretained {
         driver.pointee.read = NetifDriver.read_cb // empty with log message.  should never be called
         driver.pointee.write = NetifDriver.write_cb
         driver.pointee.close = NetifDriver.close_cb
-        
+        driver.pointee.add_route = NetifDriver.add_route_cb
+        driver.pointee.delete_route = NetifDriver.delete_route_cb
+                
         return driver
     }
     
@@ -144,5 +146,37 @@ class NetifDriver : NSObject, ZitiUnretained {
         }
         mySelf.close()
         return Int32(0)
+    }
+    
+    static let add_route_cb:add_route_cb = { handle, dest in
+        guard let mySelf = zitiUnretained(NetifDriver.self, UnsafeMutableRawPointer(handle)) else {
+            log.wtf("invalid handle", function: "add_route_cb()")
+            return -1
+        }
+        guard let tunnelProvider = mySelf.tunnelProvider else {
+            log.wtf("invalid tunnelProvider", function: "add_route_cb()")
+            return -1
+        }
+        guard let destStr = dest != nil ? String(cString: dest!) : nil else {
+            log.error("Invalid dest paramater", function: "add_route_cb()")
+            return -1
+        }
+        return tunnelProvider.addRoute(destStr)
+    }
+    
+    static let delete_route_cb:delete_route_cb = { handle, dest in
+        guard let mySelf = zitiUnretained(NetifDriver.self, UnsafeMutableRawPointer(handle)) else {
+            log.wtf("invalid handle", function: "delete_route_cb()")
+            return -1
+        }
+        guard let tunnelProvider = mySelf.tunnelProvider else {
+            log.wtf("invalid tunnelProvider", function: "delete_route_cb()")
+            return -1
+        }
+        guard let destStr = dest != nil ? String(cString: dest!) : nil else {
+            log.error("Invalid dest paramater", function: "delete_route_cb()")
+            return -1
+        }
+        return tunnelProvider.deleteRoute(destStr)
     }
 }
