@@ -21,10 +21,12 @@ limitations under the License.
 #include "ziti/ziti_tunnel_cbs.h"
 #include "ziti/netif_driver.h"
 
+typedef int (*apply_cb)(dns_manager *dns, const char *host, const char *ip);
+
 extern const char** ziti_all_configs;
 extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 
-void ziti_sdk_c_host_v1_wrapper(void *ziti_ctx, uv_loop_t *loop, const char *service_id, const char *proto, const char *hostname, int port);
+tunneled_service_t *ziti_sdk_c_on_service_wrapper(ziti_context ziti_ctx, ziti_service *service, int status, tunneler_context tnlr_ctx);
 
 extern int ziti_log_level(void);
 extern void ziti_log_set_level(int level);
