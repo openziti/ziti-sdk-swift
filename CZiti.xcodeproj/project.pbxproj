@@ -22,6 +22,8 @@
 		5A411E0B251FE40B005EE351 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC94E247783440021E8D9 /* Bridge.swift */; };
 		5A5538E82556F92100C02F03 /* ZitiPostureChecks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */; };
 		5A5538E92556F92100C02F03 /* ZitiPostureChecks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */; };
+		5A69FBFF25D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */; };
+		5A69FC0025D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */; };
 		5A8B0B66258EDD1100182437 /* ZitiEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B65258EDD1100182437 /* ZitiEvent.swift */; };
 		5A8B0B67258EDD1100182437 /* ZitiEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B65258EDD1100182437 /* ZitiEvent.swift */; };
 		5A8B0B81258FEA9A00182437 /* ZitiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B80258FEA9900182437 /* ZitiService.swift */; };
@@ -171,6 +173,7 @@
 		5A0E4A8A24530E1E00C56DCF /* libziti.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libziti.a; path = "deps/ziti-sdk-c/build-os-arch/library/libziti.a"; sourceTree = "<group>"; };
 		5A0E4A8D24534DDE00C56DCF /* libsodium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsodium.a; path = "deps/ziti-sdk-c/build-os-arch/_deps/libsodium-build/lib/libsodium.a"; sourceTree = "<group>"; };
 		5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiPostureChecks.swift; sourceTree = "<group>"; };
+		5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiInterceptConfigV1.swift; sourceTree = "<group>"; };
 		5A8B0B65258EDD1100182437 /* ZitiEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiEvent.swift; sourceTree = "<group>"; };
 		5A8B0B80258FEA9900182437 /* ZitiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiService.swift; sourceTree = "<group>"; };
 		5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiTunnelServerConfigV1.swift; sourceTree = "<group>"; };
@@ -389,6 +392,7 @@
 				5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */,
 				5AB83098247432C40089AF93 /* ZitiTunnelClientConfigV1.swift */,
 				5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */,
+				5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */,
 				5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */,
 				5AB8308F247432C40089AF93 /* ZitiError.swift */,
 				5AB83094247432C40089AF93 /* ZitiLog.swift */,
@@ -655,6 +659,7 @@
 				5AB830A9247432C50089AF93 /* ZitiIdentity.swift in Sources */,
 				5AA298BC2585961C001F7502 /* NetifDriver.swift in Sources */,
 				5AB830A3247432C40089AF93 /* ZitiLog.swift in Sources */,
+				5A69FBFF25D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */,
 				5AB830A4247432C40089AF93 /* ZitiUrlClientConfigV1.swift in Sources */,
 				5AB830AA247432C50089AF93 /* Ziti.swift in Sources */,
 				5AB830AB247432C50089AF93 /* ziti.c in Sources */,
@@ -683,6 +688,7 @@
 				5AB830B7247433350089AF93 /* ZitiIdentity.swift in Sources */,
 				5AA298BD2585961C001F7502 /* NetifDriver.swift in Sources */,
 				5AB830B1247433200089AF93 /* ZitiLog.swift in Sources */,
+				5A69FC0025D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */,
 				5AB830B2247433230089AF93 /* ZitiUrlClientConfigV1.swift in Sources */,
 				5AB830B8247433390089AF93 /* Ziti.swift in Sources */,
 				5AB830B92474333D0089AF93 /* ziti.c in Sources */,
@@ -934,6 +940,9 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/lwip",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
@@ -959,6 +968,9 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/lwip",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
