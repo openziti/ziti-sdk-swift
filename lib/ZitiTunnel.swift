@@ -33,7 +33,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var dns:UnsafeMutablePointer<dns_manager>!
     let netifDriver:NetifDriver
         
-    public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>) {
+    public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>, _ ipAddress:String, _ subnetMask:String) {
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         super.init()
         
@@ -51,6 +51,11 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         dns.initialize(to: dns_manager(
                         apply: ZitiTunnel.apply_dns_cb,
                         data: self.toVoidPtr()))
+        
+        let (mask, bits) = calcMaskAndBits(ipAddress, subnetMask)
+        if mask != 0 && bits != 0 {
+            ziti_tunneler_init_dns(mask, bits)
+        }
         ziti_tunneler_set_dns(tnlr_ctx, dns)
     }
     
@@ -59,6 +64,46 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         dns.deallocate()
         tunneler_opts.deinitialize(count: 1)
         tunneler_opts.deallocate()
+    }
+    
+    private func isValidIpV4Address(_ parts:[String]) -> Bool {
+        let nums = parts.compactMap { Int($0) }
+        return parts.count == 4 && nums.count == 4 && nums.filter { $0 >= 0 && $0 < 256}.count == 4
+    }
+    
+    private func calcMaskAndBits(_ ipAddress:String, _ subnetMask:String) -> (UInt32, Int32) {
+        var mask:UInt32 = 0
+        var bits:Int32 = 0
+        
+        let ipParts = ipAddress.components(separatedBy: ".")
+        let maskParts = subnetMask.components(separatedBy: ".")
+        guard isValidIpV4Address(ipParts) && isValidIpV4Address(maskParts) else {
+            log.wtf("Invalid IP address (\(ipAddress) and/or subnetMask (\(subnetMask)")
+            return (0, 0)
+        }
+        
+        let maskedIP = [
+            UInt32(ipParts[0])! & UInt32(maskParts[0])!,
+            UInt32(ipParts[1])! & UInt32(maskParts[1])!,
+            UInt32(ipParts[2])! & UInt32(maskParts[2])!,
+            UInt32(ipParts[3])! & UInt32(maskParts[3])!
+        ]
+        mask = (maskedIP[0] << 24) | (maskedIP[1] << 16) | (maskedIP[2] << 8) | maskedIP[3]
+        log.debug("Converted ipAddress \(ipAddress) to mask \(String(format:"0x%02X", mask))")
+        
+        // count the leading bits
+        for part in maskParts {
+            var byte = UInt8(part)!
+            let lastByte = byte != 0xff
+            while byte & 0x80 != 0 {
+                bits += 1
+                byte = byte << 1
+            }
+            if lastByte { break }
+        }
+        log.debug("Converted subnetMask \(subnetMask) to \(bits) bits")
+        
+        return (mask, bits)
     }
     
     public func queuePacket(_ data:Data) {
