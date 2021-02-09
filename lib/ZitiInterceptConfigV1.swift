@@ -19,8 +19,8 @@ public class ZitiInterceptConfigV1 : Codable, ZitiConfig {
     static var configType = "intercept.v1"
     
     public class PortRange : Codable {
-        let low:Int
-        let high:Int
+        public let low:Int
+        public let high:Int
     }
     
     public let protocols:[String]
