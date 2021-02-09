@@ -78,7 +78,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         let ipParts = ipAddress.components(separatedBy: ".")
         let maskParts = subnetMask.components(separatedBy: ".")
         guard isValidIpV4Address(ipParts) && isValidIpV4Address(maskParts) else {
-            log.wtf("Invalid IP address (\(ipAddress) and/or subnetMask (\(subnetMask)")
+            log.error("Invalid IP address (\(ipAddress) and/or subnetMask (\(subnetMask)")
             return (0, 0)
         }
         
