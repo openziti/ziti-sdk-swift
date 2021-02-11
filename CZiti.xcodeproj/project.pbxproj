@@ -89,6 +89,8 @@
 		5AB830CA247489C70089AF93 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5AB830C9247489C70089AF93 /* Assets.xcassets */; };
 		5AB830CD247489C70089AF93 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5AB830CB247489C70089AF93 /* LaunchScreen.storyboard */; };
 		5AB830D224748A1B0089AF93 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */; };
+		5AD1FBC325D4A8A10035CE6C /* ZitiHostConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD1FBC225D4A8A10035CE6C /* ZitiHostConfigV1.swift */; };
+		5AD1FBC425D4A8A10035CE6C /* ZitiHostConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD1FBC225D4A8A10035CE6C /* ZitiHostConfigV1.swift */; };
 		5AE14C882471D32E00179365 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C872471D32E00179365 /* main.swift */; };
 		5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
 		5AF0C4112489987500CD4DAE /* ZitiClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF0C4102489987500CD4DAE /* ZitiClaims.swift */; };
@@ -221,6 +223,7 @@
 		5AB830C9247489C70089AF93 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5AB830CC247489C70089AF93 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5AB830CE247489C70089AF93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5AD1FBC225D4A8A10035CE6C /* ZitiHostConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiHostConfigV1.swift; sourceTree = "<group>"; };
 		5AE14C852471D32E00179365 /* sample-mac-host */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "sample-mac-host"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AE14C872471D32E00179365 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5AF0C4102489987500CD4DAE /* ZitiClaims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiClaims.swift; sourceTree = "<group>"; };
@@ -393,6 +396,7 @@
 				5AB83098247432C40089AF93 /* ZitiTunnelClientConfigV1.swift */,
 				5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */,
 				5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */,
+				5AD1FBC225D4A8A10035CE6C /* ZitiHostConfigV1.swift */,
 				5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */,
 				5AB8308F247432C40089AF93 /* ZitiError.swift */,
 				5AB83094247432C40089AF93 /* ZitiLog.swift */,
@@ -654,6 +658,7 @@
 				5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */,
 				5AB830A7247432C40089AF93 /* ZitiTunnelClientConfigV1.swift in Sources */,
 				5AB830A5247432C40089AF93 /* ZitiUrlProtocol.swift in Sources */,
+				5AD1FBC325D4A8A10035CE6C /* ZitiHostConfigV1.swift in Sources */,
 				5A5538E82556F92100C02F03 /* ZitiPostureChecks.swift in Sources */,
 				5AB830A8247432C40089AF93 /* ZitiEnroller.swift in Sources */,
 				5AB830A9247432C50089AF93 /* ZitiIdentity.swift in Sources */,
@@ -683,6 +688,7 @@
 				5AB830AC2474330D0089AF93 /* ZitiError.swift in Sources */,
 				5AB830B52474332E0089AF93 /* ZitiTunnelClientConfigV1.swift in Sources */,
 				5AB830B3247433270089AF93 /* ZitiUrlProtocol.swift in Sources */,
+				5AD1FBC425D4A8A10035CE6C /* ZitiHostConfigV1.swift in Sources */,
 				5A5538E92556F92100C02F03 /* ZitiPostureChecks.swift in Sources */,
 				5AB830B6247433310089AF93 /* ZitiEnroller.swift in Sources */,
 				5AB830B7247433350089AF93 /* ZitiIdentity.swift in Sources */,

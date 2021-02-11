@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ import Foundation
         case tunnelClientConfigV1 = "ziti-tunneler-client.v1"
         case tunnelServerConfigV1 = "ziti-tunneler-server.v1"
         case urlClientConfigV1    = "ziti-url-client.v1"
+        case interceptConfigV1    = "intercept.v1"
+        case hostConfigV1         = "host.v1"
     }
     
     public var cService:UnsafeMutablePointer<ziti_service>?
@@ -34,6 +36,7 @@ import Foundation
     public var tunnelServerConfigV1:ZitiTunnelServerConfigV1?
     public var urlClientConfigV1:ZitiUrlClientConfigV1?
     public var interceptConfigV1:ZitiInterceptConfigV1?
+    public var hostConfigV1:ZitiHostConfigV1?
     
     init(_ cService:UnsafeMutablePointer<ziti_service>) {
         self.cService = cService
@@ -53,6 +56,9 @@ import Foundation
         }
         if let cfg = ZitiService.parseConfig(ZitiInterceptConfigV1.self, &(cService.pointee)) {
             interceptConfigV1 = cfg
+        }
+        if let cfg = ZitiService.parseConfig(ZitiHostConfigV1.self, &(cService.pointee)) {
+            hostConfigV1 = cfg
         }
     }
     
