@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ import Foundation
     }
     
     class func onEvent(_ event:ZitiEvent?, _ idleTime:Int) {
+        log.debug("Event: \(event.debugDescription)")
         event?.serviceEvent?.removed.forEach { removeService($0) }
         event?.serviceEvent?.added.forEach   { addOrUpdateService($0, event?.ziti, idleTime) }
         event?.serviceEvent?.changed.forEach { addOrUpdateService($0, event?.ziti, idleTime) }
@@ -102,24 +103,24 @@ import Foundation
         
         let hostPort = "\(hostname):\(port)"
         if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-            log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
+            log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
             curr.close()
         }
         if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
-            log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
+            log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
             curr.close()
         }
         
         if let scheme = (port == 80 ? "http" : (port == 443 ? "https" : nil)) {
             let intercept = ZitiIntercept(ziti, svcName, "\(scheme)://\(hostPort)", idleTime)
             intercepts[intercept.urlStr] = intercept
-            log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)", function:"onService()()")
+            log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)")
         } else {
             var intercept = ZitiIntercept(ziti, svcName, "http://\(hostPort)", idleTime)
             intercepts[intercept.urlStr] = intercept
             intercept = ZitiIntercept(ziti, svcName, "https://\(hostPort)", idleTime)
             intercepts[intercept.urlStr] = intercept
-            log.info("Setting TUN intercept svc \(svcName): \(hostPort)", function:"onService()()")
+            log.info("Setting TUN intercept svc \(svcName): \(hostPort)")
         }
     }
     
@@ -141,7 +142,7 @@ import Foundation
             
             interceptsLock.lock()
             if let curr = ZitiUrlProtocol.intercepts[urlStr] {
-                log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"", function:"onService()")
+                log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
                 curr.close()
             }
             let intercept = ZitiIntercept(ziti, svcName, urlStr, idleTime)

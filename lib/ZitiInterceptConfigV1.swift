@@ -1,5 +1,5 @@
 /*
-Copyright 2021 NetFoundry, Inc.
+Copyright NetFoundry, Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,7 +23,15 @@ public class ZitiInterceptConfigV1 : Codable, ZitiConfig {
         public let high:Int
     }
     
+    public class DialOptions : Codable {
+        public var identity:String?
+        public var connectTimeoutSeconds:Int?
+    }
+    
     public let protocols:[String]
     public let addresses:[String]
     public let portRanges:[PortRange]
+    
+    public var dialOptions:DialOptions?
+    public var sourceIp:String?
 }
