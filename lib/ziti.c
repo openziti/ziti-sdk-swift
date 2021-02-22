@@ -25,6 +25,30 @@ static const char* _ziti_all[] = {
 
 const char** ziti_all_configs = _ziti_all;
 
+typedef struct ziti_dump_ctx_s {
+    void *ctx;
+    ziti_printer_cb_wrapper printer;
+} ziti_dump_ctx;
+
+int ziti_dump_printer(void *ctx, const char *fmt, ...) {
+    ziti_dump_ctx *zdctx = ctx;
+    static char msg[4096];
+    
+    va_list vargs;
+    va_start(vargs, fmt);
+    vsnprintf(msg, sizeof(msg), fmt, vargs);
+    va_end(vargs);
+    
+    return zdctx->printer(zdctx->ctx, msg);
+}
+
+void ziti_dump_wrapper(ziti_context ztx, ziti_printer_cb_wrapper printer, void *ctx) {
+    ziti_dump_ctx zdctx;
+    zdctx.ctx = ctx;
+    zdctx.printer = printer;
+    ziti_dump(ztx, ziti_dump_printer, &zdctx);
+}
+
 tunneled_service_t *ziti_sdk_c_on_service_wrapper(ziti_context ziti_ctx, ziti_service *service, int status, tunneler_context tnlr_ctx) {
     return ziti_sdk_c_on_service(ziti_ctx, service, status, tnlr_ctx);
 }

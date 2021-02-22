@@ -186,6 +186,18 @@ import Foundation
         }
     }
     
+    /// Get the identity of the client that initiated the Ziti connection
+    ///
+    /// - Returns: Source ID or empty String
+    ///
+    @objc public func getSourceIdentity() -> String {
+        var id = ""
+        if let source_id = ziti_conn_source_identity(self.zConn) {
+            id = String(cString: source_id)
+        }
+        return id
+    }
+    
     /// Send data to the connection peer
     ///
     /// - Parameters:

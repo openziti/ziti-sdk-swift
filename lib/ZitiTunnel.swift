@@ -20,6 +20,7 @@ public protocol ZitiTunnelProvider {
     func deleteRoute(_ dest:String) -> Int32
     
     func applyDns(_ host:String, _ ip:String) -> Int32
+    func fallbackDns(_ name:String) -> String?
     
     func writePacket(_ data:Data)
 }
@@ -28,12 +29,16 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     private static let log = ZitiLog(ZitiTunnel.self)
     private let log = ZitiTunnel.log
     
+    var tunnelProvider:ZitiTunnelProvider?
     var tnlr_ctx:tunneler_context?
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
     var dns:UnsafeMutablePointer<dns_manager>!
     let netifDriver:NetifDriver
         
-    public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>, _ ipAddress:String, _ subnetMask:String) {
+    public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>,
+                _ ipAddress:String, _ subnetMask:String,
+                _ ipDNS:String) {
+        self.tunnelProvider = tunnelProvider
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         super.init()
         
@@ -47,9 +52,17 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             ziti_host: ziti_sdk_c_host))
         tnlr_ctx = ziti_tunneler_init(tunneler_opts, loop)
         
+        // TODO: change this to `get_tunneler_dns(uv_loop_t *l, uint32_t dns_ip, dns_fallback_cb cb, void *ctx)` to use T SDK's dns...
         dns = UnsafeMutablePointer<dns_manager>.allocate(capacity: 1)
         dns.initialize(to: dns_manager(
+                        internal_dns: false,
+                        dns_ip: ipStrToUInt32(ipDNS),
+                        dns_port: 53,
                         apply: ZitiTunnel.apply_dns_cb,
+                        query: ZitiTunnel.dns_query_cb,
+                        loop: loop,
+                        fb_cb: ZitiTunnel.dns_fallback_cb,
+                        fb_ctx: self.toVoidPtr(),
                         data: self.toVoidPtr()))
         
         let (mask, bits) = calcMaskAndBits(ipAddress, subnetMask)
@@ -69,6 +82,15 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     private func isValidIpV4Address(_ parts:[String]) -> Bool {
         let nums = parts.compactMap { Int($0) }
         return parts.count == 4 && nums.count == 4 && nums.filter { $0 >= 0 && $0 < 256}.count == 4
+    }
+    
+    private func ipStrToUInt32(_ str:String) -> UInt32 {
+        let parts = str.components(separatedBy: ".")
+        guard isValidIpV4Address(parts) else {
+            log.error("Unable to convert \"\(str)\" to IP address")
+            return 0
+        }
+        return (UInt32(parts[0])! << 24) | (UInt32(parts[1])! << 16) | (UInt32(parts[2])! << 8) | UInt32(parts[3])!
     }
     
     private func calcMaskAndBits(_ ipAddress:String, _ subnetMask:String) -> (UInt32, Int32) {
@@ -116,12 +138,31 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     static let apply_dns_cb:apply_cb = { dns, host, ip in
         guard let mySelf = zitiUnretained(ZitiTunnel.self, dns?.pointee.data) else {
-            log.wtf("invalid context", function: "apply_dns_cb()")
+            log.wtf("invalid context")
             return -1
         }
         
         let hostStr = host != nil ? String(cString: host!) : ""
         let ipStr = ip != nil ? String(cString: ip!) : ""
-        return mySelf.netifDriver.tunnelProvider?.applyDns(hostStr, ipStr) ?? -1
+        return mySelf.tunnelProvider?.applyDns(hostStr, ipStr) ?? -1
+    }
+    
+    static let dns_query_cb:dns_query = { dns_manager, q_packet, q_len, cb, ctx in
+        log.wtf("Unexpected call to unimplemented function")
+        return -1
+    }
+    
+    static let dns_fallback_cb:dns_fallback_cb = { name, ctx, addr in
+        guard let mySelf = zitiUnretained(ZitiTunnel.self, ctx), let name = name, let addr = addr else {
+            log.wtf("invalid context")
+            return 3 // NXDOMAIN
+        }
+        
+        let nameStr = String(cString: name)
+        if let ipStr = mySelf.tunnelProvider?.fallbackDns(nameStr), let cStr = ipStr.cString(using: .utf8) {
+            addr.pointee.s_addr = inet_addr(cStr)
+            return 0 // NO_ERROR
+        }        
+        return 3 // NXDOMAIN
     }
 }
