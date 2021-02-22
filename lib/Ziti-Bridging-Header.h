@@ -26,6 +26,9 @@ typedef int (*apply_cb)(dns_manager *dns, const char *host, const char *ip);
 extern const char** ziti_all_configs;
 extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 
+typedef int (*ziti_printer_cb_wrapper)(void *ctx, const char *msg);
+void ziti_dump_wrapper(ziti_context ztx, ziti_printer_cb_wrapper printer, void *ctx);
+
 tunneled_service_t *ziti_sdk_c_on_service_wrapper(ziti_context ziti_ctx, ziti_service *service, int status, tunneler_context tnlr_ctx);
 
 extern int ziti_log_level(void);

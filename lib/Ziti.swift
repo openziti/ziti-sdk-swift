@@ -81,6 +81,15 @@ import Foundation
     private var connections:[ZitiConnection] = []
     private var connectionsLock = NSLock()
     
+    /// Type used for debug dump
+    ///
+    /// - Parameters:
+    ///     - msg: debug string
+    ///
+    /// - Returns: number of characters printed
+    public typealias ZitiDumpPrinter = (_ msg:String) -> Int32
+    private var dumpPrinter:ZitiDumpPrinter?
+    
     private var id:ZitiIdentity
     
     // MARK: - Initializers
@@ -509,13 +518,12 @@ import Foundation
         return (up, down)
     }
     
-    /// Output debugging information to standard out
+    /// Output debugging information to supplied callback. The output from this command may be useful when submitting issues.
     ///
     /// This method must be called in an interation of the loop
-    @objc public func dump() {
-        // TODO: updated `ziti_dump`: void ziti_dump(ziti_context ztx, int (*printer)(void *, const char *, ...), void *ctx)
-        // ziti_dump(ztx)
-        log.error("TODO")
+    @objc public func dump(_ printer: @escaping ZitiDumpPrinter) {
+        self.dumpPrinter = printer
+        ziti_dump_wrapper(ztx, Ziti.onDumpPrinter, self.toVoidPtr())
     }
     
     /// Checks availability of service
@@ -564,6 +572,15 @@ import Foundation
     }
         
     // MARK: - Static C Callbacks
+    
+    static private let onDumpPrinter:ziti_printer_cb_wrapper = { ctx, msg in
+        guard let mySelf = zitiUnretained(Ziti.self, ctx) else {
+            log.wtf("invalid context")
+            return 0
+        }
+        let str = msg != nil ? String(cString: msg!) : ""
+        return mySelf.dumpPrinter?(str) ?? 0
+    }
     
     static private let onEvent:ziti_event_cb = { ztx, cEvent in
         guard let ctx = ziti_app_ctx(ztx), let mySelf = zitiUnretained(Ziti.self, ctx) else {
