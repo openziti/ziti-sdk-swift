@@ -19,7 +19,6 @@ public protocol ZitiTunnelProvider {
     func addRoute(_ dest:String) -> Int32
     func deleteRoute(_ dest:String) -> Int32
     
-    func applyDns(_ host:String, _ ip:String) -> Int32
     func fallbackDns(_ name:String) -> String?
     
     func writePacket(_ data:Data)
@@ -52,18 +51,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             ziti_host: ziti_sdk_c_host))
         tnlr_ctx = ziti_tunneler_init(tunneler_opts, loop)
         
-        // TODO: change this to `get_tunneler_dns(uv_loop_t *l, uint32_t dns_ip, dns_fallback_cb cb, void *ctx)` to use T SDK's dns...
-        dns = UnsafeMutablePointer<dns_manager>.allocate(capacity: 1)
-        dns.initialize(to: dns_manager(
-                        internal_dns: false,
-                        dns_ip: ipStrToUInt32(ipDNS),
-                        dns_port: 53,
-                        apply: ZitiTunnel.apply_dns_cb,
-                        query: ZitiTunnel.dns_query_cb,
-                        loop: loop,
-                        fb_cb: ZitiTunnel.dns_fallback_cb,
-                        fb_ctx: self.toVoidPtr(),
-                        data: self.toVoidPtr()))
+        dns = get_tunneler_dns(loop, ipStrToUInt32(ipDNS), ZitiTunnel.dns_fallback_cb, self.toVoidPtr())
         
         let (mask, bits) = calcMaskAndBits(ipAddress, subnetMask)
         if mask != 0 && bits != 0 {
@@ -73,8 +61,6 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     }
     
     deinit {
-        dns.deinitialize(count: 1)
-        dns.deallocate()
         tunneler_opts.deinitialize(count: 1)
         tunneler_opts.deallocate()
     }
@@ -134,22 +120,6 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     public func onService(_ ztx:ziti_context, _ svc: inout ziti_service, _ status:Int32) {
         _ = ziti_sdk_c_on_service_wrapper(ztx, &svc, status, tnlr_ctx)
-    }
-    
-    static let apply_dns_cb:apply_cb = { dns, host, ip in
-        guard let mySelf = zitiUnretained(ZitiTunnel.self, dns?.pointee.data) else {
-            log.wtf("invalid context")
-            return -1
-        }
-        
-        let hostStr = host != nil ? String(cString: host!) : ""
-        let ipStr = ip != nil ? String(cString: ip!) : ""
-        return mySelf.tunnelProvider?.applyDns(hostStr, ipStr) ?? -1
-    }
-    
-    static let dns_query_cb:dns_query = { dns_manager, q_packet, q_len, cb, ctx in
-        log.wtf("Unexpected call to unimplemented function")
-        return -1
     }
     
     static let dns_fallback_cb:dns_fallback_cb = { name, ctx, addr in
