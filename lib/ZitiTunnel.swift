@@ -51,7 +51,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             ziti_host: ziti_sdk_c_host))
         tnlr_ctx = ziti_tunneler_init(tunneler_opts, loop)
         
-        dns = get_tunneler_dns(loop, ipStrToUInt32(ipDNS), ZitiTunnel.dns_fallback_cb, self.toVoidPtr())
+        let dns_ip = CFSwapInt32HostToBig(ipStrToUInt32(ipDNS))
+        dns = get_tunneler_dns(loop, dns_ip, ZitiTunnel.dns_fallback_cb, self.toVoidPtr())
         
         let (mask, bits) = calcMaskAndBits(ipAddress, subnetMask)
         if mask != 0 && bits != 0 {
@@ -76,7 +77,11 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             log.error("Unable to convert \"\(str)\" to IP address")
             return 0
         }
-        return (UInt32(parts[0])! << 24) | (UInt32(parts[1])! << 16) | (UInt32(parts[2])! << 8) | UInt32(parts[3])!
+        
+        let arr = parts.map { return UInt32($0)! }
+        let n = (arr[0] << 24) | (arr[1] << 16) | (arr[2] << 8) | arr[3]
+        log.debug("Converted IP string \"\(str)\" to \(arr) to \(String(format:"0x%02X", n))")
+        return n
     }
     
     private func calcMaskAndBits(_ ipAddress:String, _ subnetMask:String) -> (UInt32, Int32) {
