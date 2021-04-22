@@ -376,7 +376,7 @@ import Foundation
                                 pq_os_cb:  Ziti.onOsQuery,
                                 pq_process_cb: Ziti.onProcessQuery,
                                 pq_domain_cb: Ziti.onDomainQuery,
-                                aq_mfa_cb: nil, //TODO Ziti.onMfaAuthQuery,
+                                aq_mfa_cb: Ziti.onMfaAuthQuery,
                                 app_ctx: self.toVoidPtr(),
                                 events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue,
                                 event_cb: Ziti.onEvent)
