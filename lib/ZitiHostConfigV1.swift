@@ -20,17 +20,24 @@ public class ZitiHostConfigV1 : Codable, ZitiConfig {
     
     enum CodingKeys: String, CodingKey {
         case proto = "protocol"
-        case dialInterceptedProtocol
+        case forwardProtocol
+        case allowedProtocols
         case address
-        case dialInterceptedAddress
+        case forwardAddress
+        case allowedAddresses
+        case allowedSourceAddresses
         case port
-        case dialInterceptedPort
+        case forwardPort
+        case allowedPortRanges
         case listenOptions
     }
     
+    public class PortRange : Codable {
+        public let low:Int
+        public let high:Int
+    }
+    
     public class ListenOptions : Codable {
-        public var cost:Int?
-        public var precedence:String?
         public var connectTimeoutSeconds:Int?
         public var maxConnections:Int?
         public var identity:String?
@@ -38,13 +45,17 @@ public class ZitiHostConfigV1 : Codable, ZitiConfig {
     }
     
     public var proto:String?
-    public var dialInterceptedProtocol:Bool?
+    public var forwardProtocol:Bool?
+    public var allowedProtocols:[String]?
     
     public var address:String?
-    public var dialInterceptedAddress:Bool?
+    public var forwardAddress:Bool?
+    public var allowedAddresses:[String]?
+    public var allowedSourceAddresses:[String]?
     
     public var port:Int?
-    public var dialInterceptedPort:Bool?
+    public var forwardPort:Bool?
+    public var allowedPortRanges:[PortRange]?
     
     public var listenOptions:ListenOptions?
 }
