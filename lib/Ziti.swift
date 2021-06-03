@@ -653,7 +653,7 @@ import Foundation
         }
         let zaq = ZitiMfaAuthQuery(aq_mfa)
         mySelf.ar_mfa_cb = cb
-        mySelf.mfaAuthQueryCallback?(mySelf, mfa_ctx, zaq) // caller to call mfaAuthResponse()
+        mySelf.mfaAuthQueryCallback?(mySelf, mfa_ctx, zaq) // callee to call mfaAuthResponse()
     }
     
     static private let onMfaAuthResponseStatus:ziti_ar_mfa_status_cb = { ztx, mfa_ctx, status, ctx in
