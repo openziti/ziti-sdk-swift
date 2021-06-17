@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-iOS:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
@@ -43,7 +43,7 @@ jobs:
         path: CZiti-iOS.framework.tgz
 
   build-macOS:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
@@ -81,7 +81,7 @@ jobs:
         path: CZiti-macOS.framework.tgz
 
   build-docs:
-    runs-on: macos-latest
+    runs-on: macos-11
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
