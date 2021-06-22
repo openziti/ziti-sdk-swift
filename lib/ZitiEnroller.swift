@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import CZitiPrivate
 
 /**
  * Class that enroll an identity with Ziti controller using a one-time JWT file

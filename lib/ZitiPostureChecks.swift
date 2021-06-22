@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import CZitiPrivate
 
 /// Used for passing context among callbacks and mapping to `Ziti` C SDK function
 @objc public class ZitiPostureContext : NSObject {

@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import CZitiPrivate
 
 class ZitiIntercept : NSObject, ZitiUnretained {
     private let log = ZitiLog(ZitiIntercept.self)

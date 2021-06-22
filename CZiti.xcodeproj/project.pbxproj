@@ -178,6 +178,7 @@
 		5A0AC94E247783440021E8D9 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
 		5A0E4A8A24530E1E00C56DCF /* libziti.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libziti.a; path = "deps/ziti-sdk-c/build-os-arch/library/libziti.a"; sourceTree = "<group>"; };
 		5A0E4A8D24534DDE00C56DCF /* libsodium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsodium.a; path = "deps/ziti-sdk-c/build-os-arch/_deps/libsodium-build/lib/libsodium.a"; sourceTree = "<group>"; };
+		5A29E5EE268164CF00EED54C /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiPostureChecks.swift; sourceTree = "<group>"; };
 		5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiInterceptConfigV1.swift; sourceTree = "<group>"; };
 		5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiMfaEnrollment.swift; sourceTree = "<group>"; };
@@ -326,6 +327,14 @@
 			path = "sample-ios-objc";
 			sourceTree = "<group>";
 		};
+		5A29E5ED2681649500EED54C /* ProjectModule */ = {
+			isa = PBXGroup;
+			children = (
+				5A29E5EE268164CF00EED54C /* module.modulemap */,
+			);
+			path = ProjectModule;
+			sourceTree = "<group>";
+		};
 		5A2D83F92444D4B9008B1D32 = {
 			isa = PBXGroup;
 			children = (
@@ -387,6 +396,7 @@
 		5AB8308D247432C40089AF93 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				5A29E5ED2681649500EED54C /* ProjectModule */,
 				5AB8309B247432C40089AF93 /* Ziti.swift */,
 				5AB8309A247432C40089AF93 /* ZitiIdentity.swift */,
 				5AF0C4102489987500CD4DAE /* ZitiClaims.swift */,
@@ -951,6 +961,7 @@
 		5A2D83FE2444D4B9008B1D32 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
@@ -975,13 +986,15 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib/ziti-tunnel-cbs",
 				);
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/lib/Ziti-Bridging-Header.h";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Debug;
 		};
 		5A2D83FF2444D4B9008B1D32 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
@@ -1006,7 +1019,8 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib/ziti-tunnel-cbs",
 				);
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(SRCROOT)/lib/Ziti-Bridging-Header.h";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule";
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
 		};
@@ -1141,6 +1155,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -1209,6 +1224,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
