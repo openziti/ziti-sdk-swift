@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import CZitiPrivate
 
 public protocol ZitiTunnelProvider {
     func addRoute(_ dest:String) -> Int32

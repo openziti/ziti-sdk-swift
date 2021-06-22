@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import CZitiPrivate
 
 /// Logger class that mirrors the Ziti C SDK's logging feature
 public class ZitiLog {

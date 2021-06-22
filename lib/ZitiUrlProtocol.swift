@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import CZitiPrivate
 
 /**
  * `URLProtocol` that intercepts `HTTP` and `HTTPS` URL requests and routes them over the Ziti overlay as configured in your Ziti controller.

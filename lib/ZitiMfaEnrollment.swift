@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import Foundation
+import CZitiPrivate
 
 @objc public class ZitiMfaEnrollment : NSObject, Codable {
     private static let log = ZitiLog(ZitiMfaEnrollment.self)

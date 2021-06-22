@@ -15,6 +15,7 @@ limitations under the License.
 */
 
 import Foundation
+import CZitiPrivate
 
 /// Create `ZitiConnection`s from an instance of `Ziti` and use to commuicate with services over a Ziti network
 @objc public class ZitiConnection : NSObject, ZitiUnretained {
