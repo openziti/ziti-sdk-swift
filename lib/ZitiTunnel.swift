@@ -127,7 +127,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         netifDriver.queuePacket(data)
     }
     
-    public func onService(_ ztx:ziti_context, _ svcPtr: OpaquePointer, _ status:Int32) {
+    public func onService(_ ztx:OpaquePointer, _ svcPtr: OpaquePointer, _ status:Int32) {
         let svc = UnsafeMutablePointer<ziti_service>(svcPtr)
         _ = ziti_sdk_c_on_service_wrapper(ztx, svc, status, tnlr_ctx)
     }
