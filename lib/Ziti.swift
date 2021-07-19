@@ -37,7 +37,7 @@ import CZitiPrivate
     
     var loop:UnsafeMutablePointer<uv_loop_t>!
     var privateLoop:Bool
-    public var ztx:ziti_context?
+    public var ztx:OpaquePointer?
     
     // temporary until user data available for posture checks
     static var postureContexts:[ziti_context:Ziti?] = [:]
@@ -90,6 +90,23 @@ import CZitiPrivate
     /// - Returns: number of characters printed
     public typealias ZitiDumpPrinter = (_ msg:String) -> Int32
     private var dumpPrinter:ZitiDumpPrinter?
+    
+    /// Ziti constant indicating OK status from Ziti C SDK call
+    public static let ZITI_OK = 0
+    
+    /// Ziti constant indication service is unavailable from Ziti C SDK call
+    public static let ZITI_SERVICE_UNAVAILABLE = 17
+    
+    /// Ziti constant indicating an indentity is allowed to dial a particular service
+    public static let ZITI_CAN_DIAL = 1
+    
+    /// Ziti constant indicating an indentity is allowed to bind a particular service
+    public static let ZITI_CAN_BIND = 2
+    
+    /// Convenience function to convert Ziti error status to String
+    public class func zitiErrorString(status: Int32) -> String {
+        return String(cString: ziti_errorstr(status))
+    }
     
     private var id:ZitiIdentity
     
@@ -166,10 +183,10 @@ import CZitiPrivate
     ///     - zid: the `ZitiIdentity` containing the information needed to access the Keychain for stored identity information (keys and identity certificates).
     ///     - loop: the externanally supplied `uv_loop`
     ///
-    public init(zid:ZitiIdentity, loop:UnsafeMutablePointer<uv_loop_t>) {
+    public init(zid:ZitiIdentity, loopPtr:ZitiRunloop) {
         self.id = zid
         self.privateLoop = false
-        self.loop = loop
+        self.loop = loopPtr.loop
         super.init()
         initOpsHandle()
     }
@@ -191,6 +208,33 @@ import CZitiPrivate
         }
         opsAsyncHandle?.deinitialize(count: 1)
         opsAsyncHandle?.deallocate()
+    }
+    
+    /// Helper class to manage private loop constructs. An object of this class can be used when holding a shared instane of the loop to be used among
+    /// multiple identities
+    @objc public class ZitiRunloop : NSObject {
+        var loop:UnsafeMutablePointer<uv_loop_t>!
+        public override init() {
+            loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
+            loop.initialize(to: uv_loop_t())
+            uv_loop_init(loop)
+        }
+        deinit {
+            loop.deinitialize(count: 1)
+            loop.deallocate()
+        }
+    }
+    
+    /// wrapper to execute uv_run (blocking)
+    public class func executeRunloop(loopPtr:ZitiRunloop) {
+        let loop = loopPtr.loop
+        let rStatus = uv_run(loop, UV_RUN_DEFAULT)
+        guard rStatus == 0 else {
+            let errStr = String(cString: uv_strerror(rStatus))
+            log.wtf("error running uv loop: \(rStatus) \(errStr)")
+            return
+        }
+        log.info("runZiti - loop exited with status 0")
     }
     
     /// Remove keys and certificates created during `enroll()` from the keychain
@@ -383,7 +427,7 @@ import CZitiPrivate
                                 event_cb: Ziti.onEvent)
         
         let initStatus = ziti_init_opts(&(nfOpts!), loop)
-        guard initStatus == ZITI_OK else {
+        guard initStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
             log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
             initCallback(ZitiError(errStr, errorCode: Int(initStatus)))
@@ -539,7 +583,7 @@ import CZitiPrivate
         perform {
             let req = ServiceAvailableRequest(self, onServiceAvailable)
             let status = ziti_service_available(self.ztx, service.cString(using: .utf8), Ziti.onServiceAvailable, req.toVoidPtr())
-            guard status == ZITI_OK else {
+            guard status == Ziti.ZITI_OK else {
                 self.log.error(String(cString: ziti_errorstr(status)))
                 return
             }
