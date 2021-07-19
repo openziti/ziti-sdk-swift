@@ -65,14 +65,6 @@ import CZitiPrivate
     private var eventCallbacksLock = NSLock()
     private var eventCallbacks:[(cb:EventCallback, mask:UInt32)] = []
     
-    /// Type used for closure called when a call to `serviceAvailable(_:_:)` is made
-    ///
-    /// - Parameters:
-    ///     - ztx: Ziti context
-    ///     - svc: the `ziti-sdk-c`'s `ziti_service` that has changed, or nil on error condition
-    ///     - status: ZITI_OK, ZITI_SERVICE_UNAVAILABLE, or errorCode on nil `ziti_service`
-    public typealias ServiceCallback = (_ ztx:ziti_context? , _ svc: UnsafeMutablePointer<ziti_service>?, _ status:Int32) -> Void
-    
     /// Type used for closure called for an operation to be performed on the loop
     public typealias PerformCallback = () -> Void
     private var opsAsyncHandle:UnsafeMutablePointer<uv_async_t>?
@@ -572,25 +564,6 @@ import CZitiPrivate
         ziti_dump_wrapper(ztx, Ziti.onDumpPrinter, self.toVoidPtr())
     }
     
-    /// Checks availability of service
-    ///
-    /// The supplied name is case sensitive. Note that this function is not synchronous
-    ///
-    /// - Parameters:
-    ///     - service: the name of the service to check
-    ///     - onServiceAvaialble: callback called with status `ZITI_OK` of `ZITI_SERVICE_NOT_AVAILABLE`
-    public func serviceAvailable(_ service:String, _ onServiceAvailable: @escaping ServiceCallback) {
-        perform {
-            let req = ServiceAvailableRequest(self, onServiceAvailable)
-            let status = ziti_service_available(self.ztx, service.cString(using: .utf8), Ziti.onServiceAvailable, req.toVoidPtr())
-            guard status == Ziti.ZITI_OK else {
-                self.log.error(String(cString: ziti_errorstr(status)))
-                return
-            }
-            self.serviceAvaialbleRequests.append(req)
-        }
-    }
-    
     /// Perform an operation in an upcoming iteration of the loop
     ///
     /// Ziti is not threadsafe.  All operations must run on the same thread as `run(_:)`.  Use the `perform(_:)` method to execute
@@ -959,17 +932,6 @@ import CZitiPrivate
         }
     }
     
-    static private let onServiceAvailable:ziti_service_cb = { ztx, zs, status, ctx in
-        guard let req = zitiUnretained(ServiceAvailableRequest.self, ctx) else {
-            log.wtf("invalid context", function:"onServiceAvaialble()")
-            return
-        }
-        if let ziti = req.ziti {
-            ziti.serviceAvaialbleRequests = ziti.serviceAvaialbleRequests.filter { $0 !== req }
-        }
-        req.cb(ztx, zs, status)
-    }
-    
     // MARK: - Helpers
     
     private static func dropFirst(_ drop:String, _ str:String) -> String {
@@ -979,16 +941,6 @@ import CZitiPrivate
         }
         return newStr
     }
-    
-    class ServiceAvailableRequest : ZitiUnretained {
-        weak var ziti:Ziti?
-        let cb:ServiceCallback
-        init(_ ziti:Ziti, _ cb: @escaping ServiceCallback) {
-            self.ziti = ziti
-            self.cb = cb
-        }
-    }
-    var serviceAvaialbleRequests:[ServiceAvailableRequest] = []
 }
 
 // from: https://github.com/apple/swift/blob/dfc3933a05264c0c19f7cd43ea0dca351f53ed48/stdlib/private/SwiftPrivate/SwiftPrivate.swift#L68
