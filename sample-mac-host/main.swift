@@ -16,14 +16,13 @@ limitations under the License.
 
 import Foundation
 import CZiti
-import CZitiPrivate
 
 var ziti:Ziti?
 
 // Server callbacks
 let onListen:ZitiConnection.ListenCallback = { serv, status in
-    let statMsg = String(cString: ziti_errorstr(status))
-    if (status == ZITI_OK) {
+    let statMsg = Ziti.zitiErrorString(status: status)
+    if (status == Ziti.ZITI_OK) {
         print("Byte Counter is ready! \(status)(\(statMsg))")
     }
     else {
@@ -33,8 +32,8 @@ let onListen:ZitiConnection.ListenCallback = { serv, status in
 }
 
 let onAccept:ZitiConnection.ConnCallback = { conn, status in
-    guard status == ZITI_OK else {
-        let errStr = String(cString: ziti_errorstr(status))
+    guard status == Ziti.ZITI_OK else {
+        let errStr = Ziti.zitiErrorString(status: status)
         fputs("Client accept error: \(status)(\(errStr))\n", stderr)
         return
     }
@@ -42,7 +41,7 @@ let onAccept:ZitiConnection.ConnCallback = { conn, status in
     if let msg = String("Hello from byte counter!\n").data(using: .utf8) {
         conn.write(msg) { _, len in
             guard len >= 0 else {
-                let errStr = String(cString: ziti_errorstr(Int32(len)))
+                let errStr = Ziti.zitiErrorString(status: Int32(len))
                 fputs("Connected client write error: \(len)(\(errStr)\n", stderr)
                 return
             }
@@ -53,7 +52,7 @@ let onAccept:ZitiConnection.ConnCallback = { conn, status in
 
 let onDataFromClient:ZitiConnection.DataCallback = { conn, data, len in
     guard len > 0 else {
-        let errStr = String(cString: ziti_errorstr(Int32(len)))
+        let errStr = Ziti.zitiErrorString(status: Int32(len))
         fputs("onDataFromClient: \(len)(\(errStr)\n", stderr)
         return 0
     }
@@ -66,7 +65,7 @@ let onDataFromClient:ZitiConnection.DataCallback = { conn, data, len in
         print("Responding to client with \(len)")
         conn.write(response) { _, len in
             guard len >= 0 else {
-                let errStr = String(cString: ziti_errorstr(Int32(len)))
+                let errStr = Ziti.zitiErrorString(status: Int32(len))
                 fputs("Error writing to client: \(len)(\(errStr)\n", stderr)
                 return
             }
@@ -78,8 +77,8 @@ let onDataFromClient:ZitiConnection.DataCallback = { conn, data, len in
 
 // Client callbacks
 let onDial:ZitiConnection.ConnCallback = { conn, status in
-    guard status == ZITI_OK else {
-        let errStr = String(cString: ziti_errorstr(status))
+    guard status == Ziti.ZITI_OK else {
+        let errStr = Ziti.zitiErrorString(status: status)
         fputs("onDial :\(status)(\(errStr)", stderr)
         return
     }
@@ -87,7 +86,7 @@ let onDial:ZitiConnection.ConnCallback = { conn, status in
     if let msg = String("hello").data(using: .utf8) {
         conn.write(msg) { _, len in
             guard len >= 0 else {
-                let errStr = String(cString: ziti_errorstr(Int32(len)))
+                let errStr = Ziti.zitiErrorString(status: Int32(len))
                 fputs("Dialed connection write error: \(len)(\(errStr)\n", stderr)
                 return
             }
@@ -98,7 +97,7 @@ let onDial:ZitiConnection.ConnCallback = { conn, status in
 
 let onDataFromServer:ZitiConnection.DataCallback = { conn, data, len in
     guard len > 0 else {
-        let errStr = String(cString: ziti_errorstr(Int32(len)))
+        let errStr = Ziti.zitiErrorString(status: Int32(len))
         fputs("onDataFromServer: \(len)\(errStr)", stderr)
         conn.close()
         ziti?.shutdown()
@@ -143,8 +142,8 @@ ziti.run { zErr in
     
     if isServer {
         conn.listen(service, onListen) { server, client, status in
-            guard status == ZITI_OK else {
-                fputs("onClient \(status): \(String(cString: ziti_errorstr(status)))", stderr)
+            guard status == Ziti.ZITI_OK else {
+                fputs("onClient \(status): \(Ziti.zitiErrorString(status: status))", stderr)
                 return
             }
             client.accept(onAccept, onDataFromClient)

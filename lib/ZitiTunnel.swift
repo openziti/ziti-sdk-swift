@@ -32,10 +32,11 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tunnelProvider:ZitiTunnelProvider?
     var tnlr_ctx:tunneler_context?
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
+    var loop:UnsafeMutablePointer<uv_loop_t>!
     var dns:UnsafeMutablePointer<dns_manager>!
     let netifDriver:NetifDriver
         
-    public init(_ tunnelProvider:ZitiTunnelProvider, _ loop:UnsafeMutablePointer<uv_loop_t>,
+    public init(_ tunnelProvider:ZitiTunnelProvider, _ loopPtr:Ziti.ZitiRunloop,
                 _ ipAddress:String, _ subnetMask:String,
                 _ ipDNS:String) {
         self.tunnelProvider = tunnelProvider
@@ -50,6 +51,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             ziti_close_write: ziti_sdk_c_close_write,
             ziti_write: ziti_sdk_c_write,
             ziti_host: ziti_sdk_c_host))
+        
+        loop = loopPtr.loop
         tnlr_ctx = ziti_tunneler_init(tunneler_opts, loop)
         
         let dns_ip = CFSwapInt32HostToBig(ipStrToUInt32(ipDNS))
@@ -124,8 +127,9 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         netifDriver.queuePacket(data)
     }
     
-    public func onService(_ ztx:ziti_context, _ svc: inout ziti_service, _ status:Int32) {
-        _ = ziti_sdk_c_on_service_wrapper(ztx, &svc, status, tnlr_ctx)
+    public func onService(_ ztx:ziti_context, _ svcPtr: OpaquePointer, _ status:Int32) {
+        let svc = UnsafeMutablePointer<ziti_service>(svcPtr)
+        _ = ziti_sdk_c_on_service_wrapper(ztx, svc, status, tnlr_ctx)
     }
     
     static let dns_fallback_cb:dns_fallback_cb = { name, ctx, addr in

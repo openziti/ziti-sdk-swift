@@ -27,7 +27,8 @@ import CZitiPrivate
         case hostConfigV1         = "host.v1"
     }
     
-    public var cService:UnsafeMutablePointer<ziti_service>?
+    var cService:UnsafeMutablePointer<ziti_service>?
+    public var cServicePtr:OpaquePointer? { return OpaquePointer(cService) }
         
     public var name:String?
     public var id:String?
