@@ -64,6 +64,17 @@ function create_framework {
       exit 1
    fi
 
+   # Edit the .swiftinterface files to remove import of CZitiPrivate
+   find ${dist_dir}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}  -name '*.swiftinterface' -print0 |
+   while IFS= read -r -d '' i; do
+      echo "Editing file: $i"
+      sed 's/^import CZitiPrivate$/\/\/ import CZitiPrivate/' $i > $i.bak && mv $i.bak $i
+      if [ $? -ne 0 ] ; then
+         echo "Unable to edit ${i}"
+         exit 1
+      fi
+   done
+
    cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir}/${PROJECT_NAME}.framework/Headers
    if [ $? -ne 0 ] ; then
       echo "Unable to copy -Swift.h file"
