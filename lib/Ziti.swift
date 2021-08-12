@@ -16,7 +16,7 @@ limitations under the License.
 
 import Foundation
 import CZitiPrivate
- 
+
 /**
  This is the main entry point for interacting with Ziti, and provides a Swift-friendly way to access the Ziti C SDK
  
