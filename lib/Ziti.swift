@@ -413,9 +413,8 @@ import CZitiPrivate
                                 pq_os_cb:  Ziti.onOsQuery,
                                 pq_process_cb: Ziti.onProcessQuery,
                                 pq_domain_cb: Ziti.onDomainQuery,
-                                aq_mfa_cb: Ziti.onMfaAuthQuery,
                                 app_ctx: self.toVoidPtr(),
-                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue,
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
         let initStatus = ziti_init_opts(&(nfOpts!), loop)
@@ -599,13 +598,11 @@ import CZitiPrivate
         ziti_mfa_enroll(ztx, Ziti.onMfaEnroll, self.toVoidPtr())
     }
     
-    public typealias MfaCallbacck = (_ ziti:Ziti, _ status:Int32) -> Void
-    public typealias MfaRemoveCallback = MfaCallbacck
-    public typealias MfaVerifyCallback = MfaCallbacck
-    private var mfaRemoveCallback:MfaRemoveCallback?
-    private var mfaVerifyCallback:MfaVerifyCallback?
+    public typealias MfaCallback = (_ ziti:Ziti, _ status:Int32) -> Void
+    private var mfaRemoveCallback:MfaCallback?
+    private var mfaVerifyCallback:MfaCallback?
     
-    public func mfaRemove(_ code:String, _ cb: @escaping MfaRemoveCallback) {
+    public func mfaRemove(_ code:String, _ cb: @escaping MfaCallback) {
         mfaRemoveCallback = cb
         let cCode = code.cString(using: .utf8)
         let cCodeCpy = copyString(cCode) // grr
@@ -613,7 +610,7 @@ import CZitiPrivate
         freeString(cCodeCpy)
     }
     
-    public func mfaVerify(_ code:String, _ cb: @escaping MfaVerifyCallback) {
+    public func mfaVerify(_ code:String, _ cb: @escaping MfaCallback) {
         mfaVerifyCallback = cb
         let cCode = code.cString(using: .utf8)
         let cCodeCpy = copyString(cCode) // grr
@@ -640,46 +637,20 @@ import CZitiPrivate
         freeString(cCodeCpy)
     }
     
-    public func mfaAbort(_ mfaCtx:UnsafeMutableRawPointer) {
-        ziti_mfa_abort(mfaCtx)
-    }
-    
-    public typealias MfaAuthQueryCallback = (_ ziti:Ziti, _ mfaCtx:UnsafeMutableRawPointer?, _ authQuery:ZitiMfaAuthQuery) -> Void
-    public var mfaAuthQueryCallback:MfaAuthQueryCallback? // TODO: to init()
-    
-    private var ar_mfa_cb:ziti_ar_mfa_cb?
-    private var mfaAuthResponseStatusCallback:MfaAuthResponseStatusCallback?
-    public typealias MfaAuthResponseStatusCallback = (_ mfaCtx:UnsafeMutableRawPointer?, _ status:Int32) -> Void
-    public func mfaAuthResponse(_ mfaCtx:UnsafeMutableRawPointer?, _ code:String, _ cb: @escaping MfaAuthResponseStatusCallback) {
+    private var mfaAuthResponseStatusCallback:MfaCallback?
+    public func mfaAuth(_ mfaCtx:UnsafeMutableRawPointer?, _ code:String, _ cb: @escaping MfaCallback) {
         mfaAuthResponseStatusCallback = cb
-        let cCode = code.cString(using: .utf8)
-        let cCodeCpy = copyString(cCode) // grr
-        ar_mfa_cb?(ztx, mfaCtx, cCodeCpy, Ziti.onMfaAuthResponseStatus, self.toVoidPtr())
-        freeString(cCodeCpy)
+        ziti_mfa_auth(ztx, code.cString(using: .utf8), Ziti.onMfaAuthResponseStatus, self.toVoidPtr())
     }
         
     // MARK: - Static C Callbacks
     
-    static private let onMfaAuthQuery:ziti_aq_mfa_cb = { ztx, mfa_ctx, aq_mfa, cb in
-        guard let mySelf = zitiUnretained(Ziti.self, ziti_app_ctx(ztx)) else {
-            log.wtf("invalid context")
-            return
-        }
-        guard let aq_mfa = aq_mfa else {
-            log.error("invalid aq_mfa")
-            return
-        }
-        let zaq = ZitiMfaAuthQuery(aq_mfa)
-        mySelf.ar_mfa_cb = cb
-        mySelf.mfaAuthQueryCallback?(mySelf, mfa_ctx, zaq) // callee to call mfaAuthResponse()
-    }
-    
-    static private let onMfaAuthResponseStatus:ziti_ar_mfa_status_cb = { ztx, mfa_ctx, status, ctx in
+    static private let onMfaAuthResponseStatus:ziti_mfa_cb = { ztx, status, ctx in
         guard let mySelf = zitiUnretained(Ziti.self, ctx) else {
             log.wtf("invalid context")
             return
         }
-        mySelf.mfaAuthResponseStatusCallback?(mfa_ctx, status)
+        mySelf.mfaAuthResponseStatusCallback?(mySelf, status)
     }
     
     static private let onMfaEnroll:ziti_mfa_enroll_cb = { ztx, status, mfa_enrollment, ctx in
