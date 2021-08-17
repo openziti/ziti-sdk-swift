@@ -18,8 +18,8 @@ import CZitiPrivate
 
 /// Used for passing context among callbacks and mapping to `Ziti` C SDK function
 @objc public class ZitiPostureContext : NSObject {
-    let ztx:OpaquePointer, id:UnsafeMutablePointer<Int8>?
-    init(_ ztx:OpaquePointer, _ id:UnsafeMutablePointer<Int8>?) {
+    let ztx:OpaquePointer, id:UnsafePointer<Int8>?
+    init(_ ztx:OpaquePointer, _ id:UnsafePointer<Int8>?) {
         self.ztx = ztx
         self.id = id
         super.init()
@@ -108,7 +108,7 @@ import CZitiPrivate
 
 class ZitiMacContext : ZitiPostureContext {
     let cb:ziti_pr_mac_cb
-    init(_ ztx:OpaquePointer, _ id:UnsafeMutablePointer<Int8>?, _ cb: @escaping ziti_pr_mac_cb) {
+    init(_ ztx:OpaquePointer, _ id:UnsafePointer<Int8>?, _ cb: @escaping ziti_pr_mac_cb) {
         self.cb = cb
         super.init(ztx, id)
     }
@@ -117,7 +117,7 @@ class ZitiMacContext : ZitiPostureContext {
 // Helper classes for passing around the C SDK callbacks
 class ZitiDomainContext : ZitiPostureContext {
     let cb:ziti_pr_domain_cb
-    init(_ ztx:OpaquePointer, _ id:UnsafeMutablePointer<Int8>?, _ cb: @escaping ziti_pr_domain_cb) {
+    init(_ ztx:OpaquePointer, _ id:UnsafePointer<Int8>?, _ cb: @escaping ziti_pr_domain_cb) {
         self.cb = cb
         super.init(ztx, id)
     }
@@ -125,7 +125,7 @@ class ZitiDomainContext : ZitiPostureContext {
 
 class ZitiOsContext : ZitiPostureContext {
     let cb:ziti_pr_os_cb
-    init(_ ztx:OpaquePointer, _ id:UnsafeMutablePointer<Int8>?, _ cb: @escaping ziti_pr_os_cb) {
+    init(_ ztx:OpaquePointer, _ id:UnsafePointer<Int8>?, _ cb: @escaping ziti_pr_os_cb) {
         self.cb = cb
         super.init(ztx, id)
     }
@@ -133,13 +133,8 @@ class ZitiOsContext : ZitiPostureContext {
 
 class ZitiProcessContext : ZitiPostureContext {
     let cb:ziti_pr_process_cb
-    let cId:UnsafeMutablePointer<Int8>?
     init(_ ztx:OpaquePointer, _ id:UnsafePointer<Int8>, _ cb: @escaping ziti_pr_process_cb) {
         self.cb = cb
-        cId = copyString(id)
-        super.init(ztx, cId)
-    }
-    deinit {
-        freeString(cId)
+        super.init(ztx, id)
     }
 }
