@@ -53,9 +53,10 @@ import CZitiPrivate
     }
     
     @objc public enum RouterStatus : UInt32 {
-        case Connected, Disconnected, Removed, Unavailable
+        case Added, Connected, Disconnected, Removed, Unavailable
         public var debug: String {
             switch self {
+            case .Added:        return ".Added"
             case .Connected:    return ".Connected"
             case .Disconnected: return ".Disconnected"
             case .Removed:      return ".Removed"
