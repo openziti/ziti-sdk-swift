@@ -405,6 +405,7 @@ import CZitiPrivate
         nfOpts = ziti_options(config: nil,
                                 controller: ctrlPtr,
                                 tls:tls,
+                                disabled: false,
                                 config_types: ziti_all_configs,
                                 refresh_interval: 15,
                                 metrics_type: EWMA_1m,
