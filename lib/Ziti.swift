@@ -100,7 +100,7 @@ import CZitiPrivate
         return String(cString: ziti_errorstr(status))
     }
     
-    private var id:ZitiIdentity
+    public var id:ZitiIdentity
     
     // MARK: - Initializers
     
@@ -638,7 +638,7 @@ import CZitiPrivate
     }
     
     private var mfaAuthResponseStatusCallback:MfaCallback?
-    public func mfaAuth(_ mfaCtx:UnsafeMutableRawPointer?, _ code:String, _ cb: @escaping MfaCallback) {
+    public func mfaAuth(_ code:String, _ cb: @escaping MfaCallback) {
         mfaAuthResponseStatusCallback = cb
         ziti_mfa_auth(ztx, code.cString(using: .utf8), Ziti.onMfaAuthResponseStatus, self.toVoidPtr())
     }
