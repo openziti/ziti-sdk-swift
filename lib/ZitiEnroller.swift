@@ -121,7 +121,7 @@ import CZitiPrivate
         
         var enroll_opts = ziti_enroll_opts(jwt: enrollData.pointee.jwtFile_c,
                                            enroll_key: enrollData.pointee.privatePem_c,
-                                           enroll_cert: nil)
+                                           enroll_cert: nil, enroll_name: nil)
         let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
         guard status == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(status))

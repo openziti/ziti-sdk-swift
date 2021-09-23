@@ -25,12 +25,14 @@ import CZitiPrivate
         case Context = 0x01 // ZitiContextEvent.rawValue
         case Router  = 0x02 // ZitiRouterEvent.rawValue
         case Service = 0x04 // ZitiServiceEvent.rawValue
+        case MfaAuth = 0x08 // ZitiMfaAuthEvent.rawValue
         
         public var debug: String {
             switch self {
             case .Context: return ".Context"
             case .Router:  return ".Router"
             case .Service: return ".Service"
+            case .MfaAuth: return ".MfaAuth"
             case .Invalid: return ".Invalid"
             @unknown default: return "unknown \(self.rawValue)"
             }
@@ -51,9 +53,10 @@ import CZitiPrivate
     }
     
     @objc public enum RouterStatus : UInt32 {
-        case Connected, Disconnected, Removed, Unavailable
+        case Added, Connected, Disconnected, Removed, Unavailable
         public var debug: String {
             switch self {
+            case .Added:        return ".Added"
             case .Connected:    return ".Connected"
             case .Disconnected: return ".Disconnected"
             case .Removed:      return ".Removed"
@@ -95,10 +98,18 @@ import CZitiPrivate
         }
     }
     
+    @objc public class MfaAuthEvent : NSObject {
+        @objc public let mfaAuthQuery:ZitiMfaAuthQuery
+        init(_ cEvent:ziti_mfa_auth_event) {
+            mfaAuthQuery = ZitiMfaAuthQuery(cEvent.auth_query_mfa)
+        }
+    }
+    
     @objc public let type:EventType
     @objc public var contextEvent:ContextEvent?
     @objc public var routerEvent:RouterEvent?
     @objc public var serviceEvent:ServiceEvent?
+    @objc public var mfaAuthEvent:MfaAuthEvent?
     
     init(_ ziti:Ziti, _ cEvent:UnsafePointer<ziti_event_t>) {
         self.ziti = ziti
@@ -109,6 +120,8 @@ import CZitiPrivate
             serviceEvent = ServiceEvent(cEvent.pointee.event.service)
         } else if type == .Router {
             routerEvent = RouterEvent(cEvent.pointee.event.router)
+        } else if type == .MfaAuth {
+            mfaAuthEvent = MfaAuthEvent(cEvent.pointee.event.mfa_auth_event)
         } else {
             log.error("unrecognized event type \(cEvent.pointee.type.rawValue)")
         }
@@ -133,6 +146,16 @@ import CZitiPrivate
             str += "   removed: (\(e.removed.count))\n\(svcArrToStr(e.removed))"
             str += "   changed: (\(e.changed.count))\n\(svcArrToStr(e.changed))"
             str += "   added: (\(e.added.count))\n\(svcArrToStr(e.added))"
+        }
+        
+        if let e = mfaAuthEvent {
+            str += "   provider: \(e.mfaAuthQuery.provider ?? "nil")\n"
+            str += "   typeId: \(e.mfaAuthQuery.typeId ?? "nil")\n"
+            str += "   httpMethod: \(e.mfaAuthQuery.httpMethod ?? "nil")\n"
+            str += "   httpUrl: \(e.mfaAuthQuery.httpUrl ?? "nil")\n"
+            str += "   minLength: \(e.mfaAuthQuery.minLength ?? -1)\n"
+            str += "   maxLength: \(e.mfaAuthQuery.maxLength ?? -1)\n"
+            str += "   format: \(e.mfaAuthQuery.format ?? "nil")\n"
         }
         return str
     }
