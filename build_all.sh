@@ -40,9 +40,9 @@ function do_build {
 
       cd ${c_sdk_build_dir}
       if [[ "${toolchain}" =~ "${a}" ]] ; then
-         cmake -GNinja -DCMAKE_TOOLCHAIN_FILE=../../toolchains/${toolchain} .. && ninja
+         cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DCMAKE_TOOLCHAIN_FILE=../../toolchains/${toolchain} .. && ninja
       else
-         cmake -GNinja .. && ninja
+         cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF .. && ninja
       fi
 
       if [ $? -ne 0 ] ;  then
