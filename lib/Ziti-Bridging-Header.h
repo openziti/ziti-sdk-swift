@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
 #include <ziti/ziti.h>
 #include <ziti/ziti_src.h>
 #include <ziti/ziti_model.h>
@@ -20,6 +21,7 @@ limitations under the License.
 #include "ziti/ziti_tunnel.h"
 #include "ziti/ziti_tunnel_cbs.h"
 #include "ziti/netif_driver.h"
+#include "ziti/model_support.h"
 
 typedef int (*apply_cb)(dns_manager *dns, const char *host, const char *ip);
 

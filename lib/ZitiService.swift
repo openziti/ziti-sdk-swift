@@ -17,7 +17,7 @@ import Foundation
 import CZitiPrivate
 
 @objc public class ZitiService : NSObject, Codable {
-    private static let log = ZitiLog(ZitiService.self)
+    private let log = ZitiLog(ZitiService.self)
     enum CodingKeys: String, CodingKey {
         case name, id, encrypted, permFlags, postureQuerySets
         case tunnelClientConfigV1 = "ziti-tunneler-client.v1"
@@ -48,12 +48,14 @@ import CZitiPrivate
         encrypted = cService.pointee.encryption
         permFlags = cService.pointee.perm_flags
         
-        if var pqsPtr = cService.pointee.posture_query_set {
-            while let pqs = pqsPtr.pointee {
+        var i = model_map_iterator(&(cService.pointee.posture_query_map))
+        while i != nil {
+            let pqsPtr = model_map_it_value(i)
+            if let pqs = UnsafeMutablePointer<ziti_posture_query_set>(OpaquePointer(pqsPtr)) {
                 if postureQuerySets == nil { postureQuerySets = [] }
                 postureQuerySets?.append(ZitiPostureQuerySet(pqs))
-                pqsPtr += 1
             }
+            i = model_map_it_next(i)
         }
         
         if let cfg = ZitiService.parseConfig(ZitiTunnelClientConfigV1.self, &(cService.pointee)) {
