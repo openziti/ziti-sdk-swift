@@ -99,9 +99,11 @@ import CZitiPrivate
     }
     
     @objc public class MfaAuthEvent : NSObject {
-        @objc public let mfaAuthQuery:ZitiMfaAuthQuery
+        @objc public var mfaAuthQuery:ZitiMfaAuthQuery?
         init(_ cEvent:ziti_mfa_auth_event) {
-            mfaAuthQuery = ZitiMfaAuthQuery(cEvent.auth_query_mfa)
+            if cEvent.auth_query_mfa != nil {
+                mfaAuthQuery = ZitiMfaAuthQuery(cEvent.auth_query_mfa)
+            }
         }
     }
     
@@ -149,13 +151,17 @@ import CZitiPrivate
         }
         
         if let e = mfaAuthEvent {
-            str += "   provider: \(e.mfaAuthQuery.provider ?? "nil")\n"
-            str += "   typeId: \(e.mfaAuthQuery.typeId ?? "nil")\n"
-            str += "   httpMethod: \(e.mfaAuthQuery.httpMethod ?? "nil")\n"
-            str += "   httpUrl: \(e.mfaAuthQuery.httpUrl ?? "nil")\n"
-            str += "   minLength: \(e.mfaAuthQuery.minLength ?? -1)\n"
-            str += "   maxLength: \(e.mfaAuthQuery.maxLength ?? -1)\n"
-            str += "   format: \(e.mfaAuthQuery.format ?? "nil")\n"
+            if let mfaAuthQuery = e.mfaAuthQuery {
+                str += "   provider: \(mfaAuthQuery.provider ?? "nil")\n"
+                str += "   typeId: \(mfaAuthQuery.typeId ?? "nil")\n"
+                str += "   httpMethod: \(mfaAuthQuery.httpMethod ?? "nil")\n"
+                str += "   httpUrl: \(mfaAuthQuery.httpUrl ?? "nil")\n"
+                str += "   minLength: \(mfaAuthQuery.minLength ?? -1)\n"
+                str += "   maxLength: \(mfaAuthQuery.maxLength ?? -1)\n"
+                str += "   format: \(mfaAuthQuery.format ?? "nil")\n"
+            } else {
+                str += "   mfaAuthQuery: nil\n"
+            }
         }
         return str
     }
