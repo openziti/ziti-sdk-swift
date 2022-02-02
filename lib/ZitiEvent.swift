@@ -22,18 +22,20 @@ import CZitiPrivate
     
     @objc public enum EventType : UInt32 {
         case Invalid = 0x0
-        case Context = 0x01 // ZitiContextEvent.rawValue
-        case Router  = 0x02 // ZitiRouterEvent.rawValue
-        case Service = 0x04 // ZitiServiceEvent.rawValue
-        case MfaAuth = 0x08 // ZitiMfaAuthEvent.rawValue
+        case Context = 0x01  // ZitiContextEvent.rawValue
+        case Router  = 0x02  // ZitiRouterEvent.rawValue
+        case Service = 0x04  // ZitiServiceEvent.rawValue
+        case MfaAuth = 0x08  // ZitiMfaAuthEvent.rawValue
+        case ApiEvent = 0x10 // ZitiApiEvent.rawValue
         
         public var debug: String {
             switch self {
-            case .Context: return ".Context"
-            case .Router:  return ".Router"
-            case .Service: return ".Service"
-            case .MfaAuth: return ".MfaAuth"
-            case .Invalid: return ".Invalid"
+            case .Context:  return ".Context"
+            case .Router:   return ".Router"
+            case .Service:  return ".Service"
+            case .MfaAuth:  return ".MfaAuth"
+            case .ApiEvent: return ".ApiEvent"
+            case .Invalid:  return ".Invalid"
             @unknown default: return "unknown \(self.rawValue)"
             }
         }
@@ -107,11 +109,26 @@ import CZitiPrivate
         }
     }
     
+    @objc public class ApiEvent : NSObject {
+        @objc public let newControllerAddress:String
+        init( _ cEvent:ziti_api_event) {
+            var str = ""
+            if let cStr = cEvent.new_ctrl_address {
+                str = String(cString: cStr)
+            }
+            if !str.starts(with: "https://") {
+                str.insert(contentsOf: "https://", at: str.startIndex)
+             }
+            newControllerAddress = str
+        }
+    }
+    
     @objc public let type:EventType
     @objc public var contextEvent:ContextEvent?
     @objc public var routerEvent:RouterEvent?
     @objc public var serviceEvent:ServiceEvent?
     @objc public var mfaAuthEvent:MfaAuthEvent?
+    @objc public var apiEvent:ApiEvent?
     
     init(_ ziti:Ziti, _ cEvent:UnsafePointer<ziti_event_t>) {
         self.ziti = ziti
@@ -124,6 +141,8 @@ import CZitiPrivate
             routerEvent = RouterEvent(cEvent.pointee.event.router)
         } else if type == .MfaAuth {
             mfaAuthEvent = MfaAuthEvent(cEvent.pointee.event.mfa_auth_event)
+        } else if type == .ApiEvent {
+            apiEvent = ApiEvent(cEvent.pointee.event.api)
         } else {
             log.error("unrecognized event type \(cEvent.pointee.type.rawValue)")
         }
@@ -162,6 +181,10 @@ import CZitiPrivate
             } else {
                 str += "   mfaAuthQuery: nil\n"
             }
+        }
+        
+        if let e = apiEvent {
+            str += "   newControllerAddress: \(e.newControllerAddress)\n"
         }
         return str
     }

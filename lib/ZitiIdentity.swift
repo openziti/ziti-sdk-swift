@@ -35,7 +35,7 @@ import Foundation
     @objc public let id:String
     
     /// scheme, host, and port used to communicate with Ziti controller
-    @objc public let ztAPI:String
+    @objc public var ztAPI:String
     
     /// name assocaited with this identity in Ziti.
     ///
