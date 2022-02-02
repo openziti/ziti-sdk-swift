@@ -416,7 +416,7 @@ import CZitiPrivate
                                 pq_process_cb: Ziti.onProcessQuery,
                                 pq_domain_cb: Ziti.onDomainQuery,
                                 app_ctx: self.toVoidPtr(),
-                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue,
+                              events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue, 
                                 event_cb: Ziti.onEvent)
         
         let initStatus = ziti_init_opts(&(nfOpts!), loop)
