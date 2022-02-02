@@ -407,6 +407,7 @@ import CZitiPrivate
                                 tls:tls,
                                 disabled: false,
                                 config_types: ziti_all_configs,
+                                api_page_size: 250,
                                 refresh_interval: 15,
                                 metrics_type: EWMA_1m,
                                 router_keepalive: 5,
