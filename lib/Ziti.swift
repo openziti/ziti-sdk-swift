@@ -407,7 +407,7 @@ import CZitiPrivate
                                 tls:tls,
                                 disabled: false,
                                 config_types: ziti_all_configs,
-                                api_page_size: 250,
+                                api_page_size: 25,
                                 refresh_interval: 15,
                                 metrics_type: EWMA_1m,
                                 router_keepalive: 5,
@@ -416,7 +416,7 @@ import CZitiPrivate
                                 pq_process_cb: Ziti.onProcessQuery,
                                 pq_domain_cb: Ziti.onDomainQuery,
                                 app_ctx: self.toVoidPtr(),
-                              events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue, 
+                              events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
         let initStatus = ziti_init_opts(&(nfOpts!), loop)
