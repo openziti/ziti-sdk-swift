@@ -735,8 +735,13 @@ import CZitiPrivate
             mySelf.initCallback?(nil)
         }
         
-        // send the event...
+        // create and send the event...
         let event = ZitiEvent(mySelf, cEvent)
+        
+        if event.type == ZitiEvent.EventType.ApiEvent {
+            mySelf.id.ztAPI = event.apiEvent!.newControllerAddress
+        }
+        
         mySelf.eventCallbacksLock.lock()
         mySelf.eventCallbacks.forEach { listener in
             let mask = listener.mask
