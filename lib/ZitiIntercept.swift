@@ -42,9 +42,10 @@ class ZitiIntercept : NSObject, ZitiUnretained {
         
         uv_timer_init(ziti.loop, close_timer_h)
         close_timer_h?.pointee.data = self.toVoidPtr()
-        close_timer_h?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+        /*
+        close_timer_h?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) { //TODO: legit?  Or issue with pointee size mismatch?
             uv_unref($0)
-        }
+        }*/
     }
     
     static let on_close_timer:uv_timer_cb = { h in
