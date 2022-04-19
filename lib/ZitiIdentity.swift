@@ -25,7 +25,7 @@ import Foundation
     - `Ziti.enroll(_:_:)`
     - `Ziti.init(fromFile:)`
  */
-@objc public class ZitiIdentity : NSObject, Codable {
+@objc open class ZitiIdentity : NSObject, Codable {
     private static let log = ZitiLog(ZitiIdentity.self)
     private var log:ZitiLog { return ZitiIdentity.log }
     
