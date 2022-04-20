@@ -462,9 +462,6 @@ import CZitiPrivate
             zt.setZitiInstance(id.id, zi)
         }
         
-        // set log level
-        ZitiLog.setLogLevel(.INFO)
-        
         // Save off reference to current thread and run the loop
         if privateLoop {
             Thread.current.name = "ziti_uv_loop_private"
