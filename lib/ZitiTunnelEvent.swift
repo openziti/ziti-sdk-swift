@@ -17,28 +17,47 @@ import Foundation
 import CZitiPrivate
 
 @objc public class ZitiTunnelEvent : NSObject {
-    private let log = ZitiLog(ZitiTunnelEvent.self)
+    let log = ZitiLog(ZitiTunnelEvent.self)
     public weak var ziti:Ziti?
     
     init(_ ziti:Ziti) {
         self.ziti = ziti
     }
+    
+    func toStr(_ cStr:UnsafePointer<CChar>?) -> String {
+        if let cStr = cStr { return String(cString: cStr) }
+        return ""
+    }
+    
+    public override var debugDescription: String {
+        return "ZitiTunnelEvent: \(String(describing: self))\n" +
+            "   identity: \(ziti?.id.id ?? ""):\"\(ziti?.id.id ?? "")\""
+    }
 }
 
 @objc public class ZitiTunnelContextEvent : ZitiTunnelEvent {
-    public var status:String
-    public var name:String
-    public var version:String
-    public var controller:String
+    public var status:String = ""
+    public var name:String = ""
+    public var version:String = ""
+    public var controller:String = ""
     public var code:Int32
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<ziti_ctx_event>) {
-        self.status = String(cString: evt.pointee.status)
-        self.name = String(cString: evt.pointee.name)
-        self.version = String(cString: evt.pointee.version)
-        self.controller = String(cString: evt.pointee.controller)
         self.code = evt.pointee.code
         super.init(ziti)
+        self.status = toStr(evt.pointee.status)
+        self.name = toStr(evt.pointee.name)
+        self.version = toStr(evt.pointee.version)
+        self.controller = toStr(evt.pointee.controller)
+    }
+    
+    public override var debugDescription: String {
+        return super.debugDescription + "\n" +
+            "   status: \(status)\n" +
+            "   name: \(name)\n" +
+            "   version: \(version)\n" +
+            "   controller: \(controller)\n" +
+            "   code: \(code)"
     }
 }
 
@@ -73,20 +92,16 @@ import CZitiPrivate
             }
         }
     }
-    public var provider:String
-    public var status:String
-    public var operation:String
-    public var operation_type:MfaStatus
-    public var provisioningUrl:String
+    public var provider:String = ""
+    public var status:String = ""
+    public var operation:String = ""
+    public var operationType:MfaStatus
+    public var provisioningUrl:String = ""
     public var recovery_codes:[String]
     public var code:Int32
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<mfa_event>) {
-        self.provider = String(cString: evt.pointee.provider)
-        self.status = String(cString: evt.pointee.status)
-        self.operation = String(cString: evt.pointee.operation)
-        self.operation_type = MfaStatus(evt.pointee.operation_type)
-        self.provisioningUrl = String(cString: evt.pointee.provisioning_url)
+        self.operationType = MfaStatus(evt.pointee.operation_type)
         self.code = evt.pointee.code
         
         self.recovery_codes = []
@@ -97,27 +112,54 @@ import CZitiPrivate
             }
         }
         super.init(ziti)
+        
+        self.provider = toStr(evt.pointee.provider)
+        self.status = toStr(evt.pointee.status)
+        self.operation = toStr(evt.pointee.operation)
+        self.provisioningUrl = toStr(evt.pointee.provisioning_url)
+    }
+    
+    public override var debugDescription: String {
+        return super.debugDescription + "\n" +
+            "   provider: \(provider)\n" +
+            "   status: \(status)\n" +
+            "   operation: \(operation)\n" +
+            "   operationType: \(operationType)\n" +
+            "   provisioningUrl: \(provisioningUrl)\n" +
+            "   code: \(code)"
     }
 }
 
 @objc public class ZitiTunnelServiceEvent : ZitiTunnelEvent {
-    public var status:String
+    public var status:String = ""
     public var removed:[ZitiService] = []
     public var added:[ZitiService] = []
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<service_event>) {
-        self.status = String(cString: evt.pointee.status)
         ZitiEvent.ServiceEvent.convert(evt.pointee.removed_services, &removed)
         ZitiEvent.ServiceEvent.convert(evt.pointee.added_services, &added)
         super.init(ziti)
+        self.status = toStr(evt.pointee.status)
+    }
+    
+    public override var debugDescription: String {
+        return super.debugDescription + "\n" +
+            "   status: \(status)\n" +
+            "   removed: (\(removed.count))\n\(ZitiEvent.svcArrToStr(removed))" +
+            "   added: (\(added.count))\n\(ZitiEvent.svcArrToStr(added))"
     }
 }
 
 @objc public class ZitiTunnelApiEvent : ZitiTunnelEvent {
-    public var newControllerAddress:String
+    public var newControllerAddress:String = ""
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<api_event>) {
-        self.newControllerAddress = String(cString: evt.pointee.new_ctrl_address)
         super.init(ziti)
+        self.newControllerAddress = toStr(evt.pointee.new_ctrl_address)
+    }
+    
+    public override var debugDescription: String {
+        return super.debugDescription + "\n" +
+            "   newControllerAddress: \(newControllerAddress)"
     }
 }
