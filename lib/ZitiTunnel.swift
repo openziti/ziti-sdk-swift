@@ -35,6 +35,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
     var tnlr_ctx:tunneler_context?
     
+    static let KEY_ZITI_INSTANCE = "ZitiTunnel.zitiInstance."
     static let KEY_GOT_SERVICES = "ZitiTunnel.gotServices."
     public static var SERVICE_WAIT_TIMEOUT = 20.0
     
@@ -118,6 +119,14 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     public func setZitiInstance(_ identifier:String, _ zi:UnsafeMutablePointer<ziti_instance_s>) {
         set_ziti_instance(identifier.cString(using: .utf8), zi)
+        
+        guard let ziti = ZitiTunnel.zitiDict[identifier] else {
+            log.wtf("Unable to locate Ziti instance for identifier \(identifier)")
+            return
+        }
+        
+        let key = "\(ZitiTunnel.KEY_ZITI_INSTANCE)\(ziti.id.id)"
+        ziti.userData[key] = zi
     }
     
     @objc func runZiti() {
@@ -184,6 +193,23 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         guard let ziti = zitiDict[id], let mySelf = ziti.zitiTunnel else {
             log.wtf("invalid context")
             return
+        }
+        
+        // Update ztx (not available until loop is running...), call initCallback
+        let key = "\(KEY_ZITI_INSTANCE)\(ziti.id.id)"
+        if ziti.ztx == nil, let zi = ziti.userData[key] as? UnsafeMutablePointer<ziti_instance_s>, let ztx = zi.pointee.ztx {
+            ziti.ztx = ztx
+            Ziti.postureContexts[ztx] = ziti
+            mySelf.tunnelProvider?.initCallback(ziti, nil)
+        }
+        
+        // always update the zid name
+        if let ztx = ziti.ztx, let czid = ziti_get_identity(ztx), czid.pointee.name != nil {
+            let name = String(cString: czid.pointee.name)
+            if ziti.id.name != name {
+                log.info("zid name updated to: \(name)")
+                ziti.id.name = name
+            }
         }
         
         switch cEvent.pointee.event_type.rawValue {
