@@ -101,6 +101,10 @@
 		5AD1FBC425D4A8A10035CE6C /* ZitiHostConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AD1FBC225D4A8A10035CE6C /* ZitiHostConfigV1.swift */; };
 		5ADAE972280A5834007D1DF4 /* ZitiTunnelEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADAE971280A5834007D1DF4 /* ZitiTunnelEvent.swift */; };
 		5ADAE973280A5845007D1DF4 /* ZitiTunnelEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ADAE971280A5834007D1DF4 /* ZitiTunnelEvent.swift */; };
+		5ADAE977280F7EC4007D1DF4 /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AFE864127E3C56000D47A47 /* libresolv.9.tbd */; };
+		5ADAE978280F7EEB007D1DF4 /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AFE864127E3C56000D47A47 /* libresolv.9.tbd */; };
+		5ADAE97A280F7EFD007D1DF4 /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ADAE979280F7EFD007D1DF4 /* libresolv.9.tbd */; };
+		5ADAE97B280F7F05007D1DF4 /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5ADAE979280F7EFD007D1DF4 /* libresolv.9.tbd */; };
 		5AE14C882471D32E00179365 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AE14C872471D32E00179365 /* main.swift */; };
 		5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
 		5AF0C4112489987500CD4DAE /* ZitiClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF0C4102489987500CD4DAE /* ZitiClaims.swift */; };
@@ -240,6 +244,7 @@
 		5AC9EA1D26FB8A0700AB888D /* ZitiPostureQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiPostureQuery.swift; sourceTree = "<group>"; };
 		5AD1FBC225D4A8A10035CE6C /* ZitiHostConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiHostConfigV1.swift; sourceTree = "<group>"; };
 		5ADAE971280A5834007D1DF4 /* ZitiTunnelEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiTunnelEvent.swift; sourceTree = "<group>"; };
+		5ADAE979280F7EFD007D1DF4 /* libresolv.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.9.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS15.4.sdk/usr/lib/libresolv.9.tbd; sourceTree = DEVELOPER_DIR; };
 		5AE14C852471D32E00179365 /* sample-mac-host */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "sample-mac-host"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AE14C872471D32E00179365 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5AF0C4102489987500CD4DAE /* ZitiClaims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiClaims.swift; sourceTree = "<group>"; };
@@ -252,6 +257,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ADAE97B280F7F05007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5A0AC9482477427F0021E8D9 /* libCZiti.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -260,6 +266,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ADAE977280F7EC4007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -304,6 +311,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ADAE97A280F7EFD007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AB830D224748A1B0089AF93 /* libCZiti.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -312,6 +320,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5ADAE978280F7EEB007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -383,6 +392,7 @@
 		5AB6DF76244B8F2000F4B4E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5ADAE979280F7EFD007D1DF4 /* libresolv.9.tbd */,
 				5AFE864327E3C62800D47A47 /* libresolv.tbd */,
 				5AFE864127E3C56000D47A47 /* libresolv.9.tbd */,
 				5AA2988D25857758001F7502 /* liblwipcore.a */,
