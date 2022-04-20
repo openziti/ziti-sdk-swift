@@ -125,9 +125,13 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     }
         
     @objc func loadAndRunZiti(_ args:RunArgs) {
+        var opsZiti:Ziti?
+        
         // store self pointer for each identity to lookup ourself in onEventCallback
         args.zids.forEach { zid in
-            ZitiTunnel.zitiDict[zid.id] = Ziti(zid: zid, zitiTunnel: self)
+            let z = Ziti(zid: zid, zitiTunnel: self)
+            ZitiTunnel.zitiDict[zid.id] = z
+            if opsZiti == nil { opsZiti = z }
         }
         
         // Initialize the tunneler SDK CMDs
@@ -162,10 +166,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         }
         zidsLoadedCond.unlock()
         
-        // trigger caller that zids have loaded. Make it run on the uv_loop via a bogus identity...
-        Ziti(zid: ZitiIdentity(id: "", ztAPI: ""), loopPtr: loopPtr).perform {
-            args.loadedCb(nil)
-        }
+        // trigger caller that zids have loaded. Make it run on the uv_loop via a any identity...
+        opsZiti?.perform { args.loadedCb(nil) }
     }
     
     public func startZiti(_ zids:[ZitiIdentity], _ postureChecks:ZitiPostureChecks?, _ loadedCb: @escaping IdentitiesLoadedCallback) {
@@ -185,10 +187,13 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         }
         
         switch cEvent.pointee.event_type.rawValue {
-        case ZitiContextEvent.rawValue:
+        case TunnelEvents.ContextEvent.rawValue:
             var cCtxEvent = UnsafeRawPointer(cEvent).bindMemory(to: ziti_ctx_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelContextEvent(ziti, cCtxEvent))
-        case ZitiServiceEvent.rawValue:
+            /*cEvent.withMemoryRebound(to: ziti_ctx_event.self, capacity: 1) { cCtxEvent in
+                mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelContextEvent(ziti, cCtxEvent))
+            }*/
+        case TunnelEvents.ServiceEvent.rawValue:
             var cServiceEvent = UnsafeRawPointer(cEvent).bindMemory(to: service_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelServiceEvent(ziti, cServiceEvent))
             
@@ -201,10 +206,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
                 mySelf.zidsLoadedCond.signal()
                 mySelf.zidsLoadedCond.unlock()
             }
-        case ZitiMfaAuthEvent.rawValue:
+        case TunnelEvents.MFAEvent.rawValue:
             var cMfaAuthEvent = UnsafeRawPointer(cEvent).bindMemory(to: mfa_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelMfaEvent(ziti, cMfaAuthEvent))
-        case ZitiAPIEvent.rawValue:
+        case TunnelEvents.APIEvent.rawValue:
             var cApiEvent = UnsafeRawPointer(cEvent).bindMemory(to: api_event.self, capacity: 1)
             let event = ZitiTunnelApiEvent(ziti, cApiEvent)
             ziti.id.ztAPI = event.newControllerAddress
@@ -270,10 +275,5 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     public func queuePacket(_ data:Data) {
         netifDriver.queuePacket(data)
-    }
-    
-    public func onService(_ ztx:OpaquePointer, _ svcPtr: OpaquePointer, _ status:Int32) {
-        let svc = UnsafeMutablePointer<ziti_service>(svcPtr)
-        _ = ziti_sdk_c_on_service_wrapper(ztx, svc, status, tnlr_ctx)
     }
 }
