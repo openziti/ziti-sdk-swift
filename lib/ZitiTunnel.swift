@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import Foundation
+import Dispatch
 import CZitiPrivate
 
 public protocol ZitiTunnelProvider {
@@ -35,9 +36,12 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
     var tnlr_ctx:tunneler_context?
     
+    private let uvDG = DispatchGroup()
+    
     static let KEY_ZITI_INSTANCE = "ZitiTunnel.zitiInstance."
     static let KEY_GOT_SERVICES = "ZitiTunnel.gotServices."
     public static var SERVICE_WAIT_TIMEOUT = 20.0
+    static let ZITI_SHUTDOWN_TIMEOUT = 5.0
     
     public typealias IdentitiesLoadedCallback = (_ error:ZitiError?) -> Void
     
@@ -162,8 +166,12 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             }
         }
         
-        // Start up the run loop in it's own thread.  All callback to the tunnel provider are called from the run loop
-        Thread(target: self, selector: #selector(self.runZiti), object: nil).start()
+        // Start up the run loop in it's own thread.  All callbacks to the tunnel provider are called from the run loop
+        DispatchQueue.global().async {
+            self.uvDG.enter()
+            _ = Ziti.executeRunloop(loopPtr: self.loopPtr)
+            self.uvDG.leave()
+        }
                 
         // wait for services to be reported...
         zidsLoadedCond.lock()
@@ -182,6 +190,33 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     public func startZiti(_ zids:[ZitiIdentity], _ postureChecks:ZitiPostureChecks?, _ loadedCb: @escaping IdentitiesLoadedCallback) {
         let args = RunArgs(zids, postureChecks, loadedCb)
         Thread(target: self, selector: #selector(self.loadAndRunZiti), object: args).start()
+    }
+    
+    public func shutdownZiti(_ completionHandler: @escaping ()->Void) {
+        let opsZiti = ZitiTunnel.zitiDict.first?.1
+        
+        opsZiti?.perform {
+            for (identifier, ziti) in ZitiTunnel.zitiDict {
+                guard let ztx = ziti.ztx else {
+                    self.log.error("Invalid ztx for identifier \(identifier)")
+                    continue
+                }
+                
+                self.log.info("Shutting down \(identifier)")
+                ziti_shutdown(ztx)
+            }
+        }
+        
+        DispatchQueue.global().async {
+            let res = self.uvDG.wait(timeout: DispatchTime.now() + ZitiTunnel.ZITI_SHUTDOWN_TIMEOUT)
+            
+            if res == .timedOut {
+                self.log.error("Timed out waiting for Ziti shutdowns to complete")
+            } else {
+                self.log.info("Ziti shutdown complete, status=\(res)")
+            }
+            completionHandler()
+        }
     }
     
     static private let onEventCallback:event_cb = { cEvent in
@@ -216,9 +251,6 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         case TunnelEvents.ContextEvent.rawValue:
             var cCtxEvent = UnsafeRawPointer(cEvent).bindMemory(to: ziti_ctx_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelContextEvent(ziti, cCtxEvent))
-            /*cEvent.withMemoryRebound(to: ziti_ctx_event.self, capacity: 1) { cCtxEvent in
-                mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelContextEvent(ziti, cCtxEvent))
-            }*/
         case TunnelEvents.ServiceEvent.rawValue:
             var cServiceEvent = UnsafeRawPointer(cEvent).bindMemory(to: service_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelServiceEvent(ziti, cServiceEvent))
