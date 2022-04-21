@@ -210,11 +210,9 @@ import CZitiPrivate
         opsAsyncHandle?.initialize(to: uv_async_t())
         uv_async_init(loop, opsAsyncHandle, Ziti.onPerformOps)
         opsAsyncHandle?.pointee.data = self.toVoidPtr()
-        /* withMemoryRebound should only be used on types with same size pointee.  could move this to C, or leave ref one the loop
-        (doens't cost much...)
-         opsAsyncHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+        opsAsyncHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
             uv_unref($0)
-        }*/
+        }
     }
     
     deinit {
@@ -242,15 +240,15 @@ import CZitiPrivate
     }
     
     /// wrapper to execute uv_run (blocking)
-    public class func executeRunloop(loopPtr:ZitiRunloop) {
+    public class func executeRunloop(loopPtr:ZitiRunloop) -> Int32 {
         let loop = loopPtr.loop
         let rStatus = uv_run(loop, UV_RUN_DEFAULT)
-        guard rStatus == 0 else {
+        if rStatus != 0  {
             let errStr = String(cString: uv_strerror(rStatus))
             log.wtf("error running uv loop: \(rStatus) \(errStr)")
-            return
         }
-        log.info("runZiti - loop exited with status 0")
+        log.info("runZiti - loop exited with status \(rStatus)")
+        return rStatus
     }
     
     /// Remove keys and certificates created during `enroll()` from the keychain
