@@ -26,7 +26,6 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     var hdrs:[String:String]? = nil
     
     static var releasePending:[ZitiIntercept] = []
-    var close_timer_h:UnsafeMutablePointer<uv_timer_t>?
 
     init(_ ziti:Ziti, _ name:String, _ urlStr:String, _ idleTime:Int) {
         self.name = name
@@ -35,19 +34,12 @@ class ZitiIntercept : NSObject, ZitiUnretained {
         um_http_init_with_src(ziti.loop, &clt, urlStr.cString(using: .utf8), &zs)
         um_http_idle_keepalive(&clt, idleTime)
         
-        close_timer_h = UnsafeMutablePointer.allocate(capacity: 1)
-        close_timer_h?.initialize(to: uv_timer_t())
-        
         super.init()
         
-        uv_timer_init(ziti.loop, close_timer_h)
-        close_timer_h?.pointee.data = self.toVoidPtr()
-        close_timer_h?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
-            uv_unref($0)
-        }
+        clt.data = self.toVoidPtr()
     }
     
-    static let on_close_timer:uv_timer_cb = { h in
+    static private let on_http_close:um_http_close_cb = { h in
         guard let ctx = h?.pointee.data, let mySelf = zitiUnretained(ZitiIntercept.self, ctx) else {
             return
         }
@@ -55,18 +47,8 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     }
     
     func close() {
-        // This close sequence isn't great. If we release the mem, even after waiting for an
-        // iteration of the loop, we run into memory issues.  For now will set a very long
-        // timer and clean up when it expires (not that big of a deal, since intercepts usually
-        // last lifetime of the app)
         ZitiIntercept.releasePending.append(self)
-        um_http_close(&clt)
-        uv_timer_start(close_timer_h, ZitiIntercept.on_close_timer, 5000, 0)
-    }
-    
-    deinit {
-        close_timer_h?.deinitialize(count: 1)
-        close_timer_h?.deallocate()
+        um_http_close(&clt, ZitiIntercept.on_http_close)
     }
     
     func createRequest(_ zup:ZitiUrlProtocol, _ urlPath:String,

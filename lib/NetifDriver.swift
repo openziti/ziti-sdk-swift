@@ -43,13 +43,18 @@ class NetifDriver : NSObject, ZitiUnretained {
     
     var readQueue:[QueuedPacket] = []
     var queueLock = NSLock()
-    var asyncHandle:uv_async_t?
+    var asyncHandle:UnsafeMutablePointer<uv_async_t>?
     
     init(tunnelProvider:ZitiTunnelProvider) {
         self.tunnelProvider = tunnelProvider
         driver = UnsafeMutablePointer<netif_driver_t>.allocate(capacity: 1)
         driver.initialize(to: netif_driver_t())
         super.init()
+    }
+    
+    deinit {
+        asyncHandle?.deinitialize(count: 1)
+        asyncHandle?.deallocate()
     }
     
     func open() -> UnsafeMutablePointer<netif_driver_t> {
@@ -79,7 +84,7 @@ class NetifDriver : NSObject, ZitiUnretained {
         queueLock.unlock()
         
         if asyncHandle != nil {
-            uv_async_send(&(asyncHandle!))
+            uv_async_send(asyncHandle!)
         }
     }
     
@@ -89,9 +94,16 @@ class NetifDriver : NSObject, ZitiUnretained {
             return -1
         }
         
-        mySelf.asyncHandle = uv_async_t()
-        uv_async_init(loop, &(mySelf.asyncHandle!), NetifDriver.async_cb)
-        mySelf.asyncHandle?.data = mySelf.toVoidPtr()
+        mySelf.asyncHandle?.deinitialize(count: 1)
+        mySelf.asyncHandle?.deallocate()
+        
+        mySelf.asyncHandle = UnsafeMutablePointer<uv_async_t>.allocate(capacity: 1)
+        mySelf.asyncHandle?.initialize(to: uv_async_t())
+        uv_async_init(loop, mySelf.asyncHandle, NetifDriver.async_cb)
+        mySelf.asyncHandle?.pointee.data = mySelf.toVoidPtr()
+        mySelf.asyncHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+           uv_unref($0)
+        }
         
         mySelf.packetCallback = cb
         mySelf.netif = netif

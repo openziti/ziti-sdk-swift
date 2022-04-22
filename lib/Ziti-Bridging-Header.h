@@ -22,8 +22,7 @@ limitations under the License.
 #include "ziti/ziti_tunnel_cbs.h"
 #include "ziti/netif_driver.h"
 #include "ziti/model_support.h"
-
-typedef int (*apply_cb)(dns_manager *dns, const char *host, const char *ip);
+#include "ziti/ziti_dns.h"
 
 extern const char** ziti_all_configs;
 extern tls_context *default_tls_context(const char *ca, size_t ca_len);

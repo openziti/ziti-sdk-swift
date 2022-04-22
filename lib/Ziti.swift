@@ -39,14 +39,19 @@ import CZitiPrivate
     var privateLoop:Bool
     public var ztx:OpaquePointer?
     
+    /// Access to the `ZitiTunnel` managing this instance (if applicable)
+    public weak var zitiTunnel:ZitiTunnel?
+    
     // temporary until user data available for posture checks
     static var postureContexts:[ziti_context:Ziti?] = [:]
+    
+    @objc public var userData:[String:Any] = [:]
     
     // This memory is held onto an used by C-SDK.  If not using a private loop we need to make sure these three things
     // stay in memory
     private var tls: UnsafeMutablePointer<tls_context>?
     private var ctrlPtr: UnsafeMutablePointer<Int8>?
-    private var nfOpts: ziti_options?
+    private var zitiOpts: ziti_options?
     
     
     /// Type used for escaping  closure called follwing initialize of Ziti connectivity
@@ -183,8 +188,25 @@ import CZitiPrivate
         initOpsHandle()
     }
     
+    /// Initilize `Ziti` for use with a `ZitiTunnel` instance
+    ///
+    /// This can be useful when an application needs to manage multiple `ZitiIdentity`s and share a single `ZitiTunnel`, which manages running this instance
+    ///
+    /// - Parameters:
+    ///     - zid: the `ZitiIdentity` containing the information needed to access the Keychain for stored identity information (keys and identity certificates).
+    ///     - loop: the externanally supplied `uv_loop`
+    ///
+    public init(zid:ZitiIdentity, zitiTunnel:ZitiTunnel) {
+        self.id = zid
+        self.privateLoop = false
+        self.loop = zitiTunnel.loopPtr.loop
+        self.zitiTunnel = zitiTunnel
+        super.init()
+        initOpsHandle()
+    }
+    
     private func initOpsHandle() {
-        opsAsyncHandle = UnsafeMutablePointer.allocate(capacity: 1)
+        opsAsyncHandle = UnsafeMutablePointer<uv_async_t>.allocate(capacity: 1)
         opsAsyncHandle?.initialize(to: uv_async_t())
         uv_async_init(loop, opsAsyncHandle, Ziti.onPerformOps)
         opsAsyncHandle?.pointee.data = self.toVoidPtr()
@@ -218,15 +240,15 @@ import CZitiPrivate
     }
     
     /// wrapper to execute uv_run (blocking)
-    public class func executeRunloop(loopPtr:ZitiRunloop) {
+    public class func executeRunloop(loopPtr:ZitiRunloop) -> Int32 {
         let loop = loopPtr.loop
         let rStatus = uv_run(loop, UV_RUN_DEFAULT)
-        guard rStatus == 0 else {
+        if rStatus != 0  {
             let errStr = String(cString: uv_strerror(rStatus))
             log.wtf("error running uv loop: \(rStatus) \(errStr)")
-            return
         }
-        log.info("runZiti - loop exited with status 0")
+        log.info("runZiti - loop exited with status \(rStatus)")
+        return rStatus
     }
     
     /// Remove keys and certificates created during `enroll()` from the keychain
@@ -402,24 +424,30 @@ import CZitiPrivate
         self.initCallback = initCallback
         self.postureChecks = postureChecks
         
-        nfOpts = ziti_options(config: nil,
-                                controller: ctrlPtr,
-                                tls:tls,
-                                disabled: false,
-                                config_types: ziti_all_configs,
-                                api_page_size: 25,
-                                refresh_interval: 15,
-                                metrics_type: EWMA_1m,
-                                router_keepalive: 5,
-                                pq_mac_cb: Ziti.onMacQuery,
-                                pq_os_cb:  Ziti.onOsQuery,
-                                pq_process_cb: Ziti.onProcessQuery,
-                                pq_domain_cb: Ziti.onDomainQuery,
-                                app_ctx: self.toVoidPtr(),
+        zitiOpts = ziti_options(config: nil,
+                              controller: ctrlPtr,
+                              tls:tls,
+                              disabled: false,
+                              config_types: ziti_all_configs,
+                              api_page_size: 25,
+                              refresh_interval: 15,
+                              metrics_type: EWMA_1m,
+                              router_keepalive: 5,
+                              pq_mac_cb: postureChecks?.macQuery != nil ? Ziti.onMacQuery : nil,
+                              pq_os_cb:  postureChecks?.osQuery != nil ?  Ziti.onOsQuery : nil,
+                              pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
+                              pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
+                              app_ctx: self.toVoidPtr(),
                               events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
-                                event_cb: Ziti.onEvent)
+                              event_cb: Ziti.onEvent)
         
-        let initStatus = ziti_init_opts(&(nfOpts!), loop)
+        // ziti_instance required if being managed by ZitiTunnel
+        var zi:UnsafeMutablePointer<ziti_instance_s>?
+        if let zt = self.zitiTunnel {
+            zi = zt.createZitiInstance(id.id, &(zitiOpts!))
+        }
+        
+        let initStatus = ziti_init_opts(&(zitiOpts!), loop)
         guard initStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(initStatus))
             log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
@@ -427,8 +455,10 @@ import CZitiPrivate
             return
         }
         
-        // set log level
-        ZitiLog.setLogLevel(.INFO)
+        // only set the ZitiTunnel ziti_instance if ziti_init_ops was successful
+        if let zi = zi, let zt = self.zitiTunnel {
+            zt.setZitiInstance(id.id, zi)
+        }
         
         // Save off reference to current thread and run the loop
         if privateLoop {

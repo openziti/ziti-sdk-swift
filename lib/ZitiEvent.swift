@@ -85,12 +85,12 @@ import CZitiPrivate
         
         init(_ cEvent:ziti_service_event) {
             super.init()
-            convert(cEvent.removed, &removed)
-            convert(cEvent.changed, &changed)
-            convert(cEvent.added, &added)
+            ZitiEvent.ServiceEvent.convert(cEvent.removed, &removed)
+            ZitiEvent.ServiceEvent.convert(cEvent.changed, &changed)
+            ZitiEvent.ServiceEvent.convert(cEvent.added, &added)
         }
         
-        private func convert(_ cArr:ziti_service_array?, _ arr: inout [ZitiService]) {
+        static func convert(_ cArr:ziti_service_array?, _ arr: inout [ZitiService]) {
             if var ptr = cArr  {
                 while let svc = ptr.pointee {
                     arr.append(ZitiService(svc))
@@ -164,9 +164,9 @@ import CZitiPrivate
         }
         
         if let e = serviceEvent {
-            str += "   removed: (\(e.removed.count))\n\(svcArrToStr(e.removed))"
-            str += "   changed: (\(e.changed.count))\n\(svcArrToStr(e.changed))"
-            str += "   added: (\(e.added.count))\n\(svcArrToStr(e.added))"
+            str += "   removed: (\(e.removed.count))\n\(ZitiEvent.svcArrToStr(e.removed))"
+            str += "   changed: (\(e.changed.count))\n\(ZitiEvent.svcArrToStr(e.changed))"
+            str += "   added: (\(e.added.count))\n\(ZitiEvent.svcArrToStr(e.added))"
         }
         
         if let e = mfaAuthEvent {
@@ -189,13 +189,13 @@ import CZitiPrivate
         return str
     }
     
-    private lazy var enc = { () -> JSONEncoder in
+    static var enc = { () -> JSONEncoder in
         let e = JSONEncoder()
         //e.outputFormatting = .prettyPrinted
         return e
     }()
     
-    private func svcArrToStr(_ arr:[ZitiService]) -> String {
+    static func svcArrToStr(_ arr:[ZitiService]) -> String {
         var str = ""
         for (i, svc) in arr.enumerated() {
             if let j = try? enc.encode(svc), let jStr = String(data:j, encoding:.utf8) {
