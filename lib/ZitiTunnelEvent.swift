@@ -70,7 +70,7 @@ import CZitiPrivate
         case EnrollmentChallenge
         case Uknown
         
-        public init(_ mfaStatus:mfa_status) {
+        init(_ mfaStatus:mfa_status) {
             switch mfaStatus {
             case mfa_status_mfa_auth_status: self = .AuthStatus
             case mfa_status_auth_challenge: self = .AuthChallenge
@@ -81,7 +81,7 @@ import CZitiPrivate
             }
         }
         
-        public var mfaStatus : mfa_status {
+        var mfaStatus : mfa_status {
             switch self {
             case .AuthStatus: return mfa_status_mfa_auth_status
             case .AuthChallenge: return mfa_status_auth_challenge
