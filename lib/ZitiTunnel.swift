@@ -108,7 +108,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         tunneler_opts.deallocate()
     }
     
-    public func createZitiInstance(_ identifier:String, _ zitiOpts:UnsafeMutablePointer<ziti_options>) -> UnsafeMutablePointer<ziti_instance_s>? {
+    func createZitiInstance(_ identifier:String, _ zitiOpts:UnsafeMutablePointer<ziti_options>) -> UnsafeMutablePointer<ziti_instance_s>? {
         
         var zi:UnsafeMutablePointer<ziti_instance_s>?
         zi = new_ziti_instance_ex(identifier.cString(using: .utf8))
@@ -121,7 +121,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         return zi
     }
     
-    public func setZitiInstance(_ identifier:String, _ zi:UnsafeMutablePointer<ziti_instance_s>) {
+    func setZitiInstance(_ identifier:String, _ zi:UnsafeMutablePointer<ziti_instance_s>) {
         set_ziti_instance(identifier.cString(using: .utf8), zi)
         
         guard let ziti = ZitiTunnel.zitiDict[identifier] else {
