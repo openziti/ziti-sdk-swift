@@ -66,7 +66,8 @@ public class ZitiLog {
     /// - Parameters:
     ///     - level: only log messages at this level or higher severity
     public class func setLogLevel(_ level:LogLevel) {
-        ziti_log_set_level(level.rawValue);
+        ziti_log_set_level(level.rawValue)
+        ziti_tunnel_set_log_level(level.rawValue)
     }
     
     /// Get the system-wide log level
