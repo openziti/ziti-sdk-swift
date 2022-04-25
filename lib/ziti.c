@@ -30,6 +30,14 @@ typedef struct ziti_dump_ctx_s {
     ziti_printer_cb_wrapper printer;
 } ziti_dump_ctx;
 
+ZITI_FUNC extern void
+ziti_logger(int level, const char *module, const char *file, unsigned int line, const char *func,
+            const char *fmt, ...);
+
+void set_tunnel_logger(void) {
+    ziti_tunnel_set_logger(ziti_logger);
+}
+
 int ziti_dump_printer(void *ctx, const char *fmt, ...) {
     ziti_dump_ctx *zdctx = ctx;
     static char msg[4096];

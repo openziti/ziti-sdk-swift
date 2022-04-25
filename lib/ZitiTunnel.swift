@@ -73,6 +73,9 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     public init(_ tunnelProvider:ZitiTunnelProvider,
                 _ ipAddress:String, _ subnetMask:String,
                 _ ipDNS:String, _ ipUpstreamDNS:String) {
+
+        set_tunnel_logger()
+
         self.tunnelProvider = tunnelProvider
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         super.init()
@@ -133,10 +136,6 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         ziti.userData[key] = zi
     }
     
-    @objc func runZiti() {
-        Ziti.executeRunloop(loopPtr: loopPtr)
-    }
-        
     @objc func loadAndRunZiti(_ args:RunArgs) {
         var opsZiti:Ziti?
         
