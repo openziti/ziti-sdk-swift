@@ -69,6 +69,7 @@ class NetifDriver : NSObject, ZitiUnretained {
         driver.pointee.close = NetifDriver.close_cb
         driver.pointee.add_route = NetifDriver.add_route_cb
         driver.pointee.delete_route = NetifDriver.delete_route_cb
+        driver.pointee.exclude_rt = NetifDriver.exclude_rt_cb
                 
         return driver
     }
@@ -191,5 +192,21 @@ class NetifDriver : NSObject, ZitiUnretained {
             return -1
         }
         return tunnelProvider.deleteRoute(destStr)
+    }
+    
+    static let exclude_rt_cb:exclude_route_fn = { handle, loop, dest in
+        guard let mySelf = zitiUnretained(NetifDriver.self, UnsafeMutableRawPointer(handle)) else {
+            log.wtf("invalid handle", function: "exclude_rt_cb()")
+            return -1
+        }
+        guard let tunnelProvider = mySelf.tunnelProvider else {
+            log.wtf("invalid tunnelProvider", function: "exclude_rt_cb()")
+            return -1
+        }
+        guard let destStr = dest != nil ? String(cString: dest!) : nil else {
+            log.error("Invalid dest paramater", function: "exclude_rt_cb()")
+            return -1
+        }
+        return tunnelProvider.excludeRoute(destStr, OpaquePointer(loop))
     }
 }

@@ -20,6 +20,7 @@ import CZitiPrivate
 public protocol ZitiTunnelProvider {
     func addRoute(_ dest:String) -> Int32
     func deleteRoute(_ dest:String) -> Int32
+    func excludeRoute(_ dest:String, _ loop:OpaquePointer?) -> Int32
     func writePacket(_ data:Data)
     
     func initCallback(_ ziti:Ziti, _ error:ZitiError?)
@@ -72,7 +73,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     public init(_ tunnelProvider:ZitiTunnelProvider,
                 _ ipAddress:String, _ subnetMask:String,
-                _ ipDNS:String, _ ipUpstreamDNS:String) {
+                _ ipDNS:String, _ ipUpstreamDNS:String?) {
 
         set_tunnel_logger()
 
@@ -95,15 +96,18 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         log.debug("dnsCidr = \(dnsCidr)")
         ziti_dns_setup(tnlr_ctx, ipDNS.cString(using: .utf8), dnsCidr.cString(using: .utf8))
         
-        var upDNS = ipUpstreamDNS
-        var upPort:UInt16 = 53
-        if upDNS.contains(where: { $0 == ":" }) {
-            let parts = upDNS.split(separator: ":")
-            upDNS = String(parts[0])
-            upPort = UInt16(parts[1]) ?? upPort
+        log.debug("upstreamDNS = \(ipUpstreamDNS ?? "nil")")
+        if let ipUpstreamDNS = ipUpstreamDNS {
+            var upDNS = ipUpstreamDNS
+            var upPort:UInt16 = 53
+            if upDNS.contains(where: { $0 == ":" }) {
+                let parts = upDNS.split(separator: ":")
+                upDNS = String(parts[0])
+                upPort = UInt16(parts[1]) ?? upPort
+            }
+            log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
+            ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
         }
-        log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
-        ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
     }
     
     deinit {
