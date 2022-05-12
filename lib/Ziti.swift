@@ -272,7 +272,7 @@ import CZitiPrivate
     @objc public static func setAppInfo(_ appId:String, _ appVersion:String) {
         ziti_set_app_info(appId.cString(using: .utf8), appVersion.cString(using: .utf8))
     }
-    
+        
     // MARK: - Enrollment
     
     /// Type used for escaping  closure called following an enrollment attempt
@@ -585,6 +585,17 @@ import CZitiPrivate
             ziti_get_transfer_rates(ztx, &up, &down)
         }
         return (up, down)
+    }
+    
+    /// Notifies that the host has undergone a state change: either woke or unlocked.
+    /// 
+    ///  - Parameters:
+    ///     - woken whether the host device has been woke from sleep/hibernation
+    ///     - unlocked whether the host device has been unlocked
+    public func endpointStateChange(_ woken:Bool, _ unlocked:Bool) {
+        if let ztx = self.ztx {
+            ziti_endpoint_state_change(ztx, woken, unlocked)
+        }
     }
     
     /// Output debugging information to supplied callback. The output from this command may be useful when submitting issues.
