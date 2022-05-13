@@ -15,7 +15,7 @@ limitations under the License.
 */
 import Foundation
 
-protocol ZitiUnretained : class {
+protocol ZitiUnretained : AnyObject {
     func toVoidPtr() -> UnsafeMutableRawPointer
 }
 

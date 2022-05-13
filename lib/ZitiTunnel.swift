@@ -96,7 +96,6 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         log.debug("dnsCidr = \(dnsCidr)")
         ziti_dns_setup(tnlr_ctx, ipDNS.cString(using: .utf8), dnsCidr.cString(using: .utf8))
         
-        log.debug("upstreamDNS = \(ipUpstreamDNS ?? "nil")")
         if let ipUpstreamDNS = ipUpstreamDNS {
             var upDNS = ipUpstreamDNS
             var upPort:UInt16 = 53
@@ -106,7 +105,13 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
                 upPort = UInt16(parts[1]) ?? upPort
             }
             log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
-            ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
+            let r = ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
+            if r != 0 {
+                let cStrErr = uv_err_name(r)
+                var strErr = ""
+                if let cStrErr = cStrErr { strErr = String(cString:cStrErr) }
+                log.error("Error setting upstream DNS to \(upDNS):\(upPort), ret=\(r), uv_err=\(strErr)")
+            }
         }
     }
     
