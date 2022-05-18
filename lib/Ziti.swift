@@ -632,20 +632,21 @@ import CZitiPrivate
         let h:UnsafeMutablePointer<uv_timer_t> = UnsafeMutablePointer<uv_timer_t>.allocate(capacity: 1)
         h.initialize(to: uv_timer_t())
         uv_timer_init(loop, h)
-        
         h.pointee.data = UnsafeMutableRawPointer(arg)
+        h.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_unref($0)
+        }
         
         uv_timer_start(h, Ziti.onTimer, timeout, repeatTime)
     }
     
-    @objc public func destroyTimer(_ h:OpaquePointer) {
+    @objc public func endTimer(_ h:OpaquePointer) {
         let handle = UnsafeMutablePointer<uv_timer_t>(h)
-        let arg = UnsafeMutablePointer<TimerData>(OpaquePointer(handle.pointee.data))
+        
         uv_timer_stop(handle)
-        arg?.deinitialize(count: 1)
-        arg?.deallocate()
-        handle.deinitialize(count: 1)
-        handle.deallocate()
+        handle.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_close($0, Ziti.onTimerClose)
+        }
     }
     
     /// Register a closure to be called when events are received
@@ -775,6 +776,18 @@ import CZitiPrivate
             return
         }
         arg.pointee.op(OpaquePointer(h))
+    }
+    
+    static private let onTimerClose:uv_close_cb = { h in
+        guard let handle = h else {
+            log.wtf("Invalid handle")
+            return
+        }
+        let arg = UnsafeMutablePointer<TimerData>(OpaquePointer(handle.pointee.data))
+        arg?.deinitialize(count: 1)
+        arg?.deallocate()
+        handle.deinitialize(count: 1)
+        handle.deallocate()
     }
     
     static private let onDumpPrinter:ziti_printer_cb_wrapper = { ctx, msg in
