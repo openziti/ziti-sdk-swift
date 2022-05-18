@@ -620,6 +620,35 @@ import CZitiPrivate
         uv_async_send(opsAsyncHandle)
     }
     
+    public typealias TimerCallback = (OpaquePointer) -> Void
+    class TimerData : NSObject {
+        var op:TimerCallback
+        init(_ op: @escaping TimerCallback) { self.op = op }
+    }
+    @objc public func startTimer( _ timeout:UInt64, _ repeatTime:UInt64, _ op: @escaping TimerCallback) {
+        let arg = UnsafeMutablePointer<TimerData>.allocate(capacity: 1)
+        arg.initialize(to: TimerData(op))
+        
+        let h:UnsafeMutablePointer<uv_timer_t> = UnsafeMutablePointer<uv_timer_t>.allocate(capacity: 1)
+        h.initialize(to: uv_timer_t())
+        uv_timer_init(loop, h)
+        h.pointee.data = UnsafeMutableRawPointer(arg)
+        h.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_unref($0)
+        }
+        
+        uv_timer_start(h, Ziti.onTimer, timeout, repeatTime)
+    }
+    
+    @objc public func endTimer(_ h:OpaquePointer) {
+        let handle = UnsafeMutablePointer<uv_timer_t>(h)
+        
+        uv_timer_stop(handle)
+        handle.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+            uv_close($0, Ziti.onTimerClose)
+        }
+    }
+    
     /// Register a closure to be called when events are received
     ///
     /// These callbacks should be registerd before `run(_:)` is executed or the intiali events will be missed
@@ -739,6 +768,26 @@ import CZitiPrivate
             }
         }
         mySelf.mfaRecoveryCodesCallback?(mySelf, status, codes)
+    }
+    
+    static private let onTimer:uv_timer_cb = { h in
+        guard let h = h,  let arg = UnsafeMutablePointer<TimerData>(OpaquePointer(h.pointee.data)) else {
+            log.wtf("Invalid context")
+            return
+        }
+        arg.pointee.op(OpaquePointer(h))
+    }
+    
+    static private let onTimerClose:uv_close_cb = { h in
+        guard let handle = h else {
+            log.wtf("Invalid handle")
+            return
+        }
+        let arg = UnsafeMutablePointer<TimerData>(OpaquePointer(handle.pointee.data))
+        arg?.deinitialize(count: 1)
+        arg?.deallocate()
+        handle.deinitialize(count: 1)
+        handle.deallocate()
     }
     
     static private let onDumpPrinter:ziti_printer_cb_wrapper = { ctx, msg in
