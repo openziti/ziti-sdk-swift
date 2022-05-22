@@ -17,7 +17,7 @@ import Foundation
 import Dispatch
 import CZitiPrivate
 
-public protocol ZitiTunnelProvider {
+public protocol ZitiTunnelProvider : AnyObject {
     func addRoute(_ dest:String) -> Int32
     func deleteRoute(_ dest:String) -> Int32
     func excludeRoute(_ dest:String, _ loop:OpaquePointer?) -> Int32
@@ -32,7 +32,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     private let log = ZitiTunnel.log
     
     var loopPtr = Ziti.ZitiRunloop()
-    var tunnelProvider:ZitiTunnelProvider?
+    weak var tunnelProvider:ZitiTunnelProvider?
     let netifDriver:NetifDriver
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
     var tnlr_ctx:tunneler_context?
@@ -71,7 +71,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         init(_ addr:String, mask:String) { self.addr = addr; self.mask = mask }
     }
     
-    public init(_ tunnelProvider:ZitiTunnelProvider,
+    public init(_ tunnelProvider:ZitiTunnelProvider?,
                 _ ipAddress:String, _ subnetMask:String,
                 _ ipDNS:String, _ ipUpstreamDNS:String?) {
 

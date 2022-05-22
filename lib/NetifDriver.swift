@@ -35,7 +35,7 @@ class NetifDriver : NSObject, ZitiUnretained {
     private static let log = ZitiLog(NetifDriver.self)
     private let log = NetifDriver.log
     
-    var tunnelProvider:ZitiTunnelProvider?
+    weak var tunnelProvider:ZitiTunnelProvider?
     
     var driver:UnsafeMutablePointer<netif_driver_t>!
     var packetCallback:packet_cb?
@@ -45,7 +45,7 @@ class NetifDriver : NSObject, ZitiUnretained {
     var queueLock = NSLock()
     var asyncHandle:UnsafeMutablePointer<uv_async_t>?
     
-    init(tunnelProvider:ZitiTunnelProvider) {
+    init(tunnelProvider:ZitiTunnelProvider?) {
         self.tunnelProvider = tunnelProvider
         driver = UnsafeMutablePointer<netif_driver_t>.allocate(capacity: 1)
         driver.initialize(to: netif_driver_t())
