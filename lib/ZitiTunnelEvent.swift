@@ -31,7 +31,7 @@ import CZitiPrivate
     
     public override var debugDescription: String {
         return "ZitiTunnelEvent: \(String(describing: self))\n" +
-            "   identity: \(ziti?.id.id ?? ""):\"\(ziti?.id.id ?? "")\""
+        "   identity: \(ziti?.id.name ?? ""):\"\(ziti?.id.id ?? "")\""
     }
 }
 
