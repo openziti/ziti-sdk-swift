@@ -3,3 +3,6 @@ DerivedData/
 dist/
 include/
 build/
+docs/
+dev-build_all.sh
+workspace-settings-overrides.xcconfig

@@ -194,6 +194,13 @@ This repository includes a few examples of using the library:
 
 # Building
 
+## Update `xcconfig` Settings
+Create a file called `Configs/workspace-settings-overrides.xcconfig` and populate with appropriate values. 
+```
+DEVELOPMENT_TEAM = XXXXXXXXXX
+ORGANIZATION_PREFIX = ...
+```
+
 ## From Script
 
 This project conains the [`buid_all.sh`](build_all.sh) script that will build the project from the command-line for `macosx`, `iphoneos`, and `iphonesimulator` platforms.
