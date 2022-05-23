@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ import CZitiPrivate
     /// important to verify the status code in this callback. If successful the status will be set to `ZITI_OK`
     ///
     /// - Parameters:
-    ///     - conn: refernce to `ZitiConnection`
+    ///     - conn: reference to `ZitiConnection`
     ///     - status: `ZITI_OK` on success, else Ziti error code
     public typealias ConnCallback = (_ conn:ZitiConnection, _ status:Int32) -> Void
     

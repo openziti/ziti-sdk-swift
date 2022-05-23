@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,16 +17,29 @@ import Foundation
 import Dispatch
 import CZitiPrivate
 
+/// Protocol for delegate of ZitiTunnel that handles routes, writing packets, and tunnel events
 public protocol ZitiTunnelProvider : AnyObject {
+    
+    /// Indicates the specified route should be intercepted
     func addRoute(_ dest:String) -> Int32
+    
+    /// Indicates the specified route should no longer be intercepted
     func deleteRoute(_ dest:String) -> Int32
+    
+    /// Indicates router to never intercept, ragarless of service configation (e.g., addresses of Ziti controllers and routers)
     func excludeRoute(_ dest:String, _ loop:OpaquePointer?) -> Int32
+    
+    /// Indicates a packet should be written to the tunnel interface
     func writePacket(_ data:Data)
     
+    /// Callback invoked for each Ziti instance once its initialization is complete
     func initCallback(_ ziti:Ziti, _ error:ZitiError?)
+    
+    /// Callback invoked when tunnel events are received
     func tunnelEventCallback(_ event:ZitiTunnelEvent)
 }
 
+/// Class providing a Swift wrapper for Ziti Tunnel SDK C
 public class ZitiTunnel : NSObject, ZitiUnretained {
     private static let log = ZitiLog(ZitiTunnel.self)
     private let log = ZitiTunnel.log
@@ -41,9 +54,14 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     static let KEY_ZITI_INSTANCE = "ZitiTunnel.zitiInstance."
     static let KEY_GOT_SERVICES = "ZitiTunnel.gotServices."
+    
+    /// Starting the tunnel will delay up to `SERVICE_WAIT_TIMEOUT` seconds waitig for services to be retrieved before calling the `IdentitiesLoadedCallback`
+    /// This is done to allow the `ZitiTunnelProvider` to configure any intercepted routes on the interface before it is started (important when extending an
+    ///  `NEPacketTunnelProvider`)
     public static var SERVICE_WAIT_TIMEOUT = 20.0
     static let ZITI_SHUTDOWN_TIMEOUT = 5.0
     
+    /// Type defintion of callback invoked when all identities have loaded (or timed-out)
     public typealias IdentitiesLoadedCallback = (_ error:ZitiError?) -> Void
     
     class RunArgs : NSObject {
@@ -65,12 +83,24 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     // event_cb has no user data, so we'll lookup ZitiTunnel instnance by identifier
     private static var zitiDict:[String:Ziti] = [:]
     
+    /// Class encapsulating an IPv4 route
     public class Route : NSObject {
+        /// base address
         public var addr:String
+        
+        /// subnet mask
         public var mask:String
+        
         init(_ addr:String, mask:String) { self.addr = addr; self.mask = mask }
     }
     
+    /// Initialize a `ZitiTunnel` instance
+    ///  - Parameters:
+    ///     - tunnelProvider: Delegate for adding/removing routes, writing packets, and handling events
+    ///     - ipAddress: Address of the tunnel interface
+    ///     - subnetMask: Mask of the `ipAddress` for routes to the tunnel interface
+    ///     - ipDNS: Address for DNS queries
+    ///     - upstreamDNS: Address for handlig DNS queries that aren't meant to be intercepted.  If `nil`, such requests are REFUSED
     public init(_ tunnelProvider:ZitiTunnelProvider?,
                 _ ipAddress:String, _ subnetMask:String,
                 _ ipDNS:String, _ ipUpstreamDNS:String?) {
@@ -195,11 +225,19 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         opsZiti?.perform { args.loadedCb(nil) }
     }
     
+    /// Connect to Ziti and begin processing for the specified identites
+    /// - Parameters:
+    ///     - zids: List of Ziti identities
+    ///     - postureChecks: Handler for posture checks
+    ///     - loadedCb: Callback invoked when identites are loaded (services have been received or timed-out)
     public func startZiti(_ zids:[ZitiIdentity], _ postureChecks:ZitiPostureChecks?, _ loadedCb: @escaping IdentitiesLoadedCallback) {
         let args = RunArgs(zids, postureChecks, loadedCb)
         Thread(target: self, selector: #selector(self.loadAndRunZiti), object: args).start()
     }
     
+    /// Shutdown Ziti
+    /// - Parameters:
+    ///     - completionHandler: Callback invoked when shutodwn compete
     public func shutdownZiti(_ completionHandler: @escaping ()->Void) {
         let opsZiti = ZitiTunnel.zitiDict.first?.1
         
@@ -339,6 +377,9 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         return (mask, bits)
     }
     
+    /// Queue a packet received from the tunnel interface for processing (e.g., for intercepted services or DNS requests)
+    /// - Parameters:
+    ///     - data: IP packet received from the tunnel interface
     public func queuePacket(_ data:Data) {
         netifDriver.queuePacket(data)
     }

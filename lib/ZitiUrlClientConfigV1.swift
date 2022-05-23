@@ -1,5 +1,5 @@
 /*
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,13 +15,23 @@ limitations under the License.
 */
 import Foundation
 
+/// Class representation of ziti-url-client.v1 service configuration
 public class ZitiUrlClientConfigV1 : Codable, ZitiConfig {
     static var configType = "ziti-url-client.v1"
     
+    /// Scheme name (e.g., http, https)
     public let scheme:String
+    
+    /// hostname
     public let hostname:String
+    
+    /// (optional) port number, which will be inferred from `scheme` if not set
     public var port:Int?
+    
+    /// HTTP header to inject into the response
     public var headers: [String: String]?
     
+    
+    /// Convenience function to resolve `port`
     public func getPort() -> Int { return port ?? (scheme == "https" ? 443 : 80) }
 }

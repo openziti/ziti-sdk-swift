@@ -1,5 +1,5 @@
 /*
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,13 +16,24 @@ limitations under the License.
 import Foundation
 import CZitiPrivate
 
+
+/// Class encapsulating Ziti SDK C's posture query
 @objc public class ZitiPostureQuery : NSObject, Codable {
     private static let log = ZitiLog(ZitiPostureQuery.self)
     
+    /// Indicates whether or not this posture check is currently passing
     public var isPassing:Bool?
+    
+    /// Indicates the type of posture query
     public var queryType:String?
+    
+    /// id of this posture query
     public var id:String?
+    
+    /// Timeout in seconds (if specified, -1 if not applicable)
     public var timeout:Int32?
+    
+    /// Timeout remaining (if applicable, otherwise -1)
     public var timeoutRemaining:Int32?
          
     init(_ cPQ:UnsafeMutablePointer<ziti_posture_query>) {

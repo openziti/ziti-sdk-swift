@@ -1,5 +1,5 @@
 /*
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,8 +16,11 @@ limitations under the License.
 import Foundation
 import CZitiPrivate
 
+/// Class to encapsulate a Ziti Tunneler SDK event
 @objc public class ZitiTunnelEvent : NSObject {
     let log = ZitiLog(ZitiTunnelEvent.self)
+    
+    /// Weak reference to Ziti instnace associated with this event
     public weak var ziti:Ziti?
     
     init(_ ziti:Ziti) {
@@ -29,17 +32,30 @@ import CZitiPrivate
         return ""
     }
     
+    /// Provide a debug description of the event
+    /// - returns: String containing the debug description
     public override var debugDescription: String {
         return "ZitiTunnelEvent: \(String(describing: self))\n" +
         "   identity: \(ziti?.id.name ?? ""):\"\(ziti?.id.id ?? "")\""
     }
 }
 
+/// Class encapsulating Ziti Tunnel SDK C Context Event
 @objc public class ZitiTunnelContextEvent : ZitiTunnelEvent {
+    
+    /// Controller status
     public var status:String = ""
+    
+    /// Controller name
     public var name:String = ""
+    
+    /// Controller version
     public var version:String = ""
+    
+    /// Controller address
     public var controller:String = ""
+    
+    /// Controller event code
     public var code:Int32
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<ziti_ctx_event>) {
@@ -51,6 +67,8 @@ import CZitiPrivate
         self.controller = toStr(evt.pointee.controller)
     }
     
+    /// Debug description of event
+    /// - returns: String containing the debug description
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
             "   status: \(status)\n" +
@@ -61,13 +79,28 @@ import CZitiPrivate
     }
 }
 
+/// Class encapsulating Ziti Tunnel SDK C MFA Event
 @objc public class ZitiTunnelMfaEvent : ZitiTunnelEvent {
+    
+    /// Enumeration of MFA Status
     public enum MfaStatus  {
+        
+        /// MFA Authentication Status
         case AuthStatus
+        
+        /// MFA Authentication Challenge
         case AuthChallenge
+        
+        /// MFA Enrollment Verification
         case EnrollmentVerification
+        
+        /// MFA Removal
         case EnrollmentRemove
+        
+        /// MFA Enrollment Challenge
         case EnrollmentChallenge
+        
+        /// Unregognized status
         case Uknown
         
         init(_ mfaStatus:mfa_status) {
@@ -92,12 +125,26 @@ import CZitiPrivate
             }
         }
     }
+    
+    /// MFA provider
     public var provider:String = ""
+    
+    /// MFA status
     public var status:String = ""
+    
+    /// MFA operation
     public var operation:String = ""
+    
+    /// MFA operation type
     public var operationType:MfaStatus
+    
+    /// MFA provisioning URL
     public var provisioningUrl:String = ""
+    
+    /// MFA recovery codes
     public var recovery_codes:[String]
+    
+    /// MFA authentication code
     public var code:Int32
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<mfa_event>) {
@@ -119,6 +166,8 @@ import CZitiPrivate
         self.provisioningUrl = toStr(evt.pointee.provisioning_url)
     }
     
+    /// Debug description
+    /// - returns: String containing debug description of this event
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
             "   provider: \(provider)\n" +
@@ -130,9 +179,16 @@ import CZitiPrivate
     }
 }
 
+/// Class encapsulating Ziti Tunnel SDK C Service Event
 @objc public class ZitiTunnelServiceEvent : ZitiTunnelEvent {
+    
+    /// Event status
     public var status:String = ""
+    
+    /// Listing of services removed
     public var removed:[ZitiService] = []
+    
+    /// Listing of services added
     public var added:[ZitiService] = []
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<service_event>) {
@@ -142,6 +198,8 @@ import CZitiPrivate
         self.status = toStr(evt.pointee.status)
     }
     
+    /// Debug description
+    /// - returns: String containing debug description of this event
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
             "   status: \(status)\n" +
@@ -150,7 +208,10 @@ import CZitiPrivate
     }
 }
 
+/// Class encapsulating Ziti Tunnel SDK C API Event
 @objc public class ZitiTunnelApiEvent : ZitiTunnelEvent {
+    
+    /// New controller address
     public var newControllerAddress:String = ""
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<api_event>) {
@@ -158,6 +219,8 @@ import CZitiPrivate
         self.newControllerAddress = toStr(evt.pointee.new_ctrl_address)
     }
     
+    /// Debug description
+    /// - returns: String containing debug description of this event
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
             "   newControllerAddress: \(newControllerAddress)"

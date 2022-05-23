@@ -1,5 +1,5 @@
 /*
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -17,11 +17,17 @@ limitations under the License.
 import Foundation
 import CZitiPrivate
 
+/// Class encapsulating Ziti SDK C's response to an MFA enrollment request
 @objc public class ZitiMfaEnrollment : NSObject, Codable {
     private static let log = ZitiLog(ZitiMfaEnrollment.self)
     
+    /// Indicates whether or not this enrollment has been verified
     public var isVerified:Bool?
+    
+    /// MFA provisioning URL
     public var provisioningUrl:String?
+    
+    /// MFA recovery codes
     public var recoveryCodes:[String]?
     
     init(_ cMfaEnrollment:UnsafeMutablePointer<ziti_mfa_enrollment>) {

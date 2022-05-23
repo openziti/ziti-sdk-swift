@@ -1,5 +1,5 @@
 /*
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ limitations under the License.
 import Foundation
 import CZitiPrivate
 
+/// Class encapsulating a Ziti SDK C service
 @objc public class ZitiService : NSObject, Codable {
     private let log = ZitiLog(ZitiService.self)
     enum CodingKeys: String, CodingKey {
@@ -28,17 +29,38 @@ import CZitiPrivate
     }
     
     var cService:UnsafeMutablePointer<ziti_service>?
+    
+    /// Opaque reference to Ziti SDK C service
     public var cServicePtr:OpaquePointer? { return OpaquePointer(cService) }
         
+    /// Name of the service
     public var name:String?
+    
+    /// ID of the service
     public var id:String?
+    
+    /// Indicates wheter or not this service is end-to-end encrypted
     public var encrypted:Bool?
+    
+    /// Service permisions (e.g., DIAL and/or BIND)
     public var permFlags:Int32?
+    
+    /// Listing of posture query sets
     public var postureQuerySets:[ZitiPostureQuerySet]?
+    
+    /// Tunnel client configuration (if provided)
     public var tunnelClientConfigV1:ZitiTunnelClientConfigV1?
+    
+    /// Tunnel server configuation (if provided)
     public var tunnelServerConfigV1:ZitiTunnelServerConfigV1?
+    
+    /// URL client configuration (if provided)
     public var urlClientConfigV1:ZitiUrlClientConfigV1?
+    
+    /// Intercept configuration (f provided)
     public var interceptConfigV1:ZitiInterceptConfigV1?
+    
+    /// Host configuation (if provided)
     public var hostConfigV1:ZitiHostConfigV1?
     
     init(_ cService:UnsafeMutablePointer<ziti_service>) {

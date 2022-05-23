@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -16,33 +16,67 @@ limitations under the License.
 import Foundation
 import CZitiPrivate
 
+/// Class encapsulating Swft representations of Ziti SDK C events
 @objc public class ZitiEvent : NSObject {
     private let log = ZitiLog(ZitiEvent.self)
+    
+    /// weak reference to Ziti instance generating this event
     public weak var ziti:Ziti?
     
+    /// Enumeration of possible event types
     @objc public enum EventType : UInt32 {
+        
+        /// Unrecognized event type
         case Invalid = 0x0
+        
+        /// Indicates a `ContextEvent`
         case Context = 0x01  // ZitiContextEvent.rawValue
+        
+        /// Indicates a `RouterEvent`
         case Router  = 0x02  // ZitiRouterEvent.rawValue
+        
+        /// Indicates a `ServiceEvent`
         case Service = 0x04  // ZitiServiceEvent.rawValue
+        
+        /// Indicates an `MfaAuthEvent`
         case MfaAuth = 0x08  // ZitiMfaAuthEvent.rawValue
+        
+        /// Indicates an `ApiEvent`
         case ApiEvent = 0x10 // ZitiApiEvent.rawValue
         
+        /// Generates a string describing the event
+        /// - returns: String describing the event
         public var debug: String {
             switch self {
+                
+            /// Indicates `ContextEvent`
             case .Context:  return ".Context"
+                
+            /// Indicates `RouterEvent`
             case .Router:   return ".Router"
+                
+            /// Indicates `ServiceEvent`
             case .Service:  return ".Service"
+                
+            /// Indicates `MfaAuthEvent`
             case .MfaAuth:  return ".MfaAuth"
+                
+            /// Indicates `ApiEvent`
             case .ApiEvent: return ".ApiEvent"
+                
+            /// Indicates unrecognized event
             case .Invalid:  return ".Invalid"
             @unknown default: return "unknown \(self.rawValue)"
             }
         }
     }
     
+    /// Encapsulation of Ziti SDK C context event
     @objc public class ContextEvent : NSObject {
+        /// Event status
         @objc public let status:Int32
+        
+        /// Error string (if present, else nil)
         @objc public let err:String?
         init(_ cEvent:ziti_context_event) {
             status = cEvent.ctrl_status
@@ -54,8 +88,24 @@ import CZitiPrivate
         }
     }
     
+    /// Enumeration of possible router status settings
     @objc public enum RouterStatus : UInt32 {
-        case Added, Connected, Disconnected, Removed, Unavailable
+        /// Router added
+        case Added,
+             
+             /// Router connected
+             Connected,
+             
+             /// Router disconnected
+             Disconnected,
+             
+             /// Router removed
+             Removed,
+             
+             /// Router unavailable
+             Unavailable
+        
+        /// Returns string representation of router status
         public var debug: String {
             switch self {
             case .Added:        return ".Added"
@@ -67,9 +117,17 @@ import CZitiPrivate
             }
         }
     }
+    
+    /// Encapsulation of Ziti SDK C's Router Event
     @objc public class RouterEvent : NSObject {
+        
+        /// Status triggering the event
         @objc public let status:RouterStatus
+        
+        /// Name of router associated with this event
         @objc public let name:String
+        
+        /// Version of router associated with this event
         @objc public let version:String
         init(_ cEvent:ziti_router_event) {
             status = RouterStatus(rawValue: cEvent.status.rawValue) ?? RouterStatus.Unavailable
@@ -78,9 +136,16 @@ import CZitiPrivate
         }
     }
     
+    /// Encapsulation of Ziti SDK C's Service Event
     @objc public class ServiceEvent : NSObject {
+        
+        /// List of services removed
         @objc public var removed:[ZitiService] = []
+        
+        /// List of services changed
         @objc public var changed:[ZitiService] = []
+        
+        /// List of services added
         @objc public var added:[ZitiService] = []
         
         init(_ cEvent:ziti_service_event) {
@@ -100,7 +165,10 @@ import CZitiPrivate
         }
     }
     
+    /// Encapsulation of Ziti SDK C's MFA Auth Event
     @objc public class MfaAuthEvent : NSObject {
+        
+        /// The authentication query
         @objc public var mfaAuthQuery:ZitiMfaAuthQuery?
         init(_ cEvent:ziti_mfa_auth_event) {
             if cEvent.auth_query_mfa != nil {
@@ -109,7 +177,10 @@ import CZitiPrivate
         }
     }
     
+    /// Encapsulation of Ziti SDK C's API Event
     @objc public class ApiEvent : NSObject {
+        
+        /// New controller address
         @objc public let newControllerAddress:String
         init( _ cEvent:ziti_api_event) {
             var str = ""
@@ -123,11 +194,22 @@ import CZitiPrivate
         }
     }
     
+    /// The type of event
     @objc public let type:EventType
+    
+    /// Populated based on event `type`
     @objc public var contextEvent:ContextEvent?
+    
+    /// Populated based on event `type`
     @objc public var routerEvent:RouterEvent?
+    
+    /// Populated based on event `type`
     @objc public var serviceEvent:ServiceEvent?
+    
+    /// Populated based on event `type`
     @objc public var mfaAuthEvent:MfaAuthEvent?
+    
+    /// Populated based on event `type`
     @objc public var apiEvent:ApiEvent?
     
     init(_ ziti:Ziti, _ cEvent:UnsafePointer<ziti_event_t>) {
@@ -148,6 +230,8 @@ import CZitiPrivate
         }
     }
     
+    /// Plain text description of event
+    /// - returns:  String containing debug description
     public override var debugDescription: String {
         var str = "\(String(describing: self)):\n"
         str += "   type: \(type.debug)\n"

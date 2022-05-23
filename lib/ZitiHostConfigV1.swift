@@ -1,5 +1,5 @@
 /*
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@ limitations under the License.
 */
 import Foundation
 
+/// Class representation of host.v1 service configuration
 public class ZitiHostConfigV1 : Codable, ZitiConfig {
     static var configType = "host.v1"
     
@@ -32,30 +33,63 @@ public class ZitiHostConfigV1 : Codable, ZitiConfig {
         case listenOptions
     }
     
+    /// Class representing port range
     public class PortRange : Codable {
+        
+        /// lowest port number in range
         public let low:Int
+        
+        /// highest port number in range
         public let high:Int
     }
     
+    
+    /// Class representing listening options
     public class ListenOptions : Codable {
+        
+        /// connection timeout in seconds
         public var connectTimeoutSeconds:Int?
+        
+        /// maximum number of connections
         public var maxConnections:Int?
+        
+        /// hosting identity
         public var identity:String?
+        
+        /// indicates whether or not to bind using endge identity
         public var bindUsingEdgeIdentity:Bool?
     }
     
+    /// protocol
     public var proto:String?
+    
+    /// indicates whether or not to forward protocol
     public var forwardProtocol:Bool?
+    
+    /// listing of allowed protocols
     public var allowedProtocols:[String]?
     
+    /// address
     public var address:String?
+    
+    /// indicates whether or not to forward address
     public var forwardAddress:Bool?
+    
+    /// listing of allowed addresses
     public var allowedAddresses:[String]?
+    
+    /// listing of allowed source addresses
     public var allowedSourceAddresses:[String]?
     
+    /// port number
     public var port:Int?
+    
+    /// Indicates whether or not to forward port number
     public var forwardPort:Bool?
+    
+    /// listing of allowed port ranges
     public var allowedPortRanges:[PortRange]?
     
+    /// Listen options
     public var listenOptions:ListenOptions?
 }

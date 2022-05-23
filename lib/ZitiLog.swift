@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -23,7 +23,33 @@ public class ZitiLog {
     
     /// Maps to Ziti CSDK log levels, which cannot be imported directly
     public enum LogLevel : Int32 {
-        case WTF = -2, DEFAULT = -1, NONE, ERROR, WARN, INFO, DEBUG, VERBOSE, TRACE
+        /// "What a terrible failure"
+        case WTF = -2,
+        
+        /// Default log level
+        DEFAULT = -1,
+        
+        /// No logging
+        NONE,
+        
+        /// Log Errors and above
+        ERROR,
+        
+        /// Log Warnings and above
+        WARN,
+        
+        /// Log info and above
+        INFO,
+        
+        /// Log Debug and above
+        DEBUG,
+        
+        /// Log Verbose and above
+        VERBOSE,
+        
+        /// Log Trace and above
+        TRACE
+        
         func toStr() -> String {
             let tStr:String
             switch self {
