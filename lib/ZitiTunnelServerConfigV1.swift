@@ -1,5 +1,5 @@
 /*
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@ limitations under the License.
 */
 import Foundation
 
+/// Class representation of ziti-tunneler-server.v1 service configuration
 public class ZitiTunnelServerConfigV1 : Codable, ZitiConfig {
     static var configType = "ziti-tunneler-server.v1"
     enum CodingKeys: String, CodingKey {
@@ -23,7 +24,12 @@ public class ZitiTunnelServerConfigV1 : Codable, ZitiConfig {
         case proto = "protocol"
     }
     
+    /// hostname to connect
     public let hostname:String
+    
+    /// port to connect
     public let port:Int
+    
+    /// protocol to connect
     public let proto:String // `protocol` is a reserved word...
 }

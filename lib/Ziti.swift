@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -37,6 +37,8 @@ import CZitiPrivate
     
     var loop:UnsafeMutablePointer<uv_loop_t>!
     var privateLoop:Bool
+    
+    /// Opaque reference to Ziti SDK C context
     public var ztx:OpaquePointer?
     
     /// Access to the `ZitiTunnel` managing this instance (if applicable)
@@ -45,6 +47,7 @@ import CZitiPrivate
     // temporary until user data available for posture checks
     static var postureContexts:[ziti_context:Ziti?] = [:]
     
+    /// Arbitrary data user can attach to a Ziti instance.  This dictionary is not used internally and is completely under the control of the user.
     @objc public var userData:[String:Any] = [:]
     
     // This memory is held onto an used by C-SDK.  If not using a private loop we need to make sure these three things
@@ -105,6 +108,7 @@ import CZitiPrivate
         return String(cString: ziti_errorstr(status))
     }
     
+    /// Identity associated with this instance of Ziti
     public var id:ZitiIdentity
     
     // MARK: - Initializers
@@ -228,6 +232,8 @@ import CZitiPrivate
     /// multiple identities
     @objc public class ZitiRunloop : NSObject {
         var loop:UnsafeMutablePointer<uv_loop_t>!
+        
+        /// Initialize an instance of ZitiRunLoop
         public override init() {
             loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
             loop.initialize(to: uv_loop_t())
@@ -620,11 +626,19 @@ import CZitiPrivate
         uv_async_send(opsAsyncHandle)
     }
     
+    /// User supplied callback for timer
     public typealias TimerCallback = (OpaquePointer) -> Void
     class TimerData : NSObject {
         var op:TimerCallback
         init(_ op: @escaping TimerCallback) { self.op = op }
     }
+    
+    /// Schedule a timer
+    ///
+    /// - Parameters:
+    ///       - timeout: Time in miliseconds to wait before for execution of the TimerCallback.  If timeout is zero, the callback fires on the next event loop iteration.
+    ///       - repeatTime: If repeatTime is non-zero, the callback fires first after timeout milliseconds and then repeatedly after repeatTime milliseconds.
+    ///       - op: User supplied callback to execute when timer fires
     @objc public func startTimer( _ timeout:UInt64, _ repeatTime:UInt64, _ op: @escaping TimerCallback) {
         let arg = UnsafeMutablePointer<TimerData>.allocate(capacity: 1)
         arg.initialize(to: TimerData(op))
@@ -640,6 +654,10 @@ import CZitiPrivate
         uv_timer_start(h, Ziti.onTimer, timeout, repeatTime)
     }
     
+    /// Remove and destroy a timer
+    /// - Parameters:
+    ///     - h: Opaque pointer to the timer handle available in TimerCallback
+    ///
     @objc public func endTimer(_ h:OpaquePointer) {
         let handle = UnsafeMutablePointer<uv_timer_t>(h)
         
@@ -663,17 +681,27 @@ import CZitiPrivate
     
     // MARK: - MFA
     
+    /// Type definition of MFA enrollment callback
     public typealias MfaEnrollCallback = (_ ziti:Ziti, _ status:Int32, _ mfaEnrollment:ZitiMfaEnrollment?) -> Void
     private var mfaEnrollCallback:MfaEnrollCallback?
+    
+    /// Enroll in MFA
+    /// - Parameters:
+    ///     - cb: Callback invoked on completion of enrollment attempt
     public func mfaEnroll(_ cb: @escaping MfaEnrollCallback) {
         mfaEnrollCallback = cb
         ziti_mfa_enroll(ztx, Ziti.onMfaEnroll, self.toVoidPtr())
     }
     
+    /// Type definition of callback method for MFA operations
     public typealias MfaCallback = (_ ziti:Ziti, _ status:Int32) -> Void
     private var mfaRemoveCallback:MfaCallback?
     private var mfaVerifyCallback:MfaCallback?
     
+    /// Remove MFA from this identity
+    /// - Parameters:
+    ///     - code: TOTP code for MFA
+    ///     - cb: Callback invoked on completion of the attempt
     public func mfaRemove(_ code:String, _ cb: @escaping MfaCallback) {
         mfaRemoveCallback = cb
         let cCode = code.cString(using: .utf8)
@@ -682,6 +710,10 @@ import CZitiPrivate
         freeString(cCodeCpy)
     }
     
+    /// Verify an MFA enrollment attempt
+    /// - Parameters:
+    ///     - code: TOTP code for MFA
+    ///     - cb: Callback invoked on completion of the attempt
     public func mfaVerify(_ code:String, _ cb: @escaping MfaCallback) {
         mfaVerifyCallback = cb
         let cCode = code.cString(using: .utf8)
@@ -690,9 +722,14 @@ import CZitiPrivate
         freeString(cCodeCpy)
     }
     
+    /// Type definition of callback method for attempted retrieval or MFA recovery codes
     public typealias MfaRecoveryCodesCallback = (_ ziti:Ziti, _ status:Int32, _ codes:[String]) -> Void
     private var mfaRecoveryCodesCallback:MfaRecoveryCodesCallback?
     
+    /// Retrieve MFA recovery codes
+    /// - Parameters:
+    ///     - code: TOTP code for MFA
+    ///     - cb: Callback invoked on completion of the attempt
     public func mfaGetRecoveryCodes(_ code:String, _ cb: @escaping MfaRecoveryCodesCallback) {
         mfaRecoveryCodesCallback = cb
         let cCode = code.cString(using: .utf8)
@@ -701,6 +738,10 @@ import CZitiPrivate
         freeString(cCodeCpy)
     }
     
+    /// Generate new MFA recovery codes
+    /// - Parameters:
+    ///     - code: TOTP code for MFA
+    ///     - cb: Callback invoked on completion of the attempt
     public func mfaNewRecoveryCodes(_ code:String, _ cb: @escaping MfaRecoveryCodesCallback) {
         mfaRecoveryCodesCallback = cb
         let cCode = code.cString(using: .utf8)
@@ -710,6 +751,10 @@ import CZitiPrivate
     }
     
     private var mfaAuthResponseStatusCallback:MfaCallback?
+    /// Authenticate via MFA
+    /// - Parameters:
+    ///     - code: TOTP code for MFA
+    ///     - cb: Callback invoked on completion of the attempt
     public func mfaAuth(_ code:String, _ cb: @escaping MfaCallback) {
         mfaAuthResponseStatusCallback = cb
         ziti_mfa_auth(ztx, code.cString(using: .utf8), Ziti.onMfaAuthResponseStatus, self.toVoidPtr())

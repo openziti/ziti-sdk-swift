@@ -1,5 +1,5 @@
 /*
-Copyright 2020 NetFoundry, Inc.
+Copyright NetFoundry Inc.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -167,6 +167,10 @@ import CZitiPrivate
         return getClaims()?.sub
     }
     
+    /**
+     * Retreive the claims in the JWT file
+     * - returns: The claims in the file or nil if enable to decode
+     */
     public func getClaims() -> ZitiClaims? {
         do {
             // Get the contents
