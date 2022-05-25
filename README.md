@@ -270,4 +270,4 @@ for tracking bugs and feature requests.
 - Join our [Developer Community](https://openziti.org)
 - Participate in discussion on [Discourse](https://openziti.discourse.group/)
 
-Copyright NetFoundry, Inc.
+Copyright NetFoundry Inc.
