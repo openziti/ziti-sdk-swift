@@ -169,7 +169,7 @@ For further information on Cocoapods, check [their official documentation](http:
 
 ## Via `CZiti.framework`
 
-* Obtain `CZiti.framework` following the build steps below or by downloading from [Artifactory](https://netfoundry.jfrog.io/artifactory/ziti-sdk-swift/)
+* Obtain `CZiti.framework` following the build steps below or by downloading from [GitHub Releases](https://github.com/openziti/ziti-sdk-swift/releases)
 * Drag the appropriate `CZiti.framework` into your project, selecting "Copy items if needed", "Create groups", and your target checked under "Add to targets:".
 * Ensure the framework is shown under **General - Frameworks, Libraries, and Embedded Content**. If not present, click the "+" button to add it manually.  The "Embedded" entry should be set to "Do Not Embed".
 * Ensure the framework is shown under **Build Phases - Link Binary with Libraries**.  The "Status" entry should be set to "Required"
@@ -231,7 +231,7 @@ Tthe resultant `CZiti.framework` is available in the approprate sub-directory of
 
 ## Build Manually
 
-The project depends on the __Ziti Tunnel C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-tunnel-sdk-c`.  This project expects builds to be built in `./deps/ziti-tunnel-sdk-c/build-macosx-x86_64` and `build-macosx-arm64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64` for the simulator). 
+The project depends on the __Ziti Tunnel C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-tunnel-sdk-c`.  This project expects builds to be built in `./deps/ziti-tunnel-sdk-c/build-macosx-x86_64` and `./deps/ziti-tunnel-sdk-c/build-macosx-arm64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64` for the simulator). 
 
 Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.
 
