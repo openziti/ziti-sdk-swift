@@ -296,7 +296,15 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         switch cEvent.pointee.event_type.rawValue {
         case TunnelEvents.ContextEvent.rawValue:
             var cCtxEvent = UnsafeRawPointer(cEvent).bindMemory(to: ziti_ctx_event.self, capacity: 1)
-            mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelContextEvent(ziti, cCtxEvent))
+            let zEvent = ZitiTunnelContextEvent(ziti, cCtxEvent)
+            mySelf.tunnelProvider?.tunnelEventCallback(zEvent)
+            
+            if zEvent.code == ZITI_CONTROLLER_UNAVAILABLE {
+                mySelf.zidsLoadedCond.lock()
+                mySelf.zidsToLoad -= 1
+                mySelf.zidsLoadedCond.signal()
+                mySelf.zidsLoadedCond.unlock()
+            }
         case TunnelEvents.ServiceEvent.rawValue:
             var cServiceEvent = UnsafeRawPointer(cEvent).bindMemory(to: service_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelServiceEvent(ziti, cServiceEvent))
