@@ -94,6 +94,9 @@ import CZitiPrivate
     /// Ziti constant indicating OK status from Ziti C SDK call
     public static let ZITI_OK = 0
     
+    /// Ziti controller is unavailable
+    public static let ZITI_CONTROLLER_UNAVAILABLE = -15
+    
     /// Ziti constant indication service is unavailable from Ziti C SDK call
     public static let ZITI_SERVICE_UNAVAILABLE = 17
     
