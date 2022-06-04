@@ -97,6 +97,9 @@ import CZitiPrivate
     /// Ziti controller is unavailable
     public static let ZITI_CONTROLLER_UNAVAILABLE = -15
     
+    /// Ziti context is disabled
+    public static let ZITI_DISABLED = -29
+    
     /// Ziti constant indication service is unavailable from Ziti C SDK call
     public static let ZITI_SERVICE_UNAVAILABLE = 17
     
