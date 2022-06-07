@@ -127,27 +127,33 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         ziti_dns_setup(tnlr_ctx, ipDNS.cString(using: .utf8), dnsCidr.cString(using: .utf8))
         
         if let ipUpstreamDNS = ipUpstreamDNS {
-            var upDNS = ipUpstreamDNS
-            var upPort:UInt16 = 53
-            if upDNS.contains(where: { $0 == ":" }) {
-                let parts = upDNS.split(separator: ":")
-                upDNS = String(parts[0])
-                upPort = UInt16(parts[1]) ?? upPort
-            }
-            log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
-            let r = ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
-            if r != 0 {
-                let cStrErr = uv_err_name(r)
-                var strErr = ""
-                if let cStrErr = cStrErr { strErr = String(cString:cStrErr) }
-                log.error("Error setting upstream DNS to \(upDNS):\(upPort), ret=\(r), uv_err=\(strErr)")
-            }
+            setUpstreamDns(ipUpstreamDNS)
         }
     }
     
     deinit {
         tunneler_opts.deinitialize(count: 1)
         tunneler_opts.deallocate()
+    }
+    
+    /// Set upstream DNS address
+    /// - Parameter ipUpstreamDNS: hostname (and optional port) for upstream DNS requests
+    public func setUpstreamDns(_ ipUpstreamDNS:String) {
+        var upDNS = ipUpstreamDNS
+        var upPort:UInt16 = 53
+        if upDNS.contains(where: { $0 == ":" }) {
+            let parts = upDNS.split(separator: ":")
+            upDNS = String(parts[0])
+            upPort = UInt16(parts[1]) ?? upPort
+        }
+        log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
+        let r = ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
+        if r != 0 {
+            let cStrErr = uv_err_name(r)
+            var strErr = ""
+            if let cStrErr = cStrErr { strErr = String(cString:cStrErr) }
+            log.error("Error setting upstream DNS to \(upDNS):\(upPort), ret=\(r), uv_err=\(strErr)")
+        }
     }
     
     func createZitiInstance(_ identifier:String, _ zitiOpts:UnsafeMutablePointer<ziti_options>) -> UnsafeMutablePointer<ziti_instance_s>? {
