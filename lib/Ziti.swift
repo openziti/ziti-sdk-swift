@@ -406,7 +406,7 @@ import CZitiPrivate
         
         // Get private key
         guard let privKey = zkc.getPrivateKey() else {
-            let errStr = "unable to retrive private key from keychain"
+            let errStr = "unable to retrieve private key from keychain"
             log.error(errStr)
             initCallback(ZitiError(errStr))
             return
