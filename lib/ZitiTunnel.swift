@@ -51,6 +51,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tnlr_ctx:tunneler_context?
     
     private let uvDG = DispatchGroup()
+    private let opsZiti:Ziti
+    private var loopKeepAliveHandle:UnsafeMutablePointer<uv_async_t>?
     
     static let KEY_ZITI_INSTANCE = "ZitiTunnel.zitiInstance."
     static let KEY_GOT_SERVICES = "ZitiTunnel.gotServices."
@@ -100,13 +102,12 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     ///     - ipAddress: Address of the tunnel interface
     ///     - subnetMask: Mask of the `ipAddress` for routes to the tunnel interface
     ///     - ipDNS: Address for DNS queries
-    ///     - upstreamDNS: Address for handlig DNS queries that aren't meant to be intercepted.  If `nil`, such requests are REFUSED
     public init(_ tunnelProvider:ZitiTunnelProvider?,
-                _ ipAddress:String, _ subnetMask:String,
-                _ ipDNS:String, _ ipUpstreamDNS:String?) {
+                _ ipAddress:String, _ subnetMask:String, _ ipDNS:String) {
 
         set_tunnel_logger()
 
+        opsZiti = Ziti(zid: ZitiIdentity(id: "--- ops Ziti ---", ztAPI: ""), loopPtr: loopPtr)
         self.tunnelProvider = tunnelProvider
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         super.init()
@@ -126,19 +127,22 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         log.debug("dnsCidr = \(dnsCidr)")
         ziti_dns_setup(tnlr_ctx, ipDNS.cString(using: .utf8), dnsCidr.cString(using: .utf8))
         
-        if let ipUpstreamDNS = ipUpstreamDNS {
-            setUpstreamDns(ipUpstreamDNS)
-        }
+        loopKeepAliveHandle = UnsafeMutablePointer<uv_async_t>.allocate(capacity: 1)
+        loopKeepAliveHandle?.initialize(to: uv_async_t())
+        uv_async_init(loopPtr.loop, loopKeepAliveHandle, ZitiTunnel.onLoopKeepAlive)
     }
     
     deinit {
         tunneler_opts.deinitialize(count: 1)
         tunneler_opts.deallocate()
+        loopKeepAliveHandle?.deinitialize(count: 1)
+        loopKeepAliveHandle?.deallocate()
     }
     
     /// Set upstream DNS address
     /// - Parameter ipUpstreamDNS: hostname (and optional port) for upstream DNS requests
-    public func setUpstreamDns(_ ipUpstreamDNS:String) {
+    /// - Returns: Returns 0 on success
+    public func setUpstreamDns(_ ipUpstreamDNS:String) -> Int32 {
         var upDNS = ipUpstreamDNS
         var upPort:UInt16 = 53
         if upDNS.contains(where: { $0 == ":" }) {
@@ -147,17 +151,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             upPort = UInt16(parts[1]) ?? upPort
         }
         log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
-        let r = ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
-        if r != 0 {
-            let cStrErr = uv_err_name(r)
-            var strErr = ""
-            if let cStrErr = cStrErr { strErr = String(cString:cStrErr) }
-            log.error("Error setting upstream DNS to \(upDNS):\(upPort), ret=\(r), uv_err=\(strErr)")
-        }
+        return ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
     }
     
     func createZitiInstance(_ identifier:String, _ zitiOpts:UnsafeMutablePointer<ziti_options>) -> UnsafeMutablePointer<ziti_instance_s>? {
-        
         var zi:UnsafeMutablePointer<ziti_instance_s>?
         zi = new_ziti_instance_ex(identifier.cString(using: .utf8))
         
@@ -182,13 +179,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     }
     
     @objc func loadAndRunZiti(_ args:RunArgs) {
-        var opsZiti:Ziti?
-        
         // store self pointer for each identity to lookup ourself in onEventCallback
         args.zids.forEach { zid in
             let z = Ziti(zid: zid, zitiTunnel: self)
             ZitiTunnel.zitiDict[zid.id] = z
-            if opsZiti == nil { opsZiti = z }
         }
         
         // Initialize the tunneler SDK CMDs
@@ -228,7 +222,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         zidsLoadedCond.unlock()
         
         // trigger caller that zids have loaded. Make it run on the uv_loop via a any identity...
-        opsZiti?.perform { args.loadedCb(nil) }
+        opsZiti.perform { args.loadedCb(nil) }
     }
     
     /// Connect to Ziti and begin processing for the specified identites
@@ -245,15 +239,17 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     /// - Parameters:
     ///     - completionHandler: Callback invoked when shutodwn compete
     public func shutdownZiti(_ completionHandler: @escaping ()->Void) {
-        let opsZiti = ZitiTunnel.zitiDict.first?.1
-        
-        opsZiti?.perform {
+        opsZiti.perform {
+            // remove reference to loopKeepAliveHandle
+            self.loopKeepAliveHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
+                uv_unref($0)
+            }
+            
             for (identifier, ziti) in ZitiTunnel.zitiDict {
                 guard let ztx = ziti.ztx else {
                     self.log.error("Invalid ztx for identifier \(identifier)")
                     continue
                 }
-                
                 self.log.info("Shutting down \(identifier)")
                 ziti_shutdown(ztx)
             }
@@ -389,6 +385,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         log.debug("Converted subnetMask \(subnetMask) to \(bits) bits")
         
         return (mask, bits)
+    }
+    
+    static private let onLoopKeepAlive:uv_async_cb = { _ in
+        // noop
     }
     
     /// Queue a packet received from the tunnel interface for processing (e.g., for intercepted services or DNS requests)
