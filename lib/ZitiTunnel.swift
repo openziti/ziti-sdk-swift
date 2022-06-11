@@ -154,6 +154,12 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         return ziti_dns_set_upstream(loopPtr.loop, upDNS.cString(using: .utf8), upPort)
     }
     
+    /// Perform on operation on the uv_loop managed by this class
+    /// - Parameter op: operation to perform
+    public func perform(_ op: @escaping Ziti.PerformCallback) {
+        opsZiti.perform(op)
+    }
+    
     func createZitiInstance(_ identifier:String, _ zitiOpts:UnsafeMutablePointer<ziti_options>) -> UnsafeMutablePointer<ziti_instance_s>? {
         var zi:UnsafeMutablePointer<ziti_instance_s>?
         zi = new_ziti_instance_ex(identifier.cString(using: .utf8))
@@ -222,7 +228,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         zidsLoadedCond.unlock()
         
         // trigger caller that zids have loaded. Make it run on the uv_loop via a any identity...
-        opsZiti.perform { args.loadedCb(nil) }
+        self.perform { args.loadedCb(nil) }
     }
     
     /// Connect to Ziti and begin processing for the specified identites
@@ -239,7 +245,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     /// - Parameters:
     ///     - completionHandler: Callback invoked when shutodwn compete
     public func shutdownZiti(_ completionHandler: @escaping ()->Void) {
-        opsZiti.perform {
+        self.perform {
             // remove reference to loopKeepAliveHandle
             self.loopKeepAliveHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
                 uv_unref($0)
