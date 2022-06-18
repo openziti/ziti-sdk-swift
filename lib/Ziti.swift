@@ -610,6 +610,30 @@ import CZitiPrivate
         }
     }
     
+    /// Check if this instance of Ziti is enabled.  This method should only be called from the same thread as the run loop (e.g., as part of a `perform(_:)` operation), and
+    /// not before `InitCallback` is triggered.
+    ///
+    /// - Returns: Bool indicating if this Ziti instance is enabled, or false if called before `InitCallback` has been triggered
+    public func isEnabled() -> Bool {
+        guard let ztx = self.ztx else {
+            log.error("Unable to determins isEnabled before valid context established")
+            return false
+        }
+        return ziti_is_enabled(ztx)
+    }
+    
+    /// Enable or disable this Ziti instance. This method should only be called from the same thread as the run loop (e.g., as part of a `perform(_:)` operation), and
+    /// not before `InitCallback` is triggered.
+    ///
+    /// - Parameter enabled: Boolean indicating to enable or disable this Zit iinstance
+    public func setEnabled(_ enabled:Bool) {
+        guard let ztx = self.ztx else {
+            log.error("Unable to set enabled status to \(enabled) before valid context established")
+            return
+        }
+        ziti_set_enabled(ztx, enabled)
+    }
+    
     /// Output debugging information to supplied callback. The output from this command may be useful when submitting issues.
     ///
     /// This method must be called in an interation of the loop
