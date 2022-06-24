@@ -368,7 +368,7 @@ import CZitiPrivate
     ///     - `run(_:_)`
     ///     - `runAsync(_:)`
     @objc public func run(_ initCallback: @escaping InitCallback) {
-        run(nil,  initCallback)
+        run(nil, initCallback)
     }
     
     /// Execute a permanant loop processing data from all attached sources (including Ziti)
@@ -381,11 +381,12 @@ import CZitiPrivate
     ///
     /// - Parameters:
     ///     - postureChecks: provide (optional) support for posture checks
+    ///     - enabled: indicate whether to start in enabled or disabled state
     ///     - initCallback: called when intialization with the Ziti controller is complete
     ///
     /// - See also:
     ///     - `runAsync(_:)`
-    @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
+    @objc public func run(_ postureChecks:ZitiPostureChecks?, enabled:Bool=true, _ initCallback: @escaping InitCallback) {
         guard let cztAPI = id.ztAPI.cString(using: .utf8) else {
             let errStr = "unable to convert controller URL (ztAPI) to C string"
             log.error(errStr)
@@ -439,7 +440,7 @@ import CZitiPrivate
         zitiOpts = ziti_options(config: nil,
                               controller: ctrlPtr,
                               tls:tls,
-                              disabled: false,
+                              disabled: !enabled,
                               config_types: ziti_all_configs,
                               api_page_size: 25,
                               refresh_interval: 15,
