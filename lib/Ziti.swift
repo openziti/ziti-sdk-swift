@@ -439,7 +439,7 @@ import CZitiPrivate
         zitiOpts = ziti_options(config: nil,
                                 controller: ctrlPtr,
                                 tls:tls,
-                                disabled: id.startDisabled,
+                                disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
                                 refresh_interval: 15,
