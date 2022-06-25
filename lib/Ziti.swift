@@ -381,12 +381,11 @@ import CZitiPrivate
     ///
     /// - Parameters:
     ///     - postureChecks: provide (optional) support for posture checks
-    ///     - enabled: indicate whether to start in enabled or disabled state
     ///     - initCallback: called when intialization with the Ziti controller is complete
     ///
     /// - See also:
     ///     - `runAsync(_:)`
-    @objc public func run(_ postureChecks:ZitiPostureChecks?, enabled:Bool=true, _ initCallback: @escaping InitCallback) {
+    @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
         guard let cztAPI = id.ztAPI.cString(using: .utf8) else {
             let errStr = "unable to convert controller URL (ztAPI) to C string"
             log.error(errStr)
@@ -438,21 +437,21 @@ import CZitiPrivate
         self.postureChecks = postureChecks
         
         zitiOpts = ziti_options(config: nil,
-                              controller: ctrlPtr,
-                              tls:tls,
-                              disabled: !enabled,
-                              config_types: ziti_all_configs,
-                              api_page_size: 25,
-                              refresh_interval: 15,
-                              metrics_type: EWMA_1m,
-                              router_keepalive: 5,
-                              pq_mac_cb: postureChecks?.macQuery != nil ? Ziti.onMacQuery : nil,
-                              pq_os_cb:  postureChecks?.osQuery != nil ?  Ziti.onOsQuery : nil,
-                              pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
-                              pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
-                              app_ctx: self.toVoidPtr(),
-                              events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
-                              event_cb: Ziti.onEvent)
+                                controller: ctrlPtr,
+                                tls:tls,
+                                disabled: id.startDisabled,
+                                config_types: ziti_all_configs,
+                                api_page_size: 25,
+                                refresh_interval: 15,
+                                metrics_type: EWMA_1m,
+                                router_keepalive: 5,
+                                pq_mac_cb: postureChecks?.macQuery != nil ? Ziti.onMacQuery : nil,
+                                pq_os_cb:  postureChecks?.osQuery != nil ?  Ziti.onOsQuery : nil,
+                                pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
+                                pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
+                                app_ctx: self.toVoidPtr(),
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
+                                event_cb: Ziti.onEvent)
         
         // ziti_instance required if being managed by ZitiTunnel
         var zi:UnsafeMutablePointer<ziti_instance_s>?
