@@ -307,7 +307,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             let zEvent = ZitiTunnelContextEvent(ziti, cCtxEvent)
             mySelf.tunnelProvider?.tunnelEventCallback(zEvent)
             
-            if zEvent.code == ZITI_CONTROLLER_UNAVAILABLE {
+            if zEvent.code == ZITI_CONTROLLER_UNAVAILABLE || zEvent.code == ZITI_DISABLED {
                 mySelf.zidsLoadedCond.lock()
                 mySelf.zidsToLoad -= 1
                 mySelf.zidsLoadedCond.signal()
