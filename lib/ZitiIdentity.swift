@@ -46,7 +46,7 @@ import Foundation
     @objc public var ca:String?
     
     /// Request `Ziti` to start this identity in disabled state
-    @objc public var startDisabled:Bool = false
+    public var startDisabled:Bool? = false
     
     /// Initialize a `ZitiIdentity` given the provided identity infomation
     ///
