@@ -45,6 +45,9 @@ import Foundation
     /// CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
     @objc public var ca:String?
     
+    /// Request `Ziti` to start this identity in disabled state
+    @objc public var startDisabled:Bool = false
+    
     /// Initialize a `ZitiIdentity` given the provided identity infomation
     ///
     /// - Parameters:
