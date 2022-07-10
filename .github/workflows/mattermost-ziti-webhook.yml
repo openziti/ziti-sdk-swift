@@ -1,5 +1,5 @@
-name: mattermost-ziti-webhook
-on: 
+name: ziti-mattermost-action-py
+on:
   create:
   delete:
   issues:
@@ -10,16 +10,18 @@ on:
   push:
   fork:
   release:
+    types: [released]
 
 jobs:
-  mattermost-ziti-webhook:
-    runs-on: macos-latest
-    name: POST Webhook
+  ziti-webhook:
+    runs-on: ubuntu-latest
+    name: Ziti Mattermost Action - Py
     steps:
-    - uses: openziti/ziti-webhook-action@main
+    - name: Post to dev-notifications
+      uses: openziti/ziti-mattermost-action-py@main
       with:
-        ziti-id: ${{ secrets.ZITI_MATTERMOST_IDENTITY }}
-        webhook-url: ${{ secrets.ZITI_MATTERMOST_WEBHOOK_URL }}
-        webhook-secret: ${{ secrets.ZITI_MATTERMOSTI_WEBHOOK_SECRET }}
-      env:
-        ZITI_LOG: 11
+        zitiId: ${{ secrets.ZITI_MATTERMOST_IDENTITY }}
+        webhookUrl: ${{ secrets.ZHOOK_URL }}
+        eventJson: ${{ toJson(github.event) }}
+        senderUsername: "GitHubZ"
+        destChannel: "dev-notifications"
