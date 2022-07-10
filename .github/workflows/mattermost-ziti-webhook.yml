@@ -1,7 +1,5 @@
 name: ziti-mattermost-action-py
 on:
-  create:
-  delete:
   issues:
   issue_comment:
   pull_request_review:
