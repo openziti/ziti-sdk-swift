@@ -25,7 +25,7 @@ jobs:
         eventJson: ${{ toJson(github.event) }}
         senderUsername: "GitHubZ"
         destChannel: "dev-notifications"
-   - uses: openziti/ziti-mattermost-action-py@main
+    - uses: openziti/ziti-mattermost-action-py@main
       if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
       with:
         zitiId: ${{ secrets.ZITI_MATTERMOST_IDENTITY }}
