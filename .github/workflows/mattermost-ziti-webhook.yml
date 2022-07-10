@@ -5,6 +5,7 @@ on:
   pull_request_review:
   pull_request_review_comment:
   pull_request:
+    types: [opened, reopened]
   push:
   fork:
   release:
