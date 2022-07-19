@@ -1,5 +1,7 @@
 name: mattermost-ziti-webhook
 on:
+  create:
+  delete:
   issues:
   issue_comment:
   pull_request_review:
