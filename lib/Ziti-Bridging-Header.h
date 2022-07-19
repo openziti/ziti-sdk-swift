@@ -34,8 +34,8 @@ void ziti_dump_wrapper(ziti_context ztx, ziti_printer_cb_wrapper printer, void *
 
 tunneled_service_t *ziti_sdk_c_on_service_wrapper(ziti_context ziti_ctx, ziti_service *service, int status, tunneler_context tnlr_ctx);
 
-extern int ziti_log_level(void);
-extern void ziti_log_set_level(int level);
+extern int ziti_log_level(const char *module, const char *file);
+extern void ziti_log_set_level(int level, const char *marker);
 
 char **copyStringArray(char *const arr[], int count);
 void freeStringArray(char **arr);

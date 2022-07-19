@@ -51,8 +51,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tnlr_ctx:tunneler_context?
     
     private let uvDG = DispatchGroup()
-    private let opsZiti:Ziti
     private var loopKeepAliveHandle:UnsafeMutablePointer<uv_async_t>?
+    
+    /// instance of Ziti that can be used for general purpose calls for performing operations, timers
+    public let opsZiti:Ziti
     
     static let KEY_ZITI_INSTANCE = "ZitiTunnel.zitiInstance."
     static let KEY_GOT_SERVICES = "ZitiTunnel.gotServices."

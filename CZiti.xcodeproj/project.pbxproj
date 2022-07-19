@@ -36,9 +36,7 @@
 		5A8B0C1E2594119900182437 /* ZitiTunnelServerConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */; };
 		5AA2988E25857758001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2988A25857758001F7502 /* libziti-tunnel-cbs-c.a */; };
 		5AA2988F25857758001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2988B25857758001F7502 /* libziti-tunnel-sdk-c.a */; };
-		5AA2989025857758001F7502 /* liblwipunixarch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2988C25857758001F7502 /* liblwipunixarch.a */; };
 		5AA2989125857759001F7502 /* liblwipcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2988D25857758001F7502 /* liblwipcore.a */; };
-		5AA2989625857789001F7502 /* liblwipunixarch.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2989225857788001F7502 /* liblwipunixarch.a */; };
 		5AA2989725857789001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2989325857788001F7502 /* libziti-tunnel-sdk-c.a */; };
 		5AA2989825857789001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2989425857788001F7502 /* libziti-tunnel-cbs-c.a */; };
 		5AA2989925857789001F7502 /* liblwipcore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AA2989525857789001F7502 /* liblwipcore.a */; };
@@ -278,7 +276,6 @@
 			files = (
 				5AA2988E25857758001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */,
 				5AA2988F25857758001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */,
-				5AA2989025857758001F7502 /* liblwipunixarch.a in Frameworks */,
 				5AA2989125857759001F7502 /* liblwipcore.a in Frameworks */,
 				5A0E4A8E24534DDE00C56DCF /* libsodium.a in Frameworks */,
 				5A0E4A8B24530E1E00C56DCF /* libziti.a in Frameworks */,
@@ -294,7 +291,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5AA2989625857789001F7502 /* liblwipunixarch.a in Frameworks */,
 				5AA2989725857789001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */,
 				5AA2989825857789001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */,
 				5AA2989925857789001F7502 /* liblwipcore.a in Frameworks */,
