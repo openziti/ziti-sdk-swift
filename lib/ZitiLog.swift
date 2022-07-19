@@ -92,13 +92,13 @@ public class ZitiLog {
     /// - Parameters:
     ///     - level: only log messages at this level or higher severity
     public class func setLogLevel(_ level:LogLevel) {
-        ziti_log_set_level(level.rawValue)
+        ziti_log_set_level(level.rawValue, nil)
         ziti_tunnel_set_log_level(level.rawValue)
     }
     
     /// Get the system-wide log level
     public class func getLogLevel() -> LogLevel {
-        let zll = ziti_log_level()
+        let zll = ziti_log_level(nil, nil)
         if zll < LogLevel.WTF.rawValue { return .WTF }
         if zll > LogLevel.TRACE.rawValue { return .TRACE }
         return LogLevel(rawValue: zll) ?? .WTF
@@ -214,7 +214,7 @@ public class ZitiLog {
             function.removeSubrange(function.firstIndex(of: "(")!...function.lastIndex(of: ")")!)
         }
         
-        if lvl.rawValue <= ziti_log_level() {
+        if lvl.rawValue <= ziti_log_level(nil, nil) {
             fputs("[\(df.string(from: Date()))] \(lvl.toStr()) \(file):\(line) \(function)() \(msg)\n", stderr)
         }
     }
