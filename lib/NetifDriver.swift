@@ -70,6 +70,7 @@ class NetifDriver : NSObject, ZitiUnretained {
         driver.pointee.add_route = NetifDriver.add_route_cb
         driver.pointee.delete_route = NetifDriver.delete_route_cb
         driver.pointee.exclude_rt = NetifDriver.exclude_rt_cb
+        driver.pointee.commit_routes = NetifDriver.commit_routes_cb
                 
         return driver
     }
@@ -208,5 +209,17 @@ class NetifDriver : NSObject, ZitiUnretained {
             return -1
         }
         return tunnelProvider.excludeRoute(destStr, OpaquePointer(loop))
+    }
+    
+    static let commit_routes_cb:commit_routes_fn = { handle, loop in
+        guard let mySelf = zitiUnretained(NetifDriver.self, UnsafeMutableRawPointer(handle)) else {
+            log.wtf("invalid handle", function: "commit_routes_cb()")
+            return -1
+        }
+        guard let tunnelProvider = mySelf.tunnelProvider else {
+            log.wtf("invalid tunnelProvider", function: "commit_routes_cb()")
+            return -1
+        }
+        return tunnelProvider.commitRoutes(OpaquePointer(loop))
     }
 }
