@@ -29,6 +29,9 @@ public protocol ZitiTunnelProvider : AnyObject {
     /// Indicates router to never intercept, ragarless of service configation (e.g., addresses of Ziti controllers and routers)
     func excludeRoute(_ dest:String, _ loop:OpaquePointer?) -> Int32
     
+    /// Indicates a set of routes have been added of deleted and can be commited to the network interface
+    func commitRoutes(_ loop:OpaquePointer?) -> Int32
+    
     /// Indicates a packet should be written to the tunnel interface
     func writePacket(_ data:Data)
     
