@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ZitiLog Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ZitiLog" class="dashAnchor"></a>
+    <a title="ZitiLog Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CZiti Docs</a></p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CZiti Reference</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        ZitiLog Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti.html">Ziti</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiConnection.html">ZitiConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller.html">ZitiEnroller</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/EventType.html">– EventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ContextEvent.html">– ContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterStatus.html">– RouterStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterEvent.html">– RouterEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ServiceEvent.html">– ServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/MfaAuthEvent.html">– MfaAuthEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/ListenOptions.html">– ListenOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiIdentity.html">ZitiIdentity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1.html">ZitiInterceptConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/DialOptions.html">– DialOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiKeychain.html">ZitiKeychain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog.html">ZitiLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureChecks.html">ZitiPostureChecks</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiPostureContext">ZitiPostureContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuery.html">ZitiPostureQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuerySet.html">ZitiPostureQuerySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiService.html">ZitiService</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel.html">ZitiTunnel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel/Route.html">– Route</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent/MfaStatus.html">– MfaStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServerConfigV1.html">ZitiTunnelServerConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServiceEvent.html">ZitiTunnelServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlClientConfigV1.html">ZitiUrlClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ZitiLog</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiLog</span></code></pre>
+
+                </div>
+              </div>
+            <p>Logger class that mirrors the Ziti C SDK&rsquo;s logging feature</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC0C5LevelO"></a>
+                    <a name="//apple_ref/swift/Enum/LogLevel" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC0C5LevelO">LogLevel</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Maps to Ziti CSDK log levels, which cannot be imported directly</p>
+
+                        <a href="../Classes/ZitiLog/LogLevel.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">LogLevel</span> <span class="p">:</span> <span class="kt">Int32</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogCyACSScfc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogCyACSScfc">init(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize logger</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">category</span><span class="p">:</span> <span class="kt">String</span> <span class="o">=</span> <span class="s">"CZiti"</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>category</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>descriptive name to differentiate unique logging areas</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogCyACyXlXpcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogCyACyXlXpcfc">init(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize logger</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="n">convenience</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">aClass</span><span class="p">:</span> <span class="kt">AnyClass</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>aClass</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>use name of this class as the loggng categy</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC03setC5LevelyyAC0cE0OFZ"></a>
+                    <a name="//apple_ref/swift/Method/setLogLevel(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC03setC5LevelyyAC0cE0OFZ">setLogLevel(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set the system-wide log level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kd">func</span> <span class="nf">setLogLevel</span><span class="p">(</span><span class="n">_</span> <span class="nv">level</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiLog/LogLevel.html">LogLevel</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>level</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>only log messages at this level or higher severity</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC03getC5LevelAC0cE0OyFZ"></a>
+                    <a name="//apple_ref/swift/Method/getLogLevel()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC03getC5LevelAC0cE0OyFZ">getLogLevel()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get the system-wide log level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kd">func</span> <span class="nf">getLogLevel</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt"><a href="../Classes/ZitiLog/LogLevel.html">LogLevel</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC5trace_4file8function4lineySS_s12StaticStringVAISutF"></a>
+                    <a name="//apple_ref/swift/Method/trace(_:file:function:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC5trace_4file8function4lineySS_s12StaticStringVAISutF">trace(_:<wbr>file:<wbr>function:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Log a message at <code>.TRACE</code> level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">trace</span><span class="p">(</span><span class="n">_</span> <span class="nv">msg</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+           <span class="nv">file</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#file</span><span class="p">,</span>
+           <span class="nv">function</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#function</span><span class="p">,</span>
+           <span class="nv">line</span><span class="p">:</span><span class="kt">UInt</span><span class="o">=</span><span class="kd">#line</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>msg</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>message to log</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the file that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>function</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the function that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>line number where this message was logged</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC7verbose_4file8function4lineySS_s12StaticStringVAISutF"></a>
+                    <a name="//apple_ref/swift/Method/verbose(_:file:function:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC7verbose_4file8function4lineySS_s12StaticStringVAISutF">verbose(_:<wbr>file:<wbr>function:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Log a message at <code>.VERBOSE</code> level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">verbose</span><span class="p">(</span><span class="n">_</span> <span class="nv">msg</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+           <span class="nv">file</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#file</span><span class="p">,</span>
+           <span class="nv">function</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#function</span><span class="p">,</span>
+           <span class="nv">line</span><span class="p">:</span><span class="kt">UInt</span><span class="o">=</span><span class="kd">#line</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>msg</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>message to log</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the file that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>function</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the function that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>line number where this message was logged</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC5debug_4file8function4lineySS_s12StaticStringVAISutF"></a>
+                    <a name="//apple_ref/swift/Method/debug(_:file:function:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC5debug_4file8function4lineySS_s12StaticStringVAISutF">debug(_:<wbr>file:<wbr>function:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Log a message at <code>.DEBUG</code> level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">debug</span><span class="p">(</span><span class="n">_</span> <span class="nv">msg</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+           <span class="nv">file</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#file</span><span class="p">,</span>
+           <span class="nv">function</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#function</span><span class="p">,</span>
+           <span class="nv">line</span><span class="p">:</span><span class="kt">UInt</span><span class="o">=</span><span class="kd">#line</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>msg</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>message to log</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the file that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>function</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the function that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>line number where this message was logged</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC4info_4file8function4lineySS_s12StaticStringVAISutF"></a>
+                    <a name="//apple_ref/swift/Method/info(_:file:function:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC4info_4file8function4lineySS_s12StaticStringVAISutF">info(_:<wbr>file:<wbr>function:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Log a message at <code>.INFO</code> level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">info</span><span class="p">(</span><span class="n">_</span> <span class="nv">msg</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+          <span class="nv">file</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#file</span><span class="p">,</span>
+          <span class="nv">function</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#function</span><span class="p">,</span>
+          <span class="nv">line</span><span class="p">:</span><span class="kt">UInt</span><span class="o">=</span><span class="kd">#line</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>msg</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>message to log</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the file that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>function</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the function that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>line number where this message was logged</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC4warn_4file8function4lineySS_s12StaticStringVAISutF"></a>
+                    <a name="//apple_ref/swift/Method/warn(_:file:function:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC4warn_4file8function4lineySS_s12StaticStringVAISutF">warn(_:<wbr>file:<wbr>function:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Log a message at <code>.WARN</code> level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">warn</span><span class="p">(</span><span class="n">_</span> <span class="nv">msg</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+           <span class="nv">file</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#file</span><span class="p">,</span>
+           <span class="nv">function</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#function</span><span class="p">,</span>
+           <span class="nv">line</span><span class="p">:</span><span class="kt">UInt</span><span class="o">=</span><span class="kd">#line</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>msg</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>message to log</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the file that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>function</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the function that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>line number where this message was logged</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC5error_4file8function4lineySS_s12StaticStringVAISutF"></a>
+                    <a name="//apple_ref/swift/Method/error(_:file:function:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC5error_4file8function4lineySS_s12StaticStringVAISutF">error(_:<wbr>file:<wbr>function:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Log a message at <code>.ERROR</code> level</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">error</span><span class="p">(</span><span class="n">_</span> <span class="nv">msg</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+           <span class="nv">file</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#file</span><span class="p">,</span>
+           <span class="nv">function</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#function</span><span class="p">,</span>
+           <span class="nv">line</span><span class="p">:</span><span class="kt">UInt</span><span class="o">=</span><span class="kd">#line</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>msg</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>message to log</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the file that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>function</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the function that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>line number where this message was logged</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti7ZitiLogC3wtf_4file8function4lineySS_s12StaticStringVAISutF"></a>
+                    <a name="//apple_ref/swift/Method/wtf(_:file:function:line:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti7ZitiLogC3wtf_4file8function4lineySS_s12StaticStringVAISutF">wtf(_:<wbr>file:<wbr>function:<wbr>line:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Log a message at <code>.WTF</code> level (&ldquo;what a terrible failure&rdquo;)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">wtf</span><span class="p">(</span><span class="n">_</span> <span class="nv">msg</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+         <span class="nv">file</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#file</span><span class="p">,</span>
+         <span class="nv">function</span><span class="p">:</span><span class="kt">StaticString</span><span class="o">=</span><span class="kd">#function</span><span class="p">,</span>
+         <span class="nv">line</span><span class="p">:</span><span class="kt">UInt</span><span class="o">=</span><span class="kd">#line</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>msg</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>message to log</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>file</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the file that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>function</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the function that makes this log message</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>line</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>line number where this message was logged</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2022-10-10)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>

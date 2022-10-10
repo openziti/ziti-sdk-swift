@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ZitiTunnel Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ZitiTunnel" class="dashAnchor"></a>
+    <a title="ZitiTunnel Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CZiti Docs</a></p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CZiti Reference</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        ZitiTunnel Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti.html">Ziti</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiConnection.html">ZitiConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller.html">ZitiEnroller</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/EventType.html">– EventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ContextEvent.html">– ContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterStatus.html">– RouterStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterEvent.html">– RouterEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ServiceEvent.html">– ServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/MfaAuthEvent.html">– MfaAuthEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/ListenOptions.html">– ListenOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiIdentity.html">ZitiIdentity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1.html">ZitiInterceptConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/DialOptions.html">– DialOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiKeychain.html">ZitiKeychain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog.html">ZitiLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureChecks.html">ZitiPostureChecks</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiPostureContext">ZitiPostureContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuery.html">ZitiPostureQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuerySet.html">ZitiPostureQuerySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiService.html">ZitiService</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel.html">ZitiTunnel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel/Route.html">– Route</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent/MfaStatus.html">– MfaStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServerConfigV1.html">ZitiTunnelServerConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServiceEvent.html">ZitiTunnelServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlClientConfigV1.html">ZitiUrlClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ZitiTunnel</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnel</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">ZitiUnretained</span></code></pre>
+
+                </div>
+              </div>
+            <p>Class providing a Swift wrapper for Ziti Tunnel SDK C</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC03opsB0AA0B0Cvp"></a>
+                    <a name="//apple_ref/swift/Property/opsZiti" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC03opsB0AA0B0Cvp">opsZiti</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>instance of Ziti that can be used for general purpose calls for performing operations, timers</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">opsZiti</span><span class="p">:</span> <span class="kt"><a href="../Classes/Ziti.html">Ziti</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC20SERVICE_WAIT_TIMEOUTSdvpZ"></a>
+                    <a name="//apple_ref/swift/Variable/SERVICE_WAIT_TIMEOUT" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC20SERVICE_WAIT_TIMEOUTSdvpZ">SERVICE_WAIT_TIMEOUT</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Starting the tunnel will delay up to <code>SERVICE_WAIT_TIMEOUT</code> seconds waitig for services to be retrieved before calling the <code><a href="../Classes/ZitiTunnel.html#/s:5CZiti10ZitiTunnelC24IdentitiesLoadedCallbacka">IdentitiesLoadedCallback</a></code>
+This is done to allow the <code><a href="../Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a></code> to configure any intercepted routes on the interface before it is started (important when extending an
+ <code>NEPacketTunnelProvider</code>)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">static</span> <span class="k">var</span> <span class="nv">SERVICE_WAIT_TIMEOUT</span><span class="p">:</span> <span class="kt">Double</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC24IdentitiesLoadedCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/IdentitiesLoadedCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC24IdentitiesLoadedCallbacka">IdentitiesLoadedCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Type defintion of callback invoked when all identities have loaded (or timed-out)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">IdentitiesLoadedCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC5RouteC"></a>
+                    <a name="//apple_ref/swift/Class/Route" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC5RouteC">Route</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Class encapsulating an IPv4 route</p>
+
+                        <a href="../Classes/ZitiTunnel/Route.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">Route</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelCyAcA0bC8Provider_pSg_S3Stcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(_:_:_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelCyAcA0bC8Provider_pSg_S3Stcfc">init(_:<wbr>_:<wbr>_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize a <code>ZitiTunnel</code> instance</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">tunnelProvider</span><span class="p">:</span><span class="kt"><a href="../Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a></span><span class="p">?,</span>
+            <span class="n">_</span> <span class="nv">ipAddress</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">subnetMask</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">ipDNS</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>tunnelProvider</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Delegate for adding/removing routes, writing packets, and handling events</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>ipAddress</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Address of the tunnel interface</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>subnetMask</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Mask of the <code>ipAddress</code> for routes to the tunnel interface</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>ipDNS</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Address for DNS queries</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC14setUpstreamDnsys5Int32VSSF"></a>
+                    <a name="//apple_ref/swift/Method/setUpstreamDns(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC14setUpstreamDnsys5Int32VSSF">setUpstreamDns(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set upstream DNS address</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setUpstreamDns</span><span class="p">(</span><span class="n">_</span> <span class="nv">ipUpstreamDNS</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int32</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>ipUpstreamDNS</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>hostname (and optional port) for upstream DNS requests</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Returns 0 on success</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC7performyyyycF"></a>
+                    <a name="//apple_ref/swift/Method/perform(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC7performyyyycF">perform(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Perform on operation on the uv_loop managed by this class</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">perform</span><span class="p">(</span><span class="n">_</span> <span class="nv">op</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html">Ziti</a></span><span class="o">.</span><span class="kt">PerformCallback</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>op</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>operation to perform</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC05startB0yySayAA0B8IdentityCG_AA0B13PostureChecksCSgyAA0B5ErrorCSgctF"></a>
+                    <a name="//apple_ref/swift/Method/startZiti(_:_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC05startB0yySayAA0B8IdentityCG_AA0B13PostureChecksCSgyAA0B5ErrorCSgctF">startZiti(_:<wbr>_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Connect to Ziti and begin processing for the specified identites</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">startZiti</span><span class="p">(</span><span class="n">_</span> <span class="nv">zids</span><span class="p">:</span> <span class="p">[</span><span class="kt"><a href="../Classes/ZitiIdentity.html">ZitiIdentity</a></span><span class="p">],</span> <span class="n">_</span> <span class="nv">postureChecks</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiPostureChecks.html">ZitiPostureChecks</a></span><span class="p">?,</span> <span class="n">_</span> <span class="nv">loadedCb</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiTunnel.html#/s:5CZiti10ZitiTunnelC24IdentitiesLoadedCallbacka">IdentitiesLoadedCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>zids</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>List of Ziti identities</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>postureChecks</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Handler for posture checks</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>loadedCb</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Callback invoked when identites are loaded (services have been received or timed-out)</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC08shutdownB0yyyycF"></a>
+                    <a name="//apple_ref/swift/Method/shutdownZiti(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC08shutdownB0yyyycF">shutdownZiti(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Shutdown Ziti</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">shutdownZiti</span><span class="p">(</span><span class="n">_</span> <span class="nv">completionHandler</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>completionHandler</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>Callback invoked when shutodwn compete</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC11queuePacketyy10Foundation4DataVF"></a>
+                    <a name="//apple_ref/swift/Method/queuePacket(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC11queuePacketyy10Foundation4DataVF">queuePacket(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Queue a packet received from the tunnel interface for processing (e.g., for intercepted services or DNS requests)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">queuePacket</span><span class="p">(</span><span class="n">_</span> <span class="nv">data</span><span class="p">:</span> <span class="kt">Data</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>data</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>IP packet received from the tunnel interface</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2022-10-10)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>

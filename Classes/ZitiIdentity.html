@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ZitiIdentity Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ZitiIdentity" class="dashAnchor"></a>
+    <a title="ZitiIdentity Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CZiti Docs</a></p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CZiti Reference</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        ZitiIdentity Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti.html">Ziti</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiConnection.html">ZitiConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller.html">ZitiEnroller</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/EventType.html">– EventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ContextEvent.html">– ContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterStatus.html">– RouterStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterEvent.html">– RouterEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ServiceEvent.html">– ServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/MfaAuthEvent.html">– MfaAuthEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/ListenOptions.html">– ListenOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiIdentity.html">ZitiIdentity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1.html">ZitiInterceptConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/DialOptions.html">– DialOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiKeychain.html">ZitiKeychain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog.html">ZitiLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureChecks.html">ZitiPostureChecks</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiPostureContext">ZitiPostureContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuery.html">ZitiPostureQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuerySet.html">ZitiPostureQuerySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiService.html">ZitiService</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel.html">ZitiTunnel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel/Route.html">– Route</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent/MfaStatus.html">– MfaStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServerConfigV1.html">ZitiTunnelServerConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServiceEvent.html">ZitiTunnelServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlClientConfigV1.html">ZitiUrlClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ZitiIdentity</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">open</span> <span class="kd">class</span> <span class="kt">ZitiIdentity</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">Codable</span></code></pre>
+
+                </div>
+              </div>
+            <p>Identity information for interacting with Ziti</p>
+
+<p>Objects of these types are <code>Codable</code> so can easiliy be converted to/from JSON and stored on disk.  A <code>ZitiIdentity</code> is created as part of <code><a href="../Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(cm)enroll::">Ziti.enroll(_:_:)</a></code>, and can be used to initialiaze on instance of <code><a href="../Classes/Ziti.html">Ziti</a></code>.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    See Also:
+
+<ul>
+<li><code><a href="../Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(cm)enroll::">Ziti.enroll(_:_:)</a></code></li>
+<li><code><a href="../Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)initFromFile:">Ziti.init(fromFile:)</a></code></li>
+</ul>
+
+</div>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(py)id"></a>
+                    <a name="//apple_ref/swift/Property/id" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(py)id">id</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Identity string</p>
+
+<p>Initially the <code>sub</code> field from the  one-time enrollment JWT.  Used by <code><a href="../Classes/Ziti.html">Ziti</a></code> to store and retrieve identity-related items in the Keychain</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(py)ztAPI"></a>
+                    <a name="//apple_ref/swift/Property/ztAPI" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(py)ztAPI">ztAPI</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>scheme, host, and port used to communicate with Ziti controller</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">ztAPI</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(py)name"></a>
+                    <a name="//apple_ref/swift/Property/name" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(py)name">name</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>name assocaited with this identity in Ziti.</p>
+
+<p>Note that this name is unknown until a session with Ziti is active</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(py)ca"></a>
+                    <a name="//apple_ref/swift/Property/ca" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(py)ca">ca</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">ca</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti12ZitiIdentityC13startDisabledSbSgvp"></a>
+                    <a name="//apple_ref/swift/Property/startDisabled" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti12ZitiIdentityC13startDisabledSbSgvp">startDisabled</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Request <code><a href="../Classes/Ziti.html">Ziti</a></code> to start this identity in disabled state</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">startDisabled</span><span class="p">:</span> <span class="kt">Bool</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(im)initWithId:ztAPI:name:ca:"></a>
+                    <a name="//apple_ref/swift/Method/init(id:ztAPI:name:ca:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(im)initWithId:ztAPI:name:ca:">init(id:<wbr>ztAPI:<wbr>name:<wbr>ca:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize a <code>ZitiIdentity</code> given the provided identity infomation</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">ztAPI</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">ca</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>id</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>unique identifier of this identity</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>ztAPI</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>URL for accessing Ziti controller API</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>name</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name currently configured for this identity</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>ca</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>CA pool that can be used to verify trust of the Ziti controller</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(im)save:"></a>
+                    <a name="//apple_ref/swift/Method/save(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(im)save:">save(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Save this object to a JSON file</p>
+
+<p>This file can be used to initialize a <code><a href="../Classes/Ziti.html">Ziti</a></code> object.</p>
+<div class="aside aside-see">
+    <p class="aside-title">See</p>
+    <p>See also:</p>
+
+<ul>
+<li><code><a href="../Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(cm)enroll::">Ziti.enroll(_:_:)</a></code></li>
+</ul>
+
+</div>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">save</span><span class="p">(</span><span class="n">_</span> <span class="nv">initFile</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>initFile</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>file containing JSON-encoded data representing this object</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2022-10-10)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>

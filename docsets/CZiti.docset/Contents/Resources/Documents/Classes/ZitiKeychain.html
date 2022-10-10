@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ZitiKeychain Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ZitiKeychain" class="dashAnchor"></a>
+    <a title="ZitiKeychain Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CZiti Docs</a></p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CZiti Reference</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        ZitiKeychain Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti.html">Ziti</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiConnection.html">ZitiConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller.html">ZitiEnroller</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/EventType.html">– EventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ContextEvent.html">– ContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterStatus.html">– RouterStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterEvent.html">– RouterEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ServiceEvent.html">– ServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/MfaAuthEvent.html">– MfaAuthEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/ListenOptions.html">– ListenOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiIdentity.html">ZitiIdentity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1.html">ZitiInterceptConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/DialOptions.html">– DialOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiKeychain.html">ZitiKeychain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog.html">ZitiLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureChecks.html">ZitiPostureChecks</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiPostureContext">ZitiPostureContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuery.html">ZitiPostureQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuerySet.html">ZitiPostureQuerySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiService.html">ZitiService</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel.html">ZitiTunnel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel/Route.html">– Route</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent/MfaStatus.html">– MfaStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServerConfigV1.html">ZitiTunnelServerConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServiceEvent.html">ZitiTunnelServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlClientConfigV1.html">ZitiUrlClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ZitiKeychain</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiKeychain</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+
+                </div>
+              </div>
+            <p>This class manages access to the Keychain, creating and storing keys and certificates needed to access a Ziti network.</p>
+
+<p>This is primarily an internally used class, though certain methods are marked public in order to support senarios where the enrollment is
+provided by an application other than the one that needs to access Ziti using this identity (which will require the end user to provide their credentials
+to configure the keychain to allow the application access to the keys and certificates).</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti12ZitiKeychainC3tagACSS_tcfc"></a>
+                    <a name="//apple_ref/swift/Method/init(tag:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti12ZitiKeychainC3tagACSS_tcfc">init(tag:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initialize an instance of <code>ZitiKeychain</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">tag</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>tag</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>a <code>String</code> used to identify the application in the keychain.  This is usually set to the <code>sub</code> field of the one-time JWT used during enrollment</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti12ZitiKeychainC22addTrustForCertificateys5Int32VSo03SecG3RefaF"></a>
+                    <a name="//apple_ref/swift/Method/addTrustForCertificate(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti12ZitiKeychainC22addTrustForCertificateys5Int32VSo03SecG3RefaF">addTrustForCertificate(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p><strong>macOS only</strong>
+This method will prompt for user creds to access keychain to mark the provided certificate as <code>Trusted</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addTrustForCertificate</span><span class="p">(</span><span class="n">_</span> <span class="nv">certificate</span><span class="p">:</span> <span class="kt">SecCertificate</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">OSStatus</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>certificate</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The certificate for which to add trust</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti12ZitiKeychainC13extractRootCaySo17SecCertificateRefaSgSSF"></a>
+                    <a name="//apple_ref/swift/Method/extractRootCa(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti12ZitiKeychainC13extractRootCaySo17SecCertificateRefaSgSSF">extractRootCa(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Extract the Root CA certificate from the provided pool</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">extractRootCa</span><span class="p">(</span><span class="n">_</span> <span class="nv">caPool</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">SecCertificate</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>caPool</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PEM-formatted pool of CA certificates</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>the Root CA certificate, or <code>nil</code> if not found</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti12ZitiKeychainC9addCaPoolySbSSF"></a>
+                    <a name="//apple_ref/swift/Method/addCaPool(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti12ZitiKeychainC9addCaPoolySbSSF">addCaPool(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Add the provided Root CA pool to the keychain</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addCaPool</span><span class="p">(</span><span class="n">_</span> <span class="nv">caPool</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>caPool</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PEM-formatted pool of CA certificates</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p><code>true</code> if the certificates are successfully added to the keychain, otherwise <code>false</code></p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti12ZitiKeychainC24evalTrustForCertificatesys5Int32VSaySo17SecCertificateRefaG_So17OS_dispatch_queueCySo0ieK0a_SbSo07CFErrorK0aSgtctF"></a>
+                    <a name="//apple_ref/swift/Method/evalTrustForCertificates(_:_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti12ZitiKeychainC24evalTrustForCertificatesys5Int32VSaySo17SecCertificateRefaG_So17OS_dispatch_queueCySo0ieK0a_SbSo07CFErrorK0aSgtctF">evalTrustForCertificates(_:<wbr>_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Evaluates a trust object asynchronously on the specified dispatch queue.</p>
+
+<p>You must call this method from the same dispatch queue that you specify as the queue parameter.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">evalTrustForCertificates</span><span class="p">(</span><span class="n">_</span> <span class="nv">certificates</span><span class="p">:[</span><span class="kt">SecCertificate</span><span class="p">],</span>
+                                     <span class="n">_</span> <span class="nv">queue</span><span class="p">:</span><span class="kt">DispatchQueue</span><span class="p">,</span>
+                                     <span class="n">_</span> <span class="nv">result</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt">SecTrustWithErrorCallback</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">OSStatus</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>certificates</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The certificate to be verified, plus any other certificates that might be useful for verifying the certificate.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>queue</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The dispatch queue on which the result block should execute. You must call the method from the same queue.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>result</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A closure that the method calls to report the result of trust evaluation.</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti12ZitiKeychainC12extractCertsySaySo17SecCertificateRefaGSSF"></a>
+                    <a name="//apple_ref/swift/Method/extractCerts(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti12ZitiKeychainC12extractCertsySaySo17SecCertificateRefaGSSF">extractCerts(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Extract certificates from a PEM-formatted CA pool and return an array of <code>SecCertificate</code> objects</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">extractCerts</span><span class="p">(</span><span class="n">_</span> <span class="nv">caPool</span><span class="p">:</span> <span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="kt">SecCertificate</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>caPool</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>PEM-formatted pool of CA certificates</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>an array of <code>SecCertificate</code> objects</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2022-10-10)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>

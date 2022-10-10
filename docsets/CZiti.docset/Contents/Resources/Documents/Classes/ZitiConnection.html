@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ZitiConnection Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+    <script src="../js/lunr.min.js" defer></script>
+    <script src="../js/typeahead.jquery.js" defer></script>
+    <script src="../js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ZitiConnection" class="dashAnchor"></a>
+    <a title="ZitiConnection Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html">CZiti Docs</a></p>
+        <div class="header-right">
+          <form role="search" action="../search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html">CZiti Reference</a>
+        <img id="carat" src="../img/carat.png" alt=""/>
+        ZitiConnection Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti.html">Ziti</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiConnection.html">ZitiConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller.html">ZitiEnroller</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/EventType.html">– EventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ContextEvent.html">– ContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterStatus.html">– RouterStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/RouterEvent.html">– RouterEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ServiceEvent.html">– ServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/MfaAuthEvent.html">– MfaAuthEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiHostConfigV1/ListenOptions.html">– ListenOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiIdentity.html">ZitiIdentity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1.html">ZitiInterceptConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiInterceptConfigV1/DialOptions.html">– DialOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiKeychain.html">ZitiKeychain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog.html">ZitiLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureChecks.html">ZitiPostureChecks</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiPostureContext">ZitiPostureContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuery.html">ZitiPostureQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiPostureQuerySet.html">ZitiPostureQuerySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiService.html">ZitiService</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel.html">ZitiTunnel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnel/Route.html">– Route</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelMfaEvent/MfaStatus.html">– MfaStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServerConfigV1.html">ZitiTunnelServerConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelServiceEvent.html">ZitiTunnelServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlClientConfigV1.html">ZitiUrlClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ZitiConnection</h1>
+              <div class="declaration">
+                <div class="language">
+                  
+                  <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiConnection</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">ZitiUnretained</span></code></pre>
+
+                </div>
+              </div>
+            <p>Create <code>ZitiConnection</code>s from an instance of <code><a href="../Classes/Ziti.html">Ziti</a></code> and use to commuicate with services over a Ziti network</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti14ZitiConnectionC12ConnCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/ConnCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti14ZitiConnectionC12ConnCallbacka">ConnCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Connection callback</p>
+
+<p>This callback is invoked after <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)dial:::">dial(_:_:_:)</a></code> or <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)accept::">accept(_:_:)</a></code> is completed. The result of the function may be an error condition so it is
+important to verify the status code in this callback. If successful the status will be set to <code>ZITI_OK</code></p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ConnCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">conn</span><span class="p">:</span> <span class="kt">ZitiConnection</span><span class="p">,</span> <span class="n">_</span> <span class="nv">status</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>conn</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>reference to <code>ZitiConnection</code></p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>status</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p><code>ZITI_OK</code> on success, else Ziti error code</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti14ZitiConnectionC14ListenCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/ListenCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti14ZitiConnectionC14ListenCallbacka">ListenCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Listen callback</p>
+
+<p>This callback is invoked after <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)listen:::">listen(_:_:_:)</a></code> and is aliased to <code><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12ConnCallbacka">ConnCallback</a></code> as a convenience for human readability</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ListenCallback</span> <span class="o">=</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12ConnCallbacka">ConnCallback</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti14ZitiConnectionC12DataCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/DataCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti14ZitiConnectionC12DataCallbacka">DataCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Data callback</p>
+
+<p>This callback is invoked when data arrives from <code><a href="../Classes/Ziti.html">Ziti</a></code>, either as a response from <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)dial:::">dial(_:_:_:)</a></code> or from <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)accept::">accept(_:_:)</a></code>
+Return value should indicate how much data was consumed by the application. This callback will be called again at some later
+time and as many times as needed for application to accept the all of the data</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">DataCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">conn</span><span class="p">:</span> <span class="kt">ZitiConnection</span><span class="p">,</span> <span class="n">_</span> <span class="nv">data</span><span class="p">:</span> <span class="kt">Data</span><span class="p">?,</span> <span class="n">_</span> <span class="nv">status</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>conn</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the connection</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>data</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the incoming data</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>status</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>size of the data or a Ziti error code, <code>ZITI_EOF</code> when connection has closed</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti14ZitiConnectionC14ClientCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/ClientCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti14ZitiConnectionC14ClientCallbacka">ClientCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Client callback</p>
+
+<p>This callback is invoked when a client connects to the service specified in <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)listen:::">listen(_:_:_:)</a></code> call. The result of the status may be an error condition so it is
+important to verify the status code in this callback. If successful the status will be set to <code>ZITI_OK</code></p>
+
+<p>Generally this callback is used for any preparations necessary before accepting incoming data from the Ziti network.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ClientCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">server</span><span class="p">:</span> <span class="kt">ZitiConnection</span><span class="p">,</span> <span class="n">_</span> <span class="nv">client</span><span class="p">:</span> <span class="kt">ZitiConnection</span><span class="p">,</span> <span class="n">_</span> <span class="nv">status</span><span class="p">:</span> <span class="kt">Int32</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>server</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>server connection</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>client</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>client connection, generally used to <code>accept()</code>the connection in this callback</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>status</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p><code>ZITI_OK</code> or error code</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti14ZitiConnectionC13WriteCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/WriteCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti14ZitiConnectionC13WriteCallbacka">WriteCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Write callback</p>
+
+<p>This callback is invoked after a call the <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)write::">write(_:_:)</a></code> completes. The result of the <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)write::">write(_:_:)</a></code> may be an error condition so it is
+important to verify the provided status code in this callback.</p>
+
+<p>This callback is often used to free or reinitialize the buffer associated with the <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)write::">write(_:_:)</a></code>. It is important to not free this memory
+until after data has been written to the wire else the results of the write operation may be unexpected.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">WriteCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">conn</span><span class="p">:</span> <span class="kt">ZitiConnection</span><span class="p">,</span> <span class="n">_</span> <span class="nv">status</span><span class="p">:</span> <span class="kt">Int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>status</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>amount of data written or Ziti error code</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti14ZitiConnectionC13CloseCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/CloseCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti14ZitiConnectionC13CloseCallbacka">CloseCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Close callback</p>
+
+<p>This callback is invoked after a call the <code><a href="../Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)close:">close(_:)</a></code> completes.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">CloseCallback</span> <span class="o">=</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>status</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>amount of data written or Ziti error code</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiConnection(im)dial:::"></a>
+                    <a name="//apple_ref/swift/Method/dial(_:_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiConnection(im)dial:::">dial(_:<wbr>_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Established a connection to a <code><a href="../Classes/Ziti.html">Ziti</a></code> service.</p>
+
+<p>Before any bytes can be sent over a <code><a href="../Classes/Ziti.html">Ziti</a></code>service a connection must be established. This method will attempt to establish a connection
+by dialiing the service with the given name. The result of the <code>dial()</code> attempt is included in the specified <code><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12ConnCallbacka">ConnCallback</a></code>.</p>
+
+<p>If the <code>dial</code> succeeds, the provided <code><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12DataCallbacka">DataCallback</a></code> is invoked to handle data returned from the service. If the <code>dial</code> fails, only
+the <code><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12ConnCallbacka">ConnCallback</a></code> will be invoked with the corresponding error code</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">dial</span><span class="p">(</span><span class="n">_</span> <span class="nv">service</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">onConn</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12ConnCallbacka">ConnCallback</a></span><span class="p">,</span> <span class="n">_</span> <span class="nv">onData</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12DataCallbacka">DataCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>service</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the service to dial</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onConn</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback invoked after <code>dial</code> attempt completes</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onData</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback invoked after a successful <code>dial</code> attempt with data received over the connection</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiConnection(im)listen:::"></a>
+                    <a name="//apple_ref/swift/Method/listen(_:_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiConnection(im)listen:::">listen(_:<wbr>_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Start accepting <code><a href="../Classes/Ziti.html">Ziti</a></code> client connections</p>
+
+<p>This function is invoked to tell the <code><a href="../Classes/Ziti.html">Ziti</a></code> to  accept connections from other <code><a href="../Classes/Ziti.html">Ziti</a></code> clients for the provided service name.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">listen</span><span class="p">(</span><span class="n">_</span> <span class="nv">service</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">onListen</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC14ListenCallbacka">ListenCallback</a></span><span class="p">,</span> <span class="n">_</span> <span class="nv">onClient</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC14ClientCallbacka">ClientCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>service</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>name of the service to be hosted</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onListen</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback invoked indicating success or failure of <code>listen</code> attempt</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onClient</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback invoked when client attempts to dial this service</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiConnection(im)accept::"></a>
+                    <a name="//apple_ref/swift/Method/accept(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiConnection(im)accept::">accept(_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Completes a client connection</p>
+
+<p>After a client connects to a hosted Ziti service this method is invoked to finish  connection establishment, establishing
+the callbacks necessary to send data to the connecting client or to process data sent by the client.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">accept</span><span class="p">(</span><span class="n">_</span> <span class="nv">onConn</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12ConnCallbacka">ConnCallback</a></span><span class="p">,</span> <span class="n">_</span> <span class="nv">onData</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC12DataCallbacka">DataCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onConn</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>invoked when <code>accept</code> completes indicating status of the attempt</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onData</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>invoked each time the client sends data</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiConnection(im)getSourceIdentity"></a>
+                    <a name="//apple_ref/swift/Method/getSourceIdentity()" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiConnection(im)getSourceIdentity">getSourceIdentity()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Get the identity of the client that initiated the Ziti connection</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">getSourceIdentity</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Return Value</h4>
+                        <p>Source ID or empty String</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiConnection(im)write::"></a>
+                    <a name="//apple_ref/swift/Method/write(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiConnection(im)write::">write(_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Send data to the connection peer</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">write</span><span class="p">(</span><span class="n">_</span> <span class="nv">data</span><span class="p">:</span> <span class="kt">Data</span><span class="p">,</span> <span class="n">_</span> <span class="nv">onWrite</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC13WriteCallbacka">WriteCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>data</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the data to send</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onWrite</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback invoked after the <code>write</code> completes</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiConnection(im)close:"></a>
+                    <a name="//apple_ref/swift/Method/close(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiConnection(im)close:">close(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Close this connection</p>
+
+<p>When no longer needed the connection should be closed to gracefully disconnect. This method should be invoked after any status is returned
+which indicates an error situation.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">close</span><span class="p">(</span><span class="n">_</span> <span class="nv">onClose</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiConnection.html#/s:5CZiti14ZitiConnectionC13CloseCallbacka">CloseCallback</a></span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onClose</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called when connection is completely closed</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2022-10-10)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>

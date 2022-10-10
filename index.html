@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>CZiti  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+    <script src="js/lunr.min.js" defer></script>
+    <script src="js/typeahead.jquery.js" defer></script>
+    <script src="js/jazzy.search.js" defer></script>
+  </head>
+  <body>
+    <a title="CZiti  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html">CZiti Docs</a></p>
+        <div class="header-right">
+          <form role="search" action="search.json">
+            <input type="text" placeholder="Search documentation" data-typeahead>
+          </form>
+        </div>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html">CZiti Reference</a>
+        <img id="carat" src="img/carat.png" alt=""/>
+        CZiti  Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/Ziti.html">Ziti</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiClaims.html">ZitiClaims</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiConnection.html">ZitiConnection</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEnroller.html">ZitiEnroller</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent.html">ZitiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent/EventType.html">– EventType</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent/ContextEvent.html">– ContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent/RouterStatus.html">– RouterStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent/RouterEvent.html">– RouterEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent/ServiceEvent.html">– ServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent/MfaAuthEvent.html">– MfaAuthEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiHostConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiHostConfigV1/ListenOptions.html">– ListenOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiIdentity.html">ZitiIdentity</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiInterceptConfigV1.html">ZitiInterceptConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiInterceptConfigV1/PortRange.html">– PortRange</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiInterceptConfigV1/DialOptions.html">– DialOptions</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiKeychain.html">ZitiKeychain</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiLog.html">ZitiLog</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiLog/LogLevel.html">– LogLevel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiPostureChecks.html">ZitiPostureChecks</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes.html#/c:@M@CZiti@objc(cs)ZitiPostureContext">ZitiPostureContext</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiPostureQuery.html">ZitiPostureQuery</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiPostureQuerySet.html">ZitiPostureQuerySet</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiService.html">ZitiService</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnel.html">ZitiTunnel</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnel/Route.html">– Route</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelMfaEvent/MfaStatus.html">– MfaStatus</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelServerConfigV1.html">ZitiTunnelServerConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelServiceEvent.html">ZitiTunnelServiceEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiUrlClientConfigV1.html">ZitiUrlClientConfigV1</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Protocols.html">Protocols</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Protocols/ZitiTunnelProvider.html">ZitiTunnelProvider</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <h1 id='ziti-sdk-for-swift' class='heading'>Ziti SDK for Swift</h1>
+
+<p><img src="https://github.com/openziti/ziti-sdk-swift/workflows/CI/badge.svg?branch=master" alt="Build Status"></p>
+
+<p>An SDK for accessing Ziti from macOS and iOS applications using the Swift programming language.</p>
+
+<p>This SDK provides a Swift-friendly wrapper of the <strong>Ziti Tunnel C SDK</strong>, an implementation of <code>URLProtocol</code> for intercepting HTTP and HTTPS traffic, and examples of using the SDK in an application.</p>
+<h1 id='usage' class='heading'>Usage</h1>
+
+<p>The <code><a href="Classes/Ziti.html">Ziti</a></code> class is the main entry point for accessing Ziti networks. An instance of <code><a href="Classes/Ziti.html">Ziti</a></code> requires a <code><a href="Classes/ZitiIdentity.html">ZitiIdentity</a></code> at time of initialization.</p>
+
+<p>Use <code><a href="Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)createConnection">Ziti.createConnection()</a></code> to create instances of <code><a href="Classes/ZitiConnection.html">ZitiConnection</a></code> to <code><a href="Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)dial:::">ZitiConnection.dial(_:_:_:)</a></code> services or <code><a href="Classes/ZitiConnection.html#/c:@M@CZiti@objc(cs)ZitiConnection(im)listen:::">ZitiConnection.listen(_:_:_:)</a></code>  for service connections.</p>
+
+<p>Use <code><a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a></code> to intercept HTTP and HTTPS connections and route them over a Ziti network.</p>
+<h2 id='enrollment' class='heading'>Enrollment</h2>
+
+<p>A <code><a href="Classes/ZitiIdentity.html">ZitiIdentity</a></code> is created as part of the enrollment process with a Ziti network.  <code><a href="Classes/Ziti.html">Ziti</a></code> support enrollment using a one-time JWT supplied by your Ziti network administror.</p>
+
+<p>The <code><a href="Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(cm)enroll::">Ziti.enroll(_:_:)</a></code> method validates the JWT is properly signed, creates a private key and stores it in the keychain, initiates a Certificate Signing Request (CSR) with the controller, and stores the resultant certificate in the keychain.</p>
+
+<p><strong>Swift</strong></p>
+<pre class="highlight plaintext"><code>import CZiti
+
+let jwtFile = &lt;...&gt;
+let outFile = &lt;...&gt;
+
+Ziti.enroll(jwtFile) { zid, zErr in
+    guard let zid = zid else {
+        fputs("Invalid enrollment response, \(String(describing: zErr))\n", stderr)
+        exit(-1)
+    }
+    guard zid.save(outFile) else {
+        fputs("Unable to save to file \(outFile)\n", stderr)
+        exit(-1)
+    }
+
+    print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
+}
+</code></pre>
+
+<p><strong>Objective-C</strong></p>
+<pre class="highlight plaintext"><code>#import "CZiti-Swift.h"
+
+NSString *jwtFile = &lt;...&gt;
+NSString *outFile = &lt;...&gt;
+
+[Ziti enroll:jwtFile : ^(ZitiIdentity *zid, ZitiError *zErr) {
+    if (zErr != NULL) {
+        // Handle error
+        return;
+    }
+
+    if (![zid save:outFile]) {
+        // Handle error
+        return;
+    }
+}];
+</code></pre>
+
+<p>The identity file saved to <code>outfile</code> in the example code above contains information for contacting the Ziti controller and locally accessing the private key and certificate in the keychain.</p>
+<h2 id='running-ziti' class='heading'>Running Ziti</h2>
+
+<p>A typical application flow would:</p>
+
+<ol>
+<li>Check a well-known location for a stored identity file</li>
+<li>If not present, initiate an enrollment (e.g., prompt the user for location of a one-time JWT enrollment file, or scan in a QR code)</li>
+<li>When identity file is available, use it to create and run an instance of <code><a href="Classes/Ziti.html">Ziti</a></code></li>
+</ol>
+
+<p><code><a href="Classes/Ziti.html">Ziti</a></code> executes on a loop, similar to <code>Foundation</code>&lsquo;s <code>Runloop</code>. The <code><a href="Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)run:">Ziti.run(_:)</a></code> method essentially enters an infinite loop processing Ziti events, and will only exit after <code><a href="Classes/Ziti.html">Ziti</a></code> is shut down.</p>
+
+<p>The <code><a href="Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)runAsync:">Ziti.runAsync(_:)</a></code> method is provided as a convenience to spawn a new thread and call <code><a href="Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)run:">Ziti.run(_:)</a></code>. </p>
+
+<p><strong>Swift</strong></p>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">zidFile</span> <span class="o">=</span> <span class="o">&lt;...&gt;</span>
+
+<span class="k">guard</span> <span class="k">let</span> <span class="nv">ziti</span> <span class="o">=</span> <span class="kt">Ziti</span><span class="p">(</span><span class="nv">fromFile</span><span class="p">:</span> <span class="n">zidFile</span><span class="p">)</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Unable to create Ziti identity from file </span><span class="se">\(</span><span class="n">zidFile</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+    <span class="k">return</span>
+<span class="p">}</span>
+
+<span class="n">ziti</span><span class="o">.</span><span class="n">runAsync</span> <span class="p">{</span> <span class="n">zErr</span> <span class="k">in</span>
+    <span class="k">guard</span> <span class="n">zErr</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nf">print</span><span class="p">(</span><span class="s">"Unable to run Ziti: </span><span class="se">\(</span><span class="kt">String</span><span class="p">(</span><span class="nv">describing</span><span class="p">:</span> <span class="n">zErr</span><span class="o">!</span><span class="p">)</span><span class="se">)</span><span class="s">"</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="nf">print</span><span class="p">(</span><span class="s">"Successfully initialized Ziti!"</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p><strong>Objective-C</strong></p>
+<pre class="highlight plaintext"><code>NSString *zidFile = &lt;...&gt;
+
+Ziti *ziti = [[Ziti alloc] initFromFile:[self zidFile]];
+
+if (ziti != NULL) {
+    [ziti runAsync: ^(ZitiError *zErr) {
+        if (zErr != NULL) {
+            // Handle error
+            return;
+        }
+        [ZitiUrlProtocol register:ziti :10000];
+    }];
+}
+</code></pre>
+
+<p>To execute code on the thread running Ziti use the <code>perform(_:)</code> method.</p>
+<h2 id='using-code-zitiurlprotocol-code' class='heading'>Using <code><a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a></code></h2>
+
+<p>The SDK also includes <code><a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a></code>, which implements a <code>URLProtocol</code> that interceptes HTTP and HTTPS requests for Ziti services and routes them over a Ziti network.</p>
+
+<p><code><a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a></code> should be instantiated as part of the <code><a href="Classes/Ziti.html#/s:5CZiti4ZitiC12InitCallbacka">Ziti.InitCallback</a></code> of <code><a href="Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)run:">Ziti.run(_:)</a></code> to ensure <code><a href="Classes/Ziti.html">Ziti</a></code> is initialized before
+     starting to intercept services.</p>
+
+<p><strong>Swift</strong></p>
+<pre class="highlight swift"><code><span class="n">ziti</span><span class="o">.</span><span class="n">runAsync</span> <span class="p">{</span> <span class="n">zErr</span> <span class="k">in</span>
+    <span class="k">guard</span> <span class="n">zErr</span> <span class="o">==</span> <span class="kc">nil</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">// Handle error</span>
+        <span class="k">return</span>
+    <span class="p">}</span>
+    <span class="kt">ZitiUrlProtocol</span><span class="o">.</span><span class="nf">register</span><span class="p">(</span><span class="n">ziti</span><span class="p">)</span>
+<span class="p">}</span>
+</code></pre>
+
+<p><strong>Objective-C</strong></p>
+<pre class="highlight plaintext"><code>[ziti runAsync: ^(ZitiError *zErr) {
+    if (zErr != NULL) {
+        // Handle error
+        return;
+    }
+    [ZitiUrlProtocol register:ziti :10000];
+}];
+</code></pre>
+
+<p>If using your own <code>URLSession</code> insteal of <code>URLSession.shared</code>, <code><a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a></code> will need to be configured in your <code>URLSession</code>&rsquo;s configuration:</p>
+<pre class="highlight swift"><code>    <span class="k">let</span> <span class="nv">configuration</span> <span class="o">=</span> <span class="kt">URLSessionConfiguration</span><span class="o">.</span><span class="k">default</span>
+    <span class="n">configuration</span><span class="o">.</span><span class="n">protocolClasses</span><span class="p">?</span><span class="o">.</span><span class="nf">insert</span><span class="p">(</span><span class="kt">ZitiUrlProtocol</span><span class="o">.</span><span class="k">self</span><span class="p">,</span> <span class="nv">at</span><span class="p">:</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">urlSession</span> <span class="o">=</span> <span class="kt">URLSession</span><span class="p">(</span><span class="nv">configuration</span><span class="p">:</span><span class="n">configuration</span><span class="p">)</span>
+</code></pre>
+
+<p>See also the documentation included in the <code>CZiti</code> module available in the <code>Xcode</code> Quick Help pane.</p>
+<h1 id='adding-code-cziti-code-as-a-dependency' class='heading'>Adding <code>CZiti</code> as a Dependency</h1>
+
+<p><code>CZiti</code> is built into a static library (<code>libCZiti.a</code>) and is packaged as a static Framework (<code>CZiti.framework</code>).</p>
+
+<p>Note that that <code>CZiti</code> is not built for Bitcode, and when building for a device the <strong>Build Settings - Build Options</strong> should set <code>Enable Bitcode</code> to <code>No</code>. </p>
+<h2 id='via-code-cocoapods-code' class='heading'>Via <code>CocoaPods</code></h2>
+
+<p>If you are using <a href="https://cocoapods.org/">Cocoapods</a>, update your <code>Podfile</code>:</p>
+<pre class="highlight ruby"><code><span class="n">target</span> <span class="s1">'Some-macOS-Target'</span>
+  <span class="n">use_frameworks!</span>
+  <span class="n">platform</span> <span class="ss">:macos</span><span class="p">,</span> <span class="s1">'10.15'</span>
+  <span class="n">pod</span> <span class="s1">'CZiti-macOS'</span><span class="p">,</span> <span class="s1">'~&gt; 0.1'</span>
+<span class="k">end</span>
+
+<span class="n">target</span> <span class="s1">'SomeTarget-iOS-Target'</span>
+  <span class="n">use_frameworks!</span>
+  <span class="n">platform</span> <span class="ss">:ios</span><span class="p">,</span> <span class="s1">'13.4'</span>
+  <span class="n">pod</span> <span class="s1">'CZiti-iOS'</span><span class="p">,</span> <span class="s1">'~&gt; 0.1'</span>
+<span class="k">end</span>
+</code></pre>
+
+<p>For further information on Cocoapods, check <a href="http://guides.cocoapods.org/using/getting-started.html">their official documentation</a>.</p>
+<h2 id='via-code-cziti-framework-code' class='heading'>Via <code>CZiti.framework</code></h2>
+
+<ul>
+<li>Obtain <code>CZiti.framework</code> following the build steps below or by downloading from <a href="https://github.com/openziti/ziti-sdk-swift/releases">GitHub Releases</a></li>
+<li>Drag the appropriate <code>CZiti.framework</code> into your project, selecting &ldquo;Copy items if needed&rdquo;, &ldquo;Create groups&rdquo;, and your target checked under &ldquo;Add to targets:&rdquo;.</li>
+<li>Ensure the framework is shown under <strong>General - Frameworks, Libraries, and Embedded Content</strong>. If not present, click the &ldquo;+&rdquo; button to add it manually.  The &ldquo;Embedded&rdquo; entry should be set to &ldquo;Do Not Embed&rdquo;.</li>
+<li>Ensure the framework is shown under <strong>Build Phases - Link Binary with Libraries</strong>.  The &ldquo;Status&rdquo; entry should be set to &ldquo;Required&rdquo;</li>
+<li><strong>Build Settings - Frameworks</strong> should include an entry of the directory containing <code>CZiti.framework</code> in your project</li>
+</ul>
+
+<p>Wnen including <code>CZiti</code> in an <strong>Objective-C</strong> project, adding a Swift file that imports <code>Foundation</code> to your project will help ensure your project is setup correctly for accessing <strong>Swift</strong> from <strong>Objective-C</strong></p>
+<h2 id='via-code-libcziti-a-code' class='heading'>Via <code>libCZiti.a</code></h2>
+
+<ul>
+<li>Follow the build steps below to create <code>libCZiti.a</code></li>
+<li>Add <code>libCZiti.a</code> library to your project&rsquo;s <strong>Frameworks and Libraries</strong>, and ensure it is listed in your project&rsquo;s <strong>Build Phases</strong> under <strong>Link Binary with Libraries</strong>.</li>
+<li>Your <strong>Library Search Path</strong> and <strong>Swift Compiler Seatch Paths - Import Paths</strong> should include the directory containing <code>libCZiti.a</code> and <code>CZiti.swiftmodule/</code></li>
+<li>When this project is built from <code>Xcode</code>, the <code>CZiti-Swift.h</code> file is copied to <code>$(PROJECT_ROOT)/include/$(PLATFORM)</code> (e.g., <code>./include/iphoneos</code>).  <code>CZiti-Swift.h</code> can also be found the the <code>DerivedSources</code> directory under <code>./DerivedData</code> following a build from either <code>Xcode</code> or via <code>build_all.sh</code>.  This file is needed to use <code>CZiti</code> from Objective-C. Your  <strong>Search Paths - Header Search Paths</strong> must include the directory containing <code>CZiti-Swift.h</code>.</li>
+<li>Inspect the sample apps&rsquo; configurations in this repository for relevant build settings for libraries and paths</li>
+</ul>
+<h2 id='examples' class='heading'>Examples</h2>
+
+<p>This repository includes a few examples of using the library:</p>
+
+<ul>
+<li><a href="ziti-mac-enroller/main.swift"><code>ziti-mac-enroller</code></a> is a utility that will enroll an identity using a supplied one-time JWT token.  It can optionally update the keychain to trust for the CA pool used by the Ziti controller</li>
+<li><a href="sample-mac-host/main.swift"><code>sample-mac-host</code></a> is a command-line utility that can operate as either a client or a server for a specified Ziti server</li>
+<li><a href="cziti.sample-ios/README.md"><code>sample-ios</code></a> exercises <code><a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a></code> to intercept <code>URLSesson</code> requests, route them over Ziti, and display the results</li>
+<li><a href="sample-ios-objc/README.md"><code>sample-ios-objc</code></a> demonstrates using <strong>Objective-C</strong> to exercise <code><a href="Classes/ZitiUrlProtocol.html">ZitiUrlProtocol</a></code></li>
+</ul>
+<h1 id='building' class='heading'>Building</h1>
+<h2 id='update-code-xcconfig-code-settings' class='heading'>Update <code>xcconfig</code> Settings</h2>
+
+<p>Create a file called <code>Configs/workspace-settings-overrides.xcconfig</code> and populate with appropriate values. </p>
+<pre class="highlight plaintext"><code>DEVELOPMENT_TEAM = XXXXXXXXXX
+ORGANIZATION_PREFIX = ...
+</code></pre>
+<h2 id='from-script' class='heading'>From Script</h2>
+
+<p>This project conains the <a href="build_all.sh"><code>buid_all.sh</code></a> script that will build the project from the command-line for <code>macosx</code>, <code>iphoneos</code>, and <code>iphonesimulator</code> platforms.</p>
+
+<p>Once the static libraries are built, the <code>build_all.sh</code> script executes  <a href="make_dist.sh"><code>make_dist.sh</code></a>, creating two Frameworks, each called <code>CZiti.framework</code>, under the project&rsquo;s <code>./dist</code> directory.</p>
+
+<ul>
+<li><code>./dist/iOS</code> containes a static Universal Framework suitable for use with both the simulator and a real device.</li>
+<li><code>./dist/macOS</code> contains a static Framework for use on macOS.</li>
+</ul>
+
+<p>The scripts require the following executables to be on the caller&rsquo;s path:</p>
+
+<ul>
+<li><code>xcodebuild</code> used to build <code>CZiti-*</code> schemes in <code>CZiti.xcodeproj</code>, avaialble as part of your <code>Xcode</code> installation</li>
+<li><code>cmake</code> used for building the <strong>Ziti Tunnel C SDK</strong> dependency.  (Can be installed via <code>brew install cmake</code>)</li>
+<li><code>ninja</code> also used for building the <strong>Ziti Tunnel C SDK</strong>. (Can be installed via <code>brew install ninja</code>)</li>
+</ul>
+<pre class="highlight shell"><code><span class="gp">$ </span>git clone --recurse-submodules https://github.com/openziti/ziti-sdk-swift.git
+<span class="gp">$ </span><span class="nb">cd </span>ziti-sdk-swift
+<span class="gp">$ </span>/bin/sh build_all.sh
+</code></pre>
+
+<p>By default, the scripts build for <code>Release</code> configuration.  To build for <code>Debug</code>, execute </p>
+<pre class="highlight shell"><code><span class="gp">$ </span><span class="nv">CONFIGURATION</span><span class="o">=</span>Debug /bin/sh build_all.sh
+</code></pre>
+
+<p>The resultant <code>libCZiti.a</code> and <code>CZiti.swiftmodule</code> are available in the appropriate sub-directory of <code>./DerivedData</code>.</p>
+
+<p>Tthe resultant <code>CZiti.framework</code> is available in the approprate sub-directory of <code>./dist</code>, and include <code>CZiti-Swift.h</code> (needed to use the framework from <strong>Objective-C</strong> projects).</p>
+<h2 id='build-manually' class='heading'>Build Manually</h2>
+
+<p>The project depends on the <strong>Ziti Tunnel C SDK</strong>, which is built directly into the  library.  It is maintained as a submodule at <code>./deps/ziti-tunnel-sdk-c</code>.  This project expects builds to be built in <code>./deps/ziti-tunnel-sdk-c/build-macosx-x86_64</code> and <code>./deps/ziti-tunnel-sdk-c/build-macosx-arm64</code> for macOS and <code>./deps/ziti-sdk-c/build-iphoneos-arm64</code> for iOS (or <code>build-iphonesimulator-x86_64</code> for the simulator). </p>
+
+<p>Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.</p>
+<pre class="highlight plaintext"><code>$ git clone https://github.com/openziti/ziti-sdk-swift.git
+$ cd ziti-sdk-swift
+$ git submodule update --init --recursive
+$ cd deps/ziti-tunnel-sdk-c
+$ mkdir build-macosx-x86_64
+$ cd build-macosx-x86_64
+$ cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON .. &amp;&amp; make
+$ cd ..
+$ mkdir build-macosx-arm64
+$ cd build-macosx-arm64
+$ cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake .. &amp;&amp; make
+$ cd ..
+$ mkdir build-iphoneos-arm64
+$ cd build-iphoneos-arm64
+$ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake &amp;&amp; make
+$ cd ..
+$ mkdir build-iphonesimulator-X86_64
+$ cd build-iphonesimulator-X86_64
+$ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake &amp;&amp; make
+</code></pre>
+
+<p>Once the <strong>Ziti Tunnel C SDK</strong> is built, use <code>CZiti.xcodeproj</code> to build the libraries and examples.</p>
+
+<p>The <a href="make_dist.sh"><code>make_dist.sh</code></a> script will package the static library, swiftmodule, and <strong>Objective-C</strong> header file (<code>CZiti-Swift.h</code>) into static frameworks found under the <code>./dist</code> directory.</p>
+<h1 id='getting-help' class='heading'>Getting Help</h1>
+
+<p>Please use these community resources for getting help. We use GitHub <a href="https://github.com/openziti/ziti-url-protocol/issues">issues</a> 
+for tracking bugs and feature requests.</p>
+
+<ul>
+<li>Read the <a href="https://openziti.github.io/ziti/overview.html">docs</a></li>
+<li>Join our <a href="https://openziti.org">Developer Community</a></li>
+<li>Participate in discussion on <a href="https://openziti.discourse.group/">Discourse</a></li>
+</ul>
+
+<p>Copyright NetFoundry Inc.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2022 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2022-10-10)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</html>
