@@ -4,7 +4,8 @@ on:
     branches: [ main ]
   push:
     branches: [ main ]
-
+permissions:
+  contents: write
 jobs:
   build-iOS:
     runs-on: macos-latest
@@ -80,8 +81,9 @@ jobs:
         name: CZiti-macOS.framework
         path: CZiti-macOS.framework.tgz
 
-  build-docs:
+  build-and-deploy-docs:
     runs-on: macos-latest
+    concurrency: ci-${{ github.ref }}
     steps:
     - name: Checkout Project
       uses: actions/checkout@v2
@@ -106,6 +108,11 @@ jobs:
         rm *.podspec
         jazzy --hide-documentation-coverage -x '-arch,x86_64,-scheme,CZiti-macOS,-sdk,macosx' -m CZiti
         tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
+
+    - name: Deploy Docs
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: docs
 
     - name: Upload Docs
       uses: actions/upload-artifact@v2
