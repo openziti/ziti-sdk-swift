@@ -450,7 +450,7 @@ import CZitiPrivate
                                 api_page_size: 25,
                                 refresh_interval: refresh_interval,
                                 metrics_type: EWMA_1m,
-                                router_keepalive: 60, //5,
+                                router_keepalive: 60,
                                 pq_mac_cb: postureChecks?.macQuery != nil ? Ziti.onMacQuery : nil,
                                 pq_os_cb:  postureChecks?.osQuery != nil ?  Ziti.onOsQuery : nil,
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
