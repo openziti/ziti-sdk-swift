@@ -436,15 +436,21 @@ import CZitiPrivate
         self.initCallback = initCallback
         self.postureChecks = postureChecks
         
+        #if os(macOS)
+            let refresh_interval = 15
+        #else
+            let refresh_interval = 300
+        #endif
+        
         zitiOpts = ziti_options(config: nil,
                                 controller: ctrlPtr,
                                 tls:tls,
                                 disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
-                                refresh_interval: 15,
+                                refresh_interval: refresh_interval,
                                 metrics_type: EWMA_1m,
-                                router_keepalive: 5,
+                                router_keepalive: 60, //5,
                                 pq_mac_cb: postureChecks?.macQuery != nil ? Ziti.onMacQuery : nil,
                                 pq_os_cb:  postureChecks?.osQuery != nil ?  Ziti.onOsQuery : nil,
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
