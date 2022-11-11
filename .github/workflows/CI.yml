@@ -15,20 +15,19 @@ jobs:
       with:
         submodules: true
 
-    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '13.2.1'
 
     - name: Build iphoneos
       run: |
-        cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64
+        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64 
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
 
     - name: Build iphonesimulator
       run: |
-        cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64
+        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64 
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
 
@@ -38,7 +37,7 @@ jobs:
         tar -cvzf CZiti-iOS.framework.tgz -C ./dist/iOS/Release/Pods/CZiti-iOS/ .
 
     - name: Upload Framework
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: CZiti-iOS.framework
         path: CZiti-iOS.framework.tgz
@@ -51,19 +50,18 @@ jobs:
       with:
         submodules: true
 
-    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '13.2.1'
 
     - name: Build x86_64
       run: |
-        cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
+        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
 
     - name: Build arm64
       run: |
-        cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-arm64
+        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-arm64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-arm64 
 
     - name: Build Universal Lib
@@ -76,7 +74,7 @@ jobs:
         tar -cvzf CZiti-macOS.framework.tgz -C ./dist/macOS/Release/Pods/CZiti-macOS/ .
 
     - name: Upload Framework
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: CZiti-macOS.framework
         path: CZiti-macOS.framework.tgz
@@ -90,7 +88,6 @@ jobs:
       with:
         submodules: true
 
-    - uses: seanmiddleditch/gha-setup-ninja@v3
     - uses: maxim-lobanov/setup-xcode@v1
       with:
         xcode-version: '13.2.1'
@@ -100,7 +97,7 @@ jobs:
 
     - name: Build C SDK
       run: |
-        cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
+        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
 
     - name: Gen Docs
@@ -115,7 +112,7 @@ jobs:
         folder: docs
 
     - name: Upload Docs
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: ziti-sdk-swift-docs
         path: ziti-sdk-swift-docs.tgz
@@ -131,17 +128,17 @@ jobs:
         fetch-depth: 0
 
     - name: Download Docs
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: ziti-sdk-swift-docs
 
     - name: Download iOS Framework
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: CZiti-iOS.framework
 
     - name: Download macOS Framework
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: CZiti-macOS.framework
 
