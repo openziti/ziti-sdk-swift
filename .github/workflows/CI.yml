@@ -79,7 +79,7 @@ jobs:
         name: CZiti-macOS.framework
         path: CZiti-macOS.framework.tgz
 
-  build-and-deploy-docs:
+  build-docs:
     runs-on: macos-latest
     concurrency: ci-${{ github.ref }}
     steps:
@@ -106,11 +106,6 @@ jobs:
         jazzy --hide-documentation-coverage -x '-arch,x86_64,-scheme,CZiti-macOS,-sdk,macosx' -m CZiti
         tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
 
-    - name: Deploy Docs
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        folder: docs
-
     - name: Upload Docs
       uses: actions/upload-artifact@v3
       with:
@@ -119,7 +114,7 @@ jobs:
 
   draft-release:
     runs-on: ubuntu-latest
-    needs: [ build-iOS, build-macOS, build-and-deploy-docs ]
+    needs: [ build-iOS, build-macOS, build-docs ]
     if: github.event_name == 'push' && github.ref  == 'refs/heads/main'
     steps:
     - name: Checkout Project

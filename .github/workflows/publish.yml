@@ -4,7 +4,7 @@ on:
     types: [ published ]
 
 jobs:
-  publish:
+  publish-podspecs:
     runs-on: macos-latest
     steps:
     - name: Checkout Project
@@ -25,3 +25,20 @@ jobs:
         echo ${{ steps.get_release.outputs.tag_name }} > version 
         pod trunk push CZiti-iOS.podspec
         pod trunk push CZiti-macOS.podspec
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    - name: Download Docs
+      uses: actions/download-artifact@v3
+      with:
+        name: ziti-sdk-swift-docs
+
+    - name: Extract Docs
+      run: |
+        mkdir ./docs
+        tar -xvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
+
+    - name: Publish Docs
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: docs
