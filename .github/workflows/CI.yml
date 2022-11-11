@@ -81,7 +81,6 @@ jobs:
 
   build-docs:
     runs-on: macos-latest
-    concurrency: ci-${{ github.ref }}
     steps:
     - name: Checkout Project
       uses: actions/checkout@v3
