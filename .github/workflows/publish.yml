@@ -26,8 +26,42 @@ jobs:
         pod trunk push CZiti-iOS.podspec
         pod trunk push CZiti-macOS.podspec
 
+  build-docs:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '13.2.1'
+
+    - name: Get Jazzy
+      run: gem install jazzy
+
+    - name: Build C SDK
+      run: |
+        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
+        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
+
+    - name: Gen Docs
+      run: |
+        rm *.podspec
+        jazzy --hide-documentation-coverage -x '-arch,x86_64,-scheme,CZiti-macOS,-sdk,macosx' -m CZiti
+        tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
+
+    - name: Upload Docs
+      uses: actions/upload-artifact@v3
+      with:
+        name: ziti-sdk-swift-docs
+        path: ziti-sdk-swift-docs.tgz
+
   publish-docs:
     runs-on: ubuntu-latest
+    needs: [publish-podspecs, build-docs]
+    concurrency: ci-${{ github.ref }}
     - name: Download Docs
       uses: actions/download-artifact@v3
       with:
