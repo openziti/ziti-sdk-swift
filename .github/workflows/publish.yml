@@ -1,0 +1,49 @@
+name: publish podspecs
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  publish-podspecs:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Get Release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Push Podspecs
+      env:
+        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+      run: |
+        echo ${{ steps.get_release.outputs.tag_name }} > version 
+        pod trunk push CZiti-iOS.podspec
+        pod trunk push CZiti-macOS.podspec
+
+  publish-docs:
+    runs-on: ubuntu-latest
+    concurrency: ci-${{ github.ref }}
+    - name: Get Release
+      id: get_release
+      uses: bruceadams/get-release@v1.3.2
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+
+    - name: Download Docs
+        run: curl ${{ steps.get_release.outputs.upload_url }}/ziti-sdk-swift-docs.tgz -L -o ziti-sdk-swift-docs.tgz
+
+    - name: Extract Docs
+      run: |
+        mkdir ./docs
+        tar -xvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
+
+    - name: Publish Docs
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: docs
