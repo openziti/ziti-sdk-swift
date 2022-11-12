@@ -37,7 +37,7 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Download Docs
-      run: curl ${{ steps.get_release.outputs.upload_url }}/ziti-sdk-swift-docs.tgz -L -o ziti-sdk-swift-docs.tgz
+      run: curl ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.get_release.outputs.tag_name }}/ziti-sdk-swift-docs.tgz -L -o ziti-sdk-swift-docs.tgz
 
     - name: Extract Docs
       run: |
