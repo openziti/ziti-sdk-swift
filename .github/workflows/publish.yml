@@ -29,6 +29,7 @@ jobs:
   publish-docs:
     runs-on: ubuntu-latest
     concurrency: ci-${{ github.ref }}
+    steps:
     - name: Get Release
       id: get_release
       uses: bruceadams/get-release@v1.3.2
