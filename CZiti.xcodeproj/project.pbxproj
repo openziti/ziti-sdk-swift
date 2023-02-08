@@ -19,6 +19,8 @@
 		5A0E4A8C24530E2500C56DCF /* libziti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8A24530E1E00C56DCF /* libziti.a */; };
 		5A0E4A8E24534DDE00C56DCF /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8D24534DDE00C56DCF /* libsodium.a */; };
 		5A0E4A8F24534DE500C56DCF /* libsodium.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A0E4A8D24534DDE00C56DCF /* libsodium.a */; };
+		5A1D8AD629940BE500101BD7 /* libtlsuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A1D8AD529940BE500101BD7 /* libtlsuv.a */; };
+		5A1D8AD729940C3A00101BD7 /* libtlsuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5A1D8AD529940BE500101BD7 /* libtlsuv.a */; };
 		5A411E0B251FE40B005EE351 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0AC94E247783440021E8D9 /* Bridge.swift */; };
 		5A5538E82556F92100C02F03 /* ZitiPostureChecks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */; };
 		5A5538E92556F92100C02F03 /* ZitiPostureChecks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */; };
@@ -46,7 +48,6 @@
 		5AA298BD2585961C001F7502 /* NetifDriver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA298BB2585961C001F7502 /* NetifDriver.swift */; };
 		5AAAEDE62464D8AB00C56383 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDE52464D8AB00C56383 /* main.swift */; };
 		5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
-		5AB6DF7E244B8F2000F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
 		5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */; };
 		5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
@@ -55,7 +56,6 @@
 		5AB6DFBA244BA64300F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
 		5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
 		5AB6DFBC244BA64B00F4B4E0 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */; };
-		5AB6DFBE244BA65400F4B4E0 /* libuv_mbed.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF77244B8F2000F4B4E0 /* libuv_mbed.a */; };
 		5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB8309F247432C40089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
 		5AB830A0247432C40089AF93 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83091247432C40089AF93 /* ZitiKeychain.swift */; };
@@ -186,6 +186,7 @@
 		5A0AC94E247783440021E8D9 /* Bridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bridge.swift; sourceTree = "<group>"; };
 		5A0E4A8A24530E1E00C56DCF /* libziti.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libziti.a; path = "deps/ziti-sdk-c/build-os-arch/library/libziti.a"; sourceTree = "<group>"; };
 		5A0E4A8D24534DDE00C56DCF /* libsodium.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsodium.a; path = "deps/ziti-sdk-c/build-os-arch/_deps/libsodium-build/lib/libsodium.a"; sourceTree = "<group>"; };
+		5A1D8AD529940BE500101BD7 /* libtlsuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libtlsuv.a; path = "deps/ziti-tunnel-sdk-c/build-os-arch/_deps/tlsuv-build/libtlsuv.a"; sourceTree = "<group>"; };
 		5A298539283C271E0056C9A7 /* workspace-settings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "workspace-settings.xcconfig"; sourceTree = "<group>"; };
 		5A29E5EE268164CF00EED54C /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiPostureChecks.swift; sourceTree = "<group>"; };
@@ -279,7 +280,7 @@
 				5AA2989125857759001F7502 /* liblwipcore.a in Frameworks */,
 				5A0E4A8E24534DDE00C56DCF /* libsodium.a in Frameworks */,
 				5A0E4A8B24530E1E00C56DCF /* libziti.a in Frameworks */,
-				5AB6DF7E244B8F2000F4B4E0 /* libuv_mbed.a in Frameworks */,
+				5A1D8AD629940BE500101BD7 /* libtlsuv.a in Frameworks */,
 				5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */,
 				5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */,
 				5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */,
@@ -294,7 +295,7 @@
 				5AA2989725857789001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */,
 				5AA2989825857789001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */,
 				5AA2989925857789001F7502 /* liblwipcore.a in Frameworks */,
-				5AB6DFBE244BA65400F4B4E0 /* libuv_mbed.a in Frameworks */,
+				5A1D8AD729940C3A00101BD7 /* libtlsuv.a in Frameworks */,
 				5AB6DFBC244BA64B00F4B4E0 /* libuv_a.a in Frameworks */,
 				5AB6DFB9244BA63F00F4B4E0 /* libmbedcrypto.a in Frameworks */,
 				5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */,
@@ -398,6 +399,7 @@
 		5AB6DF76244B8F2000F4B4E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5A1D8AD529940BE500101BD7 /* libtlsuv.a */,
 				5ADAE979280F7EFD007D1DF4 /* libresolv.9.tbd */,
 				5AFE864327E3C62800D47A47 /* libresolv.tbd */,
 				5AFE864127E3C56000D47A47 /* libresolv.9.tbd */,
@@ -1027,9 +1029,9 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/deps/uv_link_t/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
@@ -1040,7 +1042,7 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
@@ -1088,9 +1090,9 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/http_parser-src",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-src/deps/uv_link_t/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-src/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
@@ -1101,7 +1103,7 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
 				);
 				LIBRARY_SEARCH_PATHS = (
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/mbedtls-build/library",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/uv-mbed-build",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/libuv-build",
