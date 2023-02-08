@@ -31,7 +31,7 @@ import CZitiPrivate
     var stopped = false
     var finished = false
     
-    var req:UnsafeMutablePointer<um_http_req_t>? = nil
+    var req:UnsafeMutablePointer<tlsuv_http_req_t>? = nil
     var resp:HTTPURLResponse?
     
     var clientThread:Thread? // Thread that calls start/stopLoading, handles client notifications
@@ -285,7 +285,7 @@ import CZitiPrivate
     //
     // MARK: - um_http callbacks
     //
-    static private let on_http_resp:um_http_resp_cb = { resp, ctx in
+    static private let on_http_resp:tlsuv_http_resp_cb = { resp, ctx in
         guard let resp = resp, let mySelf = zitiUnretained(ZitiUrlProtocol.self, ctx) else {
             log.wtf("unable to decode context")
             return
@@ -349,7 +349,7 @@ import CZitiPrivate
         }
     }
     
-    static private let on_http_body:um_http_body_cb = { req, body, len in
+    static private let on_http_body:tlsuv_http_body_cb = { req, body, len in
         guard let req = req, let mySelf = zitiUnretained(ZitiUrlProtocol.self ,req.pointee.data) else {
             log.wtf("unable to decode context")
             return

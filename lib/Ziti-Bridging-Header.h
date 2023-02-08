@@ -17,7 +17,7 @@ limitations under the License.
 #include <ziti/ziti.h>
 #include <ziti/ziti_src.h>
 #include <ziti/ziti_model.h>
-#include <uv_mbed/um_http.h>
+#include <tlsuv/http.h>
 #include "ziti/ziti_tunnel.h"
 #include "ziti/ziti_tunnel_cbs.h"
 #include "ziti/netif_driver.h"

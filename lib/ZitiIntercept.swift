@@ -21,8 +21,8 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     
     let name:String
     let urlStr:String
-    var clt = um_http_t()
-    var zs = um_src_t()
+    var clt = tlsuv_http_t()
+    var zs = tlsuv_src_t()
     var hdrs:[String:String]? = nil
     
     static var releasePending:[ZitiIntercept] = []
@@ -31,15 +31,15 @@ class ZitiIntercept : NSObject, ZitiUnretained {
         self.name = name
         self.urlStr = urlStr
         ziti_src_init(ziti.loop, &zs, name.cString(using: .utf8), ziti.ztx)
-        um_http_init_with_src(ziti.loop, &clt, urlStr.cString(using: .utf8), &zs)
-        um_http_idle_keepalive(&clt, idleTime)
+        tlsuv_http_init_with_src(ziti.loop, &clt, urlStr.cString(using: .utf8), &zs)
+        tlsuv_http_idle_keepalive(&clt, idleTime)
         
         super.init()
         
         clt.data = self.toVoidPtr()
     }
     
-    static private let on_http_close:um_http_close_cb = { h in
+    static private let on_http_close:tlsuv_http_close_cb = { h in
         guard let ctx = h?.pointee.data, let mySelf = zitiUnretained(ZitiIntercept.self, ctx) else {
             return
         }
@@ -48,24 +48,24 @@ class ZitiIntercept : NSObject, ZitiUnretained {
     
     func close() {
         ZitiIntercept.releasePending.append(self)
-        um_http_close(&clt, ZitiIntercept.on_http_close)
+        tlsuv_http_close(&clt, ZitiIntercept.on_http_close)
     }
     
     func createRequest(_ zup:ZitiUrlProtocol, _ urlPath:String,
-                       _ on_resp:@escaping um_http_resp_cb,
-                       _ on_body:@escaping um_http_body_cb,
-                       _ ctx:UnsafeMutableRawPointer) -> UnsafeMutablePointer<um_http_req_t>? {
+                       _ on_resp:@escaping tlsuv_http_resp_cb,
+                       _ on_body:@escaping tlsuv_http_body_cb,
+                       _ ctx:UnsafeMutableRawPointer) -> UnsafeMutablePointer<tlsuv_http_req_t>? {
         
-        var req:UnsafeMutablePointer<um_http_req_t>? = nil
+        var req:UnsafeMutablePointer<tlsuv_http_req_t>? = nil
         
         let method = zup.request.httpMethod ?? "GET"
-        req = um_http_req(&clt, method, urlPath.cString(using: .utf8), on_resp, ctx)
+        req = tlsuv_http_req(&clt, method, urlPath.cString(using: .utf8), on_resp, ctx)
         req?.pointee.resp.body_cb = on_body
         
         if req != nil {
             // Add request headers
             zup.request.allHTTPHeaderFields?.forEach { h in
-                um_http_req_header(req,
+                tlsuv_http_req_header(req,
                                    h.key.cString(using: .utf8),
                                    h.value.cString(using: .utf8))
             }
@@ -73,7 +73,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
             // add any headers specified via service config
             if let hdrs = hdrs {
                 hdrs.forEach { hdr in
-                    um_http_req_header(req, hdr.key, hdr.value)
+                    tlsuv_http_req_header(req, hdr.key, hdr.value)
                 }
             }
             
@@ -83,14 +83,14 @@ class ZitiIntercept : NSObject, ZitiUnretained {
                 if let nfv = ziti_get_version()?.pointee {
                     zv = "\(String(cString: nfv.version))-@\(String(cString: nfv.revision))"
                 }
-                um_http_req_header(req,
+                tlsuv_http_req_header(req,
                                    "User-Agent".cString(using: .utf8),
                                    "\(ZitiUrlProtocol.self); ziti-sdk-c/\(zv)".cString(using: .utf8))
             }
             
             // if no Accept, add it
             if zup.request.allHTTPHeaderFields?["Accept"] == nil {
-                um_http_req_header(req,
+                tlsuv_http_req_header(req,
                                    "Accept".cString(using: .utf8),
                                    "*/*".cString(using: .utf8))
             }
@@ -100,7 +100,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
                 let ptr = UnsafeMutablePointer<Int8>.allocate(capacity: body.count)
                 let bytes:[Int8] = body.map{ Int8(bitPattern: $0) }
                 ptr.initialize(from: bytes, count: body.count)
-                um_http_req_data(req, ptr, body.count, nil)
+                tlsuv_http_req_data(req, ptr, body.count, nil)
                 ptr.deallocate()
             } else if let stream = zup.request.httpBodyStream {
                 if let clv = zup.request.allHTTPHeaderFields?["Content-Length"], let contentLen = Int(clv) {
@@ -114,7 +114,7 @@ class ZitiIntercept : NSObject, ZitiUnretained {
                     stream.close()
                     
                     _ = ptr.withMemoryRebound(to: Int8.self, capacity: body.count) {
-                        um_http_req_data(req, $0, body.count, nil)
+                        tlsuv_http_req_data(req, $0, body.count, nil)
                     }
                     ptr.deallocate()
                 } else {
