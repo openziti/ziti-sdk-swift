@@ -21,13 +21,13 @@ jobs:
 
     - name: Build iphoneos
       run: |
-        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64
+        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64 
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
 
     - name: Build iphonesimulator
       run: |
-        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64
+        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64 
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
 
@@ -56,12 +56,12 @@ jobs:
 
     - name: Build x86_64
       run: |
-        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
+        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
 
     - name: Build arm64
       run: |
-        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-arm64
+        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-arm64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-arm64 
 
     - name: Build Universal Lib
@@ -96,7 +96,7 @@ jobs:
 
     - name: Build C SDK
       run: |
-        cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
+        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
         cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
 
     - name: Gen Docs
