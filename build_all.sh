@@ -40,9 +40,9 @@ function do_build {
 
       cd ${c_sdk_build_dir}
       if [[ "${toolchain}" =~ "${a}" ]] ; then
-         cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/${toolchain} .. && ninja
+         cmake -GNinja -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/${toolchain} .. && ninja
       else
-         cmake -GNinja -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON .. && ninja
+         cmake -GNinja -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON .. && ninja
       fi
 
       if [ $? -ne 0 ] ;  then
