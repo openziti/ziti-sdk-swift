@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         spec:
-        - { name: 'build-iphoneos-arm6', toolchain: 'iOS-arm64' }
+        - { name: 'build-iphoneos-arm64', toolchain: 'iOS-arm64' }
         - { name: 'build-iphonesimulator-x86_64', toolchain: 'iOS-x86_64' }
         - { name: 'build-macosx-arm64', toolchain: 'macOS-arm64' }
         - { name: 'build-macosx-x86_64' }
