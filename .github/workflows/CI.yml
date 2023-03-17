@@ -33,9 +33,9 @@ jobs:
       env:
         TOOLCHAIN: ${{ matrix.spec.toolchain && format('../../toolchains/{0}.cmake', matrix.spec.toolchain) || '' }}
       run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }
-        cmake --build ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }
-        tar -cvzf ${{ matrix.spec.name }.tgz -C ./deps/ziti-tunnel-sdk-c ${{ matrix.spec.name }
+        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
+        cmake --build ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
+        tar -cvzf ${{ matrix.spec.name }.tgz -C ./deps/ziti-tunnel-sdk-c ${{ matrix.spec.name }}
 
     - name: Upload Build
       uses: actions/upload-artifact@v3
