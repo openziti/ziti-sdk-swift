@@ -6,9 +6,19 @@ on:
     branches: [ main ]
 permissions:
   contents: write
+
 jobs:
-  build-iOS:
+  build-tsdk:
     runs-on: macos-latest
+
+    strategy:
+      matrix:
+        spec:
+        - { name: 'build-iphoneos-arm64', toolchain: 'iOS-arm64' }
+        - { name: 'build-iphonesimulator-x86_64', toolchain: 'iOS-x86_64' }
+        - { name: 'build-macosx-arm64', toolchain: 'macOS-arm64' }
+        - { name: 'build-macosx-x86_64' }
+
     steps:
     - name: Checkout Project
       uses: actions/checkout@v3
@@ -19,88 +29,83 @@ jobs:
       with:
         xcode-version: '13.2.1'
 
-    - name: Build iphoneos
+    - name: ${{ matrix.spec.name }}
+      env:
+        TOOLCHAIN: ${{ matrix.spec.toolchain && format('../../toolchains/{0}.cmake', matrix.spec.toolchain) || '' }}
       run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-iphoneos-arm64 
+        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
+        cmake --build ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
+        tar -cvzf ${{ matrix.spec.name }}.tgz -C ./deps/ziti-tunnel-sdk-c ${{ matrix.spec.name }}
+
+    - name: Upload Build
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{ matrix.spec.name }}.tgz
+        path: ${{ matrix.spec.name }}.tgz
+
+  build-cziti:
+    runs-on: macos-latest
+    needs: [ build-tsdk ]
+
+    steps:
+    - name: Checkout Project
+      uses: actions/checkout@v3
+      with:
+        submodules: true
+
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '13.2.1'
+
+    - name: Download Artifacts
+      uses: actions/download-artifact@v3
+
+    - name: Extract TSDK Builds
+      run: |
+        ls -lart
+        file build-iphoneos-arm64.tgz
+        file build-iphoneos-arm64.tgz/build-iphoneos-arm64.tgz
+        tar -xzvf build-iphoneos-arm64.tgz/build-iphoneos-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
+        tar -xzvf build-iphonesimulator-x86_64.tgz/build-iphonesimulator-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
+        tar -xzvf build-macosx-x86_64.tgz/build-macosx-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
+        tar -xzvf build-macosx-arm64.tgz/build-macosx-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
+
+    - name: Build CZiti
+      run: |
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch arm64 -sdk iphoneos
-
-    - name: Build iphonesimulator
-      run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-iphonesimulator-x86_64 
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -sdk iphonesimulator
+        xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO -sdk macosx 
 
-    - name: Create Framework
+    - name: Create Frameworks
       run: |
-        FOR=iOS ./make_dist.sh
+        ./make_dist.sh
         tar -cvzf CZiti-iOS.framework.tgz -C ./dist/iOS/Release/Pods/CZiti-iOS/ .
+        tar -cvzf CZiti-macOS.framework.tgz -C ./dist/macOS/Release/Pods/CZiti-macOS/ .
+        pushd ./dist
+        zip -r ../CZiti.xcframework.zip CZiti.xcframework
+        popd
 
-    - name: Upload Framework
+    - name: Upload CZiti-iOS.framework
       uses: actions/upload-artifact@v3
       with:
         name: CZiti-iOS.framework
         path: CZiti-iOS.framework.tgz
 
-  build-macOS:
-    runs-on: macos-latest
-    steps:
-    - name: Checkout Project
-      uses: actions/checkout@v3
-      with:
-        submodules: true
-
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '13.2.1'
-
-    - name: Build x86_64
-      run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
-
-    - name: Build arm64
-      run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-arm64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-arm64 
-
-    - name: Build Universal Lib
-      run: |
-        xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti -arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO -sdk macosx
-
-    - name: Create Framework
-      run: |
-        FOR=macOS ./make_dist.sh
-        tar -cvzf CZiti-macOS.framework.tgz -C ./dist/macOS/Release/Pods/CZiti-macOS/ .
-
-    - name: Upload Framework
+    - name: Upload CZiti-macOS.framework
       uses: actions/upload-artifact@v3
       with:
         name: CZiti-macOS.framework
         path: CZiti-macOS.framework.tgz
 
-  build-docs:
-    runs-on: macos-latest
-    steps:
-    - name: Checkout Project
-      uses: actions/checkout@v3
+    - name: Upload CZiti.xcframework
+      uses: actions/upload-artifact@v3
       with:
-        submodules: true
-
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '13.2.1'
-
-    - name: Get Jazzy
-      run: gem install jazzy
-
-    - name: Build C SDK
-      run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64
-        cmake --build ./deps/ziti-tunnel-sdk-c/build-macosx-x86_64 
+        name: CZiti.xcframework
+        path: CZiti.xcframework.zip
 
     - name: Gen Docs
       run: |
+        gem install jazzy
         rm *.podspec
         jazzy --hide-documentation-coverage -x '-arch,x86_64,-scheme,CZiti-macOS,-sdk,macosx' -m CZiti
         tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
@@ -113,7 +118,7 @@ jobs:
 
   draft-release:
     runs-on: ubuntu-latest
-    needs: [ build-iOS, build-macOS, build-docs ]
+    needs: [ build-cziti ]
     if: github.event_name == 'push' && github.ref  == 'refs/heads/main'
     steps:
     - name: Checkout Project
@@ -135,6 +140,11 @@ jobs:
       uses: actions/download-artifact@v3
       with:
         name: CZiti-macOS.framework
+
+    - name: Download CZiti.xcframework
+      uses: actions/download-artifact@v3
+      with:
+        name: CZiti.xcframework
 
     - name: Draft Release
       id: release_drafter
@@ -173,4 +183,15 @@ jobs:
         asset_path: ./CZiti-macOS.framework.tgz
         asset_name: CZiti-macOS.framework.tgz
         asset_content_type: application/tgz
+        overwrite: true
+
+    - name: Upload CZiti.xcframework
+      uses: shogo82148/actions-upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.release_drafter.outputs.upload_url }}
+        asset_path: ./CZiti.xcframework.zip
+        asset_name: CZiti.xcframework.zip
+        asset_content_type: application/zip
         overwrite: true
