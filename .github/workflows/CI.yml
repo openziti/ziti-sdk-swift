@@ -41,7 +41,7 @@ jobs:
       uses: actions/upload-artifact@v3
       with:
         name: ${{ matrix.spec.name }}`
-        path: ${{ matrix.spec.name }.tgz
+        path: ${{ matrix.spec.name }}.tgz
 
   build-cziti:
     runs-on: macos-latest
