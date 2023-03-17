@@ -62,14 +62,10 @@ jobs:
 
     - name: Extract TSDK Builds
       run: |
-        ls -lart
-        unzip -o build-iphoneos-arm64.tgz
+        for f in build-*.tgz ; do mv ${f} ${f}.zip && unzip ${f}.zip ; done
         tar -xzvf build-iphoneos-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
-        unzip -o build-iphonesimulator-x86_64.tgz
         tar -xzvf build-iphonesimulator-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
-        unzip -o build-macosx-x86_64.tgz
         tar -xzvf build-macosx-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
-        unzip -o build-macosx-arm64.tgz
         tar -xzvf build-macosx-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
 
     - name: Build CZiti
