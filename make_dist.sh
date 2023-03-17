@@ -13,6 +13,21 @@ SWIFTMODULE_NAME="CZiti.swiftmodule"
 # make for iOS, macOS, or All
 : ${FOR:="All"}
 
+function edit_interfaces {
+   module_dir="$1"
+
+   # Edit the .swiftinterface files to remove import of CZitiPrivate
+   find ${module_dir} -name '*.swiftinterface' -print0 |
+   while IFS= read -r -d '' i; do
+      echo "Editing file: $i"
+      sed 's/^import CZitiPrivate$/\/\/ import CZitiPrivate/' $i > $i.bak && mv $i.bak $i
+      if [ $? -ne 0 ] ; then
+         echo "Unable to edit ${i}"
+         exit 1
+      fi
+   done
+}
+
 function create_framework {
    pod_name="$1"
    dist_dir="$2"
@@ -65,15 +80,7 @@ function create_framework {
    fi
 
    # Edit the .swiftinterface files to remove import of CZitiPrivate
-   find ${dist_dir}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}  -name '*.swiftinterface' -print0 |
-   while IFS= read -r -d '' i; do
-      echo "Editing file: $i"
-      sed 's/^import CZitiPrivate$/\/\/ import CZitiPrivate/' $i > $i.bak && mv $i.bak $i
-      if [ $? -ne 0 ] ; then
-         echo "Unable to edit ${i}"
-         exit 1
-      fi
-   done
+   edit_interfaces "${dist_dir}/${PROJECT_NAME}.framework/Modules/${SWIFTMODULE_NAME}"
 
    cp ${derived_sources_dir}/CZiti-Swift.h ${dist_dir}/${PROJECT_NAME}.framework/Headers
    if [ $? -ne 0 ] ; then
@@ -113,6 +120,9 @@ function create_framework {
    echo "Done creating ${dist_dir}/${PROJECT_NAME}.framework"
 }
 
+# accrue these based on $FOR value
+xcframework_args=""
+
 #
 # iOS
 #
@@ -129,6 +139,11 @@ if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
       echo "Unable to create framework for iOS"
       exit 1
    fi
+
+   xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}-iphoneos/${LIB_NAME}"
+   xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources"
+   xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${LIB_NAME}" \
+   xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/CZiti-iOS.build/DerivedSources"
 fi
 
 #
@@ -147,5 +162,22 @@ if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
       echo "Unable to create framework for macOS"
       exit 1
    fi
+
+   xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}/${LIB_NAME}" \
+   xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}/CZiti-macOS.build/DerivedSources"
 fi
 
+#
+# xcframework
+#
+echo "Creating xcframework"
+xcodebuild -create-xcframework ${xcframework_args} -output ${DIST_DIR}/CZiti.xcframework
+
+if [ $? -ne 0 ] ; then
+   echo "Unable to create xcframework"
+   exit 1
+fi
+
+edit_interfaces ${DIST_DIR}/CZiti.xcframework
+
+echo "Done creating ${DIST_DIR}/CZiti.xcframework"
