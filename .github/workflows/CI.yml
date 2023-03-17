@@ -65,6 +65,7 @@ jobs:
         ls -lart
         # for f in build-*.tgz ; do mv ${f} ${f}.zip && ls -lart && unzip ${f}.zip ; done
         # ls -l lart
+        file build-iphoneos-arm64.tgz
         unzip -o build-iphoneos-arm64.tgz
         ls -lart
         tar -xzvf build-iphoneos-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
