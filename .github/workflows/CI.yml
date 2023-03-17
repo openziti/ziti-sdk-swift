@@ -62,9 +62,13 @@ jobs:
 
     - name: Extract TSDK Builds
       run: |
+        unzip build-iphoneos-arm64.tgz.zip
         tar -xzvf build-iphoneos-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
+        unzip build-iphonesimulator-x86_64.tgz.zip
         tar -xzvf build-iphonesimulator-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
+        unzip build-macosx-x86_64.tgz.zip
         tar -xzvf build-macosx-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
+        unzip build-macosx-arm64.tgz.zip
         tar -xzvf build-macosx-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
 
     - name: Build CZiti
