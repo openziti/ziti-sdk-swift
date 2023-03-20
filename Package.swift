@@ -4,7 +4,7 @@
 import PackageDescription
 
 let version = "0.30.6"
-let checksum = "e3140a782566a31d3248beb23edb7845e6f01c5d1a5c3cfe61b1a47e9157e67c"
+let checksum = "f7d02b86926a71a42e987d23d2023a3a9cb9dc270005e20086d084cd5722adcc"
 
 let package = Package(
     name: "CZiti",
