@@ -40,7 +40,7 @@ jobs:
     - name: Upload Build
       uses: actions/upload-artifact@v3
       with:
-        name: ${{ matrix.spec.name }}.tgz
+        name: ${{ matrix.spec.name }}
         path: ${{ matrix.spec.name }}.tgz
 
   build-cziti:
@@ -62,13 +62,10 @@ jobs:
 
     - name: Extract TSDK Builds
       run: |
-        ls -lart
-        file build-iphoneos-arm64.tgz
-        file build-iphoneos-arm64.tgz/build-iphoneos-arm64.tgz
-        tar -xzvf build-iphoneos-arm64.tgz/build-iphoneos-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
-        tar -xzvf build-iphonesimulator-x86_64.tgz/build-iphonesimulator-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
-        tar -xzvf build-macosx-x86_64.tgz/build-macosx-x86_64.tgz -C ./deps/ziti-tunnel-sdk-c
-        tar -xzvf build-macosx-arm64.tgz/build-macosx-arm64.tgz -C ./deps/ziti-tunnel-sdk-c
+        ARTIFACT="build-iphoneos-arm64"; tar -xzvf ${ARTIFACT}/${ARTIFACT}.tgz -C ./deps/ziti-tunnel-sdk-c
+        ARTIFACT="build-iphonesimulator-x86_64"; tar -xzvf ${ARTIFACT}/${ARTIFACT}.tgz -C ./deps/ziti-tunnel-sdk-c
+        ARTIFACT="build-macosx-x86_64"; tar -xzvf ${ARTIFACT}/${ARTIFACT}.tgz -C ./deps/ziti-tunnel-sdk-c
+        ARTIFACT="build-macosx-arm64"; tar -xzvf ${ARTIFACT}/${ARTIFACT}.tgz -C ./deps/ziti-tunnel-sdk-c
 
     - name: Build CZiti
       run: |
@@ -81,9 +78,7 @@ jobs:
         ./make_dist.sh
         tar -cvzf CZiti-iOS.framework.tgz -C ./dist/iOS/Release/Pods/CZiti-iOS/ .
         tar -cvzf CZiti-macOS.framework.tgz -C ./dist/macOS/Release/Pods/CZiti-macOS/ .
-        pushd ./dist
-        zip -r ../CZiti.xcframework.zip CZiti.xcframework
-        popd
+        pushd ./dist && zip -r ../CZiti.xcframework.zip CZiti.xcframework && popd
 
     - name: Upload CZiti-iOS.framework
       uses: actions/upload-artifact@v3
@@ -195,3 +190,53 @@ jobs:
         asset_name: CZiti.xcframework.zip
         asset_content_type: application/zip
         overwrite: true
+
+    - name: Compute Checksum
+      id: calc_checksum
+      run: |
+        # checksum=$(swift package compute-checksum ./CZiti.xcframework.zip)
+        checksum=$(shasum -a 256 ./CZiti.xcframework.zip | cut -d " " -f1)
+        echo "checksum: ${checksum}"
+        echo "checksum=${checksum}" >> $GITHUB_OUTPUT
+
+    - name: Edit Package.swift
+      env:
+        VERS: ${{ steps.release_drafter.outputs.tag_name }}
+        CHKSM: ${{ steps.calc_checksum.outputs.checksum }}
+      run: |
+        echo "VERS=${VERS}; CHKSM=${CHKSM}"
+        sed "/let version = \"/s/.*/let version = \"${VERS}\"/; /let checksum = \"/s/.*/let checksum = \"${CHKSM}\"/" Package.swift > Package.swift.next
+        cat Package.swift.next
+        mv Package.swift.next Package.swift
+
+    - name: Git Config SSH
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        gh_ci_key: ${{ secrets.GH_CI_KEY }}
+      run: |
+        ssh_key=$(echo ${gh_ci_key} | base64 --decode)
+        echo ${ssh_key} > ssh.key
+        git config user.name ziti-ci
+        git config user.email ziti-ci@netfoundry.io
+        git config core.sshCommand "ssh -i ssh.key"
+        git remote set-url origin git@github.com:${GITHUB_REPOSITORY}.git
+
+    - name: Git Config PGP
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        ziti_ci_gpg_key: ${{ secrets.ZITI_CI_GPG_KEY }}
+        ziti_ci_gpg_key_id: ${{ secrets.ZITI_CI_GPG_KEY_ID }}
+      run: |
+        git config user.signingkey ${ziti_ci_gpg_key_id} 
+        echo ${ziti_ci_gpg_key} > gpg.key
+        gpg --import gpg.key
+        git config commit.gpgsign
+
+    - name: Git Commit Package.swift
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        VERS: ${{ steps.release_drafter.outputs.tag_name }}
+        CHKSM: ${{ steps.calc_checksum.outputs.checksum }}
+      run: |
+        git commit -m "set version = ${VERS}; set checksum = ${CHKSM}" Package.swift
+        git push
