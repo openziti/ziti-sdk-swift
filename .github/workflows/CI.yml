@@ -209,34 +209,23 @@ jobs:
         cat Package.swift.next
         mv Package.swift.next Package.swift
 
-    - name: Git Config SSH
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        gh_ci_key: ${{ secrets.GH_CI_KEY }}
-      run: |
-        ssh_key=$(echo ${gh_ci_key} | base64 --decode)
-        echo ${ssh_key} > ssh.key
-        git config user.name ziti-ci
-        git config user.email ziti-ci@netfoundry.io
-        git config core.sshCommand "ssh -i ssh.key"
-        git remote set-url origin git@github.com:${GITHUB_REPOSITORY}.git
+    - name: Install Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: '1.19.x'
 
-    - name: Git Config PGP
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        ziti_ci_gpg_key: ${{ secrets.ZITI_CI_GPG_KEY }}
-        ziti_ci_gpg_key_id: ${{ secrets.ZITI_CI_GPG_KEY_ID }}
-      run: |
-        git config user.signingkey ${ziti_ci_gpg_key_id} 
-        echo ${ziti_ci_gpg_key} > gpg.key
-        gpg --import gpg.key
-        git config commit.gpgsign
+    - name: Install Ziti CI
+      uses: netfoundry/ziti-ci@v1
 
     - name: Git Commit Package.swift
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        gh_ci_key: ${{ secrets.GH_CI_KEY }}
+        ziti_ci_gpg_key: ${{ secrets.ZITI_CI_GPG_KEY }}
+        ziti_ci_gpg_key_id: ${{ secrets.ZITI_CI_GPG_KEY_ID }}
         VERS: ${{ steps.release_drafter.outputs.tag_name }}
         CHKSM: ${{ steps.calc_checksum.outputs.checksum }}
       run: |
+        $(go env GOPATH)/bin/ziti-ci configure-git
         git commit -m "set version = ${VERS}; set checksum = ${CHKSM}" Package.swift
         git push
