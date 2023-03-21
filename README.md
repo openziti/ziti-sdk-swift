@@ -144,9 +144,14 @@ See also the documentation included in the `CZiti` module available in the `Xcod
 
 # Adding `CZiti` as a Dependency
 
-`CZiti` is built into a static library (`libCZiti.a`) and is packaged as a static Framework (`CZiti.framework`).
+`CZiti` is built into an XCFramework (`CZiti.xcframework`), a static library (`libCZiti.a`), and a static Framework (`CZiti.framework`).
  
 Note that that `CZiti` is not built for Bitcode, and when building for a device the __Build Settings - Build Options__ should set `Enable Bitcode` to `No`. 
+
+Note that `CZiti` depends on `libresolv.9.tbd`, and requires access to outbound network connections and the Apple Keychain.
+
+## Via `Swift Package Manager`
+See [ziti-sdk-swift-dist](https://github.com/openziti/ziti-sdk-swift-dist) for access to `CZiti.xcframework` built from this repository and made available as a `.binaryTarget`.
 
 ## Via `CocoaPods`
 If you are using [Cocoapods](https://cocoapods.org/), update your `Podfile`:
@@ -259,15 +264,12 @@ $ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLC
 
 Once the __Ziti Tunnel C SDK__ is built, use `CZiti.xcodeproj` to build the libraries and examples.
 
-The [`make_dist.sh`](make_dist.sh) script will package the static library, swiftmodule, and __Objective-C__ header file (`CZiti-Swift.h`) into static frameworks found under the `./dist` directory.
+The [`make_dist.sh`](make_dist.sh) script will package the static library, swiftmodule, and __Objective-C__ header file (`CZiti-Swift.h`) into static frameworks and an XCFramework found under the `./dist` directory.
 
-# Getting Help
-
-Please use these community resources for getting help. We use GitHub [issues](https://github.com/openziti/ziti-url-protocol/issues) 
-for tracking bugs and feature requests.
-
-- Read the [docs](https://openziti.github.io/ziti/overview.html)
-- Join our [Developer Community](https://openziti.org)
+## Getting Help
+Please use these community resources for getting help. 
+- Read the [docs](https://docs.openziti.io/docs/learn/introduction/)
 - Participate in discussion on [Discourse](https://openziti.discourse.group/)
+- Use GitHub [issues](https://github.com/openziti/ziti-sdk-swift/issues) for tracking bugs and feature requests.
 
 Copyright NetFoundry Inc.
