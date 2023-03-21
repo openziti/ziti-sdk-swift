@@ -1,4 +1,4 @@
-name: publish podspecs
+name: publish artifacts
 on:
   release:
     types: [ published ]
@@ -85,6 +85,7 @@ jobs:
         VERS: ${{ steps.get_release.outputs.tag_name }}
         CHKSM: ${{ steps.calc_checksum.outputs.checksum }}
       run: |
+        echo ${{ steps.get_release.outputs.tag_name }} > version 
         $(go env GOPATH)/bin/ziti-ci configure-git
         git commit -m "set version = ${VERS}; set checksum = ${CHKSM}" Package.swift
         git push
