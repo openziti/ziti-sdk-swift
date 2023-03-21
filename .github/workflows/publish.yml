@@ -60,7 +60,7 @@ jobs:
 
     - name: Edit Package.swift
       env:
-        VERS: ${{ steps.release_drafter.outputs.tag_name }}
+        VERS: ${{ steps.get_release.outputs.tag_name }}
         CHKSM: ${{ steps.calc_checksum.outputs.checksum }}
       run: |
         echo "VERS=${VERS}; CHKSM=${CHKSM}"
@@ -82,7 +82,7 @@ jobs:
         gh_ci_key: ${{ secrets.GH_CI_KEY }}
         ziti_ci_gpg_key: ${{ secrets.ZITI_CI_GPG_KEY }}
         ziti_ci_gpg_key_id: ${{ secrets.ZITI_CI_GPG_KEY_ID }}
-        VERS: ${{ steps.release_drafter.outputs.tag_name }}
+        VERS: ${{ steps.get_release.outputs.tag_name }}
         CHKSM: ${{ steps.calc_checksum.outputs.checksum }}
       run: |
         $(go env GOPATH)/bin/ziti-ci configure-git
