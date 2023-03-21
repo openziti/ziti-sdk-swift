@@ -87,6 +87,8 @@ jobs:
       run: |
         echo ${VERS} > version 
         $(go env GOPATH)/bin/ziti-ci configure-git
+        echo "Updating remote to ssh ziti-sdk-swift-dist"
+        git remote set-url origin git@github.com:openziti/ziti-sdk-swift-dist.git
         git commit -m "set version = ${VERS}; set checksum = ${CHKSM}" Package.swift
         git push
         git tag -a ${VERS} -m "Release v${VERS}"
