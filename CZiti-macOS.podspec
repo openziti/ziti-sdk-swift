@@ -1,5 +1,7 @@
 version = `cat ./version`.strip
 Pod::Spec.new do |s|  
+    s.deprecated_in_favor_of = 'CZiti Swift Package. See https://github.com/openziti/ziti-sdk-swift-dist.git'
+
     s.name      = 'CZiti-macOS'
     s.version   = version
     s.summary   = 'Ziti SDK for Swift (macOS)'
