@@ -27,8 +27,8 @@ jobs:
         COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
       run: |
         echo ${{ steps.get_release.outputs.tag_name }} > version 
-        pod trunk push CZiti-iOS.podspec
         pod trunk push CZiti-macOS.podspec
+        pod trunk push CZiti-iOS.podspec
 
   publish-xcframework:
     runs-on: ubuntu-latest
