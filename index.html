@@ -329,7 +329,7 @@ if (ziti != NULL) {
 <p>See also the documentation included in the <code>CZiti</code> module available in the <code>Xcode</code> Quick Help pane.</p>
 <h1 id='adding-code-cziti-code-as-a-dependency' class='heading'>Adding <code>CZiti</code> as a Dependency</h1>
 
-<p><code>CZiti</code> is built into an XCFramework (<code>CZiti.xcframework</code>), a static library (<code>libCZiti.a</code>), and a static Framework (<code>CZiti.framework</code>).</p>
+<p><code>CZiti</code> is built into an XCFramework (<code>CZiti.xcframework</code>) that includes a static library (<code>libCZiti.a</code>) for each platform and architecture.</p>
 
 <p>Note that that <code>CZiti</code> is not built for Bitcode, and when building for a device the <strong>Build Settings - Build Options</strong> should set <code>Enable Bitcode</code> to <code>No</code>. </p>
 
@@ -338,6 +338,8 @@ if (ziti != NULL) {
 
 <p>See <a href="https://github.com/openziti/ziti-sdk-swift-dist">ziti-sdk-swift-dist</a> for access to <code>CZiti.xcframework</code> built from this repository and made available as a <code>.binaryTarget</code>.</p>
 <h2 id='via-code-cocoapods-code' class='heading'>Via <code>CocoaPods</code></h2>
+
+<p><strong>DEPECATED AS OF v0.30.11, please convert to use of Swift Package Manager</strong></p>
 
 <p>If you are using <a href="https://cocoapods.org/">Cocoapods</a>, update your <code>Podfile</code>:</p>
 <pre class="highlight ruby"><code><span class="n">target</span> <span class="s1">'Some-macOS-Target'</span>
@@ -354,17 +356,6 @@ if (ziti != NULL) {
 </code></pre>
 
 <p>For further information on Cocoapods, check <a href="http://guides.cocoapods.org/using/getting-started.html">their official documentation</a>.</p>
-<h2 id='via-code-cziti-framework-code' class='heading'>Via <code>CZiti.framework</code></h2>
-
-<ul>
-<li>Obtain <code>CZiti.framework</code> following the build steps below or by downloading from <a href="https://github.com/openziti/ziti-sdk-swift/releases">GitHub Releases</a></li>
-<li>Drag the appropriate <code>CZiti.framework</code> into your project, selecting &ldquo;Copy items if needed&rdquo;, &ldquo;Create groups&rdquo;, and your target checked under &ldquo;Add to targets:&rdquo;.</li>
-<li>Ensure the framework is shown under <strong>General - Frameworks, Libraries, and Embedded Content</strong>. If not present, click the &ldquo;+&rdquo; button to add it manually.  The &ldquo;Embedded&rdquo; entry should be set to &ldquo;Do Not Embed&rdquo;.</li>
-<li>Ensure the framework is shown under <strong>Build Phases - Link Binary with Libraries</strong>.  The &ldquo;Status&rdquo; entry should be set to &ldquo;Required&rdquo;</li>
-<li><strong>Build Settings - Frameworks</strong> should include an entry of the directory containing <code>CZiti.framework</code> in your project</li>
-</ul>
-
-<p>Wnen including <code>CZiti</code> in an <strong>Objective-C</strong> project, adding a Swift file that imports <code>Foundation</code> to your project will help ensure your project is setup correctly for accessing <strong>Swift</strong> from <strong>Objective-C</strong></p>
 <h2 id='via-code-libcziti-a-code' class='heading'>Via <code>libCZiti.a</code></h2>
 
 <ul>
@@ -387,27 +378,24 @@ if (ziti != NULL) {
 <h1 id='building' class='heading'>Building</h1>
 <h2 id='update-code-xcconfig-code-settings' class='heading'>Update <code>xcconfig</code> Settings</h2>
 
-<p>Create a file called <code>Configs/workspace-settings-overrides.xcconfig</code> and populate with appropriate values. </p>
+<p>Create a file called <code>Configs/workspace-settings-overrides.xcconfig</code> and populate with appropriate values. See <code>Configs/workplace-settings.xcconfig</code> for all possible values.</p>
 <pre class="highlight plaintext"><code>DEVELOPMENT_TEAM = XXXXXXXXXX
 ORGANIZATION_PREFIX = ...
 </code></pre>
-<h2 id='from-script' class='heading'>From Script</h2>
+<h2 id='execute-build-script' class='heading'>Execute Build Script</h2>
 
-<p>This project conains the <a href="build_all.sh"><code>buid_all.sh</code></a> script that will build the project from the command-line for <code>macosx</code>, <code>iphoneos</code>, and <code>iphonesimulator</code> platforms.</p>
+<p>The project depends on the <strong>Ziti Tunnel C SDK</strong>, which is built directly into the  library.  It is maintained as a submodule at <code>./deps/ziti-tunnel-sdk-c</code>.  This project expects builds to be built in <code>./deps/ziti-tunnel-sdk-c/build-macosx-x86_64</code> and <code>./deps/ziti-tunnel-sdk-c/build-macosx-arm64</code> for macOS and <code>./deps/ziti-sdk-c/build-iphoneos-arm64</code> for iOS (or <code>build-iphonesimulator-x86_64</code>or <code>build-iphonesimulator-arm64</code> for the simulator). </p>
 
-<p>Once the static libraries are built, the <code>build_all.sh</code> script executes  <a href="make_dist.sh"><code>make_dist.sh</code></a>, creating two Frameworks, each called <code>CZiti.framework</code>, under the project&rsquo;s <code>./dist</code> directory.</p>
+<p>This project conains the <a href="build_all.sh"><code>buid_all.sh</code></a> script that will build the project from the command-line for <code>macosx</code>, <code>iphoneos</code>, and <code>iphonesimulator</code> platforms. Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.</p>
 
-<ul>
-<li><code>./dist/iOS</code> containes a static Universal Framework suitable for use with both the simulator and a real device.</li>
-<li><code>./dist/macOS</code> contains a static Framework for use on macOS.</li>
-</ul>
+<p>Once the static libraries are built, the <code>build_all.sh</code> script executes  <a href="make_dist.sh"><code>make_dist.sh</code></a>, creating an XCFramework called <code>CZiti.xcframework</code>, under the project&rsquo;s <code>./dist</code> directory.</p>
 
 <p>The scripts require the following executables to be on the caller&rsquo;s path:</p>
 
 <ul>
 <li><code>xcodebuild</code> used to build <code>CZiti-*</code> schemes in <code>CZiti.xcodeproj</code>, avaialble as part of your <code>Xcode</code> installation</li>
+<li><code>xcpretty</code> also used to build <code>CZiti-*</code> schemes in <code>CZiti.xcodeproj</code>. (Can be installed via <code>brew install ninja</code>)</li>
 <li><code>cmake</code> used for building the <strong>Ziti Tunnel C SDK</strong> dependency.  (Can be installed via <code>brew install cmake</code>)</li>
-<li><code>ninja</code> also used for building the <strong>Ziti Tunnel C SDK</strong>. (Can be installed via <code>brew install ninja</code>)</li>
 </ul>
 <pre class="highlight shell"><code><span class="gp">$ </span>git clone --recurse-submodules https://github.com/openziti/ziti-sdk-swift.git
 <span class="gp">$ </span><span class="nb">cd </span>ziti-sdk-swift
@@ -419,37 +407,6 @@ ORGANIZATION_PREFIX = ...
 </code></pre>
 
 <p>The resultant <code>libCZiti.a</code> and <code>CZiti.swiftmodule</code> are available in the appropriate sub-directory of <code>./DerivedData</code>.</p>
-
-<p>Tthe resultant <code>CZiti.framework</code> is available in the approprate sub-directory of <code>./dist</code>, and include <code>CZiti-Swift.h</code> (needed to use the framework from <strong>Objective-C</strong> projects).</p>
-<h2 id='build-manually' class='heading'>Build Manually</h2>
-
-<p>The project depends on the <strong>Ziti Tunnel C SDK</strong>, which is built directly into the  library.  It is maintained as a submodule at <code>./deps/ziti-tunnel-sdk-c</code>.  This project expects builds to be built in <code>./deps/ziti-tunnel-sdk-c/build-macosx-x86_64</code> and <code>./deps/ziti-tunnel-sdk-c/build-macosx-arm64</code> for macOS and <code>./deps/ziti-sdk-c/build-iphoneos-arm64</code> for iOS (or <code>build-iphonesimulator-x86_64</code> for the simulator). </p>
-
-<p>Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.</p>
-<pre class="highlight plaintext"><code>$ git clone https://github.com/openziti/ziti-sdk-swift.git
-$ cd ziti-sdk-swift
-$ git submodule update --init --recursive
-$ cd deps/ziti-tunnel-sdk-c
-$ mkdir build-macosx-x86_64
-$ cd build-macosx-x86_64
-$ cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON .. &amp;&amp; make
-$ cd ..
-$ mkdir build-macosx-arm64
-$ cd build-macosx-arm64
-$ cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake .. &amp;&amp; make
-$ cd ..
-$ mkdir build-iphoneos-arm64
-$ cd build-iphoneos-arm64
-$ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake &amp;&amp; make
-$ cd ..
-$ mkdir build-iphonesimulator-X86_64
-$ cd build-iphonesimulator-X86_64
-$ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake &amp;&amp; make
-</code></pre>
-
-<p>Once the <strong>Ziti Tunnel C SDK</strong> is built, use <code>CZiti.xcodeproj</code> to build the libraries and examples.</p>
-
-<p>The <a href="make_dist.sh"><code>make_dist.sh</code></a> script will package the static library, swiftmodule, and <strong>Objective-C</strong> header file (<code>CZiti-Swift.h</code>) into static frameworks and an XCFramework found under the <code>./dist</code> directory.</p>
 <h2 id='getting-help' class='heading'>Getting Help</h2>
 
 <p>Please use these community resources for getting help. </p>
@@ -465,7 +422,7 @@ $ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLC
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2023 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2023-03-27)</p>
+          <p>&copy; 2023 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2023-03-28)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>
