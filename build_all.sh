@@ -4,7 +4,7 @@
 # Requires on path:
 #   - xcodebuild
 #   - cmake
-#   - ninja
+#   - xcpretty
 #
 # `CONFIGURATION=Debug /bin/sh $0` to build Debug configuration
 #
@@ -14,59 +14,49 @@ DERIVED_DATA_PATH="${PROJECT_ROOT}/DerivedData/CZiti"
 C_SDK_ROOT="${PROJECT_ROOT}/deps/ziti-tunnel-sdk-c"
 : ${CONFIGURATION:="Release"}
 
-function do_build {
-   scheme=$1
-   arch=$2
-   sdk=$3
-   toolchain=$4
+function build_tsdk {
+   name=$1
+   toolchain=$2
 
-   xcode_arch_arg=""
-   IFS=', ' read -r -a array <<< "$arch"
-   for a in "${array[@]}" ; do
-      c_sdk_build_dir=${C_SDK_ROOT}/build-${sdk}-${a}
+   echo "Building TSDK for ${name}; toolchain:${toolchain}"
+   rm -rf ./deps/ziti-tunnel-sdk-c/${name}
 
-      # nuke C SDK build dir and re-create it
-      rm -rf ${c_sdk_build_dir}
-      if [ $? -ne 0 ] ;  then
-         echo "Unable to delete directory ${c_sdk_build_dir}"
-         exit 1
-      fi
+   cmake -DCMAKE_BUILD_TYPE=${CONFIGURATION} \
+      -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON \
+      -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
+      -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${name}
 
-      mkdir -p ${c_sdk_build_dir}
-      if [ $? -ne 0 ] ;  then
-         echo "Unable to create directory ${c_sdk_build_dir}"
-         exit 1
-      fi
-
-      cd ${c_sdk_build_dir}
-      if [[ "${toolchain}" =~ "${a}" ]] ; then
-         cmake -GNinja -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/${toolchain} .. && ninja
-      else
-         cmake -GNinja -DCMAKE_BUILD_TYPE=${CONFIGURATION} -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON .. && ninja
-      fi
-
-      if [ $? -ne 0 ] ;  then
-         echo "FAILED building C SDK ${c_sdk_build_dir}"
-         exit 1
-      fi
-
-      xcode_arch_arg="${xcode_arch_arg} -arch ${a}"
-   done
-
-   n_arch="${#array[@]}"
-   if [ $n_arch -gt 1 ] ; then
-      xcode_arch_arg="${xcode_arch_arg} ONLY_ACTIVE_ARCH=NO"
+   if [ $? -ne 0 ] ; then
+      echo "Unable to cmake ${name}"
+      exit 1
    fi
 
-
-   cd ${PROJECT_ROOT}
-   xcodebuild build -configuration ${CONFIGURATION} -scheme ${scheme} -derivedDataPath ${DERIVED_DATA_PATH} ${xcode_arch_arg} -sdk ${sdk}
-   if [ $? -ne 0 ] ;  then
-      echo "FAILED building ${scheme} ${CONFIGURATION} ${sdk} ${xcode_arch_arg}"
+   cmake --build ./deps/ziti-tunnel-sdk-c/${name}
+   if [ $? -ne 0 ] ; then
+      echo "Unable to cmake build ${name}"
       exit 1
    fi
 }
 
+function build_cziti {
+   scheme=$1
+   sdk=$2
+   arch_flags=$3
+
+   echo "Building ${scheme} ${sdk}"
+   set -o pipefail && xcodebuild build \
+      -derivedDataPath ./DerivedData/CZiti \
+      -configuration ${CONFIGURATION} \
+      -scheme ${scheme} \
+      ${arch_flags} \
+      -sdk ${sdk} \
+      | xcpretty
+
+   if [ $? -ne 0 ] ; then
+      echo "Unable to xcodebuild ${scheme} ${sdk}"
+      exit 1
+   fi
+}
 
 rm -rf ${DERIVED_DATA_PATH}
 if [ $? -ne 0 ] ; then
@@ -74,9 +64,16 @@ if [ $? -ne 0 ] ; then
    exit 1
 fi
 
-do_build CZiti-macOS "x86_64,arm64" macosx macOS-arm64.cmake
-do_build CZiti-iOS arm64 iphoneos iOS-arm64.cmake
-do_build CZiti-iOS x86_64 iphonesimulator iOS-x86_64.cmake
+toolchain_dir="../../toolchains"
+build_tsdk 'build-iphoneos-arm64' "${toolchain_dir}/iOS-arm64.cmake"
+build_tsdk 'build-iphonesimulator-x86_64' "${toolchain_dir}/iOS-Simulator-x86_64.cmake"
+build_tsdk 'build-iphonesimulator-arm64' "${toolchain_dir}/iOS-Simulator-arm64.cmake"
+build_tsdk 'build-macosx-arm64' "${toolchain_dir}/macOS-arm64.cmake"
+build_tsdk 'build-macosx-x86_64' "${toolchain_dir}/macOS-x86_64.cmake"
+
+build_cziti 'CZiti-iOS' 'iphoneos' '-arch arm64'
+build_cziti 'CZiti-iOS' 'iphonesimulator' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
+build_cziti 'CZiti-macOS' 'macosx' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
 
 /bin/sh ${PROJECT_ROOT}/make_dist.sh
 if [ $? -ne 0 ] ; then
