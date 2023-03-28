@@ -4,31 +4,6 @@ on:
     types: [ published ]
 
 jobs:
-  publish-podspecs:
-    runs-on: macos-latest
-    steps:
-    - name: Checkout Project
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - uses: maxim-lobanov/setup-xcode@v1
-      with:
-        xcode-version: '13.2.1'
-
-    - name: Get Release
-      id: get_release
-      uses: bruceadams/get-release@v1.3.2
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
-
-    - name: Push Podspecs
-      env:
-        COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-      run: |
-        echo ${{ steps.get_release.outputs.tag_name }} > version 
-        pod trunk push CZiti-macOS.podspec
-        pod trunk push CZiti-iOS.podspec
 
   publish-xcframework:
     runs-on: ubuntu-latest

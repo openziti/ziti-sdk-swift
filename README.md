@@ -144,16 +144,18 @@ See also the documentation included in the `CZiti` module available in the `Xcod
 
 # Adding `CZiti` as a Dependency
 
-`CZiti` is built into an XCFramework (`CZiti.xcframework`), a static library (`libCZiti.a`), and a static Framework (`CZiti.framework`).
+`CZiti` is built into an XCFramework (`CZiti.xcframework`) that includes a static library (`libCZiti.a`) for each platform and architecture.
  
 Note that that `CZiti` is not built for Bitcode, and when building for a device the __Build Settings - Build Options__ should set `Enable Bitcode` to `No`. 
 
 Note that `CZiti` depends on `libresolv.9.tbd`, and requires access to outbound network connections and the Apple Keychain.
 
-## Via `Swift Package Manager`
+## Via `Swift Package Manager` 
 See [ziti-sdk-swift-dist](https://github.com/openziti/ziti-sdk-swift-dist) for access to `CZiti.xcframework` built from this repository and made available as a `.binaryTarget`.
 
-## Via `CocoaPods`
+## Via `CocoaPods` 
+**DEPECATED AS OF v0.30.11, please convert to use of Swift Package Manager**
+
 If you are using [Cocoapods](https://cocoapods.org/), update your `Podfile`:
 
 ```ruby
@@ -172,15 +174,6 @@ end
 
 For further information on Cocoapods, check [their official documentation](http://guides.cocoapods.org/using/getting-started.html).
 
-## Via `CZiti.framework`
-
-* Obtain `CZiti.framework` following the build steps below or by downloading from [GitHub Releases](https://github.com/openziti/ziti-sdk-swift/releases)
-* Drag the appropriate `CZiti.framework` into your project, selecting "Copy items if needed", "Create groups", and your target checked under "Add to targets:".
-* Ensure the framework is shown under **General - Frameworks, Libraries, and Embedded Content**. If not present, click the "+" button to add it manually.  The "Embedded" entry should be set to "Do Not Embed".
-* Ensure the framework is shown under **Build Phases - Link Binary with Libraries**.  The "Status" entry should be set to "Required"
-* **Build Settings - Frameworks** should include an entry of the directory containing `CZiti.framework` in your project
-
-Wnen including `CZiti` in an __Objective-C__ project, adding a Swift file that imports `Foundation` to your project will help ensure your project is setup correctly for accessing __Swift__ from __Objective-C__
 
 ## Via `libCZiti.a`
 
@@ -200,24 +193,26 @@ This repository includes a few examples of using the library:
 # Building
 
 ## Update `xcconfig` Settings
-Create a file called `Configs/workspace-settings-overrides.xcconfig` and populate with appropriate values. 
+Create a file called `Configs/workspace-settings-overrides.xcconfig` and populate with appropriate values. See `Configs/workplace-settings.xcconfig` for all possible values.
 ```
 DEVELOPMENT_TEAM = XXXXXXXXXX
 ORGANIZATION_PREFIX = ...
 ```
 
-## From Script
+## Execute Build Script
 
-This project conains the [`buid_all.sh`](build_all.sh) script that will build the project from the command-line for `macosx`, `iphoneos`, and `iphonesimulator` platforms.
+The project depends on the __Ziti Tunnel C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-tunnel-sdk-c`.  This project expects builds to be built in `./deps/ziti-tunnel-sdk-c/build-macosx-x86_64` and `./deps/ziti-tunnel-sdk-c/build-macosx-arm64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64`or `build-iphonesimulator-arm64` for the simulator). 
 
-Once the static libraries are built, the `build_all.sh` script executes  [`make_dist.sh`](make_dist.sh), creating two Frameworks, each called `CZiti.framework`, under the project's `./dist` directory.
-* `./dist/iOS` containes a static Universal Framework suitable for use with both the simulator and a real device.
-* `./dist/macOS` contains a static Framework for use on macOS.
+
+This project conains the [`buid_all.sh`](build_all.sh) script that will build the project from the command-line for `macosx`, `iphoneos`, and `iphonesimulator` platforms. Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.
+
+
+Once the static libraries are built, the `build_all.sh` script executes  [`make_dist.sh`](make_dist.sh), creating an XCFramework called `CZiti.xcframework`, under the project's `./dist` directory.
 
 The scripts require the following executables to be on the caller's path:
 * `xcodebuild` used to build `CZiti-*` schemes in `CZiti.xcodeproj`, avaialble as part of your `Xcode` installation
+* `xcpretty` also used to build `CZiti-*` schemes in `CZiti.xcodeproj`. (Can be installed via `brew install ninja`)
 * `cmake` used for building the __Ziti Tunnel C SDK__ dependency.  (Can be installed via `brew install cmake`)
-* `ninja` also used for building the __Ziti Tunnel C SDK__. (Can be installed via `brew install ninja`)
 
 ```bash
 $ git clone --recurse-submodules https://github.com/openziti/ziti-sdk-swift.git
@@ -232,39 +227,6 @@ $ CONFIGURATION=Debug /bin/sh build_all.sh
 
 The resultant `libCZiti.a` and `CZiti.swiftmodule` are available in the appropriate sub-directory of `./DerivedData`.
 
-Tthe resultant `CZiti.framework` is available in the approprate sub-directory of `./dist`, and include `CZiti-Swift.h` (needed to use the framework from __Objective-C__ projects).
-
-## Build Manually
-
-The project depends on the __Ziti Tunnel C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-tunnel-sdk-c`.  This project expects builds to be built in `./deps/ziti-tunnel-sdk-c/build-macosx-x86_64` and `./deps/ziti-tunnel-sdk-c/build-macosx-arm64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64` for the simulator). 
-
-Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.
-
-```
-$ git clone https://github.com/openziti/ziti-sdk-swift.git
-$ cd ziti-sdk-swift
-$ git submodule update --init --recursive
-$ cd deps/ziti-tunnel-sdk-c
-$ mkdir build-macosx-x86_64
-$ cd build-macosx-x86_64
-$ cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON .. && make
-$ cd ..
-$ mkdir build-macosx-arm64
-$ cd build-macosx-arm64
-$ cmake -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/macOS-arm64.cmake .. && make
-$ cd ..
-$ mkdir build-iphoneos-arm64
-$ cd build-iphoneos-arm64
-$ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-arm64.cmake && make
-$ cd ..
-$ mkdir build-iphonesimulator-X86_64
-$ cd build-iphonesimulator-X86_64
-$ cmake .. -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE=../../toolchains/iOS-x86_64.cmake && make
-```
-
-Once the __Ziti Tunnel C SDK__ is built, use `CZiti.xcodeproj` to build the libraries and examples.
-
-The [`make_dist.sh`](make_dist.sh) script will package the static library, swiftmodule, and __Objective-C__ header file (`CZiti-Swift.h`) into static frameworks and an XCFramework found under the `./dist` directory.
 
 ## Getting Help
 Please use these community resources for getting help. 
