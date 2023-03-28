@@ -16,12 +16,7 @@ limitations under the License.
 
 #include <ziti/ziti.h>
 #include <ziti/ziti_src.h>
-#include <ziti/ziti_model.h>
-#include <tlsuv/http.h>
-#include "ziti/ziti_tunnel.h"
 #include "ziti/ziti_tunnel_cbs.h"
-#include "ziti/netif_driver.h"
-#include "ziti/model_support.h"
 #include "ziti/ziti_dns.h"
 
 extern const char** ziti_all_configs;
