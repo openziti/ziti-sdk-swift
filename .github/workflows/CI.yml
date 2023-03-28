@@ -75,7 +75,7 @@ jobs:
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti \
           -arch arm64 -sdk iphoneos | xcpretty
         xcodebuild build -configuration Release -scheme CZiti-iOS -derivedDataPath ./DerivedData/CZiti \
-           -arch x86_64 -sdk iphonesimulator | xcpretty
+           -arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator | xcpretty
         xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti \
            -arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO -sdk macosx  | xcpretty
 
