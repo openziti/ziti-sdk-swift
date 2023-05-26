@@ -439,7 +439,7 @@ import CZitiPrivate
         #if os(macOS)
             let refresh_interval = 15
         #else
-            let refresh_interval = 300
+            let refresh_interval = 30
         #endif
         
         zitiOpts = ziti_options(config: nil,
