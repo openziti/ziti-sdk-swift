@@ -49,7 +49,7 @@ jobs:
         go-version: '1.19.x'
 
     - name: Install Ziti CI
-      uses: netfoundry/ziti-ci@v1
+      uses: openziti/ziti-ci@v1
 
     - name: Git Commit and Tag
       env:

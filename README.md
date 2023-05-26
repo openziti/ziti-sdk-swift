@@ -211,7 +211,7 @@ Once the static libraries are built, the `build_all.sh` script executes  [`make_
 
 The scripts require the following executables to be on the caller's path:
 * `xcodebuild` used to build `CZiti-*` schemes in `CZiti.xcodeproj`, avaialble as part of your `Xcode` installation
-* `xcpretty` also used to build `CZiti-*` schemes in `CZiti.xcodeproj`. (Can be installed via `brew install ninja`)
+* `xcpretty` also used to build `CZiti-*` schemes in `CZiti.xcodeproj`. (Can be installed via `gem install xcpretty`)
 * `cmake` used for building the __Ziti Tunnel C SDK__ dependency.  (Can be installed via `brew install cmake`)
 
 ```bash
