@@ -307,7 +307,7 @@ import CZitiPrivate
         let code = Int(resp.pointee.code)
         guard code > 0 else {
             let str = String(cString: ziti_errorstr(Int32(code)))
-            log.error("\(code) str")
+            log.error("\(code) \(str)")
             let err = ZitiError(str, errorCode: code)
             mySelf.notifyDidFailWithError(ZitiError(str, errorCode: code))
             return
