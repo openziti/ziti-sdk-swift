@@ -13,20 +13,23 @@ jobs:
 
     - name: Get Release
       id: get_release
-      uses: bruceadams/get-release@v1.3.2
+      run: |
+        url=$(gh release view --json url --jq .url)
+        echo "url=${url}" | tee -a $GITHUB_OUTPUT
+        tag_name=$(gh release view --json tagName --jq .tagName)
+        echo "tag_name=${tag_name}" | tee -a $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Download xcframework
-      run: curl ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.get_release.outputs.tag_name }}/CZiti.xcframework.zip -L -o CZiti.xcframework.zip
+      run: curl ${{ steps.get_release.outputs.url }}/CZiti.xcframework.zip -LO
 
     - name: Compute Checksum
       id: calc_checksum
       run: |
         # checksum=$(swift package compute-checksum ./CZiti.xcframework.zip)
         checksum=$(shasum -a 256 ./CZiti.xcframework.zip | cut -d " " -f1)
-        echo "checksum: ${checksum}"
-        echo "checksum=${checksum}" >> $GITHUB_OUTPUT
+        echo "checksum=${checksum}" | tee -a $GITHUB_OUTPUT
 
     - name: Checkout Distribution Project
       uses: actions/checkout@v3
@@ -80,7 +83,9 @@ jobs:
 
     - name: Get Release
       id: get_release
-      uses: bruceadams/get-release@v1.3.2
+      run: |
+        tag_name=$(gh release view --json tagName --jq .tagName)
+        echo "tag_name=${tag_name}" | tee -a $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
