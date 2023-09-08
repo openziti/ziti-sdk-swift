@@ -41,7 +41,7 @@ jobs:
         VERS: ${{ steps.get_release.outputs.tag_name }}
         CHKSM: ${{ steps.calc_checksum.outputs.checksum }}
       run: |
-        echo "VERS=${VERS}; CHKSM=${CHKSM}
+        echo "VERS=${VERS}; CHKSM=${CHKSM}"
         sed "/let version = \"/s/.*/let version = \"${VERS}\"/; /let checksum = \"/s/.*/let checksum = \"${CHKSM}\"/" Package.swift > Package.swift.next
         cat Package.swift.next
         mv Package.swift.next Package.swift
