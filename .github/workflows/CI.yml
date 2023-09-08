@@ -28,13 +28,17 @@ jobs:
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '14.2.0'
+
+    - uses: lukka/run-vcpkg@v10
+      with:
+        vcpkgGitCommitId: '19af97cba8ca48474e4ad15a24ed50271a9ecdac'
 
     - name: ${{ matrix.spec.name }}
       env:
         TOOLCHAIN: ${{ matrix.spec.toolchain && format('../../toolchains/{0}.cmake', matrix.spec.toolchain) || '' }}
       run: |
-        cmake -DCMAKE_BUILD_TYPE=Release -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
+        cmake -DCMAKE_BUILD_TYPE=Release -DTLSUV_TLSLIB=mbedtls -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DZITI_TUNNEL_BUILD_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
         cmake --build ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
         tar -cvzf ${{ matrix.spec.name }}.tgz -C ./deps/ziti-tunnel-sdk-c ${{ matrix.spec.name }}
 
@@ -56,7 +60,7 @@ jobs:
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '13.2.1'
+        xcode-version: '14.2.0'
 
     - name: Download Artifacts
       uses: actions/download-artifact@v3

@@ -22,7 +22,9 @@ function build_tsdk {
    rm -rf ./deps/ziti-tunnel-sdk-c/${name}
 
    cmake -DCMAKE_BUILD_TYPE=${CONFIGURATION} \
+      -DTLSUV_TLSLIB=mbedtls \
       -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON \
+      -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
       -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${name}
 
@@ -37,6 +39,10 @@ function build_tsdk {
       exit 1
    fi
 }
+
+if ! command -v xcpretty > /dev/null; then
+  xcpretty() { echo "install xcpretty for more legible xcodebuild output"; cat; }
+fi
 
 function build_cziti {
    scheme=$1
