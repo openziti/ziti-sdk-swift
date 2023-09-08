@@ -14,15 +14,15 @@ jobs:
     - name: Get Release
       id: get_release
       run: |
-        url=$(gh release view --json url --jq .url)
-        echo "url=${url}" | tee -a $GITHUB_OUTPUT
         tag_name=$(gh release view --json tagName --jq .tagName)
         echo "tag_name=${tag_name}" | tee -a $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Download xcframework
-      run: curl ${{ steps.get_release.outputs.url }}/CZiti.xcframework.zip -LO
+      run: gh release download -p CZiti.xcframework.zip
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
 
     - name: Compute Checksum
       id: calc_checksum
@@ -81,16 +81,10 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: Get Release
-      id: get_release
-      run: |
-        tag_name=$(gh release view --json tagName --jq .tagName)
-        echo "tag_name=${tag_name}" | tee -a $GITHUB_OUTPUT
+    - name: Download Docs
+      run: gh release download -p ziti-sdk-swift-docs.tgz
       env:
         GITHUB_TOKEN: ${{ github.token }}
-
-    - name: Download Docs
-      run: curl ${{ github.server_url }}/${{ github.repository }}/releases/download/${{ steps.get_release.outputs.tag_name }}/ziti-sdk-swift-docs.tgz -L -o ziti-sdk-swift-docs.tgz
 
     - name: Extract Docs
       run: |
