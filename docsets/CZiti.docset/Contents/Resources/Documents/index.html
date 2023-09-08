@@ -185,9 +185,10 @@
         <section>
           <section class="section">
             
-            <h1 id='ziti-sdk-for-swift' class='heading'>Ziti SDK for Swift</h1>
+            <p><img src="https://raw.githubusercontent.com/openziti/branding/main/images/banners/Swift.jpg" alt="Ziggy using the ziti-sdk-swift"></p>
+<h1 id='ziti-sdk-for-swift' class='heading'>Ziti SDK for Swift</h1>
 
-<p><img src="https://github.com/openziti/ziti-sdk-swift/workflows/CI/badge.svg?branch=master" alt="Build Status"></p>
+<p><img src="https://github.com/openziti/ziti-sdk-swift/workflows/CI/badge.svg?branch=main" alt="Build Status"></p>
 
 <p>An SDK for accessing Ziti from macOS and iOS applications using the Swift programming language.</p>
 
@@ -337,6 +338,62 @@ if (ziti != NULL) {
 <h2 id='via-code-swift-package-manager-code' class='heading'>Via <code>Swift Package Manager</code></h2>
 
 <p>See <a href="https://github.com/openziti/ziti-sdk-swift-dist">ziti-sdk-swift-dist</a> for access to <code>CZiti.xcframework</code> built from this repository and made available as a <code>.binaryTarget</code>.</p>
+<h2 id='using-a-locally-built-cziti' class='heading'>Using a locally built CZiti</h2>
+
+<p>To exercise modifications to the CZiti framework in your application, first add the CZiti module as a dependency to your app as described above, then override the CZiti framework with a local package. See <a href="https://developer.apple.com/documentation/xcode/editing-a-package-dependency-as-a-local-package">Editing a package dependency as a local package</a> for an overview of this process.</p>
+
+<p>I used the following steps to override CZiti with a local build in the ziti-tunnel-apple project:</p>
+
+<ol>
+<li><p>Build the CZiti framework. You may want to build for debugging:</p>
+
+<p>$ CONFIGURATION=Debug ./build_all.sh</p></li>
+</ol>
+
+<p>When complete, the build will be located in ./dist/CZiti.xcframework.</p>
+
+<ol>
+<li>Create a Package.swift for the local CZiti framework:</li>
+</ol>
+<pre class="highlight shell"><code>   cat &gt; ./dist/Package.swift <span class="sh">&lt;&lt;EOF
+   // swift-tools-version: 5.7
+   import PackageDescription
+
+   let package = Package(
+       name: "CZiti",
+       platforms: [ .macOS(.v10_14), .iOS(.v13) ],
+       products: [ .library( name: "CZiti", targets: ["CZiti"]) ],
+       targets: [
+           .binaryTarget(
+               name: "CZiti",
+               path: "./CZiti.xcframework")
+       ]
+    )
+   EOF
+</span></code></pre>
+
+<ol>
+<li><p>Move or copy the ./dist directory into your application&rsquo;s top-level source directory, renaming it to
+&#39;ziti-sdk-swift-dist&rsquo;. The final directory structure should look like this:</p>
+<pre class="highlight plaintext"><code>- YourApplication/
+  - ziti-sdk-swift-dist/
+    - Package.swift
+    - CZiti.xcframework/
+</code></pre></li>
+</ol>
+
+<p>The apple documentation doesn&rsquo;t mention this, but I was unable to get Xcode to recognize that the local
+   package overrides the released CZiti framework unless the parent directory of the local CZiti framework
+   was named &lsquo;ziti-sdk-swift-dist&rsquo; (to match the github repo the CZiti releases come from), and local CZiti
+   framework was in the application&rsquo;s directory.</p>
+
+<ol>
+<li>Add the local package to your application. This can be done by clicking &ldquo;Add Local&hellip;&rdquo; while adding a
+package dependency to your application. Select the &lsquo;ziti-sdk-swift-dist` directory in the dialog.</li>
+</ol>
+
+<p>You should see the CZiti entry disappear from your project&rsquo;s Package Dependencies in the project navigator
+   when the local CZiti package is referenced.</p>
 <h2 id='via-code-cocoapods-code' class='heading'>Via <code>CocoaPods</code></h2>
 
 <p><strong>DEPECATED AS OF v0.30.11, please convert to use of Swift Package Manager</strong></p>
@@ -384,9 +441,9 @@ ORGANIZATION_PREFIX = ...
 </code></pre>
 <h2 id='execute-build-script' class='heading'>Execute Build Script</h2>
 
-<p>The project depends on the <strong>Ziti Tunnel C SDK</strong>, which is built directly into the  library.  It is maintained as a submodule at <code>./deps/ziti-tunnel-sdk-c</code>.  This project expects builds to be built in <code>./deps/ziti-tunnel-sdk-c/build-macosx-x86_64</code> and <code>./deps/ziti-tunnel-sdk-c/build-macosx-arm64</code> for macOS and <code>./deps/ziti-sdk-c/build-iphoneos-arm64</code> for iOS (or <code>build-iphonesimulator-x86_64</code>or <code>build-iphonesimulator-arm64</code> for the simulator). </p>
+<p>The project depends on the <strong>Ziti Tunnel C SDK</strong>, which is built directly into the  library.  It is maintained as a submodule at <code>./deps/ziti-tunnel-sdk-c</code>.  Be sure to follow the vcpkg setup steps in deps/ziti-tunnel-sdk-c/BUILD.md. This project expects builds to be built in <code>./deps/ziti-tunnel-sdk-c/build-macosx-x86_64</code> and <code>./deps/ziti-tunnel-sdk-c/build-macosx-arm64</code> for macOS and <code>./deps/ziti-sdk-c/build-iphoneos-arm64</code> for iOS (or <code>build-iphonesimulator-x86_64</code>or <code>build-iphonesimulator-arm64</code> for the simulator). </p>
 
-<p>This project conains the <a href="build_all.sh"><code>buid_all.sh</code></a> script that will build the project from the command-line for <code>macosx</code>, <code>iphoneos</code>, and <code>iphonesimulator</code> platforms. Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.</p>
+<p>This project contains the <a href="build_all.sh"><code>buid_all.sh</code></a> script that will build the project from the command-line for <code>macosx</code>, <code>iphoneos</code>, and <code>iphonesimulator</code> platforms.</p>
 
 <p>Once the static libraries are built, the <code>build_all.sh</code> script executes  <a href="make_dist.sh"><code>make_dist.sh</code></a>, creating an XCFramework called <code>CZiti.xcframework</code>, under the project&rsquo;s <code>./dist</code> directory.</p>
 
@@ -422,7 +479,7 @@ ORGANIZATION_PREFIX = ...
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2023 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2023-05-26)</p>
+          <p>&copy; 2023 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2023-09-08)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.14.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>
