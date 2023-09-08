@@ -155,6 +155,57 @@ Note that `CZiti` depends on `libresolv.9.tbd`, and requires access to outbound 
 ## Via `Swift Package Manager` 
 See [ziti-sdk-swift-dist](https://github.com/openziti/ziti-sdk-swift-dist) for access to `CZiti.xcframework` built from this repository and made available as a `.binaryTarget`.
 
+## Using a locally built CZiti
+
+To exercise modifications to the CZiti framework in your application, first add the CZiti module as a dependency to your app as described above, then override the CZiti framework with a local package. See [Editing a package dependency as a local package](https://developer.apple.com/documentation/xcode/editing-a-package-dependency-as-a-local-package) for an overview of this process.
+
+I used the following steps to override CZiti with a local build in the ziti-tunnel-apple project:
+
+1. Build the CZiti framework. You may want to build for debugging:
+
+      $ CONFIGURATION=Debug ./build_all.sh
+
+   When complete, the build will be located in ./dist/CZiti.xcframework.
+
+2. Create a Package.swift for the local CZiti framework:
+
+   ```bash
+   cat > ./dist/Package.swift <<EOF
+   // swift-tools-version: 5.7
+   import PackageDescription
+
+   let package = Package(
+       name: "CZiti",
+       platforms: [ .macOS(.v10_14), .iOS(.v13) ],
+       products: [ .library( name: "CZiti", targets: ["CZiti"]) ],
+       targets: [
+           .binaryTarget(
+               name: "CZiti",
+               path: "./CZiti.xcframework")
+       ]
+    )
+   EOF
+   ```
+
+3. Move or copy the ./dist directory into your application's top-level source directory, renaming it to
+   'ziti-sdk-swift-dist'. The final directory structure should look like this:
+
+        - YourApplication/
+          - ziti-sdk-swift-dist/
+            - Package.swift
+            - CZiti.xcframework/
+
+   The apple documentation doesn't mention this, but I was unable to get Xcode to recognize that the local
+   package overrides the released CZiti framework unless the parent directory of the local CZiti framework
+   was named 'ziti-sdk-swift-dist' (to match the github repo the CZiti releases come from), and local CZiti
+   framework was in the application's directory.
+
+4. Add the local package to your application. This can be done by clicking "Add Local..." while adding a
+   package dependency to your application. Select the 'ziti-sdk-swift-dist` directory in the dialog.
+
+   You should see the CZiti entry disappear from your project's Package Dependencies in the project navigator
+   when the local CZiti package is referenced.
+
 ## Via `CocoaPods` 
 **DEPECATED AS OF v0.30.11, please convert to use of Swift Package Manager**
 
@@ -203,10 +254,10 @@ ORGANIZATION_PREFIX = ...
 
 ## Execute Build Script
 
-The project depends on the __Ziti Tunnel C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-tunnel-sdk-c`.  This project expects builds to be built in `./deps/ziti-tunnel-sdk-c/build-macosx-x86_64` and `./deps/ziti-tunnel-sdk-c/build-macosx-arm64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64`or `build-iphonesimulator-arm64` for the simulator). 
+The project depends on the __Ziti Tunnel C SDK__, which is built directly into the  library.  It is maintained as a submodule at `./deps/ziti-tunnel-sdk-c`.  Be sure to follow the vcpkg setup steps in deps/ziti-tunnel-sdk-c/BUILD.md. This project expects builds to be built in `./deps/ziti-tunnel-sdk-c/build-macosx-x86_64` and `./deps/ziti-tunnel-sdk-c/build-macosx-arm64` for macOS and `./deps/ziti-sdk-c/build-iphoneos-arm64` for iOS (or `build-iphonesimulator-x86_64`or `build-iphonesimulator-arm64` for the simulator). 
 
 
-This project conains the [`buid_all.sh`](build_all.sh) script that will build the project from the command-line for `macosx`, `iphoneos`, and `iphonesimulator` platforms. Note that when building for macOS the instructions below assume you are running on an x86_64 machine when building for x86_64.
+This project contains the [`buid_all.sh`](build_all.sh) script that will build the project from the command-line for `macosx`, `iphoneos`, and `iphonesimulator` platforms.
 
 
 Once the static libraries are built, the `build_all.sh` script executes  [`make_dist.sh`](make_dist.sh), creating an XCFramework called `CZiti.xcframework`, under the project's `./dist` directory.

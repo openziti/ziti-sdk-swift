@@ -416,19 +416,33 @@ import CZitiPrivate
         // setup TLS
         let caLen = (id.ca == nil ? 0 : id.ca!.count + 1)
         tls = default_tls_context(id.ca?.cString(using: .utf8), caLen)
-        let tlsStat = tls?.pointee.api.pointee.set_own_cert(tls?.pointee.ctx,
-                                              certPEM.cString(using: .utf8),
-                                              certPEM.count + 1,
-                                              privKeyPEM.cString(using: .utf8),
-                                              privKeyPEM.count + 1)
+        
+        var tlsKey:tlsuv_private_key_t?
+        var tlsStat = tls?.pointee.api.pointee.load_key(&tlsKey, privKeyPEM.cString(using: .utf8), privKeyPEM.count + 1)
         guard tlsStat == 0 else {
-            let errStr = "unable to configure TLS, error code: \(tlsStat ?? 0)"
+            let errStr = "unable to load TLS private key, error code: \(tlsStat ?? 0)"
             log.error(errStr)
             initCallback(ZitiError(errStr, errorCode: Int(tlsStat ?? 0)))
             return
         }
-                
-        // remove compiler warning on cztAPI memory living past the inti call
+
+        tlsStat = tls?.pointee.api.pointee.set_own_cert(tls?.pointee.ctx, certPEM.cString(using: .utf8), certPEM.count + 1)
+        guard tlsStat == 0 else {
+            let errStr = "unable to configure TLS certificate, error code: \(tlsStat ?? 0)"
+            log.error(errStr)
+            initCallback(ZitiError(errStr, errorCode: Int(tlsStat ?? 0)))
+            return
+        }
+        
+        tlsStat = tls?.pointee.api.pointee.set_own_key(tls?.pointee.ctx, tlsKey)
+        guard tlsStat == 0 else {
+            let errStr = "unable to configure TLS private key, error code: \(tlsStat ?? 0)"
+            log.error(errStr)
+            initCallback(ZitiError(errStr, errorCode: Int(tlsStat ?? 0)))
+            return
+        }
+
+        // remove compiler warning on cztAPI memory living past the init call
         ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
         ctrlPtr!.initialize(from: cztAPI, count: id.ztAPI.count + 1)
         

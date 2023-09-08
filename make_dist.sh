@@ -37,7 +37,7 @@ xcframework_args=""
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}-iphoneos/${LIB_NAME}"
    xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources"
-   xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${LIB_NAME}" \
+   xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${LIB_NAME}"
    xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/CZiti-iOS.build/DerivedSources"
 fi
 
@@ -45,7 +45,7 @@ fi
 # macOS
 #
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
-   xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}/${LIB_NAME}" \
+   xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}/${LIB_NAME}"
    xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}/CZiti-macOS.build/DerivedSources"
 fi
 

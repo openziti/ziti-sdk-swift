@@ -3,5 +3,10 @@
 
 DEVELOPMENT_TEAM = XXXXXXXXXX
 ORGANIZATION_PREFIX = org.openziti
+VCPKG_ARCH[arch=arm64] = arm64
+VCPKG_ARCH[arch=x86_64] = x64
+VCPKG_OS[sdk=iphoneos*] = ios
+VCPKG_OS[sdk=iphonesimulator*] = iphonesimulator
+VCPKG_OS[sdk=macosx*] = osx
 
 #include? "workspace-settings-overrides.xcconfig"
