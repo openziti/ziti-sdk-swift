@@ -92,22 +92,22 @@ import CZitiPrivate
     private var dumpPrinter:ZitiDumpPrinter?
     
     /// Ziti constant indicating OK status from Ziti C SDK call
-    public static let ZITI_OK = 0
+    public static let ZITI_OK = CZitiPrivate.ZITI_OK
     
     /// Ziti controller is unavailable
-    public static let ZITI_CONTROLLER_UNAVAILABLE = -15
+    public static let ZITI_CONTROLLER_UNAVAILABLE = CZitiPrivate.ZITI_CONTROLLER_UNAVAILABLE
     
     /// Ziti context is disabled
-    public static let ZITI_DISABLED = -29
+    public static let ZITI_DISABLED = CZitiPrivate.ZITI_DISABLED
     
     /// Ziti constant indication service is unavailable from Ziti C SDK call
-    public static let ZITI_SERVICE_UNAVAILABLE = 17
+    public static let ZITI_SERVICE_UNAVAILABLE = CZitiPrivate.ZITI_SERVICE_UNAVAILABLE
     
     /// Ziti constant indicating an indentity is allowed to dial a particular service
-    public static let ZITI_CAN_DIAL = 1
+    public static let ZITI_CAN_DIAL = CZitiPrivate.ZITI_CAN_DIAL
     
     /// Ziti constant indicating an indentity is allowed to bind a particular service
-    public static let ZITI_CAN_BIND = 2
+    public static let ZITI_CAN_BIND = CZitiPrivate.ZITI_CAN_BIND
     
     /// Convenience function to convert Ziti error status to String
     public class func zitiErrorString(status: Int32) -> String {
