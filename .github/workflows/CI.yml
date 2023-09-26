@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build-tsdk:
-    runs-on: macos-latest
+    runs-on: macos-13
 
     strategy:
       matrix:
