@@ -28,7 +28,7 @@ jobs:
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '14.2.0'
+        xcode-version: '15.0'
 
     - uses: lukka/run-vcpkg@v10
       with:
