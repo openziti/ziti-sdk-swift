@@ -26,9 +26,9 @@ function build_tsdk {
       -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON \
       -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
-      -DDISABLE_SEMVER_VERIFICATION=ON \ # todo remove this when we go back to using a released tsdk/csdk. also in CI.yml
+      -DDISABLE_SEMVER_VERIFICATION=ON \
       -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${name}
-
+ # todo remove DISABLE_SEMVER_VERIFICATION when we go back to using a released tsdk/csdk. also in CI.yml
    if [ $? -ne 0 ] ; then
       echo "Unable to cmake ${name}"
       exit 1
