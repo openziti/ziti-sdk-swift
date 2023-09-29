@@ -50,12 +50,10 @@ import CZitiPrivate
     /// Arbitrary data user can attach to a Ziti instance.  This dictionary is not used internally and is completely under the control of the user.
     @objc public var userData:[String:Any] = [:]
     
-    // This memory is held onto an used by C-SDK.  If not using a private loop we need to make sure these three things
+    // This memory is held onto and used by C-SDK.  If not using a private loop we need to make sure these three things
     // stay in memory
-    private var tls: UnsafeMutablePointer<tls_context>?
-    private var ctrlPtr: UnsafeMutablePointer<Int8>?
     private var zitiOpts: ziti_options?
-    
+    private var zitiCtx: ziti_context?
     
     /// Type used for escaping  closure called follwing initialize of Ziti connectivity
     ///
@@ -92,22 +90,22 @@ import CZitiPrivate
     private var dumpPrinter:ZitiDumpPrinter?
     
     /// Ziti constant indicating OK status from Ziti C SDK call
-    public static let ZITI_OK = CZitiPrivate.ZITI_OK
+    public static let ZITI_OK = Int(CZitiPrivate.ZITI_OK)
     
     /// Ziti controller is unavailable
-    public static let ZITI_CONTROLLER_UNAVAILABLE = CZitiPrivate.ZITI_CONTROLLER_UNAVAILABLE
+    public static let ZITI_CONTROLLER_UNAVAILABLE = Int(CZitiPrivate.ZITI_CONTROLLER_UNAVAILABLE)
     
     /// Ziti context is disabled
-    public static let ZITI_DISABLED = CZitiPrivate.ZITI_DISABLED
+    public static let ZITI_DISABLED = Int(CZitiPrivate.ZITI_DISABLED)
     
     /// Ziti constant indication service is unavailable from Ziti C SDK call
-    public static let ZITI_SERVICE_UNAVAILABLE = CZitiPrivate.ZITI_SERVICE_UNAVAILABLE
+    public static let ZITI_SERVICE_UNAVAILABLE = Int(CZitiPrivate.ZITI_SERVICE_UNAVAILABLE)
     
     /// Ziti constant indicating an indentity is allowed to dial a particular service
-    public static let ZITI_CAN_DIAL = CZitiPrivate.ZITI_CAN_DIAL
+    public static let ZITI_CAN_DIAL = Int(CZitiPrivate.ZITI_CAN_DIAL)
     
     /// Ziti constant indicating an indentity is allowed to bind a particular service
-    public static let ZITI_CAN_BIND = CZitiPrivate.ZITI_CAN_BIND
+    public static let ZITI_CAN_BIND = Int(CZitiPrivate.ZITI_CAN_BIND)
     
     /// Convenience function to convert Ziti error status to String
     public class func zitiErrorString(status: Int32) -> String {
@@ -296,7 +294,7 @@ import CZitiPrivate
     
     /// Enroll a Ziti identity using a JWT file
     ///
-    /// Enrollment consists of parsing the JWT to determins controller address, verifytng the given JWT was signed with the controller's public key,
+    /// Enrollment consists of parsing the JWT to determine controller address, verifytng the given JWT was signed with the controller's public key,
     /// downloading the CA chain from the controller (to be used as part of establishing trust in future interactions with the controller), generating a
     /// private key (stored in the Keychain), creating a Certificate Signing Request (CSR), sending the CSR to the controller and receiving our signed
     /// certificate.  This certificate is stored in the Keychain and required for future interactions with the controller.
@@ -386,13 +384,6 @@ import CZitiPrivate
     /// - See also:
     ///     - `runAsync(_:)`
     @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
-        guard let cztAPI = id.ztAPI.cString(using: .utf8) else {
-            let errStr = "unable to convert controller URL (ztAPI) to C string"
-            log.error(errStr)
-            initCallback(ZitiError(errStr))
-            return
-        }
-        
         // Get certificate
         let zkc = ZitiKeychain(tag: id.id)
         let (maybeCert, zErr) = zkc.getCertificate()
@@ -413,41 +404,7 @@ import CZitiPrivate
         }
         let privKeyPEM = zkc.getKeyPEM(privKey)
         
-        // setup TLS
-        let caLen = (id.ca == nil ? 0 : id.ca!.count + 1)
-        tls = default_tls_context(id.ca?.cString(using: .utf8), caLen)
-        
-        var tlsCert:tls_cert?
-        var tlsKey:tlsuv_private_key_t?
-        var tlsStat = tls?.pointee.load_key(&tlsKey, privKeyPEM.cString(using: .utf8), privKeyPEM.count + 1)
-        guard tlsStat == 0 else {
-            let errStr = "unable to load TLS private key, error code: \(tlsStat ?? 0)"
-            log.error(errStr)
-            initCallback(ZitiError(errStr, errorCode: Int(tlsStat ?? 0)))
-            return
-        }
-        
-        tlsStat = tls?.pointee.load_cert(&tlsCert, certPEM.cString(using: .utf8), certPEM.count + 1)
-        guard tlsStat == 0 else {
-            let errStr = "unable to load TLS certificate, error code: \(tlsStat ?? 0)"
-            log.error(errStr)
-            initCallback(ZitiError(errStr, errorCode: Int(tlsStat ?? 0)))
-            return
-        }
-        
-        tlsStat = tls?.pointee.set_own_cert(tls, tlsKey, tlsCert)
-        guard tlsStat == 0 else {
-            let errStr = "unable to configure TLS key/certificate, error code: \(tlsStat ?? 0)"
-            log.error(errStr)
-            initCallback(ZitiError(errStr, errorCode: Int(tlsStat ?? 0)))
-            return
-        }
-        
-        // remove compiler warning on cztAPI memory living past the init call
-        ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
-        ctrlPtr!.initialize(from: cztAPI, count: id.ztAPI.count + 1)
-        
-        // init NF
+        // init ziti
         self.initCallback = initCallback
         self.postureChecks = postureChecks
         
@@ -457,9 +414,43 @@ import CZitiPrivate
             let refresh_interval = 30
         #endif
         
+        // convert kes and id info to char * types that ziti-sdk-c can use.
+        // also considered .withCString - https://stackoverflow.com/questions/31378120/convert-swift-string-into-cchar-pointer
+        let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
+        ctrlPtr.initialize(from: id.ztAPI, count: id.ztAPI.count + 1)
+        
+        let certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM.count + 1)
+        certPEMPtr.initialize(from: certPEM, count: certPEM.count + 1)
+
+        let privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
+        privKeyPEMPtr.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
+        
+        let caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
+        caPEMPtr.initialize(from: id.ca!, count: id.ca!.count + 1)
+        
+        // set up the ziti_config with our cert, etc.
+        var zitiCfg = ziti_config(
+            controller_url: ctrlPtr,
+            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
+            cfg_source: nil) // todo what is cfg_source?
+        
+        var zitiStatus = ziti_context_init(&self.zitiCtx, &zitiCfg)
+        guard zitiStatus == Ziti.ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(zitiStatus))
+            log.error("unable to initialize Ziti context, \(zitiStatus): \(errStr)", function:"start()")
+            initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
+            return
+        }
+        
+        // todo will this happen automatically via gc?
+        ctrlPtr.deallocate()
+        certPEMPtr.deallocate()
+        privKeyPEMPtr.deallocate()
+        caPEMPtr.deallocate()
+
         zitiOpts = ziti_options(config: nil,
-                                controller: ctrlPtr,
-                                tls:tls,
+                                controller: nil,
+                                tls: nil,
                                 disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
@@ -480,14 +471,21 @@ import CZitiPrivate
             zi = zt.createZitiInstance(id.id, &(zitiOpts!))
         }
         
-        let initStatus = ziti_init_opts(&(zitiOpts!), loop)
-        guard initStatus == Ziti.ZITI_OK else {
-            let errStr = String(cString: ziti_errorstr(initStatus))
-            log.error("unable to initialize Ziti, \(initStatus): \(errStr)", function:"start()")
-            initCallback(ZitiError(errStr, errorCode: Int(initStatus)))
+        zitiStatus = ziti_context_set_options(self.zitiCtx, &zitiOpts!)
+        guard zitiStatus == Ziti.ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(zitiStatus))
+            log.error("unable to set Ziti context options, \(zitiStatus): \(errStr)", function:"start()")
+            initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
             return
         }
         
+        zitiStatus = ziti_context_run(self.zitiCtx, loop)
+        guard zitiStatus == Ziti.ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(zitiStatus))
+            log.error("unable to run Ziti context, \(zitiStatus): \(errStr)", function:"start()")
+            initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
+            return
+        }
         // only set the ZitiTunnel ziti_instance if ziti_init_ops was successful
         if let zi = zi, let zt = self.zitiTunnel {
             zt.setZitiInstance(id.id, zi)
