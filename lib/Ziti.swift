@@ -414,7 +414,7 @@ import CZitiPrivate
             let refresh_interval = 30
         #endif
         
-        // convert kes and id info to char * types that ziti-sdk-c can use.
+        // convert key and id info to char * types that ziti-sdk-c can use.
         // also considered .withCString - https://stackoverflow.com/questions/31378120/convert-swift-string-into-cchar-pointer
         let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
         ctrlPtr.initialize(from: id.ztAPI, count: id.ztAPI.count + 1)
