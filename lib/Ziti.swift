@@ -425,8 +425,11 @@ import CZitiPrivate
         let privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
         privKeyPEMPtr.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
         
-        let caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
-        caPEMPtr.initialize(from: id.ca!, count: id.ca!.count + 1)
+        var caPEMPtr:UnsafeMutablePointer<Int8>? = nil
+        if (id.ca != nil) {
+            caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
+            caPEMPtr!.initialize(from: id.ca!, count: id.ca!.count + 1)
+        }
         
         // set up the ziti_config with our cert, etc.
         var zitiCfg = ziti_config(
@@ -446,11 +449,11 @@ import CZitiPrivate
         ctrlPtr.deallocate()
         certPEMPtr.deallocate()
         privKeyPEMPtr.deallocate()
-        caPEMPtr.deallocate()
+        if (caPEMPtr != nil) {
+            caPEMPtr!.deallocate()
+        }
 
         zitiOpts = ziti_options(config: nil,
-                                controller: nil,
-                                tls: nil,
                                 disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
