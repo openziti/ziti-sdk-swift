@@ -53,7 +53,6 @@ import CZitiPrivate
     // This memory is held onto and used by C-SDK.  If not using a private loop we need to make sure these three things
     // stay in memory
     private var zitiOpts: ziti_options?
-    private var zitiCtx: ziti_context?
     
     /// Type used for escaping  closure called follwing initialize of Ziti connectivity
     ///
@@ -425,7 +424,7 @@ import CZitiPrivate
         let privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
         privKeyPEMPtr.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
         
-        var caPEMPtr:UnsafeMutablePointer<Int8>? = nil
+        var caPEMPtr:UnsafeMutablePointer<Int8>? = nil // todo empty string
         if (id.ca != nil) {
             caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
             caPEMPtr!.initialize(from: id.ca!, count: id.ca!.count + 1)
@@ -437,7 +436,7 @@ import CZitiPrivate
             id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
             cfg_source: nil) // todo what is cfg_source?
         
-        var zitiStatus = ziti_context_init(&self.zitiCtx, &zitiCfg)
+        var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
         guard zitiStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(zitiStatus))
             log.error("unable to initialize Ziti context, \(zitiStatus): \(errStr)", function:"start()")
@@ -445,7 +444,6 @@ import CZitiPrivate
             return
         }
         
-        // todo will this happen automatically via gc?
         ctrlPtr.deallocate()
         certPEMPtr.deallocate()
         privKeyPEMPtr.deallocate()
@@ -468,32 +466,27 @@ import CZitiPrivate
                                 events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
-        // ziti_instance required if being managed by ZitiTunnel
-        var zi:UnsafeMutablePointer<ziti_instance_s>?
-        if let zt = self.zitiTunnel {
-            zi = zt.createZitiInstance(id.id, &(zitiOpts!))
-        }
-        
-        zitiStatus = ziti_context_set_options(self.zitiCtx, &zitiOpts!)
+        zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts!)
         guard zitiStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(zitiStatus))
             log.error("unable to set Ziti context options, \(zitiStatus): \(errStr)", function:"start()")
             initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
             return
         }
+                
+        // ziti_instance required if being managed by ZitiTunnel
+        if let zt = self.zitiTunnel {
+            zt.setZitiInstance(id.id, self.ztx!, &zitiCfg, &zitiOpts!)
+        }
         
-        zitiStatus = ziti_context_run(self.zitiCtx, loop)
+        zitiStatus = ziti_context_run(self.ztx, loop)
         guard zitiStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(zitiStatus))
             log.error("unable to run Ziti context, \(zitiStatus): \(errStr)", function:"start()")
             initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
             return
         }
-        // only set the ZitiTunnel ziti_instance if ziti_init_ops was successful
-        if let zi = zi, let zt = self.zitiTunnel {
-            zt.setZitiInstance(id.id, zi)
-        }
-        
+
         // Save off reference to current thread and run the loop
         if privateLoop {
             Thread.current.name = "ziti_uv_loop_private"
@@ -905,7 +898,7 @@ import CZitiPrivate
             log.wtf("invalid event", function:"onEvent()")
             return
         }
-        
+        log.info("********************** \(cEvent.pointee.type) Ziti event *******************")
         // always update zid name...
         if let czid = ziti_get_identity(ztx) {
             let name = String(cString: czid.pointee.name)
@@ -917,6 +910,7 @@ import CZitiPrivate
         
         // first time..
         if let ztx = ztx, mySelf.ztx == nil {
+            log.info("******** zid was \(mySelf.ztx!) will be \(ztx) *************")
             mySelf.ztx = ztx
             Ziti.postureContexts[ztx] = mySelf
             mySelf.initCallback?(nil)
