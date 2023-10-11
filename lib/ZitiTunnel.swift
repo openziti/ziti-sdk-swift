@@ -165,31 +165,14 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         opsZiti.perform(op)
     }
     
-//    func createZitiInstance(_ identifier:String,
-//                            _ zitiCfg:UnsafeMutablePointer<ziti_config>,
-//                            _ zitiOpts:UnsafeMutablePointer<ziti_options>) -> UnsafeMutablePointer<ziti_instance_s>? {
-//        var zi:UnsafeMutablePointer<ziti_instance_s>?
-//        zi = new_ziti_instance(identifier.cString(using: .utf8))
-//
-//        if let ziEvents = zi?.pointee.opts.events { zitiOpts.pointee.events = ziEvents }
-//        if let eventCb = zi?.pointee.opts.event_cb { zitiOpts.pointee.event_cb = eventCb }
-//        if let configTypes = zi?.pointee.opts.config_types { zitiOpts.pointee.config_types = configTypes }
-//        if let appCtx = zi?.pointee.opts.app_ctx { zitiOpts.pointee.app_ctx = appCtx }
-//
-//        let rc = init_ziti_instance(zi, zitiCfg, zitiOpts)
-//        if (rc != 0) {
-//            log.error("bah!")
-//        }
-//        return zi
-//    }
-    
     func setZitiInstance(_ identifier:String, _ zitiCtx:ziti_context, _ zitiCfg:UnsafeMutablePointer<ziti_config>, _ zitiOpts:UnsafeMutablePointer<ziti_options>) {
         var zi:UnsafeMutablePointer<ziti_instance_s>?
         zi = new_ziti_instance(identifier.cString(using: .utf8))
 
+        // use the context and options that the caller provided
         zi?.pointee.ztx = zitiCtx
-        zi?.pointee.load_cb = nil  // todo
-        zi?.pointee.load_ctx = nil // todo
+        init_ziti_instance(zi, zitiCfg, zitiOpts)
+
         set_ziti_instance(identifier.cString(using: .utf8), zi)
         
         guard let ziti = ZitiTunnel.zitiDict[identifier] else {
