@@ -52,7 +52,7 @@ import CZitiPrivate
     
     // This memory is held onto and used by C-SDK.  If not using a private loop we need to make sure these three things
     // stay in memory
-    private var zitiOpts: ziti_options?
+    //private var zitiOpts: ziti_options?
     
     /// Type used for escaping  closure called follwing initialize of Ziti connectivity
     ///
@@ -451,7 +451,7 @@ import CZitiPrivate
             caPEMPtr!.deallocate()
         }
 
-        zitiOpts = ziti_options(config: nil,
+        var zitiOpts = ziti_options(config: nil,
                                 disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
@@ -466,7 +466,7 @@ import CZitiPrivate
                                 events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
-        zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts!)
+        zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)
         guard zitiStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(zitiStatus))
             log.error("unable to set Ziti context options, \(zitiStatus): \(errStr)", function:"start()")
@@ -476,7 +476,7 @@ import CZitiPrivate
                 
         // ziti_instance required if being managed by ZitiTunnel
         if let zt = self.zitiTunnel {
-            zt.setZitiInstance(id.id, self.ztx!, &zitiCfg, &zitiOpts!)
+            zt.setZitiInstance(id.id, self.ztx!)
         }
         
         zitiStatus = ziti_context_run(self.ztx, loop)

@@ -165,13 +165,14 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         opsZiti.perform(op)
     }
     
-    func setZitiInstance(_ identifier:String, _ zitiCtx:ziti_context, _ zitiCfg:UnsafeMutablePointer<ziti_config>, _ zitiOpts:UnsafeMutablePointer<ziti_options>) {
+    func setZitiInstance(_ identifier:String, _ zitiCtx:ziti_context) {
         var zi:UnsafeMutablePointer<ziti_instance_s>?
         zi = new_ziti_instance(identifier.cString(using: .utf8))
 
         // use the context and options that the caller provided
         zi?.pointee.ztx = zitiCtx
-        init_ziti_instance(zi, zitiCfg, zitiOpts) // todo check return
+        // add in required options for receiving tsdk events
+        set_tnlr_options(zi) // todo check return
 
         set_ziti_instance(identifier.cString(using: .utf8), zi)
         
