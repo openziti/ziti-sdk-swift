@@ -293,7 +293,7 @@ import CZitiPrivate
     
     /// Enroll a Ziti identity using a JWT file
     ///
-    /// Enrollment consists of parsing the JWT to determine controller address, verifytng the given JWT was signed with the controller's public key,
+    /// Enrollment consists of parsing the JWT to determine controller address, verifying the given JWT was signed with the controller's public key,
     /// downloading the CA chain from the controller (to be used as part of establishing trust in future interactions with the controller), generating a
     /// private key (stored in the Keychain), creating a Certificate Signing Request (CSR), sending the CSR to the controller and receiving our signed
     /// certificate.  This certificate is stored in the Keychain and required for future interactions with the controller.
@@ -898,7 +898,6 @@ import CZitiPrivate
             log.wtf("invalid event", function:"onEvent()")
             return
         }
-        log.info("********************** \(cEvent.pointee.type) Ziti event *******************")
         // always update zid name...
         if let czid = ziti_get_identity(ztx) {
             let name = String(cString: czid.pointee.name)
@@ -910,7 +909,6 @@ import CZitiPrivate
         
         // first time..
         if let ztx = ztx, mySelf.ztx == nil {
-            log.info("******** zid was \(mySelf.ztx!) will be \(ztx) *************")
             mySelf.ztx = ztx
             Ziti.postureContexts[ztx] = mySelf
             mySelf.initCallback?(nil)

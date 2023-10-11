@@ -182,24 +182,15 @@ import CZitiPrivate
         
         /// New controller address
         @objc public let newControllerAddress:String
-        /// New CA bundle
-        @objc public let newCaBundle:String
         init( _ cEvent:ziti_api_event) {
-            var ctrlStr = ""
+            var str = ""
             if let cStr = cEvent.new_ctrl_address {
-                ctrlStr = String(cString: cStr)
+                str = String(cString: cStr)
             }
-            if !ctrlStr.starts(with: "https://") {
-                ctrlStr.insert(contentsOf: "https://", at: ctrlStr.startIndex)
+            if !str.starts(with: "https://") {
+                str.insert(contentsOf: "https://", at: str.startIndex)
              }
-            newControllerAddress = ctrlStr
-            
-            var caStr = ""
-            if let cStr = cEvent.new_ca_bundle {
-                caStr = String(cString: cStr)
-            }
-            // todo validate
-            newCaBundle = caStr
+            newControllerAddress = str
         }
     }
     

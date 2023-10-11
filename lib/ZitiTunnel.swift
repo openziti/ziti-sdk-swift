@@ -171,7 +171,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
 
         // use the context and options that the caller provided
         zi?.pointee.ztx = zitiCtx
-        init_ziti_instance(zi, zitiCfg, zitiOpts)
+        init_ziti_instance(zi, zitiCfg, zitiOpts) // todo check return
 
         set_ziti_instance(identifier.cString(using: .utf8), zi)
         
@@ -210,7 +210,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             }
         }
         
-        // Start up the run loop in it's own thread.  All callbacks to the tunnel provider are called from the run loop
+        // Start up the run loop in its own thread.  All callbacks to the tunnel provider are called from the run loop
         DispatchQueue.global().async {
             self.uvDG.enter()
             _ = Ziti.executeRunloop(loopPtr: self.loopPtr)
@@ -278,7 +278,6 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             log.error("Invalid base event identifier")
             return
         }
-        log.info("****************** \(cEvent.pointee.event_type) Tunnel event *********************")
         let id:String = String(cString: cid)
         guard let ziti = zitiDict[id], let mySelf = ziti.zitiTunnel else {
             log.wtf("invalid context")
