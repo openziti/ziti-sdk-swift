@@ -50,7 +50,7 @@ jobs:
         path: ${{ matrix.spec.name }}.tgz
 
   build-cziti:
-    runs-on: macos-latest
+    runs-on: macos-13
     needs: [ build-tsdk ]
 
     steps:
