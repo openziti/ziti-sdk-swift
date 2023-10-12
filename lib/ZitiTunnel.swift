@@ -165,19 +165,18 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         opsZiti.perform(op)
     }
     
-    func createZitiInstance(_ identifier:String, _ zitiOpts:UnsafeMutablePointer<ziti_options>) -> UnsafeMutablePointer<ziti_instance_s>? {
+    func setZitiInstance(_ identifier:String, _ zitiCtx:ziti_context) {
         var zi:UnsafeMutablePointer<ziti_instance_s>?
-        zi = new_ziti_instance_ex(identifier.cString(using: .utf8))
-        
-        if let ziEvents = zi?.pointee.opts.events { zitiOpts.pointee.events = ziEvents }
-        if let eventCb = zi?.pointee.opts.event_cb { zitiOpts.pointee.event_cb = eventCb }
-        if let configTypes = zi?.pointee.opts.config_types { zitiOpts.pointee.config_types = configTypes }
-        if let appCtx = zi?.pointee.opts.app_ctx { zitiOpts.pointee.app_ctx = appCtx }
-        
-        return zi
-    }
-    
-    func setZitiInstance(_ identifier:String, _ zi:UnsafeMutablePointer<ziti_instance_s>) {
+        zi = new_ziti_instance(identifier.cString(using: .utf8))
+        // use the context and options that the caller provided
+        zi?.pointee.ztx = zitiCtx
+        // add in required options for receiving tsdk events
+        let rc = set_tnlr_options(zi)
+        guard rc == Ziti.ZITI_OK else {
+            log.wtf("unable to set tunneler options on Ziti instance for identifier \(identifier)")
+            return
+        }
+
         set_ziti_instance(identifier.cString(using: .utf8), zi)
         
         guard let ziti = ZitiTunnel.zitiDict[identifier] else {
@@ -215,7 +214,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             }
         }
         
-        // Start up the run loop in it's own thread.  All callbacks to the tunnel provider are called from the run loop
+        // Start up the run loop in its own thread.  All callbacks to the tunnel provider are called from the run loop
         DispatchQueue.global().async {
             self.uvDG.enter()
             _ = Ziti.executeRunloop(loopPtr: self.loopPtr)
