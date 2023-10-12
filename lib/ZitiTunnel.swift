@@ -173,7 +173,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         // add in required options for receiving tsdk events
         let rc = set_tnlr_options(zi)
         guard rc == Ziti.ZITI_OK else {
-            log.wtf("unable to set tunneler options on Ziti instance for identifier \(identitifer)")
+            log.wtf("unable to set tunneler options on Ziti instance for identifier \(identifier)")
             return
         }
 

@@ -50,10 +50,6 @@ import CZitiPrivate
     /// Arbitrary data user can attach to a Ziti instance.  This dictionary is not used internally and is completely under the control of the user.
     @objc public var userData:[String:Any] = [:]
     
-    // This memory is held onto and used by C-SDK.  If not using a private loop we need to make sure these three things
-    // stay in memory
-    //private var zitiOpts: ziti_options?
-    
     /// Type used for escaping  closure called follwing initialize of Ziti connectivity
     ///
     /// - Parameters:
