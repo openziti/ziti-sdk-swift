@@ -486,7 +486,7 @@ import CZitiPrivate
             initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
             return
         }
-
+        
         // Save off reference to current thread and run the loop
         if privateLoop {
             Thread.current.name = "ziti_uv_loop_private"
@@ -898,6 +898,7 @@ import CZitiPrivate
             log.wtf("invalid event", function:"onEvent()")
             return
         }
+        
         // always update zid name...
         if let czid = ziti_get_identity(ztx) {
             let name = String(cString: czid.pointee.name)

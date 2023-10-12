@@ -168,11 +168,14 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     func setZitiInstance(_ identifier:String, _ zitiCtx:ziti_context) {
         var zi:UnsafeMutablePointer<ziti_instance_s>?
         zi = new_ziti_instance(identifier.cString(using: .utf8))
-
         // use the context and options that the caller provided
         zi?.pointee.ztx = zitiCtx
         // add in required options for receiving tsdk events
-        set_tnlr_options(zi) // todo check return
+        let rc = set_tnlr_options(zi)
+        guard rc == Ziti.ZITI_OK else {
+            log.wtf("unable to set tunneler options on Ziti instance for identifier \(identitifer)")
+            return
+        }
 
         set_ziti_instance(identifier.cString(using: .utf8), zi)
         
