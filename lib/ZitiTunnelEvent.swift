@@ -214,15 +214,20 @@ import CZitiPrivate
     /// New controller address
     public var newControllerAddress:String = ""
     
+    /// New ca bundle
+    public var newCaBundle = ""
+    
     init(_ ziti:Ziti, _ evt:UnsafePointer<api_event>) {
         super.init(ziti)
         self.newControllerAddress = toStr(evt.pointee.new_ctrl_address)
+        self.newCaBundle = toStr(evt.pointee.new_ca_bundle)
     }
     
     /// Debug description
     /// - returns: String containing debug description of this event
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
-            "   newControllerAddress: \(newControllerAddress)"
+            "   newControllerAddress: \(newControllerAddress)\n" +
+            "   newCaBundle: \(newCaBundle)"
     }
 }

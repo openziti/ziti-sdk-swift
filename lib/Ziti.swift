@@ -40,6 +40,8 @@ import CZitiPrivate
     
     /// Opaque reference to Ziti SDK C context
     public var ztx:OpaquePointer?
+    /// received first event from C sdk.
+    private var eventReceived = false
     
     /// Access to the `ZitiTunnel` managing this instance (if applicable)
     public weak var zitiTunnel:ZitiTunnel?
@@ -905,8 +907,8 @@ import CZitiPrivate
         }
         
         // first time..
-        if let ztx = ztx, mySelf.ztx == nil {
-            mySelf.ztx = ztx
+        if let ztx = ztx, !mySelf.eventReceived {
+            mySelf.eventReceived = true
             Ziti.postureContexts[ztx] = mySelf
             mySelf.initCallback?(nil)
         }
