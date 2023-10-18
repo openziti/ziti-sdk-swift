@@ -288,11 +288,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             return
         }
         
-        // Update ztx (not available until loop is running...), call initCallback
-        let key = "\(KEY_ZITI_INSTANCE)\(ziti.id.id)"
-        if ziti.ztx == nil, let zi = ziti.userData[key] as? UnsafeMutablePointer<ziti_instance_s>, let ztx = zi.pointee.ztx {
-            ziti.ztx = ztx
-            Ziti.postureContexts[ztx] = ziti
+        // call initCallback on our first event
+        if !ziti.eventReceived {
+            ziti.eventReceived = true
+            Ziti.postureContexts[ziti.ztx!] = ziti
             mySelf.tunnelProvider?.initCallback(ziti, nil)
         }
         

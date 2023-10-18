@@ -41,7 +41,7 @@ import CZitiPrivate
     /// Opaque reference to Ziti SDK C context
     public var ztx:OpaquePointer?
     /// received first event from C sdk.
-    private var eventReceived = false
+    public var eventReceived = false
     
     /// Access to the `ZitiTunnel` managing this instance (if applicable)
     public weak var zitiTunnel:ZitiTunnel?
