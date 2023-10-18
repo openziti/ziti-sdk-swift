@@ -336,7 +336,14 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         case TunnelEvents.APIEvent.rawValue:
             var cApiEvent = UnsafeRawPointer(cEvent).bindMemory(to: api_event.self, capacity: 1)
             let event = ZitiTunnelApiEvent(ziti, cApiEvent)
-            ziti.id.ztAPI = event.newControllerAddress
+            // update ourself with event info
+            if !event.newControllerAddress.isEmpty {
+                ziti.id.ztAPI = event.newControllerAddress
+            }
+            if !event.newCaBundle.isEmpty {
+                ziti.id.ca = event.newCaBundle
+            }
+            // pass event to application
             mySelf.tunnelProvider?.tunnelEventCallback(event)
         default:
             log.warn("Unrecognized event type \(cEvent.pointee.event_type.rawValue)")

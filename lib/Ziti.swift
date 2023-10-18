@@ -916,8 +916,14 @@ import CZitiPrivate
         // create and send the event...
         let event = ZitiEvent(mySelf, cEvent)
         
+        // update ourself
         if event.type == ZitiEvent.EventType.ApiEvent {
-            mySelf.id.ztAPI = event.apiEvent!.newControllerAddress
+            if !event.apiEvent!.newControllerAddress.isEmpty {
+                mySelf.id.ztAPI = event.apiEvent!.newControllerAddress
+            }
+            if !event.apiEvent!.newCaBundle.isEmpty {
+                mySelf.id.ca = event.apiEvent!.newCaBundle
+            }
         }
         
         mySelf.eventCallbacksLock.lock()
