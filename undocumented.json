@@ -1,6 +1,12 @@
 {
   "warnings": [
-
+    {
+      "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
+      "line": 185,
+      "symbol": "ZitiEvent.ApiEvent.newCaBundle",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    }
   ],
   "source_directory": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift"
 }
