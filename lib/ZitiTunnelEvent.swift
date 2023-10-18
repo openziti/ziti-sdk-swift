@@ -215,7 +215,7 @@ import CZitiPrivate
     public var newControllerAddress:String = ""
     
     /// New ca bundle
-    public var newCaBundle = ""
+    public var newCaBundle:String = ""
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<api_event>) {
         super.init(ziti)
