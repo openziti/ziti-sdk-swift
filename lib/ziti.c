@@ -34,6 +34,12 @@ ZITI_FUNC extern void
 ziti_logger(int level, const char *module, const char *file, unsigned int line, const char *func,
             const char *fmt, ...);
 
+// including ziti_log.h throws a fit.
+extern void ziti_log_init(uv_loop_t *loop, int level, void *logfn);
+void ziti_log_init_wrapper(uv_loop_t *loop) {
+    ziti_log_init(loop, -1, NULL);
+}
+
 void set_tunnel_logger(void) {
     ziti_tunnel_set_logger(ziti_logger);
 }

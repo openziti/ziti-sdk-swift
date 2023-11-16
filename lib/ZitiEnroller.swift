@@ -148,7 +148,7 @@ import CZitiPrivate
             cb(nil, nil, ZitiError(errStr, errorCode: Int(initStatus)))
             return
         }
-        
+        ziti_log_init_wrapper(&loop)
         self.enroll(withLoop: &loop, privatePem: privatePem, cb: cb)
         
         let runStatus = uv_run(&loop, UV_RUN_DEFAULT)

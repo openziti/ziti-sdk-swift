@@ -448,7 +448,9 @@ import CZitiPrivate
         if (caPEMPtr != nil) {
             caPEMPtr!.deallocate()
         }
-
+        
+        ziti_log_init_wrapper(loop)
+        
         var zitiOpts = ziti_options(config: nil,
                                 disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
