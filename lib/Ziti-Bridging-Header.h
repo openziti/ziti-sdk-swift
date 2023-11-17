@@ -22,6 +22,7 @@ limitations under the License.
 extern const char** ziti_all_configs;
 extern tls_context *default_tls_context(const char *ca, size_t ca_len);
 
+void ziti_log_init_wrapper(uv_loop_t *loop);
 void set_tunnel_logger(void);
 
 typedef int (*ziti_printer_cb_wrapper)(void *ctx, const char *msg);

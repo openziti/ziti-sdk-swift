@@ -22,6 +22,14 @@ import CZitiPrivate
 @objc public class ZitiEnroller : NSObject, ZitiUnretained {
     private static let log = ZitiLog(ZitiEnroller.self)
     private let log = ZitiEnroller.log
+    /// use the same loop for all enrollments, otherwise the logger's loop will be invalid after the first enrollment.
+    private static var loop: UnsafeMutablePointer<uv_loop_t> = {
+        let l = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
+        l.initialize(to: uv_loop_t())
+        uv_loop_init(l)
+        ziti_log_init_wrapper(l)
+        return l
+    }()
     
     /**
      * Class representing response to successful enrollment attempt
@@ -139,19 +147,9 @@ import CZitiPrivate
      *      - cb: callback called indicating status of enrollment attempt
      */
     @objc public func enroll(privatePem:String, cb:@escaping EnrollmentCallback) {
-        var loop = uv_loop_t()
+        self.enroll(withLoop: ZitiEnroller.loop, privatePem: privatePem, cb: cb)
         
-        let initStatus = uv_loop_init(&loop)
-        guard initStatus == 0 else {
-            let errStr = String(cString: uv_strerror(initStatus))
-            log.error(errStr)
-            cb(nil, nil, ZitiError(errStr, errorCode: Int(initStatus)))
-            return
-        }
-        
-        self.enroll(withLoop: &loop, privatePem: privatePem, cb: cb)
-        
-        let runStatus = uv_run(&loop, UV_RUN_DEFAULT)
+        let runStatus = uv_run(ZitiEnroller.loop, UV_RUN_DEFAULT)
         guard runStatus == 0 else {
             let errStr = String(cString: uv_strerror(runStatus))
             log.error(errStr)
