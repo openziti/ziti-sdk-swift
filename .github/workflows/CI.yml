@@ -32,7 +32,7 @@ jobs:
 
     - uses: lukka/run-vcpkg@v10
       with:
-        vcpkgGitCommitId: '19af97cba8ca48474e4ad15a24ed50271a9ecdac'
+        vcpkgGitCommitId: 'f6a5d4e8eb7476b8d7fc12a56dff300c1c986131'
 
     - name: ${{ matrix.spec.name }}
       env:
