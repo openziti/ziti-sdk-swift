@@ -44,7 +44,7 @@ jobs:
         tar -cvzf ${{ matrix.spec.name }}.tgz -C ./deps/ziti-tunnel-sdk-c ${{ matrix.spec.name }}
 
     - name: Upload Build
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.spec.name }}
         path: ${{ matrix.spec.name }}.tgz
@@ -90,7 +90,7 @@ jobs:
         pushd ./dist && zip -r ../CZiti.xcframework.zip CZiti.xcframework && popd
 
     - name: Upload CZiti.xcframework
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: CZiti.xcframework
         path: CZiti.xcframework.zip
@@ -102,7 +102,7 @@ jobs:
         tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
 
     - name: Upload Docs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ziti-sdk-swift-docs
         path: ziti-sdk-swift-docs.tgz
