@@ -22,7 +22,7 @@ jobs:
 
     steps:
     - name: Checkout Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: true
 
@@ -64,7 +64,7 @@ jobs:
         xcode-version: '15.2'
 
     - name: Download Artifacts
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
 
     - name: Extract TSDK Builds
       run: |
@@ -113,17 +113,17 @@ jobs:
     if: github.event_name == 'push' && github.ref  == 'refs/heads/main'
     steps:
     - name: Checkout Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
     - name: Download Docs
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: ziti-sdk-swift-docs
 
     - name: Download CZiti.xcframework
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: CZiti.xcframework
 

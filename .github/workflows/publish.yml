@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Get Release
       id: get_release
@@ -32,7 +32,7 @@ jobs:
         echo "checksum=${checksum}" | tee -a $GITHUB_OUTPUT
 
     - name: Checkout Distribution Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: openziti/ziti-sdk-swift-dist
 
@@ -77,7 +77,7 @@ jobs:
     concurrency: ci-${{ github.ref }}
     steps:
     - name: Checkout Project
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
 
