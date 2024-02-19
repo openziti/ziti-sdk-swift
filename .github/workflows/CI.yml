@@ -30,9 +30,9 @@ jobs:
       with:
         xcode-version: '14.3.1'
 
-    - uses: lukka/run-vcpkg@v10
+    - uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: 'f6a5d4e8eb7476b8d7fc12a56dff300c1c986131'
+        vcpkgGitCommitId: 'fba75d09065fcc76a25dcf386b1d00d33f5175af'
 
     - name: ${{ matrix.spec.name }}
       env:
