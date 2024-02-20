@@ -51,11 +51,11 @@
 		5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
 		5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */; };
 		5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
-		5AB6DF83244B8F2000F4B4E0 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */; };
+		5AB6DF83244B8F2000F4B4E0 /* libuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv.a */; };
 		5AB6DFB9244BA63F00F4B4E0 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */; };
 		5AB6DFBA244BA64300F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
 		5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
-		5AB6DFBC244BA64B00F4B4E0 /* libuv_a.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */; };
+		5AB6DFBC244BA64B00F4B4E0 /* libuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv.a */; };
 		5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB8309F247432C40089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
 		5AB830A0247432C40089AF93 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83091247432C40089AF93 /* ZitiKeychain.swift */; };
@@ -214,7 +214,7 @@
 		5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/library/libmbedx509.a"; sourceTree = "<group>"; };
 		5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/crypto/library/libmbedcrypto.a"; sourceTree = "<group>"; };
 		5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/library/libmbedtls.a"; sourceTree = "<group>"; };
-		5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv_a.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libuv/libuv_a.a"; sourceTree = "<group>"; };
+		5AB6DF7C244B8F2000F4B4E0 /* libuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libuv/libuv.a"; sourceTree = "<group>"; };
 		5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCZiti.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AB8308E247432C40089AF93 /* Ziti-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Ziti-Bridging-Header.h"; sourceTree = "<group>"; };
 		5AB8308F247432C40089AF93 /* ZitiError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiError.swift; sourceTree = "<group>"; };
@@ -286,7 +286,7 @@
 				5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */,
 				5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */,
 				5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */,
-				5AB6DF83244B8F2000F4B4E0 /* libuv_a.a in Frameworks */,
+				5AB6DF83244B8F2000F4B4E0 /* libuv.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -299,7 +299,7 @@
 				5AA2989925857789001F7502 /* liblwipcore.a in Frameworks */,
 				5A1D8AD729940C3A00101BD7 /* libtlsuv.a in Frameworks */,
 				AA039EE22A963C9C004D3F78 /* libllhttp.a in Frameworks */,
-				5AB6DFBC244BA64B00F4B4E0 /* libuv_a.a in Frameworks */,
+				5AB6DFBC244BA64B00F4B4E0 /* libuv.a in Frameworks */,
 				5AB6DFB9244BA63F00F4B4E0 /* libmbedcrypto.a in Frameworks */,
 				5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */,
 				5AB6DFBA244BA64300F4B4E0 /* libmbedtls.a in Frameworks */,
@@ -421,7 +421,7 @@
 				5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */,
 				5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */,
 				5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */,
-				5AB6DF7C244B8F2000F4B4E0 /* libuv_a.a */,
+				5AB6DF7C244B8F2000F4B4E0 /* libuv.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

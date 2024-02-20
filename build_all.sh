@@ -13,6 +13,8 @@ PROJECT_ROOT=$(cd `dirname $0` && pwd)
 DERIVED_DATA_PATH="${PROJECT_ROOT}/DerivedData/CZiti"
 C_SDK_ROOT="${PROJECT_ROOT}/deps/ziti-tunnel-sdk-c"
 : ${CONFIGURATION:="Release"}
+# make for iOS, macOS, or All
+: ${FOR:="All"}
 
 function build_tsdk {
    name=$1
@@ -71,15 +73,26 @@ if [ $? -ne 0 ] ; then
 fi
 
 toolchain_dir="../../toolchains"
-build_tsdk 'build-iphoneos-arm64' "${toolchain_dir}/iOS-arm64.cmake"
-build_tsdk 'build-iphonesimulator-x86_64' "${toolchain_dir}/iOS-Simulator-x86_64.cmake"
-build_tsdk 'build-iphonesimulator-arm64' "${toolchain_dir}/iOS-Simulator-arm64.cmake"
-build_tsdk 'build-macosx-arm64' "${toolchain_dir}/macOS-arm64.cmake"
-build_tsdk 'build-macosx-x86_64' "${toolchain_dir}/macOS-x86_64.cmake"
+if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
+   build_tsdk 'build-iphoneos-arm64' "${toolchain_dir}/iOS-arm64.cmake"
+   build_tsdk 'build-iphonesimulator-x86_64' "${toolchain_dir}/iOS-Simulator-x86_64.cmake"
+   build_tsdk 'build-iphonesimulator-arm64' "${toolchain_dir}/iOS-Simulator-arm64.cmake"
+fi
 
-build_cziti 'CZiti-iOS' 'iphoneos' '-arch arm64'
-build_cziti 'CZiti-iOS' 'iphonesimulator' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
-build_cziti 'CZiti-macOS' 'macosx' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
+if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
+   build_tsdk 'build-macosx-arm64' "${toolchain_dir}/macOS-arm64.cmake"
+   build_tsdk 'build-macosx-x86_64' "${toolchain_dir}/macOS-x86_64.cmake"
+fi
+
+
+if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
+   build_cziti 'CZiti-iOS' 'iphoneos' '-arch arm64'
+   build_cziti 'CZiti-iOS' 'iphonesimulator' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
+fi
+
+if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
+   build_cziti 'CZiti-macOS' 'macosx' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
+fi
 
 /bin/sh ${PROJECT_ROOT}/make_dist.sh
 if [ $? -ne 0 ] ; then
