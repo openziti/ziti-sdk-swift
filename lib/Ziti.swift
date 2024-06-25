@@ -429,8 +429,10 @@ import CZitiPrivate
         }
         
         // set up the ziti_config with our cert, etc.
+        var ctrls:model_list = model_list.init() // todo get controllers list
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
+            controllers: ctrls,
             id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
             cfg_source: nil) // todo what is cfg_source?
         
@@ -457,7 +459,6 @@ import CZitiPrivate
                                 api_page_size: 25,
                                 refresh_interval: refresh_interval,
                                 metrics_type: EWMA_1m,
-                                router_keepalive: 60,
                                 pq_mac_cb: postureChecks?.macQuery != nil ? Ziti.onMacQuery : nil,
                                 pq_os_cb:  postureChecks?.osQuery != nil ?  Ziti.onOsQuery : nil,
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,

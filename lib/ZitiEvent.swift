@@ -223,15 +223,15 @@ import CZitiPrivate
         self.ziti = ziti
         type = EventType(rawValue: cEvent.pointee.type.rawValue) ?? .Invalid
         if type == .Context {
-            contextEvent = ContextEvent(cEvent.pointee.event.ctx)
+            contextEvent = ContextEvent(cEvent.pointee.ctx)
         } else if type == .Service {
-            serviceEvent = ServiceEvent(cEvent.pointee.event.service)
+            serviceEvent = ServiceEvent(cEvent.pointee.service)
         } else if type == .Router {
-            routerEvent = RouterEvent(cEvent.pointee.event.router)
+            routerEvent = RouterEvent(cEvent.pointee.router)
         } else if type == .MfaAuth {
-            mfaAuthEvent = MfaAuthEvent(cEvent.pointee.event.mfa_auth_event)
+            mfaAuthEvent = MfaAuthEvent(cEvent.pointee.mfa_auth_event)
         } else if type == .ApiEvent {
-            apiEvent = ApiEvent(cEvent.pointee.event.api)
+            apiEvent = ApiEvent(cEvent.pointee.api)
         } else {
             log.error("unrecognized event type \(cEvent.pointee.type.rawValue)")
         }

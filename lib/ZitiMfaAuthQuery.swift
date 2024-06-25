@@ -42,7 +42,7 @@ import CZitiPrivate
     /// expected format
     public var format:String?
     
-    init(_ cAuthQuery:UnsafeMutablePointer<ziti_auth_query_mfa>) {
+    init(_ cAuthQuery:UnsafePointer<ziti_auth_query_mfa>) {
         super.init()
         
         typeId     = toStr(cAuthQuery.pointee.type_id)
