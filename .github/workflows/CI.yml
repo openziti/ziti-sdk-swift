@@ -1,9 +1,9 @@
 name: CI
 on:
   pull_request:
-    branches: [ main ]
-  push:
-    branches: [ main ]
+    branches:
+      - main
+      - alpha
 permissions:
   contents: write
 
@@ -110,7 +110,7 @@ jobs:
   draft-release:
     runs-on: ubuntu-latest
     needs: [ build-cziti ]
-    if: github.event_name == 'push' && github.ref  == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/alpha')
     steps:
     - name: Checkout Project
       uses: actions/checkout@v4
