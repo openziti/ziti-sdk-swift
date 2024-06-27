@@ -48,13 +48,11 @@
 		5AA298BD2585961C001F7502 /* NetifDriver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AA298BB2585961C001F7502 /* NetifDriver.swift */; };
 		5AAAEDE62464D8AB00C56383 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AAAEDE52464D8AB00C56383 /* main.swift */; };
 		5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
-		5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
-		5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */; };
-		5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
+		5AB6DF7F244B8F2000F4B4E0 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libssl.a */; };
+		5AB6DF80244B8F2000F4B4E0 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libcrypto.a */; };
 		5AB6DF83244B8F2000F4B4E0 /* libuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv.a */; };
-		5AB6DFB9244BA63F00F4B4E0 /* libmbedcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */; };
-		5AB6DFBA244BA64300F4B4E0 /* libmbedtls.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */; };
-		5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */; };
+		5AB6DFB9244BA63F00F4B4E0 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF79244B8F2000F4B4E0 /* libcrypto.a */; };
+		5AB6DFBB244BA64700F4B4E0 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF78244B8F2000F4B4E0 /* libssl.a */; };
 		5AB6DFBC244BA64B00F4B4E0 /* libuv.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF7C244B8F2000F4B4E0 /* libuv.a */; };
 		5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB8309F247432C40089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
@@ -109,6 +107,8 @@
 		5AF0C4122489987500CD4DAE /* ZitiClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF0C4102489987500CD4DAE /* ZitiClaims.swift */; };
 		AA039EE02A963C53004D3F78 /* libllhttp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA039EDF2A963C53004D3F78 /* libllhttp.a */; };
 		AA039EE22A963C9C004D3F78 /* libllhttp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA039EE12A963C9C004D3F78 /* libllhttp.a */; };
+		AACEF6272C2E0B1500C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */; };
+		AACEF6282C2E0B1500C428AE /* libjson-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6262C2E0B1500C428AE /* libjson-c.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -211,9 +211,8 @@
 		5AAAEDE32464D8AB00C56383 /* ziti-mac-enroller */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ziti-mac-enroller"; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AAAEDE52464D8AB00C56383 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCZiti.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedx509.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/library/libmbedx509.a"; sourceTree = "<group>"; };
-		5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedcrypto.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/crypto/library/libmbedcrypto.a"; sourceTree = "<group>"; };
-		5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libmbedtls.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/mbedtls/library/libmbedtls.a"; sourceTree = "<group>"; };
+		5AB6DF78244B8F2000F4B4E0 /* libssl.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libssl.a; path = "deps/ziti-tunnel-sdk-c/build-os-arch/vcpkg_installed/os-arch/lib/libssl.a"; sourceTree = "<group>"; };
+		5AB6DF79244B8F2000F4B4E0 /* libcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libcrypto.a; path = "deps/ziti-tunnel-sdk-c/build-os-arch/vcpkg_installed/os-arch/lib/libcrypto.a"; sourceTree = "<group>"; };
 		5AB6DF7C244B8F2000F4B4E0 /* libuv.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libuv.a; path = "deps/ziti-sdk-c/build-os-arch/deps/uv-mbed/deps/libuv/libuv.a"; sourceTree = "<group>"; };
 		5AB6DFAF244B990A00F4B4E0 /* libCZiti.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCZiti.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		5AB8308E247432C40089AF93 /* Ziti-Bridging-Header.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Ziti-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -251,6 +250,8 @@
 		5AFE864327E3C62800D47A47 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		AA039EDF2A963C53004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/debug/lib/libllhttp.a"; sourceTree = "<group>"; };
 		AA039EE12A963C9C004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/debug/lib/libllhttp.a"; sourceTree = "<group>"; };
+		AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
+		AACEF6262C2E0B1500C428AE /* libjson-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libjson-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libjson-c.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -276,6 +277,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AACEF6272C2E0B1500C428AE /* libprotobuf-c.a in Frameworks */,
+				AACEF6282C2E0B1500C428AE /* libjson-c.a in Frameworks */,
 				5AA2988E25857758001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */,
 				5AA2988F25857758001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */,
 				5AA2989125857759001F7502 /* liblwipcore.a in Frameworks */,
@@ -283,9 +286,8 @@
 				5A0E4A8B24530E1E00C56DCF /* libziti.a in Frameworks */,
 				5A1D8AD629940BE500101BD7 /* libtlsuv.a in Frameworks */,
 				AA039EE02A963C53004D3F78 /* libllhttp.a in Frameworks */,
-				5AB6DF7F244B8F2000F4B4E0 /* libmbedx509.a in Frameworks */,
-				5AB6DF80244B8F2000F4B4E0 /* libmbedcrypto.a in Frameworks */,
-				5AB6DF82244B8F2000F4B4E0 /* libmbedtls.a in Frameworks */,
+				5AB6DF7F244B8F2000F4B4E0 /* libssl.a in Frameworks */,
+				5AB6DF80244B8F2000F4B4E0 /* libcrypto.a in Frameworks */,
 				5AB6DF83244B8F2000F4B4E0 /* libuv.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -300,9 +302,8 @@
 				5A1D8AD729940C3A00101BD7 /* libtlsuv.a in Frameworks */,
 				AA039EE22A963C9C004D3F78 /* libllhttp.a in Frameworks */,
 				5AB6DFBC244BA64B00F4B4E0 /* libuv.a in Frameworks */,
-				5AB6DFB9244BA63F00F4B4E0 /* libmbedcrypto.a in Frameworks */,
-				5AB6DFBB244BA64700F4B4E0 /* libmbedx509.a in Frameworks */,
-				5AB6DFBA244BA64300F4B4E0 /* libmbedtls.a in Frameworks */,
+				5AB6DFB9244BA63F00F4B4E0 /* libcrypto.a in Frameworks */,
+				5AB6DFBB244BA64700F4B4E0 /* libssl.a in Frameworks */,
 				5A0E4A8F24534DE500C56DCF /* libsodium.a in Frameworks */,
 				5A0E4A8C24530E2500C56DCF /* libziti.a in Frameworks */,
 			);
@@ -402,6 +403,8 @@
 		5AB6DF76244B8F2000F4B4E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AACEF6262C2E0B1500C428AE /* libjson-c.a */,
+				AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */,
 				AA039EDF2A963C53004D3F78 /* libllhttp.a */,
 				AA039EE12A963C9C004D3F78 /* libllhttp.a */,
 				5A1D8AD529940BE500101BD7 /* libtlsuv.a */,
@@ -418,9 +421,8 @@
 				5AA2989325857788001F7502 /* libziti-tunnel-sdk-c.a */,
 				5A0E4A8D24534DDE00C56DCF /* libsodium.a */,
 				5A0E4A8A24530E1E00C56DCF /* libziti.a */,
-				5AB6DF79244B8F2000F4B4E0 /* libmbedcrypto.a */,
-				5AB6DF7B244B8F2000F4B4E0 /* libmbedtls.a */,
-				5AB6DF78244B8F2000F4B4E0 /* libmbedx509.a */,
+				5AB6DF79244B8F2000F4B4E0 /* libcrypto.a */,
+				5AB6DF78244B8F2000F4B4E0 /* libssl.a */,
 				5AB6DF7C244B8F2000F4B4E0 /* libuv.a */,
 			);
 			name = Frameworks;
@@ -1051,19 +1053,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_INCLUDE_PATHS = (
-					"$(SRCROOT)/lib/ProjectModule",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
-				);
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Debug;
@@ -1120,19 +1110,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = (
-					"$(SRCROOT)/lib/ProjectModule",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
-				);
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
@@ -1318,7 +1296,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -1380,7 +1361,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(inherited)";
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.15;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;

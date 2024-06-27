@@ -24,7 +24,7 @@ function build_tsdk {
    rm -rf ./deps/ziti-tunnel-sdk-c/${name}
 
    cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-      -DTLSUV_TLSLIB=mbedtls \
+      -DTLSUV_TLSLIB=openssl \
       -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON \
       -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
