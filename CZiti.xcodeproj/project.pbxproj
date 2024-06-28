@@ -107,6 +107,8 @@
 		5AF0C4122489987500CD4DAE /* ZitiClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF0C4102489987500CD4DAE /* ZitiClaims.swift */; };
 		AA039EE02A963C53004D3F78 /* libllhttp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA039EDF2A963C53004D3F78 /* libllhttp.a */; };
 		AA039EE22A963C9C004D3F78 /* libllhttp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA039EE12A963C9C004D3F78 /* libllhttp.a */; };
+		AACE00D42C2F4F5200C428AE /* libjson-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACE00D22C2F4F5200C428AE /* libjson-c.a */; };
+		AACE00D52C2F4F5200C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */; };
 		AACEF6272C2E0B1500C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */; };
 		AACEF6282C2E0B1500C428AE /* libjson-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6262C2E0B1500C428AE /* libjson-c.a */; };
 /* End PBXBuildFile section */
@@ -250,6 +252,8 @@
 		5AFE864327E3C62800D47A47 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
 		AA039EDF2A963C53004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/debug/lib/libllhttp.a"; sourceTree = "<group>"; };
 		AA039EE12A963C9C004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/debug/lib/libllhttp.a"; sourceTree = "<group>"; };
+		AACE00D22C2F4F5200C428AE /* libjson-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libjson-c.a"; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libjson-c.a"; sourceTree = "<group>"; };
+		AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
 		AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
 		AACEF6262C2E0B1500C428AE /* libjson-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libjson-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libjson-c.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -296,6 +300,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AACE00D42C2F4F5200C428AE /* libjson-c.a in Frameworks */,
+				AACE00D52C2F4F5200C428AE /* libprotobuf-c.a in Frameworks */,
 				5AA2989725857789001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */,
 				5AA2989825857789001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */,
 				5AA2989925857789001F7502 /* liblwipcore.a in Frameworks */,
@@ -405,6 +411,8 @@
 			children = (
 				AACEF6262C2E0B1500C428AE /* libjson-c.a */,
 				AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */,
+				AACE00D22C2F4F5200C428AE /* libjson-c.a */,
+				AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */,
 				AA039EDF2A963C53004D3F78 /* libllhttp.a */,
 				AA039EE12A963C9C004D3F78 /* libllhttp.a */,
 				5A1D8AD529940BE500101BD7 /* libtlsuv.a */,
