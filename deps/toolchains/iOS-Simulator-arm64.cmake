@@ -13,6 +13,9 @@ set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
 set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
 
+# work around vcpkg's openssl port assuming simulator platform should only be used when building x86_64
+set(ENV{VCPKG_OVERLAY_PORTS} ${PROJECT_SOURCE_DIR}/../vcpkg-overlays)
+
 set(VCPKG_OVERLAY_TRIPLETS ${PROJECT_SOURCE_DIR}/../vcpkg-triplets)
 set(VCPKG_TARGET_TRIPLET arm64-iphonesimulator)
 include($ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
