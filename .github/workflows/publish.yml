@@ -14,7 +14,7 @@ jobs:
     - name: Get Release
       id: get_release
       run: |
-        tag_name=$(gh release view --json tagName --jq .tagName)
+        tag_name=$(gh release list --exclude-drafts -L1 --json tagName --jq '.[0].tagName')
         echo "tag_name=${tag_name}" | tee -a $GITHUB_OUTPUT
         tag_suffix=$(echo -n "${tag_name}" | cut -s -d '-' -f 2-)
         dist_branch=$(echo -n ${tag_suffix:-main})
