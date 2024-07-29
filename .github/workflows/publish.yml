@@ -25,8 +25,11 @@ jobs:
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Download xcframework
-      run: gh release download -p CZiti.xcframework.zip
+      run: |
+        echo "VERS=${VERS}"
+        gh release download "${VERS}" -p CZiti.xcframework.zip
       env:
+        VERS: ${{ steps.get_release.outputs.tag_name }}
         GITHUB_TOKEN: ${{ github.token }}
 
     - name: Compute Checksum
