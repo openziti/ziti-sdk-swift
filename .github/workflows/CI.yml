@@ -34,9 +34,14 @@ jobs:
       with:
         xcode-version: '15.2'
 
+    - name: macOS tools
+      if: runner.os == 'macOS'
+      shell: bash
+      run: brew install autoconf autoconf-archive automake pkg-config
+
     - uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: 'fba75d09065fcc76a25dcf386b1d00d33f5175af'
+        vcpkgGitCommitId: '1de2026f28ead93ff1773e6e680387643e914ea1'
 
     - name: ${{ matrix.spec.name }}
       env:
