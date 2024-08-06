@@ -14,15 +14,15 @@ jobs:
     - name: Get Release
       id: get_release
       run: |
-        tag_name=$(gh release list --exclude-drafts -L1 --json tagName --jq '.[0].tagName')
         echo "tag_name=${tag_name}" | tee -a $GITHUB_OUTPUT
-        tag_suffix=$(echo -n "${tag_name}" | cut -s -d '-' -f 2-)
-        dist_branch=$(echo -n ${tag_suffix:-main})
+        dist_branch=$(echo ${target_commitsh} | awk -F / '{print $NF}')
         echo "dist_branch=${dist_branch}" | tee -a $GITHUB_OUTPUT
-        gh_pages_branch="gh-pages${tag_suffix:+-$tag_suffix}"
+        gh_pages_branch="gh-pages$([ "${dist_branch}" != "main" ] && echo "-${dist_branch}")"
         echo "gh_pages_branch=${gh_pages_branch}" | tee -a $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ github.token }}
+        tag_name: ${{ github.event.release.tag_name }}
+        target_commitsh: ${{ github.event.release.target_commitish }}
 
     - name: Download xcframework
       run: |
