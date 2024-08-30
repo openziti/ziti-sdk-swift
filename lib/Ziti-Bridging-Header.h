@@ -38,3 +38,6 @@ void freeStringArray(char **arr);
 
 char *copyString(const char *str);
 void freeString(char *str);
+
+tunnel_upstream_dns_array createUpstreamDnsArray(uint8_t size);
+void addUpstreamDns(tunnel_upstream_dns_array upstreams, const char *host, uint16_t port);
