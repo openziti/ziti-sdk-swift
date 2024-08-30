@@ -433,7 +433,7 @@ import CZitiPrivate
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
             controllers: ctrls,
-            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
+            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
             cfg_source: nil) // todo what is cfg_source?
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
@@ -464,7 +464,7 @@ import CZitiPrivate
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
-                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiAPIEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
         zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)

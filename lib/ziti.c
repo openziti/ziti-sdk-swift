@@ -87,3 +87,16 @@ char *copyString(const char *str) {
 void freeString(char *str) {
     if (str) free(str);
 }
+
+tunnel_upstream_dns_array createUpstreamDnsArray(uint8_t size) {
+    return calloc(size + 1, sizeof(tunnel_upstream_dns *));
+}
+
+void addUpstreamDns(tunnel_upstream_dns_array upstreams, const char *host, uint16_t port) {
+    int i = 0;
+    for (i = 0; upstreams[i] != NULL; i++);
+    tunnel_upstream_dns *upstream = calloc(1, sizeof(tunnel_upstream_dns));
+    upstream->host = strdup(host);
+    upstream->port = port;
+    upstreams[i] = upstream;
+}
