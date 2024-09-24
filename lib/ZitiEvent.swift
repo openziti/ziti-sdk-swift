@@ -220,16 +220,24 @@ import CZitiPrivate
         @objc public let audience:String
         
         /// Claim
-        @objc public let claim:String
+        @objc public var scopes:[String]?
         
-        init(_ cSigner:ziti_jwt_signer) {
-            id = cSigner.name != nil ? String(cString: cSigner.id) : ""
-            name = cSigner.name != nil ? String(cString: cSigner.name) : ""
-            enabled = cSigner.enabled
-            providerUrl = cSigner.provider_url != nil ? String(cString: cSigner.provider_url) : ""
-            clientId = cSigner.client_id != nil ? String(cString: cSigner.client_id) : ""
-            audience = cSigner.audience != nil ? String(cString: cSigner.audience) : ""
-            claim = cSigner.claim != nil ? String(cString: cSigner.claim) : ""
+        init(_ cSigner:UnsafeMutablePointer<ziti_jwt_signer>) {
+            id = cSigner.pointee.id != nil ? String(cString: cSigner.pointee.id) : ""
+            name = cSigner.pointee.name != nil ? String(cString: cSigner.pointee.name) : ""
+            enabled = cSigner.pointee.enabled
+            providerUrl = cSigner.pointee.provider_url != nil ? String(cString: cSigner.pointee.provider_url) : ""
+            clientId = cSigner.pointee.client_id != nil ? String(cString: cSigner.pointee.client_id) : ""
+            audience = cSigner.pointee.audience != nil ? String(cString: cSigner.pointee.audience) : ""
+            scopes = []
+            var i = model_list_iterator(&(cSigner.pointee.scopes))
+            while i != nil {
+                let scopePtr = model_list_it_element(i)
+                if let scope = UnsafeMutablePointer<CChar>(OpaquePointer(scopePtr)) {
+                    scopes?.append(String(scope.pointee))
+                }
+                i = model_list_it_next(i)
+            }
         }
     }
 

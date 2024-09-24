@@ -453,8 +453,7 @@ import CZitiPrivate
         
         ziti_log_init_wrapper(loop)
         
-        var zitiOpts = ziti_options(config: nil,
-                                disabled: id.startDisabled ?? false,
+        var zitiOpts = ziti_options(disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
                                 refresh_interval: refresh_interval,
