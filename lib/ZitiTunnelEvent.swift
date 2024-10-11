@@ -56,7 +56,7 @@ import CZitiPrivate
     public var controller:String = ""
     
     /// Controller event code
-    public var code:Int32
+    public var code:Int64
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<ziti_ctx_event>) {
         self.code = evt.pointee.code
@@ -145,7 +145,7 @@ import CZitiPrivate
     public var recovery_codes:[String]
     
     /// MFA authentication code
-    public var code:Int32
+    public var code:Int64
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<mfa_event>) {
         self.operationType = MfaStatus(evt.pointee.operation_type)

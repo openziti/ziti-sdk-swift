@@ -43,7 +43,7 @@ import CZitiPrivate
     public var encrypted:Bool?
     
     /// Service permisions (e.g., DIAL and/or BIND)
-    public var permFlags:Int32?
+    public var permFlags:Int64?
     
     /// Listing of posture query sets
     public var postureQuerySets:[ZitiPostureQuerySet]?

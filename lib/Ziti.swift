@@ -429,9 +429,11 @@ import CZitiPrivate
         }
         
         // set up the ziti_config with our cert, etc.
+        var ctrls:model_list = model_list.init() // todo get controllers list
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
-            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
+            controllers: ctrls,
+            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
             cfg_source: nil) // todo what is cfg_source?
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
@@ -451,19 +453,17 @@ import CZitiPrivate
         
         ziti_log_init_wrapper(loop)
         
-        var zitiOpts = ziti_options(config: nil,
-                                disabled: id.startDisabled ?? false,
+        var zitiOpts = ziti_options(disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
                                 refresh_interval: refresh_interval,
                                 metrics_type: EWMA_1m,
-                                router_keepalive: 60,
                                 pq_mac_cb: postureChecks?.macQuery != nil ? Ziti.onMacQuery : nil,
                                 pq_os_cb:  postureChecks?.osQuery != nil ?  Ziti.onOsQuery : nil,
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
-                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiMfaAuthEvent.rawValue | ZitiAPIEvent.rawValue,
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiAPIEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
         zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)

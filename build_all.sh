@@ -23,9 +23,17 @@ function build_tsdk {
    echo "Building TSDK for ${name}; toolchain:${toolchain}"
    rm -rf ./deps/ziti-tunnel-sdk-c/${name}
 
-   cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-      -DTLSUV_TLSLIB=mbedtls \
-      -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON \
+   cmake_build_type=RelWithDebInfo
+   if [ "${CONFIGURATION}" == "Debug" ]; then cmake_build_type="Debug"; fi
+
+   if [ -n "${ASAN_ENABLED}" ]; then
+       clang_asan_flags="-DCMAKE_C_FLAGS=-fsanitize=address -DCMAKE_CXX_FLAGS=-fsanitize=address"
+   fi
+
+   cmake -DCMAKE_BUILD_TYPE=${cmake_build_type} \
+      ${clang_asan_flags} \
+      -DTLSUV_TLSLIB=openssl \
+      -DEXCLUDE_PROGRAMS=ON \
       -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
       -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${name}
@@ -51,12 +59,17 @@ function build_cziti {
    sdk=$2
    arch_flags=$3
 
+   if [ -n "${ASAN_ENABLED}" ]; then
+       asan_flags="-enableAddressSanitizer YES"
+   fi
+
    echo "Building ${scheme} ${sdk}"
    set -o pipefail && xcodebuild build \
       -derivedDataPath ./DerivedData/CZiti \
       -configuration ${CONFIGURATION} \
       -scheme ${scheme} \
       ${arch_flags} \
+      ${asan_flags} \
       -sdk ${sdk} \
       | xcpretty
 

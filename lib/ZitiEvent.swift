@@ -39,7 +39,7 @@ import CZitiPrivate
         case Service = 0x04  // ZitiServiceEvent.rawValue
         
         /// Indicates an `MfaAuthEvent`
-        case MfaAuth = 0x08  // ZitiMfaAuthEvent.rawValue
+        case Auth = 0x08     // ZitiAuthEvent.rawValue
         
         /// Indicates an `ApiEvent`
         case ApiEvent = 0x10 // ZitiApiEvent.rawValue
@@ -58,8 +58,8 @@ import CZitiPrivate
             /// Indicates `ServiceEvent`
             case .Service:  return ".Service"
                 
-            /// Indicates `MfaAuthEvent`
-            case .MfaAuth:  return ".MfaAuth"
+            /// Indicates `AuthEvent`
+            case .Auth:     return ".Auth"
                 
             /// Indicates `ApiEvent`
             case .ApiEvent: return ".ApiEvent"
@@ -164,16 +164,103 @@ import CZitiPrivate
             }
         }
     }
-    
-    /// Encapsulation of Ziti SDK C's MFA Auth Event
-    @objc public class MfaAuthEvent : NSObject {
+
+    /// Enumeration of possible authentication actions
+    @objc public enum AuthAction : UInt32 {
+        /// Request for MFA code
+        case PromptTotp
+             
+        /// Request for HSM/TPM key pin (not yet implemented)
+        case PromptPin
+             
+        /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
+        case LoginExternal
         
-        /// The authentication query
-        @objc public var mfaAuthQuery:ZitiMfaAuthQuery?
-        init(_ cEvent:ziti_mfa_auth_event) {
-            if cEvent.auth_query_mfa != nil {
-                mfaAuthQuery = ZitiMfaAuthQuery(cEvent.auth_query_mfa)
+        case Unknown
+        
+        init(_ action:ziti_auth_action) {
+            switch action {
+            case ziti_auth_prompt_totp:    self = .PromptTotp
+            case ziti_auth_prompt_pin:     self = .PromptPin
+            case ziti_auth_login_external: self = .LoginExternal
+            default: self = .Unknown
             }
+        }
+        
+        /// Returns string representation of AuthAction
+        public var debug: String {
+            switch self {
+            case .PromptTotp:    return ".PromptTotp"
+            case .PromptPin:     return ".PromptPin"
+            case .LoginExternal: return ".LoginExternal"
+            case .Unknown:       return ".Unknown"
+            @unknown default:    return "unknown \(self.rawValue)"
+            }
+        }
+    }
+
+    /// Encapsualtion of Ziti SDK C's JWTSigner
+    @objc public class JwtSigner : NSObject {
+        /// ID
+        @objc public let id:String
+        
+        /// Name
+        @objc public let name:String
+        
+        /// Enabled
+        @objc public let enabled:Bool
+
+        /// Provider URL
+        @objc public let providerUrl:String
+        
+        /// Client ID
+        @objc public let clientId:String
+        
+        /// Audience
+        @objc public let audience:String
+        
+        /// Claim
+        @objc public var scopes:[String]?
+        
+        init(_ cSigner:UnsafeMutablePointer<ziti_jwt_signer>) {
+            id = cSigner.pointee.id != nil ? String(cString: cSigner.pointee.id) : ""
+            name = cSigner.pointee.name != nil ? String(cString: cSigner.pointee.name) : ""
+            enabled = cSigner.pointee.enabled
+            providerUrl = cSigner.pointee.provider_url != nil ? String(cString: cSigner.pointee.provider_url) : ""
+            clientId = cSigner.pointee.client_id != nil ? String(cString: cSigner.pointee.client_id) : ""
+            audience = cSigner.pointee.audience != nil ? String(cString: cSigner.pointee.audience) : ""
+            scopes = []
+            var i = model_list_iterator(&(cSigner.pointee.scopes))
+            while i != nil {
+                let scopePtr = model_list_it_element(i)
+                if let scope = UnsafeMutablePointer<CChar>(OpaquePointer(scopePtr)) {
+                    scopes?.append(String(scope.pointee))
+                }
+                i = model_list_it_next(i)
+            }
+        }
+    }
+
+    /// Encapsulation of Ziti SDK C's  Auth Event
+    @objc public class AuthEvent : NSObject {
+        
+        /// The authentication action
+        @objc public var action:AuthAction
+        
+        /// The authentication type
+        @objc public var type:String
+        
+        /// The authentication detail
+        @objc public var detail:String
+        
+        /// Authentication providers
+        @objc public var providers:Array<JwtSigner>
+        
+        init(_ cEvent:ziti_auth_event) {
+            action = AuthAction(cEvent.action)
+            type = cEvent.type != nil ? String(cString: cEvent.type) : ""
+            detail = cEvent.detail != nil ? String(cString: cEvent.detail) : ""
+            providers = [] // todo populate
         }
     }
     
@@ -214,7 +301,7 @@ import CZitiPrivate
     @objc public var serviceEvent:ServiceEvent?
     
     /// Populated based on event `type`
-    @objc public var mfaAuthEvent:MfaAuthEvent?
+    @objc public var authEvent:AuthEvent?
     
     /// Populated based on event `type`
     @objc public var apiEvent:ApiEvent?
@@ -223,15 +310,15 @@ import CZitiPrivate
         self.ziti = ziti
         type = EventType(rawValue: cEvent.pointee.type.rawValue) ?? .Invalid
         if type == .Context {
-            contextEvent = ContextEvent(cEvent.pointee.event.ctx)
+            contextEvent = ContextEvent(cEvent.pointee.ctx)
         } else if type == .Service {
-            serviceEvent = ServiceEvent(cEvent.pointee.event.service)
+            serviceEvent = ServiceEvent(cEvent.pointee.service)
         } else if type == .Router {
-            routerEvent = RouterEvent(cEvent.pointee.event.router)
-        } else if type == .MfaAuth {
-            mfaAuthEvent = MfaAuthEvent(cEvent.pointee.event.mfa_auth_event)
+            routerEvent = RouterEvent(cEvent.pointee.router)
+        } else if type == .Auth {
+            authEvent = AuthEvent(cEvent.pointee.auth)
         } else if type == .ApiEvent {
-            apiEvent = ApiEvent(cEvent.pointee.event.api)
+            apiEvent = ApiEvent(cEvent.pointee.api)
         } else {
             log.error("unrecognized event type \(cEvent.pointee.type.rawValue)")
         }
@@ -260,18 +347,11 @@ import CZitiPrivate
             str += "   added: (\(e.added.count))\n\(ZitiEvent.svcArrToStr(e.added))"
         }
         
-        if let e = mfaAuthEvent {
-            if let mfaAuthQuery = e.mfaAuthQuery {
-                str += "   provider: \(mfaAuthQuery.provider ?? "nil")\n"
-                str += "   typeId: \(mfaAuthQuery.typeId ?? "nil")\n"
-                str += "   httpMethod: \(mfaAuthQuery.httpMethod ?? "nil")\n"
-                str += "   httpUrl: \(mfaAuthQuery.httpUrl ?? "nil")\n"
-                str += "   minLength: \(mfaAuthQuery.minLength ?? -1)\n"
-                str += "   maxLength: \(mfaAuthQuery.maxLength ?? -1)\n"
-                str += "   format: \(mfaAuthQuery.format ?? "nil")\n"
-            } else {
-                str += "   mfaAuthQuery: nil\n"
-            }
+        if let e = authEvent {
+            str += "   action: \(e.type)\n"
+            str += "   type: \(e.type)\n"
+            str += "   detail: \(e.detail)\n"
+            str += "   providers: (\(e.providers.count))\n\(ZitiEvent.jwtSignerArrToStr(e.providers))"
         }
         
         if let e = apiEvent {
@@ -292,6 +372,14 @@ import CZitiPrivate
             if let j = try? enc.encode(svc), let jStr = String(data:j, encoding:.utf8) {
                 str += "      \(i):\(jStr)\n"
             }
+        }
+        return str
+    }
+    
+    static func jwtSignerArrToStr(_ arr:[JwtSigner]) -> String {
+        var str = ""
+        for (i, signer) in arr.enumerated() {
+            str += "      \(i):\(signer.description)\n"
         }
         return str
     }
