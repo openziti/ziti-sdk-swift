@@ -34,16 +34,21 @@ jobs:
       with:
         xcode-version: '15.2'
 
+    - name: macOS tools
+      if: runner.os == 'macOS'
+      shell: bash
+      run: brew install autoconf autoconf-archive automake pkg-config
+
     - uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: 'fba75d09065fcc76a25dcf386b1d00d33f5175af'
+        vcpkgJsonGlob: './deps/ziti-tunnel-sdk-c/vcpkg.json'
 
     - name: ${{ matrix.spec.name }}
       env:
         TOOLCHAIN: ${{ matrix.spec.toolchain && format('../../toolchains/{0}.cmake', matrix.spec.toolchain) || '' }}
       run: |
         (cd deps/ziti-tunnel-sdk-c && git fetch --tags)
-        cmake -DCMAKE_BUILD_TYPE=Release -DTLSUV_TLSLIB=mbedtls -DMBEDTLS_FATAL_WARNINGS:BOOL=OFF -DEXCLUDE_PROGRAMS=ON -DZITI_TUNNEL_BUILD_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
+        cmake -DCMAKE_BUILD_TYPE=Release -DTLSUV_TLSLIB=openssl -DEXCLUDE_PROGRAMS=ON -DZITI_TUNNEL_BUILD_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
         cmake --build ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
         tar -cvzf ${{ matrix.spec.name }}.tgz -C ./deps/ziti-tunnel-sdk-c ${{ matrix.spec.name }}
 

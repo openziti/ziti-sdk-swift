@@ -31,10 +31,10 @@ import CZitiPrivate
     public var id:String?
     
     /// Timeout in seconds (if specified, -1 if not applicable)
-    public var timeout:Int32?
+    public var timeout:Int64?
     
     /// Timeout remaining (if applicable, otherwise -1)
-    public var timeoutRemaining:Int32?
+    public var timeoutRemaining:Int64?
          
     init(_ cPQ:UnsafeMutablePointer<ziti_posture_query>) {
         isPassing = cPQ.pointee.is_passing
