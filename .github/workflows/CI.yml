@@ -41,7 +41,7 @@ jobs:
 
     - uses: lukka/run-vcpkg@v11
       with:
-        vcpkgGitCommitId: '1de2026f28ead93ff1773e6e680387643e914ea1'
+        vcpkgJsonGlob: './deps/ziti-edge-tunnel/vcpkg.json'
 
     - name: ${{ matrix.spec.name }}
       env:
