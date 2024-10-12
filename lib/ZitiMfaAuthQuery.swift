@@ -22,7 +22,7 @@ import CZitiPrivate
     private static let log = ZitiLog(ZitiMfaAuthQuery.self)
     
     /// query type
-    public var typeId:String?
+    public var typeId:UInt32?
     
     /// MFA provider
     public var provider:String?
@@ -45,7 +45,7 @@ import CZitiPrivate
     init(_ cAuthQuery:UnsafePointer<ziti_auth_query_mfa>) {
         super.init()
         
-        typeId     = toStr(cAuthQuery.pointee.type_id)
+        typeId     = cAuthQuery.pointee.type_id.rawValue
         provider   = toStr(cAuthQuery.pointee.provider)
         httpMethod = toStr(cAuthQuery.pointee.http_method)
         httpUrl    = toStr(cAuthQuery.pointee.http_url)
