@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>MfaStatus Enumeration Reference</title>
+    <title>AuthEvent Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Enum/MfaStatus" class="dashAnchor"></a>
-    <a title="MfaStatus Enumeration Reference"></a>
+    <a name="//apple_ref/swift/Class/AuthEvent" class="dashAnchor"></a>
+    <a title="AuthEvent Class Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../../index.html">CZiti Docs</a></p>
@@ -31,9 +31,9 @@
         <img id="carat" src="../../img/carat.png" alt=""/>
         <a href="../../Classes.html">Classes</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        <a href="../../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
+        <a href="../../Classes/ZitiEvent.html">ZitiEvent</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        MfaStatus Enumeration Reference
+        AuthEvent Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -195,15 +195,16 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>MfaStatus</h1>
+            <h1>AuthEvent</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">MfaStatus</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">AuthEvent</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
 
                 </div>
               </div>
-            <p>Enumeration of MFA Status</p>
+            <p>Encapsulation of Ziti SDK C&rsquo;s  Auth Event</p>
 
           </section>
           <section class="section task-group-section">
@@ -212,9 +213,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO04AuthF0yA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/AuthStatus" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO04AuthF0yA2EmF">AuthStatus</a>
+                    <a name="/s:5CZiti9ZitiEventC04AuthC0C6actionAC0D6ActionOvp"></a>
+                    <a name="//apple_ref/swift/Property/action" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC04AuthC0C6actionAC0D6ActionOvp">action</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -222,14 +223,15 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>MFA Authentication Status</p>
+                        <p>The authentication action</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">AuthStatus</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">action</span><span class="p">:</span> <span class="kt"><a href="../../Classes/ZitiEvent/AuthAction.html">AuthAction</a></span></code></pre>
 
                         </div>
                       </div>
@@ -239,9 +241,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO13AuthChallengeyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/AuthChallenge" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO13AuthChallengeyA2EmF">AuthChallenge</a>
+                    <a name="/s:5CZiti9ZitiEventC04AuthC0C4typeSSvp"></a>
+                    <a name="//apple_ref/swift/Property/type" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC04AuthC0C4typeSSvp">type</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -249,14 +251,15 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>MFA Authentication Challenge</p>
+                        <p>The authentication type</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">AuthChallenge</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">type</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -266,9 +269,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO22EnrollmentVerificationyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/EnrollmentVerification" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO22EnrollmentVerificationyA2EmF">EnrollmentVerification</a>
+                    <a name="/s:5CZiti9ZitiEventC04AuthC0C6detailSSvp"></a>
+                    <a name="//apple_ref/swift/Property/detail" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC04AuthC0C6detailSSvp">detail</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -276,14 +279,15 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>MFA Enrollment Verification</p>
+                        <p>The authentication detail</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">EnrollmentVerification</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">detail</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -293,9 +297,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO16EnrollmentRemoveyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/EnrollmentRemove" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO16EnrollmentRemoveyA2EmF">EnrollmentRemove</a>
+                    <a name="/s:5CZiti9ZitiEventC04AuthC0C9providersSayAC9JwtSignerCGvp"></a>
+                    <a name="//apple_ref/swift/Property/providers" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC04AuthC0C9providersSayAC9JwtSignerCGvp">providers</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -303,68 +307,15 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>MFA Removal</p>
+                        <p>Authentication providers</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">EnrollmentRemove</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO19EnrollmentChallengeyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/EnrollmentChallenge" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO19EnrollmentChallengeyA2EmF">EnrollmentChallenge</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>MFA Enrollment Challenge</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">EnrollmentChallenge</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO6UknownyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/Uknown" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti18ZitiTunnelMfaEventC0D6StatusO6UknownyA2EmF">Uknown</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Unregognized status</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Uknown</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">providers</span><span class="p">:</span> <span class="kt">Array</span><span class="o">&lt;</span><span class="kt"><a href="../../Classes/ZitiEvent/JwtSigner.html">JwtSigner</a></span><span class="o">&gt;</span></code></pre>
 
                         </div>
                       </div>

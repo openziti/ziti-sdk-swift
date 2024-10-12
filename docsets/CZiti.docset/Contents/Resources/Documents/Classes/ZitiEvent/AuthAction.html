@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>MfaAuthEvent Class Reference</title>
+    <title>AuthAction Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/MfaAuthEvent" class="dashAnchor"></a>
-    <a title="MfaAuthEvent Class Reference"></a>
+    <a name="//apple_ref/swift/Enum/AuthAction" class="dashAnchor"></a>
+    <a title="AuthAction Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../../index.html">CZiti Docs</a></p>
@@ -33,7 +33,7 @@
         <img id="carat" src="../../img/carat.png" alt=""/>
         <a href="../../Classes/ZitiEvent.html">ZitiEvent</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        MfaAuthEvent Class Reference
+        AuthAction Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -82,7 +82,13 @@
                 <a href="../../Classes/ZitiEvent/ServiceEvent.html">– ServiceEvent</a>
               </li>
               <li class="nav-group-task">
-                <a href="../../Classes/ZitiEvent/MfaAuthEvent.html">– MfaAuthEvent</a>
+                <a href="../../Classes/ZitiEvent/AuthAction.html">– AuthAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/ZitiEvent/JwtSigner.html">– JwtSigner</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/ZitiEvent/AuthEvent.html">– AuthEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
@@ -189,16 +195,16 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>MfaAuthEvent</h1>
+            <h1>AuthAction</h1>
               <div class="declaration">
                 <div class="language">
                   
                   <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="kt">MfaAuthEvent</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+<span class="kd">public</span> <span class="kd">enum</span> <span class="kt">AuthAction</span> <span class="p">:</span> <span class="kt">UInt32</span></code></pre>
 
                 </div>
               </div>
-            <p>Encapsulation of Ziti SDK C&rsquo;s MFA Auth Event</p>
+            <p>Enumeration of possible authentication actions</p>
 
           </section>
           <section class="section task-group-section">
@@ -207,9 +213,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti9ZitiEventC07MfaAuthC0C03mfaE5QueryAA0bdeG0CSgvp"></a>
-                    <a name="//apple_ref/swift/Property/mfaAuthQuery" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC07MfaAuthC0C03mfaE5QueryAA0bdeG0CSgvp">mfaAuthQuery</a>
+                    <a name="/s:5CZiti9ZitiEventC10AuthActionO10PromptTotpyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/PromptTotp" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO10PromptTotpyA2EmF">PromptTotp</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -217,15 +223,122 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>The authentication query</p>
+                        <p>Request for MFA code</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="k">var</span> <span class="nv">mfaAuthQuery</span><span class="p">:</span> <span class="kt"><a href="../../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a></span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">PromptTotp</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti9ZitiEventC10AuthActionO9PromptPinyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/PromptPin" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO9PromptPinyA2EmF">PromptPin</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Request for HSM/TPM key pin (not yet implemented)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">PromptPin</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti9ZitiEventC10AuthActionO13LoginExternalyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/LoginExternal" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO13LoginExternalyA2EmF">LoginExternal</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">LoginExternal</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti9ZitiEventC10AuthActionO7UnknownyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/Unknown" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO7UnknownyA2EmF">Unknown</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Unknown</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti9ZitiEventC10AuthActionO5debugSSvp"></a>
+                    <a name="//apple_ref/swift/Property/debug" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO5debugSSvp">debug</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Returns string representation of AuthAction</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">debug</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
 
                         </div>
                       </div>
@@ -237,7 +350,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2024 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2024-09-23)</p>
+          <p>&copy; 2024 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2024-10-11)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.2</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

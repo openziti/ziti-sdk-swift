@@ -2,7 +2,14 @@
   "warnings": [
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 185,
+      "line": 179,
+      "symbol": "ZitiEvent.AuthAction.Unknown",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
+      "line": 272,
       "symbol": "ZitiEvent.ApiEvent.newCaBundle",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
