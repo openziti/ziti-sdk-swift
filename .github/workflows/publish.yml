@@ -17,7 +17,7 @@ jobs:
         echo "tag_name=${tag_name}" | tee -a $GITHUB_OUTPUT
         dist_branch=$(echo ${target_commitsh} | awk -F / '{print $NF}')
         echo "dist_branch=${dist_branch}" | tee -a $GITHUB_OUTPUT
-        gh_pages_branch="gh-pages$([ "${dist_branch}" != "main" ] && echo "-${dist_branch}")"
+        gh_pages_branch="gh-pages$([ "${dist_branch}" != "main" ] && echo "-${dist_branch}" || echo "")"
         echo "gh_pages_branch=${gh_pages_branch}" | tee -a $GITHUB_OUTPUT
       env:
         GITHUB_TOKEN: ${{ github.token }}
