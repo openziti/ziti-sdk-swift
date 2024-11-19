@@ -408,7 +408,7 @@ import CZitiPrivate
         #if os(macOS)
             let refresh_interval = 15
         #else
-            let refresh_interval = 30
+            let refresh_interval = 90
         #endif
         
         // convert key and id info to char * types that ziti-sdk-c can use.
