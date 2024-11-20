@@ -127,9 +127,9 @@ import CZitiPrivate
         enrollData.pointee.privatePem_c = UnsafeMutablePointer<Int8>.allocate(capacity: privatePem.count + 1)
         enrollData.pointee.privatePem_c!.initialize(from: privatePem.cString(using: .utf8)!, count: privatePem.count + 1)
         
-        var enroll_opts = ziti_enroll_opts(jwt: enrollData.pointee.jwtFile_c,
-                                           enroll_key: enrollData.pointee.privatePem_c,
-                                           enroll_cert: nil, enroll_name: nil, jwt_content: nil, use_keychain: false)
+        var enroll_opts = ziti_enroll_opts(url: nil, token: enrollData.pointee.jwtFile_c,
+                                           key: enrollData.pointee.privatePem_c,
+                                           cert: nil, name: nil, use_keychain: false)
         let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
         guard status == ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(status))
