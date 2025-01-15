@@ -33,6 +33,7 @@ function build_tsdk {
    cmake -DCMAKE_BUILD_TYPE=${cmake_build_type} \
       ${clang_asan_flags} \
       -DTLSUV_TLSLIB=openssl \
+      -DVCPKG_INSTALL_OPTIONS="--debug" \
       -DEXCLUDE_PROGRAMS=ON \
       -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
