@@ -208,26 +208,44 @@ import CZitiPrivate
     }
 }
 
-/// Class encapsulating Ziti Tunnel SDK C API Event
-@objc public class ZitiTunnelApiEvent : ZitiTunnelEvent {
+/// Class encapsulating Ziti Tunnel SDK C Config Event
+@objc public class ZitiTunnelConfigEvent : ZitiTunnelEvent {
     
-    /// New controller address
-    public var newControllerAddress:String = ""
+    /// Controller address (legacy)
+    public var controller_url:String = ""
     
-    /// New ca bundle
-    public var newCaBundle:String = ""
+    /// Controller addresses
+    public var controllers:[String] = []
     
-    init(_ ziti:Ziti, _ evt:UnsafePointer<api_event>) {
+    /// CA bundle
+    public var caBundle:String = ""
+    
+    init(_ ziti:Ziti, _ evt:UnsafePointer<config_event>) {
         super.init(ziti)
-        self.newControllerAddress = toStr(evt.pointee.new_ctrl_address)
-        self.newCaBundle = toStr(evt.pointee.new_ca_bundle)
+        var ziti_cfg_ptr:UnsafeMutablePointer<ziti_config>?
+        parse_ziti_config_ptr(&ziti_cfg_ptr, evt.pointee.config_json, strlen(evt.pointee.config_json))
+        self.controller_url = toStr(ziti_cfg_ptr?.pointee.controller_url)
+        
+        var ctrlList = ziti_cfg_ptr!.pointee.controllers
+        withUnsafeMutablePointer(to: &ctrlList) { ctrlListPtr in
+            var i = model_list_iterator(ctrlListPtr)
+            while i != nil {
+                let ctrlPtr = model_list_it_element(i)
+                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                    controllers.append(String(ctrl.pointee))
+                }
+                i = model_list_it_next(i)
+            }
+        }
+        self.caBundle = toStr(ziti_cfg_ptr?.pointee.id.ca)
     }
     
     /// Debug description
     /// - returns: String containing debug description of this event
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
-            "   newControllerAddress: \(newControllerAddress)\n" +
-            "   newCaBundle: \(newCaBundle)"
+            "   controller_url: \(controller_url)\n" +
+            "   contrlollers: \(controllers)\n" +
+            "   caBundle: \(caBundle)"
     }
 }

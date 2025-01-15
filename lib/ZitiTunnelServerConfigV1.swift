@@ -16,7 +16,7 @@ limitations under the License.
 import Foundation
 
 /// Class representation of ziti-tunneler-server.v1 service configuration
-public class ZitiTunnelServerConfigV1 : Codable, ZitiConfig {
+public class ZitiTunnelServerConfigV1 : Codable, ZitiServiceConfig {
     static var configType = "ziti-tunneler-server.v1"
     enum CodingKeys: String, CodingKey {
         case hostname

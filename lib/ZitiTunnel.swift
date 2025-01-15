@@ -112,7 +112,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
 
         set_tunnel_logger()
 
-        opsZiti = Ziti(zid: ZitiIdentity(id: "--- ops Ziti ---", ztAPI: ""), loopPtr: loopPtr)
+        opsZiti = Ziti(zid: ZitiIdentity(id: "--- ops Ziti ---", ztAPIs: []), loopPtr: loopPtr)
         self.tunnelProvider = tunnelProvider
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         super.init()
@@ -336,15 +336,18 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         case TunnelEvents.MFAEvent.rawValue:
             var cMfaAuthEvent = UnsafeRawPointer(cEvent).bindMemory(to: mfa_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelMfaEvent(ziti, cMfaAuthEvent))
-        case TunnelEvents.APIEvent.rawValue:
-            var cApiEvent = UnsafeRawPointer(cEvent).bindMemory(to: api_event.self, capacity: 1)
-            let event = ZitiTunnelApiEvent(ziti, cApiEvent)
+        case TunnelEvents.ConfigEvent.rawValue:
+            var cConfigEvent = UnsafeRawPointer(cEvent).bindMemory(to: config_event.self, capacity: 1)
+            let event = ZitiTunnelConfigEvent(ziti, cConfigEvent)
             // update ourself with event info
-            if !event.newControllerAddress.isEmpty {
-                ziti.id.ztAPI = event.newControllerAddress
+            if !event.controller_url.isEmpty {
+                ziti.id.ztAPI = event.controller_url
             }
-            if !event.newCaBundle.isEmpty {
-                ziti.id.ca = event.newCaBundle
+            if !event.controllers.isEmpty {
+                ziti.id.ztAPIs = event.controllers
+            }
+            if !event.caBundle.isEmpty {
+                ziti.id.ca = event.caBundle
             }
             // pass event to application
             mySelf.tunnelProvider?.tunnelEventCallback(event)

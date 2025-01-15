@@ -56,9 +56,9 @@ import CZitiPrivate
         /**
          * URL of controller returned on successful enrollment attempt
          */
-        public let ztAPI:String, id:Identity
-        init(ztAPI:String, id:Identity) {
-            self.ztAPI = ztAPI
+        public let ztAPIs:[String], id:Identity
+        init(ztAPIs:[String], id:Identity) {
+            self.ztAPIs = ztAPIs
             self.id = id
         }
     }
@@ -233,6 +233,19 @@ import CZitiPrivate
             enrollData.pointee.enrollmentCallback?(nil, nil, ze)
             return
         }
+        
+        var controllers:[String] = []
+        var ctrlList = zc.controllers
+        withUnsafeMutablePointer(to: &ctrlList) { ctrlListPtr in
+            var i = model_list_iterator(ctrlListPtr)
+            while i != nil {
+                let ctrlPtr = model_list_it_element(i)
+                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                    controllers.append(String(ctrl.pointee))
+                }
+                i = model_list_it_next(i)
+            }
+        }
         guard let ztAPI = String(cString: zc.controller_url, encoding: .utf8) else {
             let errStr = "Invaid ztAPI response"
             log.error(errStr, function:"on_enroll()")
@@ -244,7 +257,7 @@ import CZitiPrivate
         let id = EnrollmentResponse.Identity(cert: cert,
                                              key: String(cString: zc.id.key, encoding: .utf8),
                                              ca: String(cString: zc.id.ca, encoding: .utf8))
-        let enrollResp = EnrollmentResponse(ztAPI: ztAPI, id: id)
+        let enrollResp = EnrollmentResponse(ztAPIs: controllers, id: id)
         enrollData.pointee.enrollmentCallback?(enrollResp, enrollData.pointee.subj, nil)
     }
     

@@ -57,7 +57,7 @@
 		5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB8309F247432C40089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
 		5AB830A0247432C40089AF93 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83091247432C40089AF93 /* ZitiKeychain.swift */; };
-		5AB830A1247432C40089AF93 /* ZitiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiConfig.swift */; };
+		5AB830A1247432C40089AF93 /* ZitiServiceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */; };
 		5AB830A2247432C40089AF93 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83093247432C40089AF93 /* ZitiUnretained.swift */; };
 		5AB830A3247432C40089AF93 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83094247432C40089AF93 /* ZitiLog.swift */; };
 		5AB830A4247432C40089AF93 /* ZitiUrlClientConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */; };
@@ -71,7 +71,7 @@
 		5AB830AC2474330D0089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB830AD247433110089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
 		5AB830AE247433150089AF93 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83091247432C40089AF93 /* ZitiKeychain.swift */; };
-		5AB830AF247433190089AF93 /* ZitiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiConfig.swift */; };
+		5AB830AF247433190089AF93 /* ZitiServiceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */; };
 		5AB830B02474331C0089AF93 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83093247432C40089AF93 /* ZitiUnretained.swift */; };
 		5AB830B1247433200089AF93 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83094247432C40089AF93 /* ZitiLog.swift */; };
 		5AB830B2247433230089AF93 /* ZitiUrlClientConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */; };
@@ -221,7 +221,7 @@
 		5AB8308F247432C40089AF93 /* ZitiError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiError.swift; sourceTree = "<group>"; };
 		5AB83090247432C40089AF93 /* ZitiIntercept.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiIntercept.swift; sourceTree = "<group>"; };
 		5AB83091247432C40089AF93 /* ZitiKeychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiKeychain.swift; sourceTree = "<group>"; };
-		5AB83092247432C40089AF93 /* ZitiConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiConfig.swift; sourceTree = "<group>"; };
+		5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiServiceConfig.swift; sourceTree = "<group>"; };
 		5AB83093247432C40089AF93 /* ZitiUnretained.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiUnretained.swift; sourceTree = "<group>"; };
 		5AB83094247432C40089AF93 /* ZitiLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiLog.swift; sourceTree = "<group>"; };
 		5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiUrlClientConfigV1.swift; sourceTree = "<group>"; };
@@ -454,7 +454,7 @@
 				5AB83096247432C40089AF93 /* ZitiUrlProtocol.swift */,
 				5AB83090247432C40089AF93 /* ZitiIntercept.swift */,
 				5AB83091247432C40089AF93 /* ZitiKeychain.swift */,
-				5AB83092247432C40089AF93 /* ZitiConfig.swift */,
+				5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */,
 				5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */,
 				5AB83098247432C40089AF93 /* ZitiTunnelClientConfigV1.swift */,
 				5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */,
@@ -718,7 +718,7 @@
 			files = (
 				5AB830A0247432C40089AF93 /* ZitiKeychain.swift in Sources */,
 				5A8B0B81258FEA9A00182437 /* ZitiService.swift in Sources */,
-				5AB830A1247432C40089AF93 /* ZitiConfig.swift in Sources */,
+				5AB830A1247432C40089AF93 /* ZitiServiceConfig.swift in Sources */,
 				5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */,
 				5AB830A7247432C40089AF93 /* ZitiTunnelClientConfigV1.swift in Sources */,
 				5AB830A5247432C40089AF93 /* ZitiUrlProtocol.swift in Sources */,
@@ -753,7 +753,7 @@
 			files = (
 				5AB830AE247433150089AF93 /* ZitiKeychain.swift in Sources */,
 				5A8B0B82258FEA9A00182437 /* ZitiService.swift in Sources */,
-				5AB830AF247433190089AF93 /* ZitiConfig.swift in Sources */,
+				5AB830AF247433190089AF93 /* ZitiServiceConfig.swift in Sources */,
 				5AB830AC2474330D0089AF93 /* ZitiError.swift in Sources */,
 				5AB830B52474332E0089AF93 /* ZitiTunnelClientConfigV1.swift in Sources */,
 				5AB830B3247433270089AF93 /* ZitiUrlProtocol.swift in Sources */,

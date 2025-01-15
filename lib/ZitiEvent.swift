@@ -42,29 +42,29 @@ import CZitiPrivate
         case Auth = 0x08     // ZitiAuthEvent.rawValue
         
         /// Indicates an `ApiEvent`
-        case ApiEvent = 0x10 // ZitiApiEvent.rawValue
+        case ConfigEvent = 0x10 // ZitiConfigEvent.rawValue
         
         /// Generates a string describing the event
         /// - returns: String describing the event
         public var debug: String {
             switch self {
                 
-            /// Indicates `ContextEvent`
+                /// Indicates `ContextEvent`
             case .Context:  return ".Context"
                 
-            /// Indicates `RouterEvent`
+                /// Indicates `RouterEvent`
             case .Router:   return ".Router"
                 
-            /// Indicates `ServiceEvent`
+                /// Indicates `ServiceEvent`
             case .Service:  return ".Service"
                 
-            /// Indicates `AuthEvent`
+                /// Indicates `AuthEvent`
             case .Auth:     return ".Auth"
                 
-            /// Indicates `ApiEvent`
-            case .ApiEvent: return ".ApiEvent"
+                /// Indicates `ConfigEvent`
+            case .ConfigEvent: return ".ConfigEvent"
                 
-            /// Indicates unrecognized event
+                /// Indicates unrecognized event
             case .Invalid:  return ".Invalid"
             @unknown default: return "unknown \(self.rawValue)"
             }
@@ -164,15 +164,15 @@ import CZitiPrivate
             }
         }
     }
-
+    
     /// Enumeration of possible authentication actions
     @objc public enum AuthAction : UInt32 {
         /// Request for MFA code
         case PromptTotp
-             
+        
         /// Request for HSM/TPM key pin (not yet implemented)
         case PromptPin
-             
+        
         /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
         case LoginExternal
         
@@ -198,7 +198,7 @@ import CZitiPrivate
             }
         }
     }
-
+    
     /// Encapsualtion of Ziti SDK C's JWTSigner
     @objc public class JwtSigner : NSObject {
         /// ID
@@ -209,7 +209,7 @@ import CZitiPrivate
         
         /// Enabled
         @objc public let enabled:Bool
-
+        
         /// Provider URL
         @objc public let providerUrl:String
         
@@ -240,7 +240,7 @@ import CZitiPrivate
             }
         }
     }
-
+    
     /// Encapsulation of Ziti SDK C's  Auth Event
     @objc public class AuthEvent : NSObject {
         
@@ -264,27 +264,51 @@ import CZitiPrivate
         }
     }
     
-    /// Encapsulation of Ziti SDK C's API Event
-    @objc public class ApiEvent : NSObject {
+    /// Encapsulation of Ziti SDK C's Config Event
+    @objc public class ConfigEvent : NSObject {
         
-        /// New controller address
-        @objc public let newControllerAddress:String
-        @objc public let newCaBundle:String
-        init( _ cEvent:ziti_api_event) {
+        /// Controller address
+        @objc public let controller_url:String // todo enapsulate ziti_config_s ?
+        @objc public let controllers:[String]
+        @objc public let cfgSource:String
+        
+        @objc public let caBundle:String // todo encapsulate ziti_id_cfg_s?
+        
+        init( _ cEvent:ziti_config_event) {
             var str = ""
-            if let cStr = cEvent.new_ctrl_address {
+            if let cStr = cEvent.config.pointee.controller_url {
                 str = String(cString: cStr)
             }
             if !str.starts(with: "https://") {
                 str.insert(contentsOf: "https://", at: str.startIndex)
             }
-            newControllerAddress = str
+            controller_url = str
             
+            var cfgSourceStr = ""
+            if let cStr = cEvent.config.pointee.cfg_source {
+                cfgSourceStr = String(cString: cStr)
+            }
+            cfgSource = cfgSourceStr
+
             var caStr = ""
-            if let cStr = cEvent.new_ca_bundle {
+            if let cStr = cEvent.config.pointee.id.ca {
                 caStr = String(cString: cStr)
             }
-            newCaBundle = caStr
+            caBundle = caStr
+
+            var ctrlsArray:[String] = []
+            var ctrlList = cEvent.config.pointee.controllers
+            withUnsafeMutablePointer(to: &ctrlList) { ctrlListPtr in
+                var i = model_list_iterator(ctrlListPtr)
+                while i != nil {
+                    let ctrlPtr = model_list_it_element(i)
+                    if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                        ctrlsArray.append(String(ctrl.pointee))
+                    }
+                    i = model_list_it_next(i)
+                }
+            }
+            controllers = ctrlsArray
         }
     }
     
@@ -304,7 +328,7 @@ import CZitiPrivate
     @objc public var authEvent:AuthEvent?
     
     /// Populated based on event `type`
-    @objc public var apiEvent:ApiEvent?
+    @objc public var configEvent:ConfigEvent?
     
     init(_ ziti:Ziti, _ cEvent:UnsafePointer<ziti_event_t>) {
         self.ziti = ziti
@@ -317,8 +341,8 @@ import CZitiPrivate
             routerEvent = RouterEvent(cEvent.pointee.router)
         } else if type == .Auth {
             authEvent = AuthEvent(cEvent.pointee.auth)
-        } else if type == .ApiEvent {
-            apiEvent = ApiEvent(cEvent.pointee.api)
+        } else if type == .ConfigEvent {
+            configEvent = ConfigEvent(cEvent.pointee.cfg)
         } else {
             log.error("unrecognized event type \(cEvent.pointee.type.rawValue)")
         }
@@ -354,8 +378,11 @@ import CZitiPrivate
             str += "   providers: (\(e.providers.count))\n\(ZitiEvent.jwtSignerArrToStr(e.providers))"
         }
         
-        if let e = apiEvent {
-            str += "   newControllerAddress: \(e.newControllerAddress)\n"
+        if let e = configEvent {
+            str += "   controller_url: \(e.controller_url)\n"
+            str += "   controllers: \(e.controllers))\n"
+            str += "   cfgSource: \(e.cfgSource)\n"
+            str += "   caBundle: \(e.caBundle)\n"
         }
         return str
     }

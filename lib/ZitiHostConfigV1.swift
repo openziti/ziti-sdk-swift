@@ -16,7 +16,7 @@ limitations under the License.
 import Foundation
 
 /// Class representation of host.v1 service configuration
-public class ZitiHostConfigV1 : Codable, ZitiConfig {
+public class ZitiHostConfigV1 : Codable, ZitiServiceConfig {
     static var configType = "host.v1"
     
     enum CodingKeys: String, CodingKey {
