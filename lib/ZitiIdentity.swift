@@ -37,6 +37,9 @@ import Foundation
     /// scheme, host, and port used to communicate with Ziti controller
     @objc public var ztAPI:String
     
+    /// scheme, host. and port of all controllers in cluster
+    @objc public var ztAPIs:[String]?
+    
     /// name assocaited with this identity in Ziti.
     ///
     /// Note that this name is unknown until a session with Ziti is active
@@ -55,9 +58,10 @@ import Foundation
     ///     - ztAPI: URL for accessing Ziti controller API
     ///     - name: name currently configured for this identity
     ///     - ca: CA pool that can be used to verify trust of the Ziti controller
-    @objc public init(id:String, ztAPI:String, name:String?=nil, ca:String?=nil) {
+    @objc public init(id:String, ztAPIs:[String], name:String?=nil, ca:String?=nil) {
         self.id = id
-        self.ztAPI = ztAPI
+        self.ztAPI = ztAPIs.first ?? ""
+        self.ztAPIs = ztAPIs
         self.name = name
         self.ca = ca
     }

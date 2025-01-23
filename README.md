@@ -150,7 +150,7 @@ See also the documentation included in the `CZiti` module available in the `Xcod
  
 Note that that `CZiti` is not built for Bitcode, and when building for a device the __Build Settings - Build Options__ should set `Enable Bitcode` to `No`. 
 
-Note that `CZiti` depends on `libresolv.9.tbd`, and requires access to outbound network connections and the Apple Keychain.
+Note that `CZiti` depends on `libresolv.9.tbd` and `libz.1.tbd` when linking, and requires access to outbound network connections and the Apple Keychain at runtime.
 
 ## Via `Swift Package Manager` 
 See [ziti-sdk-swift-dist](https://github.com/openziti/ziti-sdk-swift-dist) for access to `CZiti.xcframework` built from this repository and made available as a `.binaryTarget`.

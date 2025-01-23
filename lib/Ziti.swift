@@ -149,11 +149,11 @@ import CZitiPrivate
     ///
     /// - Parameters:
     ///     - id: Usually the `sub` field from the  one-time enrollment JWT.  Used by `Ziti` to store and retrieve identity-related items in the Keychain`
-    ///     - ztAPI: scheme, host, and port used to communicate with Ziti controller
-    ///     - name: name assocaited with this identity in Ziti. 
+    ///     - ztAPIs: array of URLs (scheme, host, and port) used to communicate with Ziti controllers
+    ///     - name: name assocaited with this identity in Ziti.
     ///     - caPool: CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
-    @objc public init(_ id:String, _ ztAPI:String, name:String?, caPool:String?) {
-        self.id = ZitiIdentity(id:id, ztAPI:ztAPI, name:name, ca:caPool)
+    @objc public init(_ id:String, _ ztAPIs:[String], name:String?, caPool:String?) {
+        self.id = ZitiIdentity(id:id, ztAPIs:ztAPIs, name:name, ca:caPool)
         privateLoop = true
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
@@ -345,7 +345,7 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
             
-            let zid = ZitiIdentity(id: subj, ztAPI: resp.ztAPI, ca: ca)
+            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
             
             enrollCallback(zid, nil)
@@ -429,7 +429,13 @@ import CZitiPrivate
         }
         
         // set up the ziti_config with our cert, etc.
-        var ctrls:model_list = model_list.init() // todo get controllers list
+        var ctrls:model_list = model_list()
+        id.ztAPIs?.forEach { c in
+            let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: c.count + 1)
+            ctrlPtr.initialize(from: c, count: c.count + 1)
+            model_list_append(&ctrls, ctrlPtr)
+        }
+
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
             controllers: ctrls,
@@ -451,6 +457,17 @@ import CZitiPrivate
             caPEMPtr!.deallocate()
         }
         
+        withUnsafeMutablePointer(to: &ctrls) { ctrlListPtr in
+            var i = model_list_iterator(ctrlListPtr)
+            while i != nil {
+                let ctrlPtr = model_list_it_element(i)
+                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                    ctrl.deallocate()
+                }
+                i = model_list_it_next(i)
+            }
+        }
+
         ziti_log_init_wrapper(loop)
         
         var zitiOpts = ziti_options(disabled: id.startDisabled ?? false,
@@ -463,7 +480,7 @@ import CZitiPrivate
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
-                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiAPIEvent.rawValue,
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiConfigEvent.rawValue,
                                 event_cb: Ziti.onEvent)
         
         zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)
@@ -919,13 +936,9 @@ import CZitiPrivate
         let event = ZitiEvent(mySelf, cEvent)
         
         // update ourself
-        if event.type == ZitiEvent.EventType.ApiEvent {
-            if !event.apiEvent!.newControllerAddress.isEmpty {
-                mySelf.id.ztAPI = event.apiEvent!.newControllerAddress
-            }
-            if !event.apiEvent!.newCaBundle.isEmpty {
-                mySelf.id.ca = event.apiEvent!.newCaBundle
-            }
+        if event.type == ZitiEvent.EventType.ConfigEvent {
+            mySelf.id.ztAPI = event.configEvent!.controller_url
+            mySelf.id.ca = event.configEvent!.caBundle
         }
         
         mySelf.eventCallbacksLock.lock()
