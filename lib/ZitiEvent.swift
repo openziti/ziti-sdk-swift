@@ -49,22 +49,22 @@ import CZitiPrivate
         public var debug: String {
             switch self {
                 
-                /// Indicates `ContextEvent`
+            /// Indicates `ContextEvent`
             case .Context:  return ".Context"
                 
-                /// Indicates `RouterEvent`
+            /// Indicates `RouterEvent`
             case .Router:   return ".Router"
                 
-                /// Indicates `ServiceEvent`
+            /// Indicates `ServiceEvent`
             case .Service:  return ".Service"
                 
-                /// Indicates `AuthEvent`
+            /// Indicates `AuthEvent`
             case .Auth:     return ".Auth"
                 
-                /// Indicates `ConfigEvent`
+            /// Indicates `ConfigEvent`
             case .ConfigEvent: return ".ConfigEvent"
                 
-                /// Indicates unrecognized event
+            /// Indicates unrecognized event
             case .Invalid:  return ".Invalid"
             @unknown default: return "unknown \(self.rawValue)"
             }
@@ -164,15 +164,15 @@ import CZitiPrivate
             }
         }
     }
-    
+
     /// Enumeration of possible authentication actions
     @objc public enum AuthAction : UInt32 {
         /// Request for MFA code
         case PromptTotp
-        
+             
         /// Request for HSM/TPM key pin (not yet implemented)
         case PromptPin
-        
+             
         /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
         case LoginExternal
         
@@ -198,7 +198,7 @@ import CZitiPrivate
             }
         }
     }
-    
+
     /// Encapsualtion of Ziti SDK C's JWTSigner
     @objc public class JwtSigner : NSObject {
         /// ID
@@ -209,7 +209,7 @@ import CZitiPrivate
         
         /// Enabled
         @objc public let enabled:Bool
-        
+
         /// Provider URL
         @objc public let providerUrl:String
         
@@ -240,7 +240,7 @@ import CZitiPrivate
             }
         }
     }
-    
+
     /// Encapsulation of Ziti SDK C's  Auth Event
     @objc public class AuthEvent : NSObject {
         
