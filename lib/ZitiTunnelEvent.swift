@@ -232,7 +232,8 @@ import CZitiPrivate
             while i != nil {
                 let ctrlPtr = model_list_it_element(i)
                 if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
-                    controllers.append(String(ctrl.pointee))
+                    let ctrlStr = toStr(ctrl)
+                    controllers.append(ctrlStr)
                 }
                 i = model_list_it_next(i)
             }

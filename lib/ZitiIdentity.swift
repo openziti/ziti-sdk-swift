@@ -37,8 +37,8 @@ import Foundation
     /// scheme, host, and port used to communicate with Ziti controller
     @objc public var ztAPI:String
     
-    /// shceme, host. and port of all controllers in cluster
-    @objc public var ztAPIs:[String]
+    /// scheme, host. and port of all controllers in cluster
+    @objc public var ztAPIs:[String]?
     
     /// name assocaited with this identity in Ziti.
     ///
@@ -60,7 +60,7 @@ import Foundation
     ///     - ca: CA pool that can be used to verify trust of the Ziti controller
     @objc public init(id:String, ztAPIs:[String], name:String?=nil, ca:String?=nil) {
         self.id = id
-        self.ztAPI = ztAPIs[0] // todo preserve original?
+        self.ztAPI = ztAPIs.first ?? ""
         self.ztAPIs = ztAPIs
         self.name = name
         self.ca = ca

@@ -346,7 +346,7 @@ import CZitiPrivate
             }
             
             let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, ca: ca)
-            log.info("Enrolled id:\(subj) with controllers: \(zid.ztAPIs)", function:"enroll()")
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
@@ -429,10 +429,13 @@ import CZitiPrivate
         }
         
         // set up the ziti_config with our cert, etc.
-        var ctrls:model_list = model_list.init()
-        for c in id.ztAPIs {
-            model_list_append(&ctrls, c)
+        var ctrls:model_list = model_list()
+        id.ztAPIs?.forEach { c in
+            let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: c.count + 1)
+            ctrlPtr.initialize(from: c, count: c.count + 1)
+            model_list_append(&ctrls, ctrlPtr)
         }
+
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
             controllers: ctrls,
@@ -454,6 +457,17 @@ import CZitiPrivate
             caPEMPtr!.deallocate()
         }
         
+        withUnsafeMutablePointer(to: &ctrls) { ctrlListPtr in
+            var i = model_list_iterator(ctrlListPtr)
+            while i != nil {
+                let ctrlPtr = model_list_it_element(i)
+                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                    ctrl.deallocate()
+                }
+                i = model_list_it_next(i)
+            }
+        }
+
         ziti_log_init_wrapper(loop)
         
         var zitiOpts = ziti_options(disabled: id.startDisabled ?? false,
