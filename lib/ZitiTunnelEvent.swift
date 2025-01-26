@@ -212,7 +212,7 @@ import CZitiPrivate
 @objc public class ZitiTunnelConfigEvent : ZitiTunnelEvent {
     
     /// Controller address (legacy)
-    public var controller_url:String = ""
+    public var controllerUrl:String = ""
     
     /// Controller addresses
     public var controllers:[String] = []
@@ -224,7 +224,7 @@ import CZitiPrivate
         super.init(ziti)
         var ziti_cfg_ptr:UnsafeMutablePointer<ziti_config>?
         parse_ziti_config_ptr(&ziti_cfg_ptr, evt.pointee.config_json, strlen(evt.pointee.config_json))
-        self.controller_url = toStr(ziti_cfg_ptr?.pointee.controller_url)
+        self.controllerUrl = toStr(ziti_cfg_ptr?.pointee.controller_url)
         
         var ctrlList = ziti_cfg_ptr!.pointee.controllers
         withUnsafeMutablePointer(to: &ctrlList) { ctrlListPtr in
@@ -245,7 +245,7 @@ import CZitiPrivate
     /// - returns: String containing debug description of this event
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
-            "   controller_url: \(controller_url)\n" +
+            "   controller_url: \(controllerUrl)\n" +
             "   contrlollers: \(controllers)\n" +
             "   caBundle: \(caBundle)"
     }
