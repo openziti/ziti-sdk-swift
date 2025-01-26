@@ -158,7 +158,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
         var upstreams:tunnel_upstream_dns_array? = createUpstreamDnsArray(1)
         addUpstreamDns(upstreams, upDNS, upPort)
-        var rc = ziti_dns_set_upstream(loopPtr.loop, upstreams)
+        let rc = ziti_dns_set_upstream(loopPtr.loop, upstreams)
         free_tunnel_upstream_dns_array(&upstreams)
         return rc
     }
