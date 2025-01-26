@@ -268,7 +268,7 @@ import CZitiPrivate
     @objc public class ConfigEvent : NSObject {
         
         /// Controller address
-        @objc public let controller_url:String // todo enapsulate ziti_config_s ?
+        @objc public let controllerUrl:String
         @objc public let controllers:[String]
         @objc public let cfgSource:String
         
@@ -282,7 +282,7 @@ import CZitiPrivate
             if !str.starts(with: "https://") {
                 str.insert(contentsOf: "https://", at: str.startIndex)
             }
-            controller_url = str
+            controllerUrl = str
             
             var cfgSourceStr = ""
             if let cStr = cEvent.config.pointee.cfg_source {
@@ -379,7 +379,7 @@ import CZitiPrivate
         }
         
         if let e = configEvent {
-            str += "   controller_url: \(e.controller_url)\n"
+            str += "   controller_url: \(e.controllerUrl)\n"
             str += "   controllers: \(e.controllers))\n"
             str += "   cfgSource: \(e.cfgSource)\n"
             str += "   caBundle: \(e.caBundle)\n"

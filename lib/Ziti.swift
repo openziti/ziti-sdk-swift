@@ -937,7 +937,7 @@ import CZitiPrivate
         
         // update ourself
         if event.type == ZitiEvent.EventType.ConfigEvent {
-            mySelf.id.ztAPI = event.configEvent!.controller_url
+            mySelf.id.ztAPI = event.configEvent!.controllerUrl
             mySelf.id.ca = event.configEvent!.caBundle
         }
         
