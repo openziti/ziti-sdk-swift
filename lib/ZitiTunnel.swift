@@ -340,8 +340,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             var cConfigEvent = UnsafeRawPointer(cEvent).bindMemory(to: config_event.self, capacity: 1)
             let event = ZitiTunnelConfigEvent(ziti, cConfigEvent)
             // update ourself with event info
-            if !event.controller_url.isEmpty {
-                ziti.id.ztAPI = event.controller_url
+            if !event.controllerUrl.isEmpty {
+                ziti.id.ztAPI = event.controllerUrl
             }
             if !event.controllers.isEmpty {
                 ziti.id.ztAPIs = event.controllers
