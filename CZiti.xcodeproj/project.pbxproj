@@ -28,8 +28,6 @@
 		5A69FC0025D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */; };
 		5A71D8C1262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */; };
 		5A71D8C2262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */; };
-		5A71D8D0262CFCF900504002 /* ZitiMfaAuthQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */; };
-		5A71D8D1262CFCFA00504002 /* ZitiMfaAuthQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */; };
 		5A8B0B66258EDD1100182437 /* ZitiEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B65258EDD1100182437 /* ZitiEvent.swift */; };
 		5A8B0B67258EDD1100182437 /* ZitiEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B65258EDD1100182437 /* ZitiEvent.swift */; };
 		5A8B0B81258FEA9A00182437 /* ZitiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B80258FEA9900182437 /* ZitiService.swift */; };
@@ -196,7 +194,6 @@
 		5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiPostureChecks.swift; sourceTree = "<group>"; };
 		5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiInterceptConfigV1.swift; sourceTree = "<group>"; };
 		5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiMfaEnrollment.swift; sourceTree = "<group>"; };
-		5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiMfaAuthQuery.swift; sourceTree = "<group>"; };
 		5A8B0B65258EDD1100182437 /* ZitiEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiEvent.swift; sourceTree = "<group>"; };
 		5A8B0B80258FEA9900182437 /* ZitiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiService.swift; sourceTree = "<group>"; };
 		5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiTunnelServerConfigV1.swift; sourceTree = "<group>"; };
@@ -448,7 +445,6 @@
 				5AC9EA1A26FB80D600AB888D /* ZitiPostureQuerySet.swift */,
 				5AC9EA1D26FB8A0700AB888D /* ZitiPostureQuery.swift */,
 				5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */,
-				5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */,
 				5AB83099247432C40089AF93 /* ZitiEnroller.swift */,
 				5AB83097247432C40089AF93 /* ZitiConnection.swift */,
 				5AB83096247432C40089AF93 /* ZitiUrlProtocol.swift */,
@@ -728,7 +724,6 @@
 				5AB830A9247432C50089AF93 /* ZitiIdentity.swift in Sources */,
 				5AA298BC2585961C001F7502 /* NetifDriver.swift in Sources */,
 				5AB830A3247432C40089AF93 /* ZitiLog.swift in Sources */,
-				5A71D8D0262CFCF900504002 /* ZitiMfaAuthQuery.swift in Sources */,
 				5A69FBFF25D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */,
 				5AB830A4247432C40089AF93 /* ZitiUrlClientConfigV1.swift in Sources */,
 				5A71D8C1262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */,
@@ -763,7 +758,6 @@
 				5AB830B7247433350089AF93 /* ZitiIdentity.swift in Sources */,
 				5AA298BD2585961C001F7502 /* NetifDriver.swift in Sources */,
 				5AB830B1247433200089AF93 /* ZitiLog.swift in Sources */,
-				5A71D8D1262CFCFA00504002 /* ZitiMfaAuthQuery.swift in Sources */,
 				5A69FC0025D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */,
 				5AB830B2247433230089AF93 /* ZitiUrlClientConfigV1.swift in Sources */,
 				5A71D8C2262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */,
@@ -1061,19 +1055,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_INCLUDE_PATHS = (
-					"$(SRCROOT)/lib/ProjectModule",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
-				);
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Debug;
@@ -1130,19 +1112,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = (
-					"$(SRCROOT)/lib/ProjectModule",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
-				);
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
