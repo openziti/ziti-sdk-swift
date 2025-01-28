@@ -39,7 +39,11 @@ import CZitiPrivate
     init(_ cPQ:UnsafeMutablePointer<ziti_posture_query>) {
         isPassing = cPQ.pointee.is_passing
         id = cPQ.pointee.id != nil ? String(cString: cPQ.pointee.id) : ""
-        queryType = cPQ.pointee.query_type != nil ? String(cString:cPQ.pointee.query_type) : ""
+        if let name = ziti_posture_query_types.self.name(Int32(cPQ.pointee.query_type.rawValue)) {
+            queryType = String(cString: name)
+        } else {
+            queryType = ""
+        }
         timeout = cPQ.pointee.timeout
         timeoutRemaining = cPQ.pointee.timeoutRemaining != nil ? cPQ.pointee.timeoutRemaining.pointee : -1
         //cPQ.pointee.process
