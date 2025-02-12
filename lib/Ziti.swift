@@ -302,7 +302,7 @@ import CZitiPrivate
     ///      - jwtFile:  file containing one-time JWT token for enrollment
     ///      - cb: callback called indicating status of enrollment attempt
     @objc public static func enroll( _ jwtFile:String, _ enrollCallback: @escaping EnrollmentCallback) {
-        let enroller = ZitiEnroller(jwtFile)
+        let enroller = ZitiEnroller(jwtFile: jwtFile)
         guard let subj = enroller.getSubj() else {
             let errStr = "unable to extract sub from JWT"
             log.error(errStr, function:"enroll()")
@@ -481,7 +481,7 @@ import CZitiPrivate
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
                                 events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiConfigEvent.rawValue,
-                                event_cb: Ziti.onEvent)
+                                    event_cb: Ziti.onEvent, cert_extension_window: 0)
         
         zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)
         guard zitiStatus == Ziti.ZITI_OK else {
