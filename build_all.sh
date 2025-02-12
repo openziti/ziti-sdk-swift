@@ -26,7 +26,7 @@ function build_tsdk {
    cmake_build_type=RelWithDebInfo
    if [ "${CONFIGURATION}" == "Debug" ]; then cmake_build_type="Debug"; fi
 
-   if [ -n "${ASAN_ENABLED}" ]; then
+   if [ -n "${ASAN_ENABLED}" -a "${FOR}" = "macOS" ]; then
        clang_asan_flags="-DCMAKE_C_FLAGS=-fsanitize=address -DCMAKE_CXX_FLAGS=-fsanitize=address"
    fi
 
@@ -60,7 +60,7 @@ function build_cziti {
    sdk=$2
    arch_flags=$3
 
-   if [ -n "${ASAN_ENABLED}" ]; then
+   if [ -n "${ASAN_ENABLED}" -a "${FOR}" = "macOS" ]; then
        asan_flags="-enableAddressSanitizer YES"
    fi
 
