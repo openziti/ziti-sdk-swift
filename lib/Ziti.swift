@@ -302,7 +302,7 @@ import CZitiPrivate
     ///      - jwtFile:  file containing one-time JWT token for enrollment
     ///      - cb: callback called indicating status of enrollment attempt
     @objc public static func enroll( _ jwtFile:String, _ enrollCallback: @escaping EnrollmentCallback) {
-        let enroller = ZitiEnroller(jwtFile: jwtFile)
+        let enroller = ZitiEnroller(jwtFile)
         guard let subj = enroller.getSubj() else {
             let errStr = "unable to extract sub from JWT"
             log.error(errStr, function:"enroll()")
