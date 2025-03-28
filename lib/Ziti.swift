@@ -332,7 +332,8 @@ import CZitiPrivate
             // Store certificate
             let cert = dropFirst("pem:", resp.id.cert)
             _ = zkc.deleteCertificate(silent: true)
-            guard zkc.storeCertificate(fromPem: cert) == nil else {
+            let (err, cns) = zkc.storeCertificates(cert)
+            guard err == nil else {
                 let errStr = "Unable to store certificate\n"
                 log.error(errStr, function:"enroll()")
                 enrollCallback(nil, ZitiError(errStr))
@@ -345,8 +346,8 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
             
-            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, ca: ca)
-            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
+            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certCNs: cns, ca: ca)
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI) with cns: \(zid.getCertCNs())", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
@@ -383,14 +384,14 @@ import CZitiPrivate
     @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
         // Get certificate
         let zkc = ZitiKeychain(tag: id.id)
-        let (maybeCert, zErr) = zkc.getCertificate()
-        guard let cert = maybeCert, zErr == nil else {
-            let errStr = zErr != nil ? zErr!.localizedDescription : "unable to retrieve certificate from keychain"
+        let (maybeCerts, zErr) = zkc.getCertificates(id.getCertCNs())
+        guard let certs = maybeCerts, zErr == nil else {
+            let errStr = zErr != nil ? zErr!.localizedDescription : "unable to retrieve certificates from keychain"
             log.error(errStr)
             initCallback(zErr ?? ZitiError(errStr))
             return
         }
-        let certPEM = zkc.convertToPEM("CERTIFICATE", der: cert)
+        let certPEM = zkc.convertToPEM("CERTIFICATE", ders: certs)
         
         // Get private key
         guard let privKey = zkc.getPrivateKey() else {
