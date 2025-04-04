@@ -349,6 +349,16 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             if !event.caBundle.isEmpty {
                 ziti.id.ca = event.caBundle
             }
+            if !event.certPEM.isEmpty {
+                let zkc = ZitiKeychain(tag: ziti.id.id)
+                _ = zkc.deleteCertificate()
+                let (zErr, certCNs) = zkc.storeCertificates(event.certPEM)
+                if zErr != nil {
+                    log.warn("failed to store certificates: \(zErr!.localizedDescription)", function:"onEventCallback()")
+                } else {
+                    ziti.id.certCNs = certCNs
+                }
+            }
             // pass event to application
             mySelf.tunnelProvider?.tunnelEventCallback(event)
         default:

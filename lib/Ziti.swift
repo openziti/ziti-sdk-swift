@@ -334,7 +334,7 @@ import CZitiPrivate
             _ = zkc.deleteCertificate(silent: true)
             let (err, cns) = zkc.storeCertificates(cert)
             guard err == nil else {
-                let errStr = "Unable to store certificate\n"
+                let errStr = "Unable to store certificates\n"
                 log.error(errStr, function:"enroll()")
                 enrollCallback(nil, ZitiError(errStr))
                 return
@@ -418,6 +418,7 @@ import CZitiPrivate
             model_list_append(&ctrls, c.cstring)
         }
 
+        // ziti_context_init copies strings (strdup) for its own use, so it's ok to use references to swift strings here.
         var zitiCfg = ziti_config(
             controller_url: id.ztAPI.cstring,
             controllers: ctrls,
@@ -445,7 +446,7 @@ import CZitiPrivate
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
                                 events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiConfigEvent.rawValue,
-                                    event_cb: Ziti.onEvent, cert_extension_window: 0)
+                                    event_cb: Ziti.onEvent, cert_extension_window: 30)
         
         zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)
         guard zitiStatus == Ziti.ZITI_OK else {
@@ -902,6 +903,15 @@ import CZitiPrivate
         // update ourself
         if event.type == ZitiEvent.EventType.ConfigEvent {
             mySelf.id.ztAPI = event.configEvent!.controllerUrl
+            mySelf.id.ztAPIs = event.configEvent!.controllers
+            let zkc = ZitiKeychain(tag: mySelf.id.id)
+            _ = zkc.deleteCertificate()
+            let (zErr, certCNs) = zkc.storeCertificates(event.configEvent!.cert)
+            if zErr != nil {
+                log.warn("failed to store certificates: \(zErr!.localizedDescription)", function:"onEvent()")
+            } else {
+                mySelf.id.certCNs = certCNs
+            }
             mySelf.id.ca = event.configEvent!.caBundle
         }
         
@@ -1125,7 +1135,14 @@ func scan<
 }
 
 extension String {
+    // use only when scope of c string matches scope of swift string.
     var cstring: UnsafePointer<CChar> {
         (self as NSString).cString(using: String.Encoding.utf8.rawValue)!
+    }
+    // use when c string needs to outlive swift string. caller must deallocate() the returned buffer when no longer needed.
+    var allocatedcString: UnsafeMutablePointer<CChar> {
+        let buf = UnsafeMutablePointer<CChar>.allocate(capacity: self.count + 1)
+        buf.initialize(from: self, count: self.count + 1)
+        return buf
     }
 }
