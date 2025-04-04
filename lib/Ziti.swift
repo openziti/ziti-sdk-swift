@@ -412,36 +412,17 @@ import CZitiPrivate
             let refresh_interval = 90
         #endif
         
-        // convert key and id info to char * types that ziti-sdk-c can use.
-        // also considered .withCString - https://stackoverflow.com/questions/31378120/convert-swift-string-into-cchar-pointer
-        let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
-        ctrlPtr.initialize(from: id.ztAPI, count: id.ztAPI.count + 1)
-        
-        let certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM.count + 1)
-        certPEMPtr.initialize(from: certPEM, count: certPEM.count + 1)
-
-        let privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
-        privKeyPEMPtr.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
-        
-        var caPEMPtr:UnsafeMutablePointer<Int8>? = nil // todo empty string
-        if (id.ca != nil) {
-            caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
-            caPEMPtr!.initialize(from: id.ca!, count: id.ca!.count + 1)
-        }
-        
         // set up the ziti_config with our cert, etc.
         var ctrls:model_list = model_list()
         id.ztAPIs?.forEach { c in
-            let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: c.count + 1)
-            ctrlPtr.initialize(from: c, count: c.count + 1)
-            model_list_append(&ctrls, ctrlPtr)
+            model_list_append(&ctrls, c.cstring)
         }
 
         var zitiCfg = ziti_config(
-            controller_url: ctrlPtr,
+            controller_url: id.ztAPI.cstring,
             controllers: ctrls,
-            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
-            cfg_source: nil) // todo what is cfg_source?
+            id: ziti_id_cfg(cert: certPEM.cstring, key: privKeyPEM.cstring, ca: id.ca?.cstring, oidc: nil),
+            cfg_source: nil)
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
         guard zitiStatus == Ziti.ZITI_OK else {
@@ -449,24 +430,6 @@ import CZitiPrivate
             log.error("unable to initialize Ziti context, \(zitiStatus): \(errStr)", function:"start()")
             initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
             return
-        }
-        
-        ctrlPtr.deallocate()
-        certPEMPtr.deallocate()
-        privKeyPEMPtr.deallocate()
-        if (caPEMPtr != nil) {
-            caPEMPtr!.deallocate()
-        }
-        
-        withUnsafeMutablePointer(to: &ctrls) { ctrlListPtr in
-            var i = model_list_iterator(ctrlListPtr)
-            while i != nil {
-                let ctrlPtr = model_list_it_element(i)
-                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
-                    ctrl.deallocate()
-                }
-                i = model_list_it_next(i)
-            }
         }
 
         ziti_log_init_wrapper(loop)
@@ -1159,4 +1122,10 @@ func scan<
     result.append(runningResult)
   }
   return result
+}
+
+extension String {
+    var cstring: UnsafePointer<CChar> {
+        (self as NSString).cString(using: String.Encoding.utf8.rawValue)!
+    }
 }
