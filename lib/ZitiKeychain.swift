@@ -257,8 +257,8 @@ public class ZitiKeychain : NSObject {
         return sceStatus
     }
 #endif
-    
-    @available(*, deprecated, message: "This function only stores the first certificate in `pem`. Use storeCertificates(pem:String) to store all certificates.")
+
+    /// This function only stores the first certificate in `pem`. use storeCertificates(pem:String) if you need to store all certificates in the keychain.
     func storeCertificate(fromPem pem:String) -> ZitiError? {
         let (_, zErr) = storeCertificate(fromDer: convertToDER(pem))
         if zErr != nil {
@@ -267,7 +267,6 @@ public class ZitiKeychain : NSObject {
         return zErr
     }
     
-    @available(*, deprecated)
     func storeCertificate(fromDer der:Data) -> (SecCertificate?, ZitiError?) {
         guard let certificate = SecCertificateCreateWithData(nil, der as CFData) else {
             let errStr = "Unable to create certificate from data for \(tag)"
@@ -316,17 +315,17 @@ public class ZitiKeychain : NSObject {
         return (certData, nil)
     }
     
-    func getCertificates(_ certCNs:[String]) -> ([Data]?, ZitiError?) {
+    func getCertificates(_ certCNs:[String]) -> [Data]? {
         var certs:[Data] = []
         for cn in certCNs {
             let (cert, err) = getCertificate(cn)
             guard let cert = cert, err == nil else {
-                return (nil, err)
+                return nil
             }
             certs.append(cert)
         }
         
-        return (certs, nil)
+        return certs
     }
     
     func deleteCertificate(silent:Bool=false) -> ZitiError? {
@@ -362,12 +361,13 @@ public class ZitiKeychain : NSObject {
         return nil
     }
     
-    func convertToPEM(_ type:String, ders:[Data]) -> String {
+    func convertToPEM(_ type:String, ders:[Data]) -> String? {
         var pem = ""
         ders.forEach { der in
-            pem.append(convertToPEM("CERTIFICATE", der: der))
+            pem.append(convertToPEM(type, der: der))
         }
-        return pem
+        if pem.count > 0 { return pem }
+        return nil
     }
     
     func convertToPEM(_ type:String, der:Data) -> String {

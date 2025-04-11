@@ -329,12 +329,13 @@ import CZitiPrivate
                 return
             }
             
-            // Store certificate
-            let cert = dropFirst("pem:", resp.id.cert)
+            // Store certificates
+            let certs = dropFirst("pem:", resp.id.cert)
             _ = zkc.deleteCertificate(silent: true)
-            let (err, cns) = zkc.storeCertificates(cert)
-            guard err == nil else {
-                let errStr = "Unable to store certificates\n"
+            // storeCertificate only stores the first (leaf) certificate in the pem. that's ok - the full chain of certs is stored in the .zid
+            // file. only the leaf/pubkey needs to be in the keychain.
+            guard zkc.storeCertificate(fromPem: certs) == nil else {
+                let errStr = "Unable to store certificate\n"
                 log.error(errStr, function:"enroll()")
                 enrollCallback(nil, ZitiError(errStr))
                 return
@@ -346,8 +347,8 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
             
-            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certCNs: cns, ca: ca)
-            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI) with cns: \(zid.getCertCNs())", function:"enroll()")
+            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
@@ -384,14 +385,12 @@ import CZitiPrivate
     @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
         // Get certificate
         let zkc = ZitiKeychain(tag: id.id)
-        let (maybeCerts, zErr) = zkc.getCertificates(id.getCertCNs())
-        guard let certs = maybeCerts, zErr == nil else {
-            let errStr = zErr != nil ? zErr!.localizedDescription : "unable to retrieve certificates from keychain"
+        guard let certPEM = id.getCertificates(zkc) else {
+            let errStr = "unable to retrieve certificates"
             log.error(errStr)
-            initCallback(zErr ?? ZitiError(errStr))
+            initCallback(ZitiError(errStr))
             return
         }
-        let certPEM = zkc.convertToPEM("CERTIFICATE", ders: certs)
         
         // Get private key
         guard let privKey = zkc.getPrivateKey() else {
@@ -902,17 +901,20 @@ import CZitiPrivate
         
         // update ourself
         if event.type == ZitiEvent.EventType.ConfigEvent {
-            mySelf.id.ztAPI = event.configEvent!.controllerUrl
-            mySelf.id.ztAPIs = event.configEvent!.controllers
-            let zkc = ZitiKeychain(tag: mySelf.id.id)
-            _ = zkc.deleteCertificate()
-            let (zErr, certCNs) = zkc.storeCertificates(event.configEvent!.cert)
-            if zErr != nil {
-                log.warn("failed to store certificates: \(zErr!.localizedDescription)", function:"onEvent()")
-            } else {
-                mySelf.id.certCNs = certCNs
+            let cfgEvent = event.configEvent!
+            if !cfgEvent.controllerUrl.isEmpty { mySelf.id.ztAPI = cfgEvent.controllerUrl }
+            if !cfgEvent.controllers.isEmpty { mySelf.id.ztAPIs = cfgEvent.controllers }
+            if !cfgEvent.cert.isEmpty {
+                mySelf.id.certs = cfgEvent.cert
+                let zkc = ZitiKeychain(tag: mySelf.id.id)
+                _ = zkc.deleteCertificate()
+                // store the first/leaf certificate in the keychain so it can be used in a key pair.
+                let zErr = zkc.storeCertificate(fromPem: event.configEvent!.cert)
+                if zErr != nil {
+                    log.warn("failed to store certificate: \(zErr!.localizedDescription)", function:"onEvent()")
+                }
             }
-            mySelf.id.ca = event.configEvent!.caBundle
+            if !cfgEvent.caBundle.isEmpty { mySelf.id.ca = cfgEvent.caBundle }
         }
         
         mySelf.eventCallbacksLock.lock()

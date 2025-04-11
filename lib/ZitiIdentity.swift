@@ -34,12 +34,12 @@ import Foundation
     /// Initially the `sub` field from the  one-time enrollment JWT.  Used by `Ziti` to store and retrieve identity-related items in the Keychain
     @objc public let id:String
     
-    /// Certificate CNs
-    ///
-    /// Common names for the certificates in this identities certificate chain. The first element will always match `id`.
-    /// Used by `Ziti` to retrieve certificates from the Keychain.
-    @objc public var certCNs:[String]?
-
+    /// Common names for the certificates in this identities certificate chain.
+    /// This is only set when the identity is decoded from an older representation. When `certs` is not set, this value can be used to
+    /// retrieve the identity's certificates from the Keychain.
+    @available(*, deprecated, message: "store certificates in `certs` instead")
+    @objc private var certCNs:[String]?
+    
     /// scheme, host, and port used to communicate with Ziti controller
     @objc public var ztAPI:String
     
@@ -51,6 +51,9 @@ import Foundation
     /// Note that this name is unknown until a session with Ziti is active
     @objc public var name:String?
     
+    /// Certificates (PEM)
+    @objc public var certs:String?
+
     /// CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
     @objc public var ca:String?
     
@@ -65,23 +68,29 @@ import Foundation
     ///     - certCNs: common names of certififcates 
     ///     - name: name currently configured for this identity
     ///     - ca: CA pool that can be used to verify trust of the Ziti controller
-    @objc public init(id:String, ztAPIs:[String], certCNs:[String]?=nil, name:String?=nil, ca:String?=nil) {
+    @objc public init(id:String, ztAPIs:[String], name:String?=nil, certs:String?=nil, ca:String?=nil) {
         self.id = id
-        self.certCNs = [ id ]
-        if let certCNs {
-            for cn in certCNs {
-                if cn == id { continue }
-                self.certCNs?.append(cn)
-            }
-        }
         self.ztAPI = ztAPIs.first ?? ""
         self.ztAPIs = ztAPIs
         self.name = name
+        self.certs = certs
         self.ca = ca
     }
     
-    @objc public func getCertCNs() -> [String] {
-        return certCNs ?? [self.id]
+    @objc public func getCertificates(_ zkc:ZitiKeychain?) -> String? {
+        if let certs = self.certs {
+            log.debug("returning certificates from identity")
+            return certs
+        }
+        // get certs using certCNs and the keychain if available.
+        let certCNs = self.certCNs ?? [self.id]
+        if let ders = zkc?.getCertificates(certCNs) {
+            log.debug("returning certfificates from keychain CNs=\(certCNs)")
+            self.certs = zkc?.convertToPEM("CERTIFICATE", ders: ders)
+            self.certCNs = nil
+            return self.certs
+        }
+        return nil
     }
     
     /// Save this object to a JSON file
