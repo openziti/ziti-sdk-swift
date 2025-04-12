@@ -271,8 +271,8 @@ import CZitiPrivate
         @objc public let controllerUrl:String
         @objc public let controllers:[String]
         @objc public let cfgSource:String
-        
-        @objc public let caBundle:String // todo encapsulate ziti_id_cfg_s?
+        @objc public let cert:String
+        @objc public let caBundle:String
         
         init( _ cEvent:ziti_config_event) {
             var str = ""
@@ -295,6 +295,12 @@ import CZitiPrivate
                 caStr = String(cString: cStr)
             }
             caBundle = caStr
+            
+            var certStr = ""
+            if let cStr = cEvent.config.pointee.id.cert {
+                certStr = String(cString: cStr)
+            }
+            cert = certStr
 
             var ctrlsArray:[String] = []
             var ctrlList = cEvent.config.pointee.controllers
@@ -383,6 +389,7 @@ import CZitiPrivate
             str += "   controllers: \(e.controllers))\n"
             str += "   cfgSource: \(e.cfgSource)\n"
             str += "   caBundle: \(e.caBundle)\n"
+            str += "   cert: \(e.cert)\n"
         }
         return str
     }

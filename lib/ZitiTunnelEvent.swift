@@ -220,6 +220,9 @@ import CZitiPrivate
     /// CA bundle
     public var caBundle:String = ""
     
+    /// Certificte PEM (possibly multiple certificates)
+    public var certPEM:String = ""
+    
     init(_ ziti:Ziti, _ evt:UnsafePointer<config_event>) {
         super.init(ziti)
         var ziti_cfg_ptr:UnsafeMutablePointer<ziti_config>?
@@ -239,6 +242,7 @@ import CZitiPrivate
             }
         }
         self.caBundle = toStr(ziti_cfg_ptr?.pointee.id.ca)
+        self.certPEM = toStr(ziti_cfg_ptr?.pointee.id.cert)
     }
     
     /// Debug description
@@ -247,6 +251,7 @@ import CZitiPrivate
         return super.debugDescription + "\n" +
             "   controller_url: \(controllerUrl)\n" +
             "   contrlollers: \(controllers)\n" +
-            "   caBundle: \(caBundle)"
+            "   caBundle: \(caBundle)\n" +
+            "   cert: \(certPEM)"
     }
 }

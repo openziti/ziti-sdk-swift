@@ -329,11 +329,12 @@ import CZitiPrivate
                 return
             }
             
-            // Store certificate
-            let cert = dropFirst("pem:", resp.id.cert)
+            // Store certificates
+            let certs = dropFirst("pem:", resp.id.cert)
             _ = zkc.deleteCertificate(silent: true)
-            let (err, cns) = zkc.storeCertificates(cert)
-            guard err == nil else {
+            // storeCertificate only stores the first (leaf) certificate in the pem. that's ok - the full chain of certs is stored in the .zid
+            // file. only the leaf/pubkey needs to be in the keychain.
+            guard zkc.storeCertificate(fromPem: certs) == nil else {
                 let errStr = "Unable to store certificate\n"
                 log.error(errStr, function:"enroll()")
                 enrollCallback(nil, ZitiError(errStr))
@@ -346,8 +347,8 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
             
-            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certCNs: cns, ca: ca)
-            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI) with cns: \(zid.getCertCNs())", function:"enroll()")
+            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
@@ -384,14 +385,12 @@ import CZitiPrivate
     @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
         // Get certificate
         let zkc = ZitiKeychain(tag: id.id)
-        let (maybeCerts, zErr) = zkc.getCertificates(id.getCertCNs())
-        guard let certs = maybeCerts, zErr == nil else {
-            let errStr = zErr != nil ? zErr!.localizedDescription : "unable to retrieve certificates from keychain"
+        guard let certPEM = id.getCertificates(zkc) else {
+            let errStr = "unable to retrieve certificates"
             log.error(errStr)
-            initCallback(zErr ?? ZitiError(errStr))
+            initCallback(ZitiError(errStr))
             return
         }
-        let certPEM = zkc.convertToPEM("CERTIFICATE", ders: certs)
         
         // Get private key
         guard let privKey = zkc.getPrivateKey() else {
@@ -418,6 +417,7 @@ import CZitiPrivate
             model_list_append(&ctrls, c.cstring)
         }
 
+        // ziti_context_init copies strings (strdup) for its own use, so it's ok to use references to swift strings here.
         var zitiCfg = ziti_config(
             controller_url: id.ztAPI.cstring,
             controllers: ctrls,
@@ -445,7 +445,7 @@ import CZitiPrivate
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
                                 events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiConfigEvent.rawValue,
-                                    event_cb: Ziti.onEvent, cert_extension_window: 0)
+                                    event_cb: Ziti.onEvent, cert_extension_window: 30)
         
         zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)
         guard zitiStatus == Ziti.ZITI_OK else {
@@ -901,8 +901,20 @@ import CZitiPrivate
         
         // update ourself
         if event.type == ZitiEvent.EventType.ConfigEvent {
-            mySelf.id.ztAPI = event.configEvent!.controllerUrl
-            mySelf.id.ca = event.configEvent!.caBundle
+            let cfgEvent = event.configEvent!
+            if !cfgEvent.controllerUrl.isEmpty { mySelf.id.ztAPI = cfgEvent.controllerUrl }
+            if !cfgEvent.controllers.isEmpty { mySelf.id.ztAPIs = cfgEvent.controllers }
+            if !cfgEvent.cert.isEmpty {
+                mySelf.id.certs = cfgEvent.cert
+                let zkc = ZitiKeychain(tag: mySelf.id.id)
+                _ = zkc.deleteCertificate()
+                // store the first/leaf certificate in the keychain so it can be used in a key pair.
+                let zErr = zkc.storeCertificate(fromPem: event.configEvent!.cert)
+                if zErr != nil {
+                    log.warn("failed to store certificate: \(zErr!.localizedDescription)", function:"onEvent()")
+                }
+            }
+            if !cfgEvent.caBundle.isEmpty { mySelf.id.ca = cfgEvent.caBundle }
         }
         
         mySelf.eventCallbacksLock.lock()
@@ -1125,7 +1137,14 @@ func scan<
 }
 
 extension String {
+    // use only when scope of c string matches scope of swift string.
     var cstring: UnsafePointer<CChar> {
         (self as NSString).cString(using: String.Encoding.utf8.rawValue)!
+    }
+    // use when c string needs to outlive swift string. caller must deallocate() the returned buffer when no longer needed.
+    var allocatedcString: UnsafeMutablePointer<CChar> {
+        let buf = UnsafeMutablePointer<CChar>.allocate(capacity: self.count + 1)
+        buf.initialize(from: self, count: self.count + 1)
+        return buf
     }
 }
