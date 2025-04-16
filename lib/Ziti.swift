@@ -411,20 +411,55 @@ import CZitiPrivate
             let refresh_interval = 90
         #endif
         
+        // convert key and id info to char * types that ziti-sdk-c can use.
+        // also considered .withCString - https://stackoverflow.com/questions/31378120/convert-swift-string-into-cchar-pointer
+        let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
+        ctrlPtr.initialize(from: id.ztAPI, count: id.ztAPI.count + 1)
+
+        let certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM.count + 1)
+        certPEMPtr.initialize(from: certPEM, count: certPEM.count + 1)
+
+        let privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
+        privKeyPEMPtr.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
+
+        var caPEMPtr:UnsafeMutablePointer<Int8>? = nil // todo empty string
+        if (id.ca != nil) {
+            caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
+            caPEMPtr!.initialize(from: id.ca!, count: id.ca!.count + 1)
+        }
+
         // set up the ziti_config with our cert, etc.
         var ctrls:model_list = model_list()
         id.ztAPIs?.forEach { c in
-            model_list_append(&ctrls, c.cstring)
+            let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: c.count + 1)
+            ctrlPtr.initialize(from: c, count: c.count + 1)
+            model_list_append(&ctrls, ctrlPtr)
         }
 
-        // ziti_context_init copies strings (strdup) for its own use, so it's ok to use references to swift strings here.
         var zitiCfg = ziti_config(
-            controller_url: id.ztAPI.cstring,
+            controller_url: ctrlPtr,
             controllers: ctrls,
-            id: ziti_id_cfg(cert: certPEM.cstring, key: privKeyPEM.cstring, ca: id.ca?.cstring, oidc: nil),
+            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
             cfg_source: nil)
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
+
+        ctrlPtr.deallocate()
+        certPEMPtr.deallocate()
+        privKeyPEMPtr.deallocate()
+        caPEMPtr?.deallocate()
+        
+        withUnsafeMutablePointer(to: &ctrls) { ctrlListPtr in
+            var i = model_list_iterator(ctrlListPtr)
+            while i != nil {
+                let ctrlPtr = model_list_it_element(i)
+                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                    ctrl.deallocate()
+                }
+                i = model_list_it_next(i)
+            }
+        }
+        
         guard zitiStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(zitiStatus))
             log.error("unable to initialize Ziti context, \(zitiStatus): \(errStr)", function:"start()")
@@ -1134,17 +1169,4 @@ func scan<
     result.append(runningResult)
   }
   return result
-}
-
-extension String {
-    // use only when scope of c string matches scope of swift string.
-    var cstring: UnsafePointer<CChar> {
-        (self as NSString).cString(using: String.Encoding.utf8.rawValue)!
-    }
-    // use when c string needs to outlive swift string. caller must deallocate() the returned buffer when no longer needed.
-    var allocatedcString: UnsafeMutablePointer<CChar> {
-        let buf = UnsafeMutablePointer<CChar>.allocate(capacity: self.count + 1)
-        buf.initialize(from: self, count: self.count + 1)
-        return buf
-    }
 }
