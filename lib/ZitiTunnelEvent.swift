@@ -222,10 +222,12 @@ import CZitiPrivate
     
     /// Certificte PEM (possibly multiple certificates)
     public var certPEM:String = ""
+
+    /// pointer to result of parsing event's `config_json` field. allocated by ziti-sdk-c
+    private var ziti_cfg_ptr:UnsafeMutablePointer<ziti_config>?
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<config_event>) {
         super.init(ziti)
-        var ziti_cfg_ptr:UnsafeMutablePointer<ziti_config>?
         parse_ziti_config_ptr(&ziti_cfg_ptr, evt.pointee.config_json, strlen(evt.pointee.config_json))
         self.controllerUrl = toStr(ziti_cfg_ptr?.pointee.controller_url)
         
@@ -243,6 +245,12 @@ import CZitiPrivate
         }
         self.caBundle = toStr(ziti_cfg_ptr?.pointee.id.ca)
         self.certPEM = toStr(ziti_cfg_ptr?.pointee.id.cert)
+    }
+    
+    deinit {
+        if ziti_cfg_ptr != nil {
+            free_ziti_config_ptr(ziti_cfg_ptr)
+        }
     }
     
     /// Debug description
