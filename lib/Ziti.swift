@@ -348,7 +348,7 @@ import CZitiPrivate
             }
             
             let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
-            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI), cert: \(resp.id.cert)", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
@@ -441,6 +441,12 @@ import CZitiPrivate
             controllers: ctrls,
             id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
             cfg_source: nil)
+
+        log.debug("configuring ziti-sdk-c with:\n" +
+                  "  id: \(id.id)\n" +
+                  "  ztAPIs: \(id.ztAPIs ?? [])\n" +
+                  "  cert: \(certPEM)\n" +
+                  "  ca: \(id.ca ?? "none")")
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
 
