@@ -109,6 +109,10 @@
 		AACE00D52C2F4F5200C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */; };
 		AACEF6272C2E0B1500C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */; };
 		AACEF6282C2E0B1500C428AE /* libjson-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6262C2E0B1500C428AE /* libjson-c.a */; };
+		AAFBA2472DDE1F7900B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2462DDE1F6300B47602 /* libz.1.tbd */; };
+		AAFBA2482DDE20CA00B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2462DDE1F6300B47602 /* libz.1.tbd */; };
+		AAFBA24A2DDE211800B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2492DDE210300B47602 /* libz.1.tbd */; };
+		AAFBA24B2DDE221900B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2492DDE210300B47602 /* libz.1.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -253,6 +257,8 @@
 		AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
 		AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
 		AACEF6262C2E0B1500C428AE /* libjson-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libjson-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libjson-c.a"; sourceTree = "<group>"; };
+		AAFBA2462DDE1F6300B47602 /* libz.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.tbd; path = usr/lib/libz.1.tbd; sourceTree = SDKROOT; };
+		AAFBA2492DDE210300B47602 /* libz.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.4.sdk/usr/lib/libz.1.tbd; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -260,6 +266,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA24B2DDE221900B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE97B280F7F05007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5A0AC9482477427F0021E8D9 /* libCZiti.a in Frameworks */,
 			);
@@ -269,6 +276,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA2472DDE1F7900B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE977280F7EC4007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */,
 			);
@@ -316,6 +324,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA24A2DDE211800B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE97A280F7EFD007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AB830D224748A1B0089AF93 /* libCZiti.a in Frameworks */,
 			);
@@ -325,6 +334,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA2482DDE20CA00B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE978280F7EEB007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */,
 			);
@@ -406,6 +416,8 @@
 		5AB6DF76244B8F2000F4B4E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AAFBA2462DDE1F6300B47602 /* libz.1.tbd */,
+				AAFBA2492DDE210300B47602 /* libz.1.tbd */,
 				AACEF6262C2E0B1500C428AE /* libjson-c.a */,
 				AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */,
 				AACE00D22C2F4F5200C428AE /* libjson-c.a */,
