@@ -27,11 +27,6 @@ import CZitiPrivate
         self.ziti = ziti
     }
     
-    func toStr(_ cStr:UnsafePointer<CChar>?) -> String {
-        if let cStr = cStr { return String(cString: cStr) }
-        return ""
-    }
-    
     /// Provide a debug description of the event
     /// - returns: String containing the debug description
     public override var debugDescription: String {
@@ -262,4 +257,46 @@ import CZitiPrivate
             "   caBundle: \(caBundle)\n" +
             "   cert: \(certPEM)"
     }
+}
+
+@objc public class JWTProvider : NSObject, Codable {
+    public var name:String = ""
+    public var issuer:String = ""
+
+    init(provider_c: UnsafeMutablePointer<jwt_provider>) {
+        self.name = toStr(provider_c.pointee.name)
+        self.issuer = toStr(provider_c.pointee.issuer)
+    }
+}
+
+/// Class encapsulating Ziti Tunnel SDK C External JWT Event
+@objc public class ZitiTunnelExtJWTEvent : ZitiTunnelEvent {
+
+    /// Authentication status
+    public var status:String = ""
+
+    /// JWT providers
+    public var providers:[JWTProvider] = []
+
+    init(_ ziti:Ziti, _ evt:UnsafePointer<ext_signer_event>) {
+        super.init(ziti)
+        status = toStr(evt.pointee.status)
+        var providerList = evt.pointee.providers
+        withUnsafeMutablePointer(to: &providerList) { providerListPtr in
+            var i = model_list_iterator(providerListPtr)
+            while i != nil {
+                let providerPtr = model_list_it_element(i)
+                if let provider_c = UnsafeMutablePointer<jwt_provider>(OpaquePointer(providerPtr)) {
+                    let provider = JWTProvider(provider_c: provider_c)
+                    providers.append(provider)
+                }
+                i = model_list_it_next(i)
+            }
+        }
+    }
+}
+
+func toStr(_ cStr:UnsafePointer<CChar>?) -> String {
+    if let cStr = cStr { return String(cString: cStr) }
+    return ""
 }

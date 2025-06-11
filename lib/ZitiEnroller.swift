@@ -37,16 +37,16 @@ import CZitiPrivate
     @objc public class EnrollmentResponse : NSObject, Codable {
         /// Identity portion of successful enrollment attempt
         public class Identity : Codable {
-            ///locally generated private key used for generating CSR as part of enrollmen
+            ///locally generated private key used for generating CSR as part of enrollment
             public var key:String?,
             
-            /// signed certificate created as part of CSR process
-            cert:String,
+            /// signed certificate created as part of CSR process. will be nill for url enrollments
+            cert:String?,
             
             /// root certificates for trusting the Ziti Controller
             ca:String?
             
-            init(cert:String, key:String?, ca:String?) {
+            init(cert:String?, key:String?, ca:String?) {
                 self.cert = cert
                 self.key = key
                 self.ca = ca
@@ -92,10 +92,12 @@ import CZitiPrivate
         var enrollmentCallback:EnrollmentCallback?
         var jwtFile_c:UnsafeMutablePointer<Int8>?
         var privatePem_c:UnsafeMutablePointer<Int8>?
+        var url_c:UnsafeMutablePointer<Int8>?
         
         deinit {
             jwtFile_c?.deallocate()
             privatePem_c?.deallocate()
+            url_c?.deallocate()
         }
     }
     
@@ -158,8 +160,40 @@ import CZitiPrivate
         }
     }
     
+    static func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?,
+                       controllerURL:String,
+                       cb:@escaping EnrollmentCallback) {
+        let enrollData = UnsafeMutablePointer<EnrollmentRequestData>.allocate(capacity: 1)
+        enrollData.initialize(to: EnrollmentRequestData())
+        enrollData.pointee.enrollmentCallback = cb
+        enrollData.pointee.url_c = UnsafeMutablePointer<Int8>.allocate(capacity: controllerURL.count + 1)
+        enrollData.pointee.url_c!.initialize(from: controllerURL.cString(using: .utf8)!, count: controllerURL.count + 1)
+        
+        var enroll_opts = ziti_enroll_opts(url: enrollData.pointee.url_c, token: nil, key: nil,
+                                           cert: nil, name: nil, use_keychain: false)
+        let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
+        guard status == ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(status))
+            log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
+            return
+        }
+    }
+    
+    @objc public static func enroll(url:String, cb:@escaping EnrollmentCallback) {
+        self.enroll(withLoop: ZitiEnroller.loop, controllerURL: url, cb: cb)
+        
+        let runStatus = uv_run(ZitiEnroller.loop, UV_RUN_DEFAULT)
+        guard runStatus == 0 else {
+            let errStr = String(cString: uv_strerror(runStatus))
+            log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(runStatus)))
+            return
+        }
+    }
+    
     /**
-     * Extract the sub (id) field from HWT file
+     * Extract the sub (id) field from JWT file
      */
     @objc public func getSubj() -> String? {
         return getClaims()?.sub
@@ -167,7 +201,7 @@ import CZitiPrivate
     
     /**
      * Retreive the claims in the JWT file
-     * - returns: The claims in the file or nil if enable to decode
+     * - returns: The claims in the file or nil if unable to decode
      */
     public func getClaims() -> ZitiClaims? {
         do {
@@ -226,13 +260,14 @@ import CZitiPrivate
             log.wtf("invalid config", function:"on_enroll()")
             return
         }
-        guard let cert = String(cString: zc.id.cert, encoding: .utf8) else {
-            let errStr = "Unable to convert cert to string"
-            log.error(errStr, function:"on_enroll()")
-            let ze = ZitiError(errStr, errorCode: -1)
-            enrollData.pointee.enrollmentCallback?(nil, nil, ze)
-            return
-        }
+        // todo only do this if not using url.
+        //guard let cert = String(cString: zc.id.cert, encoding: .utf8) else {
+        //    let errStr = "Unable to convert cert to string"
+        //    log.error(errStr, function:"on_enroll()")
+        //    let ze = ZitiError(errStr, errorCode: -1)
+        //    enrollData.pointee.enrollmentCallback?(nil, nil, ze)
+        //    return
+        //}
         
         var controllers:[String] = []
         var ctrlList = zc.controllers
@@ -255,9 +290,14 @@ import CZitiPrivate
             return
         }
         
-        let id = EnrollmentResponse.Identity(cert: cert,
-                                             key: String(cString: zc.id.key, encoding: .utf8),
-                                             ca: String(cString: zc.id.ca, encoding: .utf8))
+        let cert:String? = zc.id.cert != nil ? String(cString: zc.id.cert, encoding: .utf8)! : nil
+        let key:String? = zc.id.key != nil ? String(cString: zc.id.key, encoding: .utf8)! : nil
+        let ca:String? = zc.id.ca != nil ? String(cString: zc.id.ca, encoding: .utf8)! : nil
+        
+        let id = EnrollmentResponse.Identity(cert: cert, key: key, ca: ca)
+        //let id = EnrollmentResponse.Identity(cert: cert,
+        //                                     key: String(cString: zc.id.key, encoding: .utf8),
+        //                                     ca: String(cString: zc.id.ca, encoding: .utf8))
         let enrollResp = EnrollmentResponse(ztAPIs: controllers, id: id)
         enrollData.pointee.enrollmentCallback?(enrollResp, enrollData.pointee.subj, nil)
     }

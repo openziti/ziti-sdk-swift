@@ -361,6 +361,9 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             }
             // pass event to application
             mySelf.tunnelProvider?.tunnelEventCallback(event)
+        case TunnelEvents.ExtJWTEvent.rawValue:
+            var cExtJWTEvent = UnsafeRawPointer(cEvent).bindMemory(to: ext_signer_event.self, capacity: 1)
+            mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelExtJWTEvent(ziti, cExtJWTEvent))
         default:
             log.warn("Unrecognized event type \(cEvent.pointee.event_type.rawValue)")
             return
