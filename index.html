@@ -36,6 +36,9 @@
             <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="Classes/JWTProvider.html">JWTProvider</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/Ziti.html">Ziti</a>
               </li>
               <li class="nav-group-task">
@@ -84,7 +87,7 @@
                 <a href="Classes/ZitiEvent/AuthEvent.html">– AuthEvent</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+                <a href="Classes/ZitiEvent/ConfigEvent.html">– ConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
@@ -117,9 +120,6 @@
                 <a href="Classes/ZitiLog/LogLevel.html">– LogLevel</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
               </li>
               <li class="nav-group-task">
@@ -144,16 +144,19 @@
                 <a href="Classes/ZitiTunnel/Route.html">– Route</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+                <a href="Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+                <a href="Classes/ZitiTunnelConfigEvent.html">ZitiTunnelConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelExtJWTEvent.html">ZitiTunnelExtJWTEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
@@ -338,7 +341,7 @@ if (ziti != NULL) {
 
 <p>Note that that <code>CZiti</code> is not built for Bitcode, and when building for a device the <strong>Build Settings - Build Options</strong> should set <code>Enable Bitcode</code> to <code>No</code>. </p>
 
-<p>Note that <code>CZiti</code> depends on <code>libresolv.9.tbd</code>, and requires access to outbound network connections and the Apple Keychain.</p>
+<p>Note that <code>CZiti</code> depends on <code>libresolv.9.tbd</code> and <code>libz.1.tbd</code> when linking, and requires access to outbound network connections and the Apple Keychain at runtime.</p>
 <h2 id='via-code-swift-package-manager-code' class='heading'>Via <code>Swift Package Manager</code></h2>
 
 <p>See <a href="https://github.com/openziti/ziti-sdk-swift-dist">ziti-sdk-swift-dist</a> for access to <code>CZiti.xcframework</code> built from this repository and made available as a <code>.binaryTarget</code>.</p>
@@ -359,7 +362,7 @@ if (ziti != NULL) {
 <ol>
 <li>Create a Package.swift for the local CZiti framework:</li>
 </ol>
-<pre class="highlight shell"><code>   cat &gt; ./dist/Package.swift <span class="sh">&lt;&lt;EOF
+<pre class="highlight shell"><code>   <span class="nb">cat</span> <span class="o">&gt;</span> ./dist/Package.swift <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
    // swift-tools-version: 5.7
    import PackageDescription
 
@@ -373,7 +376,7 @@ if (ziti != NULL) {
                path: "./CZiti.xcframework")
        ]
     )
-   EOF
+</span><span class="no">   EOF
 </span></code></pre>
 
 <ol>
@@ -458,13 +461,13 @@ ORGANIZATION_PREFIX = ...
 <li><code>xcpretty</code> also used to build <code>CZiti-*</code> schemes in <code>CZiti.xcodeproj</code>. (Can be installed via <code>gem install xcpretty</code>)</li>
 <li><code>cmake</code> used for building the <strong>Ziti Tunnel C SDK</strong> dependency.  (Can be installed via <code>brew install cmake</code>)</li>
 </ul>
-<pre class="highlight shell"><code><span class="gp">$ </span>git clone --recurse-submodules https://github.com/openziti/ziti-sdk-swift.git
-<span class="gp">$ </span><span class="nb">cd </span>ziti-sdk-swift
-<span class="gp">$ </span>/bin/sh build_all.sh
+<pre class="highlight shell"><code><span class="nv">$ </span>git clone <span class="nt">--recurse-submodules</span> https://github.com/openziti/ziti-sdk-swift.git
+<span class="nv">$ </span><span class="nb">cd </span>ziti-sdk-swift
+<span class="nv">$ </span>/bin/sh build_all.sh
 </code></pre>
 
 <p>By default, the scripts build for <code>Release</code> configuration.  To build for <code>Debug</code>, execute </p>
-<pre class="highlight shell"><code><span class="gp">$ </span><span class="nv">CONFIGURATION</span><span class="o">=</span>Debug /bin/sh build_all.sh
+<pre class="highlight shell"><code><span class="nv">$ CONFIGURATION</span><span class="o">=</span>Debug /bin/sh build_all.sh
 </code></pre>
 
 <p>The resultant <code>libCZiti.a</code> and <code>CZiti.swiftmodule</code> are available in the appropriate sub-directory of <code>./DerivedData</code>.</p>
@@ -483,7 +486,7 @@ ORGANIZATION_PREFIX = ...
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2024 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2024-11-19)</p>
+          <p>&copy; 2025 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-06-12)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

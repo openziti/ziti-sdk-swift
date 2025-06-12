@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ApiEvent Class Reference</title>
+    <title>ConfigEvent Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/ApiEvent" class="dashAnchor"></a>
-    <a title="ApiEvent Class Reference"></a>
+    <a name="//apple_ref/swift/Class/ConfigEvent" class="dashAnchor"></a>
+    <a title="ConfigEvent Class Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../../index.html">CZiti Docs</a></p>
@@ -33,7 +33,7 @@
         <img id="carat" src="../../img/carat.png" alt=""/>
         <a href="../../Classes/ZitiEvent.html">ZitiEvent</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        ApiEvent Class Reference
+        ConfigEvent Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -42,6 +42,9 @@
           <li class="nav-group-name">
             <a href="../../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../../Classes/JWTProvider.html">JWTProvider</a>
+              </li>
               <li class="nav-group-task">
                 <a href="../../Classes/Ziti.html">Ziti</a>
               </li>
@@ -91,7 +94,7 @@
                 <a href="../../Classes/ZitiEvent/AuthEvent.html">– AuthEvent</a>
               </li>
               <li class="nav-group-task">
-                <a href="../../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+                <a href="../../Classes/ZitiEvent/ConfigEvent.html">– ConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
@@ -124,9 +127,6 @@
                 <a href="../../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
               </li>
               <li class="nav-group-task">
-                <a href="../../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
               </li>
               <li class="nav-group-task">
@@ -151,16 +151,19 @@
                 <a href="../../Classes/ZitiTunnel/Route.html">– Route</a>
               </li>
               <li class="nav-group-task">
-                <a href="../../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+                <a href="../../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
               </li>
               <li class="nav-group-task">
-                <a href="../../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+                <a href="../../Classes/ZitiTunnelConfigEvent.html">ZitiTunnelConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../../Classes/ZitiTunnelExtJWTEvent.html">ZitiTunnelExtJWTEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
@@ -195,16 +198,16 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>ApiEvent</h1>
+            <h1>ConfigEvent</h1>
               <div class="declaration">
                 <div class="language">
                   
                   <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ApiEvent</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ConfigEvent</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
 
                 </div>
               </div>
-            <p>Encapsulation of Ziti SDK C&rsquo;s API Event</p>
+            <p>Encapsulation of Ziti SDK C&rsquo;s Config Event</p>
 
           </section>
           <section class="section task-group-section">
@@ -213,9 +216,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti9ZitiEventC03ApiC0C20newControllerAddressSSvp"></a>
-                    <a name="//apple_ref/swift/Property/newControllerAddress" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC03ApiC0C20newControllerAddressSSvp">newControllerAddress</a>
+                    <a name="/s:5CZiti9ZitiEventC06ConfigC0C13controllerUrlSSvp"></a>
+                    <a name="//apple_ref/swift/Property/controllerUrl" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC06ConfigC0C13controllerUrlSSvp">controllerUrl</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -223,7 +226,7 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>New controller address</p>
+                        <p>Controller address</p>
 
                       </div>
                       <div class="declaration">
@@ -231,7 +234,7 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="k">let</span> <span class="nv">newControllerAddress</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">controllerUrl</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -241,9 +244,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti9ZitiEventC03ApiC0C11newCaBundleSSvp"></a>
-                    <a name="//apple_ref/swift/Property/newCaBundle" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC03ApiC0C11newCaBundleSSvp">newCaBundle</a>
+                    <a name="/s:5CZiti9ZitiEventC06ConfigC0C11controllersSaySSGvp"></a>
+                    <a name="//apple_ref/swift/Property/controllers" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC06ConfigC0C11controllersSaySSGvp">controllers</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -259,7 +262,91 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="k">let</span> <span class="nv">newCaBundle</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">controllers</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti9ZitiEventC06ConfigC0C9cfgSourceSSvp"></a>
+                    <a name="//apple_ref/swift/Property/cfgSource" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC06ConfigC0C9cfgSourceSSvp">cfgSource</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">cfgSource</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti9ZitiEventC06ConfigC0C4certSSvp"></a>
+                    <a name="//apple_ref/swift/Property/cert" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC06ConfigC0C4certSSvp">cert</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">cert</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti9ZitiEventC06ConfigC0C8caBundleSSvp"></a>
+                    <a name="//apple_ref/swift/Property/caBundle" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti9ZitiEventC06ConfigC0C8caBundleSSvp">caBundle</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">caBundle</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
@@ -271,7 +358,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2024 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2024-11-19)</p>
+          <p>&copy; 2025 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-06-12)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

@@ -39,6 +39,9 @@
             <a href="Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="Classes/JWTProvider.html">JWTProvider</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="Classes/Ziti.html">Ziti</a>
               </li>
               <li class="nav-group-task">
@@ -87,7 +90,7 @@
                 <a href="Classes/ZitiEvent/AuthEvent.html">– AuthEvent</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+                <a href="Classes/ZitiEvent/ConfigEvent.html">– ConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
@@ -120,9 +123,6 @@
                 <a href="Classes/ZitiLog/LogLevel.html">– LogLevel</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
               </li>
               <li class="nav-group-task">
@@ -147,16 +147,19 @@
                 <a href="Classes/ZitiTunnel/Route.html">– Route</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+                <a href="Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
               </li>
               <li class="nav-group-task">
-                <a href="Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+                <a href="Classes/ZitiTunnelConfigEvent.html">ZitiTunnelConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ZitiTunnelExtJWTEvent.html">ZitiTunnelExtJWTEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
@@ -418,7 +421,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiHostConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiConfig</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiHostConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiServiceConfig</span></code></pre>
 
                         </div>
                       </div>
@@ -487,7 +490,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiInterceptConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiConfig</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiInterceptConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiServiceConfig</span></code></pre>
 
                         </div>
                       </div>
@@ -548,35 +551,6 @@ to configure the keychain to allow the application access to the keys and certif
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiLog</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/c:@M@CZiti@objc(cs)ZitiMfaAuthQuery"></a>
-                    <a name="//apple_ref/swift/Class/ZitiMfaAuthQuery" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiMfaAuthQuery">ZitiMfaAuthQuery</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Class encapsulating Ziti SDK C&rsquo;s MFA Auth Query</p>
-
-                        <a href="Classes/ZitiMfaAuthQuery.html" class="slightly-smaller">See more</a>
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiMfaAuthQuery</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">Codable</span></code></pre>
 
                         </div>
                       </div>
@@ -805,7 +779,7 @@ to configure the keychain to allow the application access to the keys and certif
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelClientConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiConfig</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelClientConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiServiceConfig</span></code></pre>
 
                         </div>
                       </div>
@@ -931,9 +905,9 @@ to configure the keychain to allow the application access to the keys and certif
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@M@CZiti@objc(cs)ZitiTunnelApiEvent"></a>
-                    <a name="//apple_ref/swift/Class/ZitiTunnelApiEvent" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiTunnelApiEvent">ZitiTunnelApiEvent</a>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiTunnelConfigEvent"></a>
+                    <a name="//apple_ref/swift/Class/ZitiTunnelConfigEvent" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiTunnelConfigEvent">ZitiTunnelConfigEvent</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -941,16 +915,74 @@ to configure the keychain to allow the application access to the keys and certif
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Class encapsulating Ziti Tunnel SDK C API Event</p>
+                        <p>Class encapsulating Ziti Tunnel SDK C Config Event</p>
 
-                        <a href="Classes/ZitiTunnelApiEvent.html" class="slightly-smaller">See more</a>
+                        <a href="Classes/ZitiTunnelConfigEvent.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelApiEvent</span> <span class="p">:</span> <span class="kt"><a href="Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a></span></code></pre>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelConfigEvent</span> <span class="p">:</span> <span class="kt"><a href="Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)JWTProvider"></a>
+                    <a name="//apple_ref/swift/Class/JWTProvider" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)JWTProvider">JWTProvider</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                        <a href="Classes/JWTProvider.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">JWTProvider</span> <span class="p">:</span> <span class="kt">NSObject</span><span class="p">,</span> <span class="kt">Codable</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiTunnelExtJWTEvent"></a>
+                    <a name="//apple_ref/swift/Class/ZitiTunnelExtJWTEvent" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiTunnelExtJWTEvent">ZitiTunnelExtJWTEvent</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Class encapsulating Ziti Tunnel SDK C External JWT Event</p>
+
+                        <a href="Classes/ZitiTunnelExtJWTEvent.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelExtJWTEvent</span> <span class="p">:</span> <span class="kt"><a href="Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a></span></code></pre>
 
                         </div>
                       </div>
@@ -978,7 +1010,7 @@ to configure the keychain to allow the application access to the keys and certif
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelServerConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiConfig</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelServerConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiServiceConfig</span></code></pre>
 
                         </div>
                       </div>
@@ -1006,7 +1038,7 @@ to configure the keychain to allow the application access to the keys and certif
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiUrlClientConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiConfig</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiUrlClientConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiServiceConfig</span></code></pre>
 
                         </div>
                       </div>
@@ -1049,7 +1081,7 @@ to configure the keychain to allow the application access to the keys and certif
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2024 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2024-11-19)</p>
+          <p>&copy; 2025 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-06-12)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

@@ -41,6 +41,9 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Classes/JWTProvider.html">JWTProvider</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/Ziti.html">Ziti</a>
               </li>
               <li class="nav-group-task">
@@ -89,7 +92,7 @@
                 <a href="../Classes/ZitiEvent/AuthEvent.html">– AuthEvent</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+                <a href="../Classes/ZitiEvent/ConfigEvent.html">– ConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
@@ -122,9 +125,6 @@
                 <a href="../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
               </li>
               <li class="nav-group-task">
@@ -149,16 +149,19 @@
                 <a href="../Classes/ZitiTunnel/Route.html">– Route</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+                <a href="../Classes/ZitiTunnelConfigEvent.html">ZitiTunnelConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelExtJWTEvent.html">ZitiTunnelExtJWTEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
@@ -810,7 +813,7 @@ to access the Keychain for stored identity information (keys and identity certif
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">ztAPI</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="nv">caPool</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span></code></pre>
+<span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">_</span> <span class="nv">id</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">ztAPIs</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">],</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="nv">caPool</span><span class="p">:</span> <span class="kt">String</span><span class="p">?)</span></code></pre>
 
                         </div>
                       </div>
@@ -833,12 +836,12 @@ to access the Keychain for stored identity information (keys and identity certif
                             <tr>
                               <td>
                                 <code>
-                                <em>ztAPI</em>
+                                <em>ztAPIs</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>scheme, host, and port used to communicate with Ziti controller</p>
+                                  <p>array of URLs (scheme, host, and port) used to communicate with Ziti controllers</p>
                                 </div>
                               </td>
                             </tr>
@@ -1317,6 +1320,34 @@ certificate.  This certificate is stored in the Keychain and required for future
                             </tr>
                           </tbody>
                         </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollWithControllerURL::"></a>
+                    <a name="//apple_ref/swift/Method/enroll(controllerURL:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollWithControllerURL::">enroll(controllerURL:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enroll</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -2490,12 +2521,66 @@ the operation on the Ziti thread</p>
                     </section>
                   </div>
                 </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti4ZitiC15ExtAuthCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/ExtAuthCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC15ExtAuthCallbacka">ExtAuthCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Type definition of callback method for external authentication</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ExtAuthCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">ziti</span><span class="p">:</span> <span class="kt">Ziti</span><span class="p">,</span> <span class="n">_</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">ctx</span><span class="p">:</span> <span class="kt">UnsafeMutableRawPointer</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti4ZitiC7extAuthyySS_yAC_SSSvSgtctF"></a>
+                    <a name="//apple_ref/swift/Method/extAuth(_:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC7extAuthyySS_yAC_SSSvSgtctF">extAuth(_:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">extAuth</span><span class="p">(</span><span class="n">_</span> <span class="nv">provider</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">cb</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC15ExtAuthCallbacka">ExtAuthCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
               </ul>
             </div>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2024 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2024-11-19)</p>
+          <p>&copy; 2025 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-06-12)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

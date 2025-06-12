@@ -41,6 +41,9 @@
             <a href="../Classes.html">Classes</a>
             <ul class="nav-group-tasks">
               <li class="nav-group-task">
+                <a href="../Classes/JWTProvider.html">JWTProvider</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/Ziti.html">Ziti</a>
               </li>
               <li class="nav-group-task">
@@ -89,7 +92,7 @@
                 <a href="../Classes/ZitiEvent/AuthEvent.html">– AuthEvent</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiEvent/ApiEvent.html">– ApiEvent</a>
+                <a href="../Classes/ZitiEvent/ConfigEvent.html">– ConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiHostConfigV1.html">ZitiHostConfigV1</a>
@@ -122,9 +125,6 @@
                 <a href="../Classes/ZitiLog/LogLevel.html">– LogLevel</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiMfaAuthQuery.html">ZitiMfaAuthQuery</a>
-              </li>
-              <li class="nav-group-task">
                 <a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a>
               </li>
               <li class="nav-group-task">
@@ -149,16 +149,19 @@
                 <a href="../Classes/ZitiTunnel/Route.html">– Route</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiTunnelApiEvent.html">ZitiTunnelApiEvent</a>
+                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes/ZitiTunnelClientConfigV1.html">ZitiTunnelClientConfigV1</a>
+                <a href="../Classes/ZitiTunnelConfigEvent.html">ZitiTunnelConfigEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiTunnelContextEvent.html">ZitiTunnelContextEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ZitiTunnelExtJWTEvent.html">ZitiTunnelExtJWTEvent</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiTunnelMfaEvent.html">ZitiTunnelMfaEvent</a>
@@ -281,6 +284,34 @@
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(py)ztAPIs"></a>
+                    <a name="//apple_ref/swift/Property/ztAPIs" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(py)ztAPIs">ztAPIs</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>scheme, host. and port of all controllers in cluster</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">ztAPIs</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">]?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(py)name"></a>
                     <a name="//apple_ref/swift/Property/name" class="dashAnchor"></a>
                     <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(py)name">name</a>
@@ -302,6 +333,34 @@
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
 <span class="kd">public</span> <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(py)certs"></a>
+                    <a name="//apple_ref/swift/Property/certs" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(py)certs">certs</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Certificates (PEM)</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">var</span> <span class="nv">certs</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -366,9 +425,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(im)initWithId:ztAPI:name:ca:"></a>
-                    <a name="//apple_ref/swift/Method/init(id:ztAPI:name:ca:)" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(im)initWithId:ztAPI:name:ca:">init(id:<wbr>ztAPI:<wbr>name:<wbr>ca:<wbr>)</a>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(im)initWithId:ztAPIs:name:certs:ca:"></a>
+                    <a name="//apple_ref/swift/Method/init(id:ztAPIs:name:certs:ca:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(im)initWithId:ztAPIs:name:certs:ca:">init(id:<wbr>ztAPIs:<wbr>name:<wbr>certs:<wbr>ca:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -384,7 +443,7 @@
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">ztAPI</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">ca</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+<span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">id</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">ztAPIs</span><span class="p">:</span> <span class="p">[</span><span class="kt">String</span><span class="p">],</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">certs</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">ca</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -407,12 +466,24 @@
                             <tr>
                               <td>
                                 <code>
-                                <em>ztAPI</em>
+                                <em>ztAPIs</em>
                                 </code>
                               </td>
                               <td>
                                 <div>
-                                  <p>URL for accessing Ziti controller API</p>
+                                  <p>URLs for accessing Ziti controller API</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>certCNs</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>common names of certififcates</p>
                                 </div>
                               </td>
                             </tr>
@@ -442,6 +513,34 @@
                             </tr>
                           </tbody>
                         </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiIdentity(im)getCertificates:"></a>
+                    <a name="//apple_ref/swift/Method/getCertificates(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiIdentity(im)getCertificates:">getCertificates(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Undocumented</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">func</span> <span class="nf">getCertificates</span><span class="p">(</span><span class="n">_</span> <span class="nv">zkc</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiKeychain.html">ZitiKeychain</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -509,7 +608,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2024 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2024-11-19)</p>
+          <p>&copy; 2025 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2025-06-12)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.3</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>
