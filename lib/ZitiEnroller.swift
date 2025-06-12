@@ -260,14 +260,6 @@ import CZitiPrivate
             log.wtf("invalid config", function:"on_enroll()")
             return
         }
-        // todo only do this if not using url.
-        //guard let cert = String(cString: zc.id.cert, encoding: .utf8) else {
-        //    let errStr = "Unable to convert cert to string"
-        //    log.error(errStr, function:"on_enroll()")
-        //    let ze = ZitiError(errStr, errorCode: -1)
-        //    enrollData.pointee.enrollmentCallback?(nil, nil, ze)
-        //    return
-        //}
         
         var controllers:[String] = []
         var ctrlList = zc.controllers

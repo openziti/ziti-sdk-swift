@@ -330,7 +330,14 @@ import CZitiPrivate
             }
             
             // Store certificates
-            let certs = dropFirst("pem:", resp.id.cert!)
+            guard let respCert = resp.id.cert else {
+                let errStr = "enrollment response missing certificate"
+                log.error(errStr, function:"enroll()")
+                enrollCallback(nil, ZitiError(errStr))
+                return
+            }
+            
+            let certs = dropFirst("pem:", respCert)
             _ = zkc.deleteCertificate(silent: true)
             // storeCertificate only stores the first (leaf) certificate in the pem. that's ok - the full chain of certs is stored in the .zid
             // file. only the leaf/pubkey needs to be in the keychain.
@@ -348,7 +355,7 @@ import CZitiPrivate
             }
             
             let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
-            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI), cert: \(resp.id.cert!)", function:"enroll()")
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI), cert: \(respCert)", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
@@ -413,10 +420,7 @@ import CZitiPrivate
             certPEMPtr!.initialize(from: certPEM!, count: certPEM!.count + 1)
         } else {
             // is there any way to know at this point that ext auth is needed? maybe check ext auth signers? add "extAuthEnabled" field?
-            //let errStr = "unable to retrieve certificates"
-            //log.error(errStr)
-            //initCallback(ZitiError(errStr))
-            //return
+            log.debug("identity \(id.id) does not have certificates. this is ok if using external authentication")
         }
         
         // Get private key
@@ -426,11 +430,7 @@ import CZitiPrivate
             privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
             privKeyPEMPtr!.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
         } else {
-            // check if we should have a key (same deal as with cert above)
-            //let errStr = "unable to retrieve private key from keychain"
-            //log.error(errStr)
-            //initCallback(ZitiError(errStr))
-            //return
+            log.debug("identity \(id.id) does not have a private key. this is ok if using external authentication")
         }
 
         // init ziti
