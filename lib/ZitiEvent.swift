@@ -167,6 +167,9 @@ import CZitiPrivate
 
     /// Enumeration of possible authentication actions
     @objc public enum AuthAction : UInt32 {
+        /// Authentication flow is stuck, most likely due to (external auth) configuration
+        case CannotContinue
+        
         /// Request for MFA code
         case PromptTotp
              
@@ -180,9 +183,11 @@ import CZitiPrivate
         
         init(_ action:ziti_auth_action) {
             switch action {
-            case ziti_auth_prompt_totp:    self = .PromptTotp
-            case ziti_auth_prompt_pin:     self = .PromptPin
-            case ziti_auth_login_external: self = .LoginExternal
+            case ziti_auth_cannot_continue: self = .CannotContinue
+            case ziti_auth_prompt_totp:     self = .PromptTotp
+            case ziti_auth_prompt_pin:      self = .PromptPin
+            case ziti_auth_login_external:  self = .LoginExternal
+            case ziti_auth_select_external: self = .LoginExternal
             default: self = .Unknown
             }
         }
@@ -190,11 +195,12 @@ import CZitiPrivate
         /// Returns string representation of AuthAction
         public var debug: String {
             switch self {
-            case .PromptTotp:    return ".PromptTotp"
-            case .PromptPin:     return ".PromptPin"
-            case .LoginExternal: return ".LoginExternal"
-            case .Unknown:       return ".Unknown"
-            @unknown default:    return "unknown \(self.rawValue)"
+            case .CannotContinue: return ".CannotContinue"
+            case .PromptTotp:     return ".PromptTotp"
+            case .PromptPin:      return ".PromptPin"
+            case .LoginExternal:  return ".LoginExternal"
+            case .Unknown:        return ".Unknown"
+            @unknown default:     return "unknown \(self.rawValue)"
             }
         }
     }
