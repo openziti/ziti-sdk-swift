@@ -979,7 +979,10 @@ import CZitiPrivate
         
         // update ourself
         if event.type == ZitiEvent.EventType.ConfigEvent {
-            let cfgEvent = event.configEvent!
+            guard let cfgEvent = event.configEvent else {
+                log.warn( "invalid config event", function:"onEvent()")
+                return
+            }
             if !cfgEvent.controllerUrl.isEmpty { mySelf.id.ztAPI = cfgEvent.controllerUrl }
             if !cfgEvent.controllers.isEmpty { mySelf.id.ztAPIs = cfgEvent.controllers }
             if !cfgEvent.cert.isEmpty {
