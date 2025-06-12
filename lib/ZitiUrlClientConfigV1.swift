@@ -16,7 +16,7 @@ limitations under the License.
 import Foundation
 
 /// Class representation of ziti-url-client.v1 service configuration
-public class ZitiUrlClientConfigV1 : Codable, ZitiConfig {
+public class ZitiUrlClientConfigV1 : Codable, ZitiServiceConfig {
     static var configType = "ziti-url-client.v1"
     
     /// Scheme name (e.g., http, https)

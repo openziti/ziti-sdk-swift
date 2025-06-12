@@ -15,6 +15,6 @@ limitations under the License.
 */
 import Foundation
 
-protocol ZitiConfig {
+protocol ZitiServiceConfig {
     static var configType:String { get }
 }

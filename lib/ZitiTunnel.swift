@@ -112,7 +112,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
 
         set_tunnel_logger()
 
-        opsZiti = Ziti(zid: ZitiIdentity(id: "--- ops Ziti ---", ztAPI: ""), loopPtr: loopPtr)
+        opsZiti = Ziti(zid: ZitiIdentity(id: "--- ops Ziti ---", ztAPIs: []), loopPtr: loopPtr)
         self.tunnelProvider = tunnelProvider
         netifDriver = NetifDriver(tunnelProvider: tunnelProvider)
         super.init()
@@ -158,7 +158,7 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         log.debug("upStreamDNS=\(upDNS), port=\(upPort)")
         var upstreams:tunnel_upstream_dns_array? = createUpstreamDnsArray(1)
         addUpstreamDns(upstreams, upDNS, upPort)
-        var rc = ziti_dns_set_upstream(loopPtr.loop, upstreams)
+        let rc = ziti_dns_set_upstream(loopPtr.loop, upstreams)
         free_tunnel_upstream_dns_array(&upstreams)
         return rc
     }
@@ -336,18 +336,34 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         case TunnelEvents.MFAEvent.rawValue:
             var cMfaAuthEvent = UnsafeRawPointer(cEvent).bindMemory(to: mfa_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelMfaEvent(ziti, cMfaAuthEvent))
-        case TunnelEvents.APIEvent.rawValue:
-            var cApiEvent = UnsafeRawPointer(cEvent).bindMemory(to: api_event.self, capacity: 1)
-            let event = ZitiTunnelApiEvent(ziti, cApiEvent)
+        case TunnelEvents.ConfigEvent.rawValue:
+            var cConfigEvent = UnsafeRawPointer(cEvent).bindMemory(to: config_event.self, capacity: 1)
+            let event = ZitiTunnelConfigEvent(ziti, cConfigEvent)
             // update ourself with event info
-            if !event.newControllerAddress.isEmpty {
-                ziti.id.ztAPI = event.newControllerAddress
+            if !event.controllerUrl.isEmpty {
+                ziti.id.ztAPI = event.controllerUrl
             }
-            if !event.newCaBundle.isEmpty {
-                ziti.id.ca = event.newCaBundle
+            if !event.controllers.isEmpty {
+                ziti.id.ztAPIs = event.controllers
+            }
+            if !event.caBundle.isEmpty {
+                ziti.id.ca = event.caBundle
+            }
+            if !event.certPEM.isEmpty {
+                ziti.id.certs = event.certPEM
+                // store the first/leaf certificate in the keychain so it can be used in a key pair.
+                let zkc = ZitiKeychain(tag: ziti.id.id)
+                _ = zkc.deleteCertificate()
+                let zErr = zkc.storeCertificate(fromPem: event.certPEM)
+                if zErr != nil {
+                    log.warn("failed to store certificates: \(zErr!.localizedDescription)", function:"onEventCallback()")
+                }
             }
             // pass event to application
             mySelf.tunnelProvider?.tunnelEventCallback(event)
+        case TunnelEvents.ExtJWTEvent.rawValue:
+            var cExtJWTEvent = UnsafeRawPointer(cEvent).bindMemory(to: ext_signer_event.self, capacity: 1)
+            mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelExtJWTEvent(ziti, cExtJWTEvent))
         default:
             log.warn("Unrecognized event type \(cEvent.pointee.event_type.rawValue)")
             return

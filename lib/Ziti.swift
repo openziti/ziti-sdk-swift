@@ -149,11 +149,11 @@ import CZitiPrivate
     ///
     /// - Parameters:
     ///     - id: Usually the `sub` field from the  one-time enrollment JWT.  Used by `Ziti` to store and retrieve identity-related items in the Keychain`
-    ///     - ztAPI: scheme, host, and port used to communicate with Ziti controller
-    ///     - name: name assocaited with this identity in Ziti. 
+    ///     - ztAPIs: array of URLs (scheme, host, and port) used to communicate with Ziti controllers
+    ///     - name: name assocaited with this identity in Ziti.
     ///     - caPool: CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
-    @objc public init(_ id:String, _ ztAPI:String, name:String?, caPool:String?) {
-        self.id = ZitiIdentity(id:id, ztAPI:ztAPI, name:name, ca:caPool)
+    @objc public init(_ id:String, _ ztAPIs:[String], name:String?, caPool:String?) {
+        self.id = ZitiIdentity(id:id, ztAPIs:ztAPIs, name:name, ca:caPool)
         privateLoop = true
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
@@ -329,10 +329,19 @@ import CZitiPrivate
                 return
             }
             
-            // Store certificate
-            let cert = dropFirst("pem:", resp.id.cert)
+            // Store certificates
+            guard let respCert = resp.id.cert else {
+                let errStr = "enrollment response missing certificate"
+                log.error(errStr, function:"enroll()")
+                enrollCallback(nil, ZitiError(errStr))
+                return
+            }
+            
+            let certs = dropFirst("pem:", respCert)
             _ = zkc.deleteCertificate(silent: true)
-            guard zkc.storeCertificate(fromPem: cert) == nil else {
+            // storeCertificate only stores the first (leaf) certificate in the pem. that's ok - the full chain of certs is stored in the .zid
+            // file. only the leaf/pubkey needs to be in the keychain.
+            guard zkc.storeCertificate(fromPem: certs) == nil else {
                 let errStr = "Unable to store certificate\n"
                 log.error(errStr, function:"enroll()")
                 enrollCallback(nil, ZitiError(errStr))
@@ -345,8 +354,29 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
             
-            let zid = ZitiIdentity(id: subj, ztAPI: resp.ztAPI, ca: ca)
-            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
+            let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI), cert: \(respCert)", function:"enroll()")
+            
+            enrollCallback(zid, nil)
+        }
+    }
+    
+    @objc public static func enroll(controllerURL:String, _ enrollCallback: @escaping EnrollmentCallback) {
+        ZitiEnroller.enroll(url: controllerURL) { resp, _, zErr in
+            guard let resp = resp, zErr == nil else {
+                log.error(String(describing: zErr), function:"enroll()")
+                enrollCallback(nil, zErr)
+                return
+            }
+            
+            // Grab CA if specified
+            var ca = resp.id.ca
+            if let idCa = resp.id.ca {
+                ca = dropFirst("pem:", idCa)
+            }
+            
+            let zid = ZitiIdentity(id: controllerURL, ztAPIs: resp.ztAPIs, ca: ca)
+            log.info("Enrolled id:\(zid.id) with controller: \(zid.ztAPI)", function:"enroll()")
             
             enrollCallback(zid, nil)
         }
@@ -381,26 +411,28 @@ import CZitiPrivate
     /// - See also:
     ///     - `runAsync(_:)`
     @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
-        // Get certificate
+        // Get certificates. There won't be any if this identity uses external authentication.
         let zkc = ZitiKeychain(tag: id.id)
-        let (maybeCert, zErr) = zkc.getCertificate()
-        guard let cert = maybeCert, zErr == nil else {
-            let errStr = zErr != nil ? zErr!.localizedDescription : "unable to retrieve certificate from keychain"
-            log.error(errStr)
-            initCallback(zErr ?? ZitiError(errStr))
-            return
+        var certPEMPtr:UnsafeMutablePointer<Int8>? = nil
+        let certPEM = id.getCertificates(zkc)
+        if (certPEM != nil) {
+            certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM!.count + 1)
+            certPEMPtr!.initialize(from: certPEM!, count: certPEM!.count + 1)
+        } else {
+            // is there any way to know at this point that ext auth is needed? maybe check ext auth signers? add "extAuthEnabled" field?
+            log.debug("identity \(id.id) does not have certificates. this is ok if using external authentication")
         }
-        let certPEM = zkc.convertToPEM("CERTIFICATE", der: cert)
         
         // Get private key
-        guard let privKey = zkc.getPrivateKey() else {
-            let errStr = "unable to retrieve private key from keychain"
-            log.error(errStr)
-            initCallback(ZitiError(errStr))
-            return
+        var privKeyPEMPtr: UnsafeMutablePointer<Int8>? = nil
+        if let privKey = zkc.getPrivateKey() {
+            let privKeyPEM = zkc.getKeyPEM(privKey)
+            privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
+            privKeyPEMPtr!.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
+        } else {
+            log.debug("identity \(id.id) does not have a private key. this is ok if using external authentication")
         }
-        let privKeyPEM = zkc.getKeyPEM(privKey)
-        
+
         // init ziti
         self.initCallback = initCallback
         self.postureChecks = postureChecks
@@ -415,42 +447,58 @@ import CZitiPrivate
         // also considered .withCString - https://stackoverflow.com/questions/31378120/convert-swift-string-into-cchar-pointer
         let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
         ctrlPtr.initialize(from: id.ztAPI, count: id.ztAPI.count + 1)
-        
-        let certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM.count + 1)
-        certPEMPtr.initialize(from: certPEM, count: certPEM.count + 1)
 
-        let privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
-        privKeyPEMPtr.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
-        
         var caPEMPtr:UnsafeMutablePointer<Int8>? = nil // todo empty string
         if (id.ca != nil) {
             caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
             caPEMPtr!.initialize(from: id.ca!, count: id.ca!.count + 1)
         }
-        
+
         // set up the ziti_config with our cert, etc.
-        var ctrls:model_list = model_list.init() // todo get controllers list
+        var ctrls:model_list = model_list()
+        id.ztAPIs?.forEach { c in
+            let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: c.count + 1)
+            ctrlPtr.initialize(from: c, count: c.count + 1)
+            model_list_append(&ctrls, ctrlPtr)
+        }
+
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
             controllers: ctrls,
             id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
-            cfg_source: nil) // todo what is cfg_source?
+            cfg_source: nil)
+
+        log.debug("configuring ziti-sdk-c with:\n" +
+                  "  id: \(id.id)\n" +
+                  "  ztAPIs: \(id.ztAPIs ?? [])\n" +
+                  "  cert: \(certPEM)\n" +
+                  "  ca: \(id.ca ?? "none")")
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
+
+        ctrlPtr.deallocate()
+        if let certPEMPtr = certPEMPtr { certPEMPtr.deallocate() }
+        if let privKeyPEMPtr = privKeyPEMPtr { privKeyPEMPtr.deallocate() }
+        caPEMPtr?.deallocate()
+        
+        withUnsafeMutablePointer(to: &ctrls) { ctrlListPtr in
+            var i = model_list_iterator(ctrlListPtr)
+            while i != nil {
+                let ctrlPtr = model_list_it_element(i)
+                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                    ctrl.deallocate()
+                }
+                i = model_list_it_next(i)
+            }
+        }
+        
         guard zitiStatus == Ziti.ZITI_OK else {
             let errStr = String(cString: ziti_errorstr(zitiStatus))
             log.error("unable to initialize Ziti context, \(zitiStatus): \(errStr)", function:"start()")
             initCallback(ZitiError(errStr, errorCode: Int(zitiStatus)))
             return
         }
-        
-        ctrlPtr.deallocate()
-        certPEMPtr.deallocate()
-        privKeyPEMPtr.deallocate()
-        if (caPEMPtr != nil) {
-            caPEMPtr!.deallocate()
-        }
-        
+
         ziti_log_init_wrapper(loop)
         
         var zitiOpts = ziti_options(disabled: id.startDisabled ?? false,
@@ -463,8 +511,8 @@ import CZitiPrivate
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
-                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiAPIEvent.rawValue,
-                                event_cb: Ziti.onEvent)
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiConfigEvent.rawValue,
+                                    event_cb: Ziti.onEvent, cert_extension_window: 30)
         
         zitiStatus = ziti_context_set_options(self.ztx, &zitiOpts)
         guard zitiStatus == Ziti.ZITI_OK else {
@@ -804,7 +852,18 @@ import CZitiPrivate
         mfaAuthResponseStatusCallback = cb
         ziti_mfa_auth(ztx, code.cString(using: .utf8), Ziti.onMfaAuthResponseStatus, self.toVoidPtr())
     }
-        
+    
+    /// Type definition of callback method for external authentication
+    public typealias ExtAuthCallback = (_ ziti:Ziti, _ url:String, _ ctx:UnsafeMutableRawPointer?) -> Void
+    private var extAuthStatusCallback:ExtAuthCallback?
+    public func extAuth(_ provider:String, _ cb: @escaping ExtAuthCallback) {
+        extAuthStatusCallback = cb
+        let cProvider = provider.cString(using: .utf8)
+        let cProviderCpy = copyString(cProvider) // grr
+        ziti_use_ext_jwt_signer(ztx, cProviderCpy)
+        ziti_ext_auth(ztx, Ziti.onExtAuthStatus, self.toVoidPtr())
+        freeString(cProviderCpy)
+    }
     // MARK: - Static C Callbacks
     
     static private let onMfaAuthResponseStatus:ziti_mfa_cb = { ztx, status, ctx in
@@ -919,13 +978,24 @@ import CZitiPrivate
         let event = ZitiEvent(mySelf, cEvent)
         
         // update ourself
-        if event.type == ZitiEvent.EventType.ApiEvent {
-            if !event.apiEvent!.newControllerAddress.isEmpty {
-                mySelf.id.ztAPI = event.apiEvent!.newControllerAddress
+        if event.type == ZitiEvent.EventType.ConfigEvent {
+            guard let cfgEvent = event.configEvent else {
+                log.warn( "invalid config event", function:"onEvent()")
+                return
             }
-            if !event.apiEvent!.newCaBundle.isEmpty {
-                mySelf.id.ca = event.apiEvent!.newCaBundle
+            if !cfgEvent.controllerUrl.isEmpty { mySelf.id.ztAPI = cfgEvent.controllerUrl }
+            if !cfgEvent.controllers.isEmpty { mySelf.id.ztAPIs = cfgEvent.controllers }
+            if !cfgEvent.cert.isEmpty {
+                mySelf.id.certs = cfgEvent.cert
+                let zkc = ZitiKeychain(tag: mySelf.id.id)
+                _ = zkc.deleteCertificate()
+                // store the first/leaf certificate in the keychain so it can be used in a key pair.
+                let zErr = zkc.storeCertificate(fromPem: event.configEvent!.cert)
+                if zErr != nil {
+                    log.warn("failed to store certificate: \(zErr!.localizedDescription)", function:"onEvent()")
+                }
             }
+            if !cfgEvent.caBundle.isEmpty { mySelf.id.ca = cfgEvent.caBundle }
         }
         
         mySelf.eventCallbacksLock.lock()
@@ -1094,6 +1164,14 @@ import CZitiPrivate
         opsQueue.forEach { op in
             op()
         }
+    }
+    
+    static private let onExtAuthStatus:ziti_ext_auth_launch_cb = { ztx, url, ctx in
+        guard let mySelf = zitiUnretained(Ziti.self, ctx) else {
+            log.wtf("invalid context")
+            return
+        }
+        mySelf.extAuthStatusCallback?(mySelf, String(cString:url!), ctx)
     }
     
     // MARK: - Helpers

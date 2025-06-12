@@ -28,8 +28,6 @@
 		5A69FC0025D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */; };
 		5A71D8C1262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */; };
 		5A71D8C2262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */; };
-		5A71D8D0262CFCF900504002 /* ZitiMfaAuthQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */; };
-		5A71D8D1262CFCFA00504002 /* ZitiMfaAuthQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */; };
 		5A8B0B66258EDD1100182437 /* ZitiEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B65258EDD1100182437 /* ZitiEvent.swift */; };
 		5A8B0B67258EDD1100182437 /* ZitiEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B65258EDD1100182437 /* ZitiEvent.swift */; };
 		5A8B0B81258FEA9A00182437 /* ZitiService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A8B0B80258FEA9900182437 /* ZitiService.swift */; };
@@ -57,7 +55,7 @@
 		5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB8309F247432C40089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
 		5AB830A0247432C40089AF93 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83091247432C40089AF93 /* ZitiKeychain.swift */; };
-		5AB830A1247432C40089AF93 /* ZitiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiConfig.swift */; };
+		5AB830A1247432C40089AF93 /* ZitiServiceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */; };
 		5AB830A2247432C40089AF93 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83093247432C40089AF93 /* ZitiUnretained.swift */; };
 		5AB830A3247432C40089AF93 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83094247432C40089AF93 /* ZitiLog.swift */; };
 		5AB830A4247432C40089AF93 /* ZitiUrlClientConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */; };
@@ -71,7 +69,7 @@
 		5AB830AC2474330D0089AF93 /* ZitiError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB8308F247432C40089AF93 /* ZitiError.swift */; };
 		5AB830AD247433110089AF93 /* ZitiIntercept.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83090247432C40089AF93 /* ZitiIntercept.swift */; };
 		5AB830AE247433150089AF93 /* ZitiKeychain.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83091247432C40089AF93 /* ZitiKeychain.swift */; };
-		5AB830AF247433190089AF93 /* ZitiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiConfig.swift */; };
+		5AB830AF247433190089AF93 /* ZitiServiceConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */; };
 		5AB830B02474331C0089AF93 /* ZitiUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83093247432C40089AF93 /* ZitiUnretained.swift */; };
 		5AB830B1247433200089AF93 /* ZitiLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83094247432C40089AF93 /* ZitiLog.swift */; };
 		5AB830B2247433230089AF93 /* ZitiUrlClientConfigV1.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */; };
@@ -111,6 +109,10 @@
 		AACE00D52C2F4F5200C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */; };
 		AACEF6272C2E0B1500C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */; };
 		AACEF6282C2E0B1500C428AE /* libjson-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6262C2E0B1500C428AE /* libjson-c.a */; };
+		AAFBA2472DDE1F7900B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2462DDE1F6300B47602 /* libz.1.tbd */; };
+		AAFBA2482DDE20CA00B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2462DDE1F6300B47602 /* libz.1.tbd */; };
+		AAFBA24A2DDE211800B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2492DDE210300B47602 /* libz.1.tbd */; };
+		AAFBA24B2DDE221900B47602 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2492DDE210300B47602 /* libz.1.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -196,7 +198,6 @@
 		5A5538E72556F92100C02F03 /* ZitiPostureChecks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiPostureChecks.swift; sourceTree = "<group>"; };
 		5A69FBFE25D1934A007B3B43 /* ZitiInterceptConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiInterceptConfigV1.swift; sourceTree = "<group>"; };
 		5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiMfaEnrollment.swift; sourceTree = "<group>"; };
-		5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiMfaAuthQuery.swift; sourceTree = "<group>"; };
 		5A8B0B65258EDD1100182437 /* ZitiEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiEvent.swift; sourceTree = "<group>"; };
 		5A8B0B80258FEA9900182437 /* ZitiService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiService.swift; sourceTree = "<group>"; };
 		5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiTunnelServerConfigV1.swift; sourceTree = "<group>"; };
@@ -221,7 +222,7 @@
 		5AB8308F247432C40089AF93 /* ZitiError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiError.swift; sourceTree = "<group>"; };
 		5AB83090247432C40089AF93 /* ZitiIntercept.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiIntercept.swift; sourceTree = "<group>"; };
 		5AB83091247432C40089AF93 /* ZitiKeychain.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiKeychain.swift; sourceTree = "<group>"; };
-		5AB83092247432C40089AF93 /* ZitiConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiConfig.swift; sourceTree = "<group>"; };
+		5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiServiceConfig.swift; sourceTree = "<group>"; };
 		5AB83093247432C40089AF93 /* ZitiUnretained.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiUnretained.swift; sourceTree = "<group>"; };
 		5AB83094247432C40089AF93 /* ZitiLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiLog.swift; sourceTree = "<group>"; };
 		5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiUrlClientConfigV1.swift; sourceTree = "<group>"; };
@@ -256,6 +257,8 @@
 		AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
 		AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
 		AACEF6262C2E0B1500C428AE /* libjson-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libjson-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libjson-c.a"; sourceTree = "<group>"; };
+		AAFBA2462DDE1F6300B47602 /* libz.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.tbd; path = usr/lib/libz.1.tbd; sourceTree = SDKROOT; };
+		AAFBA2492DDE210300B47602 /* libz.1.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.1.tbd; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.4.sdk/usr/lib/libz.1.tbd; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -263,6 +266,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA24B2DDE221900B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE97B280F7F05007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5A0AC9482477427F0021E8D9 /* libCZiti.a in Frameworks */,
 			);
@@ -272,6 +276,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA2472DDE1F7900B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE977280F7EC4007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AAAEDEA2464D8FB00C56383 /* libCZiti.a in Frameworks */,
 			);
@@ -319,6 +324,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA24A2DDE211800B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE97A280F7EFD007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AB830D224748A1B0089AF93 /* libCZiti.a in Frameworks */,
 			);
@@ -328,6 +334,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AAFBA2482DDE20CA00B47602 /* libz.1.tbd in Frameworks */,
 				5ADAE978280F7EEB007D1DF4 /* libresolv.9.tbd in Frameworks */,
 				5AE14C8C2471DDA000179365 /* libCZiti.a in Frameworks */,
 			);
@@ -409,6 +416,8 @@
 		5AB6DF76244B8F2000F4B4E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AAFBA2462DDE1F6300B47602 /* libz.1.tbd */,
+				AAFBA2492DDE210300B47602 /* libz.1.tbd */,
 				AACEF6262C2E0B1500C428AE /* libjson-c.a */,
 				AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */,
 				AACE00D22C2F4F5200C428AE /* libjson-c.a */,
@@ -448,13 +457,12 @@
 				5AC9EA1A26FB80D600AB888D /* ZitiPostureQuerySet.swift */,
 				5AC9EA1D26FB8A0700AB888D /* ZitiPostureQuery.swift */,
 				5A71D8C0262885EF00504002 /* ZitiMfaEnrollment.swift */,
-				5A71D8CF262CFCF900504002 /* ZitiMfaAuthQuery.swift */,
 				5AB83099247432C40089AF93 /* ZitiEnroller.swift */,
 				5AB83097247432C40089AF93 /* ZitiConnection.swift */,
 				5AB83096247432C40089AF93 /* ZitiUrlProtocol.swift */,
 				5AB83090247432C40089AF93 /* ZitiIntercept.swift */,
 				5AB83091247432C40089AF93 /* ZitiKeychain.swift */,
-				5AB83092247432C40089AF93 /* ZitiConfig.swift */,
+				5AB83092247432C40089AF93 /* ZitiServiceConfig.swift */,
 				5AB83095247432C40089AF93 /* ZitiUrlClientConfigV1.swift */,
 				5AB83098247432C40089AF93 /* ZitiTunnelClientConfigV1.swift */,
 				5A8B0C1C2594119900182437 /* ZitiTunnelServerConfigV1.swift */,
@@ -718,7 +726,7 @@
 			files = (
 				5AB830A0247432C40089AF93 /* ZitiKeychain.swift in Sources */,
 				5A8B0B81258FEA9A00182437 /* ZitiService.swift in Sources */,
-				5AB830A1247432C40089AF93 /* ZitiConfig.swift in Sources */,
+				5AB830A1247432C40089AF93 /* ZitiServiceConfig.swift in Sources */,
 				5AB8309E247432C40089AF93 /* ZitiError.swift in Sources */,
 				5AB830A7247432C40089AF93 /* ZitiTunnelClientConfigV1.swift in Sources */,
 				5AB830A5247432C40089AF93 /* ZitiUrlProtocol.swift in Sources */,
@@ -728,7 +736,6 @@
 				5AB830A9247432C50089AF93 /* ZitiIdentity.swift in Sources */,
 				5AA298BC2585961C001F7502 /* NetifDriver.swift in Sources */,
 				5AB830A3247432C40089AF93 /* ZitiLog.swift in Sources */,
-				5A71D8D0262CFCF900504002 /* ZitiMfaAuthQuery.swift in Sources */,
 				5A69FBFF25D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */,
 				5AB830A4247432C40089AF93 /* ZitiUrlClientConfigV1.swift in Sources */,
 				5A71D8C1262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */,
@@ -753,7 +760,7 @@
 			files = (
 				5AB830AE247433150089AF93 /* ZitiKeychain.swift in Sources */,
 				5A8B0B82258FEA9A00182437 /* ZitiService.swift in Sources */,
-				5AB830AF247433190089AF93 /* ZitiConfig.swift in Sources */,
+				5AB830AF247433190089AF93 /* ZitiServiceConfig.swift in Sources */,
 				5AB830AC2474330D0089AF93 /* ZitiError.swift in Sources */,
 				5AB830B52474332E0089AF93 /* ZitiTunnelClientConfigV1.swift in Sources */,
 				5AB830B3247433270089AF93 /* ZitiUrlProtocol.swift in Sources */,
@@ -763,7 +770,6 @@
 				5AB830B7247433350089AF93 /* ZitiIdentity.swift in Sources */,
 				5AA298BD2585961C001F7502 /* NetifDriver.swift in Sources */,
 				5AB830B1247433200089AF93 /* ZitiLog.swift in Sources */,
-				5A71D8D1262CFCFA00504002 /* ZitiMfaAuthQuery.swift in Sources */,
 				5A69FC0025D1934A007B3B43 /* ZitiInterceptConfigV1.swift in Sources */,
 				5AB830B2247433230089AF93 /* ZitiUrlClientConfigV1.swift in Sources */,
 				5A71D8C2262885EF00504002 /* ZitiMfaEnrollment.swift in Sources */,
@@ -1061,20 +1067,9 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_INCLUDE_PATHS = (
-					"$(SRCROOT)/lib/ProjectModule",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
-				);
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -1130,19 +1125,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = (
-					"$(SRCROOT)/lib/ProjectModule",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include",
-				);
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;

@@ -178,23 +178,60 @@ public class ZitiKeychain : NSObject {
     ///
     /// - Returns: `true` if the certificates are successfully added to the keychain, otherwise `false`
     public func addCaPool(_ caPool:String) -> Bool {
-        let certs = extractCerts(caPool)
+        let (err, _) = storeCertificates(caPool, setAttrLabel: false)
+        return err == nil
+    }
+    
+    /// Add the certificates in the provided pem string to the keychain
+    ///
+    /// - Parameters
+    ///     - pem: PEM formatted certificate (or certificate chain)
+    ///
+    /// - Returns
+    ///     - An error, if one occurred.
+    ///     - An array of strings that contains the common name for each certificate in the pem.
+    public func storeCertificates(_ pem:String) -> (ZitiError?, [String]?) {
+        return storeCertificates(pem, setAttrLabel: true)
+    }
+    
+    private func storeCertificates(_ pem:String, setAttrLabel:Bool = true) -> (ZitiError?, [String]?) {
+        var cns:[String] = []
+        let certs = extractCerts(pem)
         for cert in certs {
+            var maybeCN: CFString?
+            var status = SecCertificateCopyCommonName(cert, &maybeCN)
+            guard let cn = maybeCN, status == errSecSuccess else {
+                let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+                log.error("Unable to retrieve certificate common name for \(tag): \(errStr)")
+                return (ZitiError("Unable to get certificate common name for \(tag): \(errStr)", errorCode: Int(status)), nil)
+            }
+            let cnStr = String(describing: cn)
             var parameters: [CFString: Any] = [
                 kSecClass: kSecClassCertificate,
                 kSecValueRef: cert]
+            if (setAttrLabel) {
+                // Setting kSecAttrLabel for a certificate is not effective, at least not on macOS. The cert is always stored with its
+                // common name as the label. This is true both for the file-based keychain (which can be verified with Keychain Access)
+                // and data protection (cloud) keychain (which cannot be inspected, but verified by adding/getting).
+                //
+                // Work around this by explicitly using the cn as the label, so the label is predictable on macOS and iOS, and hopefully
+                // on future macOS versions when/if `kSecAttrLabel` is respected. CNs
+                // to the caller so the app knows which certs to look for when it needs them.
+                parameters[kSecAttrLabel] = cnStr
+            }
             if #available(iOS 13.0, OSX 10.15, *) {
                 parameters[kSecUseDataProtectionKeychain] = true
             }
-            let status = SecItemAdd(parameters as CFDictionary, nil)
+            status = SecItemAdd(parameters as CFDictionary, nil)
             guard status == errSecSuccess || status == errSecDuplicateItem else {
                 let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-                log.error("Unable to store certificate for \(tag): \(errStr)")
-                return false
+                log.error("Unable to store certificate for \(cnStr): \(errStr)")
+                return (ZitiError("Unable to store certificate for \(cnStr): \(errStr)", errorCode: Int(status)), nil)
             }
             log.info("Added cert to keychain: \(String(describing: SecCertificateCopySubjectSummary(cert)))")
+            cns.append(cnStr)
         }
-        return true
+        return (nil, cns)
     }
     
 #if os(macOS) // if #available(iOS 13.0, OSX 10.15, *)
@@ -220,7 +257,8 @@ public class ZitiKeychain : NSObject {
         return sceStatus
     }
 #endif
-    
+
+    /// This function only stores the first certificate in `pem`. use storeCertificates(pem:String) if you need to store all certificates in the keychain.
     func storeCertificate(fromPem pem:String) -> ZitiError? {
         let (_, zErr) = storeCertificate(fromDer: convertToDER(pem))
         if zErr != nil {
@@ -251,11 +289,16 @@ public class ZitiKeychain : NSObject {
         return (certificate, nil)
     }
     
+    @available(*, deprecated, message: "This function only gets one certificate, but an identity may have more than one. Use getCertificates( certCNs:[String]) instead")
     func getCertificate() -> (Data?, ZitiError?) {
+        return getCertificate(tag)
+    }
+    
+    private func getCertificate(_ label:String) -> (Data?, ZitiError?) {
         let params: [CFString: Any] = [
             kSecClass: kSecClassCertificate,
             kSecReturnRef: kCFBooleanTrue!,
-            kSecAttrLabel: tag]
+            kSecAttrLabel: label]
         
         var cert: CFTypeRef?
         let status = SecItemCopyMatching(params as CFDictionary, &cert)
@@ -270,6 +313,19 @@ public class ZitiKeychain : NSObject {
             return (nil, ZitiError(errStr))
         }
         return (certData, nil)
+    }
+    
+    func getCertificates(_ certCNs:[String]) -> [Data]? {
+        var certs:[Data] = []
+        for cn in certCNs {
+            let (cert, err) = getCertificate(cn)
+            guard let cert = cert, err == nil else {
+                return nil
+            }
+            certs.append(cert)
+        }
+        
+        return certs
     }
     
     func deleteCertificate(silent:Bool=false) -> ZitiError? {
@@ -302,6 +358,15 @@ public class ZitiKeychain : NSObject {
             if !silent { log.error(errStr) }
             return ZitiError("Unable to delete certificate for \(tag): \(errStr)", errorCode: Int(deleteStatus))
         }
+        return nil
+    }
+    
+    func convertToPEM(_ type:String, ders:[Data]) -> String? {
+        var pem = ""
+        ders.forEach { der in
+            pem.append(convertToPEM(type, der: der))
+        }
+        if pem.count > 0 { return pem }
         return nil
     }
     

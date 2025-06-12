@@ -26,13 +26,14 @@ function build_tsdk {
    cmake_build_type=RelWithDebInfo
    if [ "${CONFIGURATION}" == "Debug" ]; then cmake_build_type="Debug"; fi
 
-   if [ -n "${ASAN_ENABLED}" ]; then
+   if [ -n "${ASAN_ENABLED}" -a "${FOR}" = "macOS" ]; then
        clang_asan_flags="-DCMAKE_C_FLAGS=-fsanitize=address -DCMAKE_CXX_FLAGS=-fsanitize=address"
    fi
 
    cmake -DCMAKE_BUILD_TYPE=${cmake_build_type} \
       ${clang_asan_flags} \
       -DTLSUV_TLSLIB=openssl \
+      -DVCPKG_INSTALL_OPTIONS="--overlay-ports=./deps/vcpkg-overlays/json-c" \
       -DEXCLUDE_PROGRAMS=ON \
       -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
@@ -59,7 +60,7 @@ function build_cziti {
    sdk=$2
    arch_flags=$3
 
-   if [ -n "${ASAN_ENABLED}" ]; then
+   if [ -n "${ASAN_ENABLED}" -a "${FOR}" = "macOS" ]; then
        asan_flags="-enableAddressSanitizer YES"
    fi
 

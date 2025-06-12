@@ -16,7 +16,7 @@ limitations under the License.
 import Foundation
 
 /// Class representation of intercept.v1 service configuration
-public class ZitiInterceptConfigV1 : Codable, ZitiConfig {
+public class ZitiInterceptConfigV1 : Codable, ZitiServiceConfig {
     static var configType = "intercept.v1"
     
     /// Class representing port range to intercept

@@ -27,11 +27,6 @@ import CZitiPrivate
         self.ziti = ziti
     }
     
-    func toStr(_ cStr:UnsafePointer<CChar>?) -> String {
-        if let cStr = cStr { return String(cString: cStr) }
-        return ""
-    }
-    
     /// Provide a debug description of the event
     /// - returns: String containing the debug description
     public override var debugDescription: String {
@@ -208,26 +203,100 @@ import CZitiPrivate
     }
 }
 
-/// Class encapsulating Ziti Tunnel SDK C API Event
-@objc public class ZitiTunnelApiEvent : ZitiTunnelEvent {
+/// Class encapsulating Ziti Tunnel SDK C Config Event
+@objc public class ZitiTunnelConfigEvent : ZitiTunnelEvent {
     
-    /// New controller address
-    public var newControllerAddress:String = ""
+    /// Controller address (legacy)
+    public var controllerUrl:String = ""
     
-    /// New ca bundle
-    public var newCaBundle:String = ""
+    /// Controller addresses
+    public var controllers:[String] = []
     
-    init(_ ziti:Ziti, _ evt:UnsafePointer<api_event>) {
+    /// CA bundle
+    public var caBundle:String = ""
+    
+    /// Certificte PEM (possibly multiple certificates)
+    public var certPEM:String = ""
+
+    /// pointer to result of parsing event's `config_json` field. allocated by ziti-sdk-c
+    private var ziti_cfg_ptr:UnsafeMutablePointer<ziti_config>?
+    
+    init(_ ziti:Ziti, _ evt:UnsafePointer<config_event>) {
         super.init(ziti)
-        self.newControllerAddress = toStr(evt.pointee.new_ctrl_address)
-        self.newCaBundle = toStr(evt.pointee.new_ca_bundle)
+        parse_ziti_config_ptr(&ziti_cfg_ptr, evt.pointee.config_json, strlen(evt.pointee.config_json))
+        self.controllerUrl = toStr(ziti_cfg_ptr?.pointee.controller_url)
+        
+        var ctrlList = ziti_cfg_ptr!.pointee.controllers
+        withUnsafeMutablePointer(to: &ctrlList) { ctrlListPtr in
+            var i = model_list_iterator(ctrlListPtr)
+            while i != nil {
+                let ctrlPtr = model_list_it_element(i)
+                if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
+                    let ctrlStr = toStr(ctrl)
+                    controllers.append(ctrlStr)
+                }
+                i = model_list_it_next(i)
+            }
+        }
+        self.caBundle = toStr(ziti_cfg_ptr?.pointee.id.ca)
+        self.certPEM = toStr(ziti_cfg_ptr?.pointee.id.cert)
+    }
+    
+    deinit {
+        if ziti_cfg_ptr != nil {
+            free_ziti_config_ptr(ziti_cfg_ptr)
+        }
     }
     
     /// Debug description
     /// - returns: String containing debug description of this event
     public override var debugDescription: String {
         return super.debugDescription + "\n" +
-            "   newControllerAddress: \(newControllerAddress)\n" +
-            "   newCaBundle: \(newCaBundle)"
+            "   controller_url: \(controllerUrl)\n" +
+            "   contrlollers: \(controllers)\n" +
+            "   caBundle: \(caBundle)\n" +
+            "   cert: \(certPEM)"
     }
+}
+
+@objc public class JWTProvider : NSObject, Codable {
+    public var name:String = ""
+    public var issuer:String = ""
+
+    init(provider_c: UnsafeMutablePointer<jwt_provider>) {
+        self.name = toStr(provider_c.pointee.name)
+        self.issuer = toStr(provider_c.pointee.issuer)
+    }
+}
+
+/// Class encapsulating Ziti Tunnel SDK C External JWT Event
+@objc public class ZitiTunnelExtJWTEvent : ZitiTunnelEvent {
+
+    /// Authentication status
+    public var status:String = ""
+
+    /// JWT providers
+    public var providers:[JWTProvider] = []
+
+    init(_ ziti:Ziti, _ evt:UnsafePointer<ext_signer_event>) {
+        super.init(ziti)
+        status = toStr(evt.pointee.status)
+        var providerList = evt.pointee.providers
+        withUnsafeMutablePointer(to: &providerList) { providerListPtr in
+            var i = model_list_iterator(providerListPtr)
+            while i != nil {
+                let providerPtr = model_list_it_element(i)
+                if let provider_c = UnsafeMutablePointer<jwt_provider>(OpaquePointer(providerPtr)) {
+                    let provider = JWTProvider(provider_c: provider_c)
+                    providers.append(provider)
+                }
+                i = model_list_it_next(i)
+            }
+        }
+    }
+}
+
+func toStr(_ cStr:UnsafePointer<CChar>?) -> String {
+    if let cStr = cStr { return String(cString: cStr) }
+    return ""
 }
