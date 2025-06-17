@@ -181,6 +181,21 @@ import CZitiPrivate
     }
     
     @objc public static func enroll(url:String, cb:@escaping EnrollmentCallback) {
+        // test the connection to avoid assertion in ziti-sdk-c/libuv
+        guard let ctrlUrl = URL(string: url) else {
+            let zErr = ZitiError("cannot parse \(url) as URL")
+            log.error(String(describing: zErr), function:"enroll()")
+            cb(nil, nil, zErr)
+            return
+        }
+        let (data, response, error) = URLSession.shared.syncRequest(with: ctrlUrl)
+        if let error = error {
+            let zErr = ZitiError("connection to \(url) failed: \(error.localizedDescription)")
+            log.error(String(describing: zErr), function:"enroll()")
+            cb(nil, nil, zErr)
+            return
+        }
+
         self.enroll(withLoop: ZitiEnroller.loop, controllerURL: url, cb: cb)
         
         let runStatus = uv_run(ZitiEnroller.loop, UV_RUN_DEFAULT)
@@ -310,4 +325,27 @@ import CZitiPrivate
         }
         return Data(base64Encoded: base64, options: .ignoreUnknownCharacters)
     }
+}
+
+extension URLSession {
+   
+   func syncRequest(with url: URL) -> (Data?, URLResponse?, Error?) {
+      var data: Data?
+      var response: URLResponse?
+      var error: Error?
+      
+      let dispatchGroup = DispatchGroup()
+      let task = dataTask(with: url) {
+         data = $0
+         response = $1
+         error = $2
+         dispatchGroup.leave()
+      }
+      dispatchGroup.enter()
+      task.resume()
+      dispatchGroup.wait()
+      
+      return (data, response, error)
+   }
+
 }
