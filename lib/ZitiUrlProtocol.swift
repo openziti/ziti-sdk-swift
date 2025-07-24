@@ -295,13 +295,37 @@ import CZitiPrivate
             return
         }
                 
-        var hdrMap:[String:String] = [:]
-        var curr = resp.pointee.headers.lh_first
-        while curr != nil {
-            hdrMap[String(cString: curr!.pointee.name)] = String(cString: curr!.pointee.value)
-            curr = curr!.pointee._next.le_next
+        /// Parses HTTP response headers from the C structure and constructs a Swift dictionary.
+        /// Special handling is done for "Set-Cookie" headers, which may appear multiple times.
+        /// All "Set-Cookie" values are collected into an array and then joined into a single
+        /// comma-separated string, as expected by HTTPURLResponse.
+        ///
+        /// - Returns: A dictionary mapping header names to their values, with all "Set-Cookie"
+        ///   headers combined into a single entry if present.
+        var hdrMap: [String: String] = [:]
+        var setCookieValues: [String] = []
+
+        var currentHeader = resp.pointee.headers.lh_first
+
+        while let header = currentHeader {
+            let headerName = String(cString: header.pointee.name)
+            let headerValue = String(cString: header.pointee.value)
+            
+            // Collect all "Set-Cookie" headers into an array
+            if headerName.lowercased() == "set-cookie" {
+                setCookieValues.append(headerValue)
+            } else {
+                hdrMap[headerName] = headerValue
+            }
+            
+            currentHeader = header.pointee._next.le_next
         }
-                        
+
+        // Combine all "Set-Cookie" values into a single comma-separated string
+        if !setCookieValues.isEmpty {
+            hdrMap["Set-Cookie"] = setCookieValues.joined(separator: ", ")
+        }
+
         // On TLS handshake error getting a negative response code (-53), notifyDidReceive
         // nothing, so we end up waiting for timeout. So notifyDidFailWithError instead...
         let code = Int(resp.pointee.code)
