@@ -93,11 +93,13 @@ import CZitiPrivate
         var jwtFile_c:UnsafeMutablePointer<Int8>?
         var privatePem_c:UnsafeMutablePointer<Int8>?
         var url_c:UnsafeMutablePointer<Int8>?
+        var token_c:UnsafeMutablePointer<Int8>?
         
         deinit {
             jwtFile_c?.deallocate()
             privatePem_c?.deallocate()
             url_c?.deallocate()
+            token_c?.deallocate()
         }
     }
     
@@ -180,23 +182,66 @@ import CZitiPrivate
         }
     }
     
+    static func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?,
+                       token:String,
+                       cb:@escaping EnrollmentCallback) {
+        let enrollData = UnsafeMutablePointer<EnrollmentRequestData>.allocate(capacity: 1)
+        enrollData.initialize(to: EnrollmentRequestData())
+        enrollData.pointee.enrollmentCallback = cb
+        enrollData.pointee.token_c = UnsafeMutablePointer<Int8>.allocate(capacity: token.count + 1)
+        enrollData.pointee.token_c!.initialize(from: token.cString(using: .utf8)!, count: token.count + 1)
+
+        
+        var enroll_opts = ziti_enroll_opts(url: nil, token: enrollData.pointee.token_c, key: nil,
+                                           cert: nil, name: nil, use_keychain: false)
+        let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
+        guard status == ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(status))
+            log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
+            return
+        }
+    }
+    
+    struct NetworkJwtsResponse : Codable {
+        struct Data: Codable {
+            var name:String?
+            var token:String?
+        }
+
+        var data:[NetworkJwtsResponse.Data]?
+    }
+    
     @objc public static func enroll(url:String, cb:@escaping EnrollmentCallback) {
         // test the connection to avoid assertion in ziti-sdk-c/libuv
-        guard let ctrlUrl = URL(string: url) else {
+        // also get /network-jwts so we can use apple's ca store to trust the provided url (tlsuv/openssl does not load trusted certs on iOS).
+        // if the response includes a token we use that for the enrollment instead of the url.
+        guard let jwtUrl = URL(string: url + (url.hasSuffix("/") ? "" : "/") + "/network-jwts") else {
             let zErr = ZitiError("cannot parse \(url) as URL")
             log.error(String(describing: zErr), function:"enroll()")
             cb(nil, nil, zErr)
             return
         }
-        let (data, response, error) = URLSession.shared.syncRequest(with: ctrlUrl)
+        
+        let (data, response, error) = URLSession.shared.syncRequest(with: jwtUrl)
         if let error = error {
             let zErr = ZitiError("connection to \(url) failed: \(error.localizedDescription)")
             log.error(String(describing: zErr), function:"enroll()")
             cb(nil, nil, zErr)
             return
         }
-
-        self.enroll(withLoop: ZitiEnroller.loop, controllerURL: url, cb: cb)
+        
+        guard let httpResp = response as? HTTPURLResponse, (200...299).contains(httpResp.statusCode), let data = data,
+              let decodedResp = try? JSONDecoder().decode(NetworkJwtsResponse.self, from: data),
+              let token = decodedResp.data?.first?.token else {
+            let zErr = ZitiError("invalid response from \(jwtUrl)")
+            log.error(String(describing: zErr), function:"enroll()")
+            cb(nil, nil, zErr)
+            return
+        }
+        
+        log.debug("fetched token \(token) from \(jwtUrl)")
+        self.enroll(withLoop: ZitiEnroller.loop, token: token, cb: cb)
         
         let runStatus = uv_run(ZitiEnroller.loop, UV_RUN_DEFAULT)
         guard runStatus == 0 else {
