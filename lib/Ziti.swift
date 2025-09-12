@@ -139,6 +139,7 @@ import CZitiPrivate
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
+        ziti_log_init_wrapper(loop)
         super.init()
         initOpsHandle()
     }
@@ -158,6 +159,7 @@ import CZitiPrivate
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
+        ziti_log_init_wrapper(loop)
         super.init()
         initOpsHandle()
     }
@@ -172,6 +174,7 @@ import CZitiPrivate
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
+        ziti_log_init_wrapper(loop)
         super.init()
         initOpsHandle()
     }
