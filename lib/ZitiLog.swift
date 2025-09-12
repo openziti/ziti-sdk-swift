@@ -91,8 +91,8 @@ public class ZitiLog {
     ///
     /// - Parameters:
     ///     - level: only log messages at this level or higher severity
-    public class func setLogLevel(_ level:LogLevel) {
-        ziti_log_set_level(level.rawValue, nil)
+    public class func setLogLevel(_ level:LogLevel, module:String? = nil) {
+        ziti_log_set_level(level.rawValue, module)
         ziti_tunnel_set_log_level(level.rawValue)
     }
     
