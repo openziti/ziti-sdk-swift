@@ -37,7 +37,7 @@ jobs:
     - name: macOS tools
       if: runner.os == 'macOS'
       shell: bash
-      run: brew install autoconf autoconf-archive automake pkg-config
+      run: brew install autoconf autoconf-archive automake libtool pkg-config
 
     - uses: lukka/run-vcpkg@v11
       with:
