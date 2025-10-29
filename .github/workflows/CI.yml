@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-tsdk:
-    runs-on: macos-13
+    runs-on: macos-15
 
     strategy:
       matrix:
@@ -32,12 +32,12 @@ jobs:
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.2'
+        xcode-version: '16.4'
 
     - name: macOS tools
       if: runner.os == 'macOS'
       shell: bash
-      run: brew install autoconf autoconf-archive automake pkg-config
+      run: brew install autoconf autoconf-archive automake libtool pkg-config
 
     - uses: lukka/run-vcpkg@v11
       with:
@@ -59,7 +59,7 @@ jobs:
         path: ${{ matrix.spec.name }}.tgz
 
   build-cziti:
-    runs-on: macos-13
+    runs-on: macos-15
     needs: [ build-tsdk ]
 
     steps:
@@ -70,7 +70,7 @@ jobs:
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.2'
+        xcode-version: '16.4'
 
     - name: Download Artifacts
       uses: actions/download-artifact@v4
