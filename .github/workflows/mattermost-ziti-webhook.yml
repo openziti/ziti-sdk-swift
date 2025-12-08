@@ -32,4 +32,3 @@ jobs:
         webhookUrl: ${{ secrets.ZHOOK_URL_DEV_NOTIFICATIONS }}
         eventJson: ${{ toJson(github.event) }}
         senderUsername: "GitHubZ"
-        destChannel: "dev-notifications"
