@@ -1071,7 +1071,7 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-build/library",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib/ziti-tunnel",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib/ziti-tunnel-cbs",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/lib",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/debug/lib",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "";
