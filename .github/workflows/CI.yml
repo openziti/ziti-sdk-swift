@@ -43,9 +43,15 @@ jobs:
       with:
         vcpkgJsonGlob: './deps/ziti-tunnel-sdk-c/vcpkg.json'
 
+    - uses: actions/cache@v5
+      with:
+        key: vcpkg_cache_${{ matrix.spec.name }}
+        path: ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}/vcpkg_cache
+
     - name: ${{ matrix.spec.name }}
       env:
         TOOLCHAIN: ${{ matrix.spec.toolchain && format('../../toolchains/{0}.cmake', matrix.spec.toolchain) || '' }}
+        VCPKG_BINARY_SOURCES: "clear;files,/github/workspace/deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}/vcpkg_cache,readwrite"
       run: |
         (cd deps/ziti-tunnel-sdk-c && git fetch --tags)
         cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DTLSUV_TLSLIB=openssl -DEXCLUDE_PROGRAMS=ON -DVCPKG_INSTALL_OPTIONS="--overlay-ports=./deps/vcpkg-overlays/json-c" -DZITI_TUNNEL_BUILD_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
