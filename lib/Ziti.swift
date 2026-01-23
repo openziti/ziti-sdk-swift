@@ -466,7 +466,7 @@ import CZitiPrivate
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
             controllers: ctrls,
-            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
+            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
             cfg_source: nil)
 
         log.debug("configuring ziti-sdk-c with:\n" +
