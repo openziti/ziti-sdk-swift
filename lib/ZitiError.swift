@@ -16,7 +16,7 @@ limitations under the License.
 import Foundation
 
 /// Class used for passing information about error conditions encountered while using Ziti
-public class ZitiError : NSError {
+public class ZitiError : NSError, @unchecked Sendable {
     /// Initialize a ZitiError instance
     /// - Parameters:
     ///     - desc: error description

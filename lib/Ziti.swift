@@ -466,13 +466,13 @@ import CZitiPrivate
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
             controllers: ctrls,
-            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
+            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
             cfg_source: nil)
 
         log.debug("configuring ziti-sdk-c with:\n" +
                   "  id: \(id.id)\n" +
                   "  ztAPIs: \(id.ztAPIs ?? [])\n" +
-                  "  cert: \(certPEM)\n" +
+                  "  cert: \(certPEM ?? "")\n" +
                   "  ca: \(id.ca ?? "none")")
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
