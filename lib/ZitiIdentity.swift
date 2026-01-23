@@ -37,7 +37,7 @@ import Foundation
     /// Common names for the certificates in this identities certificate chain.
     /// This is only set when the identity is decoded from an older representation. When `certs` is not set, this value can be used to
     /// retrieve the identity's certificates from the Keychain.
-    @available(*, deprecated, message: "store certificates in `certs` instead")
+    //@available(*, deprecated, message: "store certificates in `certs` instead")
     @objc private var certCNs:[String]?
     
     /// scheme, host, and port used to communicate with Ziti controller

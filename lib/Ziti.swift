@@ -472,7 +472,7 @@ import CZitiPrivate
         log.debug("configuring ziti-sdk-c with:\n" +
                   "  id: \(id.id)\n" +
                   "  ztAPIs: \(id.ztAPIs ?? [])\n" +
-                  "  cert: \(certPEM)\n" +
+                  "  cert: \(certPEM ?? "")\n" +
                   "  ca: \(id.ca ?? "none")")
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
