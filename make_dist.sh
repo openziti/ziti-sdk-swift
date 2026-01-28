@@ -12,6 +12,8 @@ SWIFTMODULE_NAME="CZiti.swiftmodule"
 
 # make for iOS, macOS, or All
 : ${FOR:="All"}
+# make for simulators
+: ${SIMS:="Yes"}
 
 function edit_interfaces {
    module_dir="$1"
@@ -37,6 +39,8 @@ xcframework_args=""
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}-iphoneos/${LIB_NAME}"
    xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphoneos/CZiti-iOS.build/DerivedSources"
+fi
+if [ "${SIMS}" = "Yes" ] && [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    xcframework_args+=" -library ${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/${LIB_NAME}"
    xcframework_args+=" -headers ${DERIVED_BUILD_DIR}/${CONFIGURATION}-iphonesimulator/CZiti-iOS.build/DerivedSources"
 fi
