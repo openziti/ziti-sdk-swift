@@ -57,6 +57,15 @@ function build_tsdk {
       echo "Unable to cmake build ${name}"
       exit 1
    fi
+
+   # installing would let us clean up the lib/include paths in the xcode project
+   # in theory, but at the moment the install targets in the cmake files are not
+   # quite accurate.
+   #cmake --install ./deps/ziti-tunnel-sdk-c/${name}
+   #if [ $? -ne 0 ] ; then
+   #   echo "Unable to cmake install ${name}"
+   #   exit 1
+   #fi
 }
 
 if ! command -v xcpretty > /dev/null; then
