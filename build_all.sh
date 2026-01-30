@@ -15,6 +15,8 @@ C_SDK_ROOT="${PROJECT_ROOT}/deps/ziti-tunnel-sdk-c"
 : ${CONFIGURATION:="Release"}
 # make for iOS, macOS, or All
 : ${FOR:="All"}
+# make for simulators
+: ${SIMS:="Yes"}
 
 function build_tsdk {
    name=$1
@@ -23,10 +25,14 @@ function build_tsdk {
    echo "Building TSDK for ${name}; toolchain:${toolchain}"
    rm -rf ./deps/ziti-tunnel-sdk-c/${name}
 
+   local for_mac=""
+   if echo "${name}" | grep -q "macosx"; then for_mac=y; fi
+
    cmake_build_type=RelWithDebInfo
    if [ "${CONFIGURATION}" == "Debug" ]; then cmake_build_type="Debug"; fi
 
-   if [ -n "${ASAN_ENABLED}" -a "${FOR}" = "macOS" ]; then
+   local clang_asan_flags=""
+   if [ -n "${ASAN_ENABLED}" -a -n "${for_mac}" ]; then
        clang_asan_flags="-DCMAKE_C_FLAGS=-fsanitize=address -DCMAKE_CXX_FLAGS=-fsanitize=address"
    fi
 
@@ -37,6 +43,7 @@ function build_tsdk {
       -DEXCLUDE_PROGRAMS=ON \
       -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
+      -DCMAKE_INSTALL_PREFIX=./deps/ziti-tunnel-sdk-c/${name}/cmake_installed \
       -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${name}
 
    if [ $? -ne 0 ] ; then
@@ -49,6 +56,15 @@ function build_tsdk {
       echo "Unable to cmake build ${name}"
       exit 1
    fi
+
+   # installing would let us clean up the lib/include paths in the xcode project
+   # in theory, but at the moment the install targets in the cmake files are not
+   # quite accurate.
+   #cmake --install ./deps/ziti-tunnel-sdk-c/${name}
+   #if [ $? -ne 0 ] ; then
+   #   echo "Unable to cmake install ${name}"
+   #   exit 1
+   #fi
 }
 
 if ! command -v xcpretty > /dev/null; then
@@ -89,23 +105,38 @@ fi
 toolchain_dir="../../toolchains"
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    build_tsdk 'build-iphoneos-arm64' "${toolchain_dir}/iOS-arm64.cmake"
+fi
+
+if [ "${SIMS}" = "Yes" ] && [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    build_tsdk 'build-iphonesimulator-x86_64' "${toolchain_dir}/iOS-Simulator-x86_64.cmake"
    build_tsdk 'build-iphonesimulator-arm64' "${toolchain_dir}/iOS-Simulator-arm64.cmake"
 fi
 
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
-   build_tsdk 'build-macosx-arm64' "${toolchain_dir}/macOS-arm64.cmake"
-   build_tsdk 'build-macosx-x86_64' "${toolchain_dir}/macOS-x86_64.cmake"
+  if [ "${ONLY_ACTIVE_ARCH}" = "YES" ]; then
+     active_arch=$(arch)
+     build_tsdk "build-macosx-${active_arch}" "${toolchain_dir}/macOS-${active_arch}.cmake"
+  else
+    build_tsdk 'build-macosx-arm64' "${toolchain_dir}/macOS-arm64.cmake"
+    build_tsdk 'build-macosx-x86_64' "${toolchain_dir}/macOS-x86_64.cmake"
+  fi
 fi
-
 
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    build_cziti 'CZiti-iOS' 'iphoneos' '-arch arm64'
+fi
+
+if [ "${SIMS}" = "Yes" ] && [ "${FOR}" = "All" ] || [ "${FOR}" = "iOS" ] ; then
    build_cziti 'CZiti-iOS' 'iphonesimulator' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
 fi
 
 if [ "${FOR}" = "All" ] || [ "${FOR}" = "macOS" ] ; then
-   build_cziti 'CZiti-macOS' 'macosx' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
+   if [ "${ONLY_ACTIVE_ARCH}" = "YES" ]; then
+     active_arch=$(arch)
+     build_cziti 'CZiti-macOS' 'macosx' "-arch ${active_arch} ONLY_ACTIVE_ARCH=YES"
+  else
+     build_cziti 'CZiti-macOS' 'macosx' '-arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO'
+  fi
 fi
 
 /bin/sh ${PROJECT_ROOT}/make_dist.sh

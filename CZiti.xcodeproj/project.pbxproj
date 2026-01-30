@@ -1048,7 +1048,6 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = TLSUV_HTTP;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1057,6 +1056,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
@@ -1076,7 +1076,7 @@
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1107,7 +1107,6 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = TLSUV_HTTP;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -1116,6 +1115,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
@@ -1135,7 +1135,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;
