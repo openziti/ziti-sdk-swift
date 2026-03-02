@@ -188,7 +188,7 @@ import CZitiPrivate
             cb(nil, nil, zErr)
             return
         }
-        let (data, response, error) = URLSession.shared.syncRequest(with: ctrlUrl)
+        let (_, _, error) = URLSession.shared.syncRequest(with: ctrlUrl)
         if let error = error {
             let zErr = ZitiError("connection to \(url) failed: \(error.localizedDescription)")
             log.error(String(describing: zErr), function:"enroll()")

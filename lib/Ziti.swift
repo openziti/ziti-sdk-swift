@@ -139,7 +139,6 @@ import CZitiPrivate
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
-        ziti_log_init_wrapper(loop)
         super.init()
         initOpsHandle()
     }
@@ -159,7 +158,6 @@ import CZitiPrivate
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
-        ziti_log_init_wrapper(loop)
         super.init()
         initOpsHandle()
     }
@@ -174,7 +172,6 @@ import CZitiPrivate
         loop = UnsafeMutablePointer<uv_loop_t>.allocate(capacity: 1)
         loop.initialize(to: uv_loop_t())
         uv_loop_init(loop)
-        ziti_log_init_wrapper(loop)
         super.init()
         initOpsHandle()
     }
@@ -252,6 +249,7 @@ import CZitiPrivate
     /// wrapper to execute uv_run (blocking)
     public class func executeRunloop(loopPtr:ZitiRunloop) -> Int32 {
         let loop = loopPtr.loop
+        ziti_log_init_wrapper(loop)
         let rStatus = uv_run(loop, UV_RUN_DEFAULT)
         if rStatus != 0  {
             let errStr = String(cString: uv_strerror(rStatus))
@@ -468,13 +466,13 @@ import CZitiPrivate
         var zitiCfg = ziti_config(
             controller_url: ctrlPtr,
             controllers: ctrls,
-            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr, oidc: nil),
+            id: ziti_id_cfg(cert: certPEMPtr, key: privKeyPEMPtr, ca: caPEMPtr),
             cfg_source: nil)
 
         log.debug("configuring ziti-sdk-c with:\n" +
                   "  id: \(id.id)\n" +
                   "  ztAPIs: \(id.ztAPIs ?? [])\n" +
-                  "  cert: \(certPEM)\n" +
+                  "  cert: \(certPEM ?? "")\n" +
                   "  ca: \(id.ca ?? "none")")
         
         var zitiStatus = ziti_context_init(&self.ztx, &zitiCfg)
@@ -502,8 +500,6 @@ import CZitiPrivate
             return
         }
 
-        ziti_log_init_wrapper(loop)
-        
         var zitiOpts = ziti_options(disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
                                 api_page_size: 25,
@@ -542,6 +538,7 @@ import CZitiPrivate
         if privateLoop {
             Thread.current.name = "ziti_uv_loop_private"
             
+            ziti_log_init_wrapper(loop)
             let rStatus = uv_run(loop, UV_RUN_DEFAULT)
             guard rStatus == 0 else {
                 let errStr = String(cString: uv_strerror(rStatus))

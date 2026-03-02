@@ -105,6 +105,8 @@
 		5AF0C4122489987500CD4DAE /* ZitiClaims.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AF0C4102489987500CD4DAE /* ZitiClaims.swift */; };
 		AA039EE02A963C53004D3F78 /* libllhttp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA039EDF2A963C53004D3F78 /* libllhttp.a */; };
 		AA039EE22A963C9C004D3F78 /* libllhttp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA039EE12A963C9C004D3F78 /* libllhttp.a */; };
+		AA90D3F72EF32D3300EA5187 /* libstc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA90D3F52EF32D0700EA5187 /* libstc.a */; };
+		AA90D3F92EF32F2300EA5187 /* libstc.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AA90D3F82EF32F2300EA5187 /* libstc.a */; };
 		AACE00D42C2F4F5200C428AE /* libjson-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACE00D22C2F4F5200C428AE /* libjson-c.a */; };
 		AACE00D52C2F4F5200C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */; };
 		AACEF6272C2E0B1500C428AE /* libprotobuf-c.a in Frameworks */ = {isa = PBXBuildFile; fileRef = AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */; };
@@ -251,8 +253,10 @@
 		5AF0C4102489987500CD4DAE /* ZitiClaims.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZitiClaims.swift; sourceTree = "<group>"; };
 		5AFE864127E3C56000D47A47 /* libresolv.9.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.9.tbd; path = usr/lib/libresolv.9.tbd; sourceTree = SDKROOT; };
 		5AFE864327E3C62800D47A47 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
-		AA039EDF2A963C53004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/debug/lib/libllhttp.a"; sourceTree = "<group>"; };
-		AA039EE12A963C9C004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/debug/lib/libllhttp.a"; sourceTree = "<group>"; };
+		AA039EDF2A963C53004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libllhttp.a"; sourceTree = "<group>"; };
+		AA039EE12A963C9C004D3F78 /* libllhttp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libllhttp.a; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libllhttp.a"; sourceTree = "<group>"; };
+		AA90D3F52EF32D0700EA5187 /* libstc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstc.a; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libstc.a"; sourceTree = "<group>"; };
+		AA90D3F82EF32F2300EA5187 /* libstc.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libstc.a; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libstc.a"; sourceTree = "<group>"; };
 		AACE00D22C2F4F5200C428AE /* libjson-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libjson-c.a"; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libjson-c.a"; sourceTree = "<group>"; };
 		AACE00D32C2F4F5200C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-iphoneos-arm64/vcpkg_installed/arm64-ios/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
 		AACEF6252C2E0B1500C428AE /* libprotobuf-c.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = "libprotobuf-c.a"; path = "deps/ziti-tunnel-sdk-c/build-macosx-arm64/vcpkg_installed/arm64-osx/lib/libprotobuf-c.a"; sourceTree = "<group>"; };
@@ -286,6 +290,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA90D3F92EF32F2300EA5187 /* libstc.a in Frameworks */,
 				AACEF6272C2E0B1500C428AE /* libprotobuf-c.a in Frameworks */,
 				AACEF6282C2E0B1500C428AE /* libjson-c.a in Frameworks */,
 				5AA2988E25857758001F7502 /* libziti-tunnel-cbs-c.a in Frameworks */,
@@ -305,6 +310,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AA90D3F72EF32D3300EA5187 /* libstc.a in Frameworks */,
 				AACE00D42C2F4F5200C428AE /* libjson-c.a in Frameworks */,
 				AACE00D52C2F4F5200C428AE /* libprotobuf-c.a in Frameworks */,
 				5AA2989725857789001F7502 /* libziti-tunnel-sdk-c.a in Frameworks */,
@@ -416,6 +422,8 @@
 		5AB6DF76244B8F2000F4B4E0 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AA90D3F52EF32D0700EA5187 /* libstc.a */,
+				AA90D3F82EF32F2300EA5187 /* libstc.a */,
 				AAFBA2462DDE1F6300B47602 /* libz.1.tbd */,
 				AAFBA2492DDE210300B47602 /* libz.1.tbd */,
 				AACEF6262C2E0B1500C428AE /* libjson-c.a */,
@@ -1048,6 +1056,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
@@ -1063,11 +1072,11 @@
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-build/library",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib/ziti-tunnel",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/lib/ziti-tunnel-cbs",
-					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/lib",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/debug/lib",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_SWIFT_FLAGS = "";
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1106,6 +1115,7 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include",
+					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes",
 					"$(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include",
@@ -1125,7 +1135,7 @@
 				);
 				OTHER_SWIFT_FLAGS = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/lib/ProjectModule $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-build/generated $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/tlsuv-src/deps/uv_link_t/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/ziti-sdk-c-src/includes $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/vcpkg_installed/$(VCPKG_ARCH)-$(VCPKG_OS)/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel-cbs/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/lib/ziti-tunnel/lwip $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-src/src/include $(PROJECT_DIR)/deps/ziti-tunnel-sdk-c/build-$(PLATFORM_NAME)-$(CURRENT_ARCH)/_deps/lwip-contrib-src/ports/unix/port/include";
 				SWIFT_OBJC_BRIDGING_HEADER = "";
 			};
 			name = Release;

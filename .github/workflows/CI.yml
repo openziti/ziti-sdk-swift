@@ -13,7 +13,7 @@ permissions:
 
 jobs:
   build-tsdk:
-    runs-on: macos-13
+    runs-on: macos-15
 
     strategy:
       matrix:
@@ -32,23 +32,38 @@ jobs:
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.2'
+        xcode-version: '26.2'
 
     - name: macOS tools
       if: runner.os == 'macOS'
       shell: bash
-      run: brew install autoconf autoconf-archive automake pkg-config
+      run: brew install autoconf autoconf-archive automake libtool pkg-config
 
     - uses: lukka/run-vcpkg@v11
       with:
         vcpkgJsonGlob: './deps/ziti-tunnel-sdk-c/vcpkg.json'
 
+    - name: get vcpkg cache key
+      id: get_vcpkg_cache_key
+      shell: bash
+      env:
+        KEY_PREFIX: vcpkg_cache-${{ matrix.spec.toolchain }}
+      run: |
+        common_key="${KEY_PREFIX}-vcpkg_json_md5=$(md5sum ./deps/ziti-tunnel-sdk-c/vcpkg.json | awk '{ print $1 }')"
+        echo "key=${common_key}-ImageVersion=${ImageVersion}" | tee -a $GITHUB_OUTPUT      
+
+    - uses: actions/cache@v5
+      with:
+        key: ${{ steps.get_vcpkg_cache_key.outputs.key }}
+        path: ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.toolchain }}/vcpkg_cache
+
     - name: ${{ matrix.spec.name }}
       env:
         TOOLCHAIN: ${{ matrix.spec.toolchain && format('../../toolchains/{0}.cmake', matrix.spec.toolchain) || '' }}
+        VCPKG_BINARY_SOURCES: "clear;files,/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/deps/ziti-tunnel-sdk-c/${{ matrix.spec.toolchain }}/vcpkg_cache,readwrite"
       run: |
         (cd deps/ziti-tunnel-sdk-c && git fetch --tags)
-        cmake -DCMAKE_BUILD_TYPE=Release -DTLSUV_TLSLIB=openssl -DEXCLUDE_PROGRAMS=ON -DVCPKG_INSTALL_OPTIONS="--overlay-ports=./deps/vcpkg-overlays/json-c" -DZITI_TUNNEL_BUILD_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
+        cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DTLSUV_TLSLIB=openssl -DEXCLUDE_PROGRAMS=ON -DVCPKG_INSTALL_OPTIONS="--overlay-ports=./deps/vcpkg-overlays/json-c" -DZITI_TUNNEL_BUILD_TESTS=OFF -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN}" -S ./deps/ziti-tunnel-sdk-c -B ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
         cmake --build ./deps/ziti-tunnel-sdk-c/${{ matrix.spec.name }}
         tar -cvzf ${{ matrix.spec.name }}.tgz -C ./deps/ziti-tunnel-sdk-c ${{ matrix.spec.name }}
 
@@ -59,7 +74,7 @@ jobs:
         path: ${{ matrix.spec.name }}.tgz
 
   build-cziti:
-    runs-on: macos-13
+    runs-on: macos-15
     needs: [ build-tsdk ]
 
     steps:
@@ -70,7 +85,7 @@ jobs:
 
     - uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.2'
+        xcode-version: '26.2'
 
     - name: Download Artifacts
       uses: actions/download-artifact@v4
