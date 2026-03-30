@@ -853,9 +853,30 @@ import CZitiPrivate
         ziti_mfa_auth(ztx, code.cString(using: .utf8), Ziti.onMfaAuthResponseStatus, self.toVoidPtr())
     }
     
+    /// Type definition of callback to provide a private key PEM during enrollToCert.
+    /// Return the PEM string on success, or nil to indicate failure.
+    public typealias EnrollKeyCallback = (_ ziti:Ziti) -> String?
+    private var enrollKeyCallback:EnrollKeyCallback?
+
     /// Type definition of callback method for external authentication
     public typealias ExtAuthCallback = (_ ziti:Ziti, _ url:String, _ ctx:UnsafeMutableRawPointer?) -> Void
     private var extAuthStatusCallback:ExtAuthCallback?
+    
+    /// Set a callback to provide a private key during enrollToCert enrollment.
+    /// Pass nil to use the SDK's default software key generation.
+    ///
+    /// Should be called before the loop is started or from the loop thread via `perform(_:)`.
+    /// The underlying C SDK does not synchronize access to these fields.
+    /// - Parameter cb: callback that returns a PEM-encoded private key, or nil
+    public func setEnrollKeyCallback(_ cb: EnrollKeyCallback?) {
+        enrollKeyCallback = cb
+        if cb != nil {
+            ziti_set_enroll_key_cb(ztx, Ziti.onEnrollKey, self.toVoidPtr())
+        } else {
+            ziti_set_enroll_key_cb(ztx, nil, nil)
+        }
+    }
+
     public func extAuth(_ provider:String, _ cb: @escaping ExtAuthCallback) {
         extAuthStatusCallback = cb
         let cProvider = provider.cString(using: .utf8)
@@ -1166,6 +1187,19 @@ import CZitiPrivate
         }
     }
     
+    static private let onEnrollKey:ziti_enroll_key_cb = { ztx, key_pem, ctx in
+        guard let mySelf = zitiUnretained(Ziti.self, ctx) else {
+            log.wtf("invalid context in onEnrollKey")
+            return Int32(ZITI_INVALID_STATE)
+        }
+        guard let pem = mySelf.enrollKeyCallback?(mySelf) else {
+            log.error("enrollKeyCallback returned nil")
+            return Int32(ZITI_KEY_GENERATION_FAILED)
+        }
+        key_pem?.pointee = strdup(pem)
+        return Int32(ZITI_OK)
+    }
+
     static private let onExtAuthStatus:ziti_ext_auth_launch_cb = { ztx, url, ctx in
         guard let mySelf = zitiUnretained(Ziti.self, ctx) else {
             log.wtf("invalid context")

@@ -262,10 +262,12 @@ import CZitiPrivate
 @objc public class JWTProvider : NSObject, Codable {
     public var name:String = ""
     public var issuer:String = ""
+    public var canCertEnroll:Bool = false
 
     init(provider_c: UnsafeMutablePointer<jwt_provider>) {
         self.name = toStr(provider_c.pointee.name)
         self.issuer = toStr(provider_c.pointee.issuer)
+        self.canCertEnroll = provider_c.pointee.can_cert_enroll
     }
 }
 
