@@ -16,87 +16,118 @@ limitations under the License.
 import Foundation
 import CZiti
 
-func usage() {
-    let nm = URL(fileURLWithPath: args[0]).lastPathComponent
-    print("Usage: \(nm) file.jwt out.zid [--trustca]")
-}
-
-// CommandLine
 let args = CommandLine.arguments
-guard CommandLine.argc >= 3 else {
-    usage()
-    exit(-1)
-}
-if CommandLine.argc == 4 && args[3] != "--trustca" {
-    usage()
-    exit(-1)
-}
-let jwtFile = args[1]
-let outFile = args[2]
-let trustCa = (CommandLine.argc == 4)
+let nm = URL(fileURLWithPath: args[0]).lastPathComponent
 
-// Enroll
-Ziti.enroll(jwtFile) { zid, zErr in
-    guard let zid = zid else {
-        fputs("Invalid enrollment response, \(String(describing: zErr))\n", stderr)
-        exit(-1)
+func usage() {
+    print("Usage:")
+    print("  \(nm) file.jwt out.zid [--trustca]       Enroll with JWT")
+    print("  \(nm) --url <url> out.zid [--trustca]     Bootstrap with controller URL")
+}
+
+// Parse --url mode vs JWT mode
+var isUrlMode = false
+var urlStr:String?
+var jwtFile:String?
+var outFile:String?
+var trustCa = false
+
+if CommandLine.argc >= 3 && args[1] == "--url" {
+    isUrlMode = true
+    guard CommandLine.argc >= 4 else { usage(); exit(-1) }
+    urlStr = args[2]
+    outFile = args[3]
+    trustCa = (CommandLine.argc >= 5 && args[4] == "--trustca")
+} else {
+    guard CommandLine.argc >= 3 else { usage(); exit(-1) }
+    jwtFile = args[1]
+    outFile = args[2]
+    if CommandLine.argc == 4 && args[3] != "--trustca" { usage(); exit(-1) }
+    trustCa = (CommandLine.argc == 4)
+}
+
+func trustCaIfNeeded(_ zid:ZitiIdentity) {
+    guard trustCa, let ca = zid.ca else {
+        exit(0)
+        return
     }
-    guard zid.save(outFile) else {
-        fputs("Unable to save to file \(outFile)\n", stderr)
-        exit(-1)
-    }
-    
-    print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
-        
-    // Add the optional CA to keychain if not already trusted
-    if trustCa, let ca = zid.ca {
-        let zkc = ZitiKeychain(tag: zid.id)
-        let certs = zkc.extractCerts(ca)
-        
-        // evalTrustForCertificates requires same DispatchQueue as caller, so force that to happen.
-        // need to process the queue, block until done
-        let dispQueue = DispatchQueue.main
-        let dispGroup = DispatchGroup()
-        
-        dispGroup.enter()
-        dispQueue.async {
-            print("Evaluating trust for CA")
-            let status = zkc.evalTrustForCertificates(certs, dispQueue) { secTrust, isTrusted, err in
-                defer { dispGroup.leave() }
-                
-                print("CA already trusted? \(isTrusted)")
-                
-                // if not trusted, prompt to addTrustForCertificate
-                if !isTrusted {
-                    guard zkc.addCaPool(ca) else {
-                        fputs("Unable to add CA pool to kechain\n", stderr)
-                        return
-                    }
-                    print("Added CA pool to Keychain")
-                    
-                    // Might be configured still to not trust rootCA. Give user
-                    // the change to mark as "Always Trust" (UI dialog will prompt for creds)
-                    if let rootCA = zkc.extractRootCa(ca) {
-                        let status = zkc.addTrustForCertificate(rootCA)
-                        if status != errSecSuccess {
-                            let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-                            fputs("Unable to add trust for CA: \(errStr)\n", stderr)
-                        } else {
-                            print("User has allowed trust of CA")
-                        }
+    let zkc = ZitiKeychain(tag: zid.id)
+    let certs = zkc.extractCerts(ca)
+
+    let dispQueue = DispatchQueue.main
+    let dispGroup = DispatchGroup()
+
+    dispGroup.enter()
+    dispQueue.async {
+        print("Evaluating trust for CA")
+        let status = zkc.evalTrustForCertificates(certs, dispQueue) { secTrust, isTrusted, err in
+            defer { dispGroup.leave() }
+
+            print("CA already trusted? \(isTrusted)")
+
+            if !isTrusted {
+                guard zkc.addCaPool(ca) else {
+                    fputs("Unable to add CA pool to keychain\n", stderr)
+                    return
+                }
+                print("Added CA pool to Keychain")
+
+                if let rootCA = zkc.extractRootCa(ca) {
+                    let status = zkc.addTrustForCertificate(rootCA)
+                    if status != errSecSuccess {
+                        let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+                        fputs("Unable to add trust for CA: \(errStr)\n", stderr)
+                    } else {
+                        print("User has allowed trust of CA")
                     }
                 }
             }
-            guard status == errSecSuccess else {
-                let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
-                fputs("Unable to evaluate trust for ca, err: \(status), \(errStr)\n", stderr)
-                exit(status)
-            }
         }
-        
-        dispGroup.notify(queue: dispQueue) {
-            exit(0)
+        guard status == errSecSuccess else {
+            let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            fputs("Unable to evaluate trust for ca, err: \(status), \(errStr)\n", stderr)
+            exit(status)
         }
-        dispatchMain()
+    }
+
+    dispGroup.notify(queue: dispQueue) {
+        exit(0)
+    }
+    dispatchMain()
+}
+
+if isUrlMode {
+    // Bootstrap with controller URL (for enrollToCert)
+    Ziti.bootstrap(controllerURL: urlStr!) { zid, zErr in
+        guard let zid = zid else {
+            fputs("Bootstrap failed, \(String(describing: zErr))\n", stderr)
+            exit(-1)
+        }
+        guard zid.save(outFile!) else {
+            fputs("Unable to save to file \(outFile!)\n", stderr)
+            exit(-1)
+        }
+
+        print("Successfully bootstrapped with controller \"\(zid.ztAPI)\"")
+        print("Identity saved to \(outFile!)")
+        print("Run this identity to complete enrollToCert via ext-jwt auth")
+
+        trustCaIfNeeded(zid)
+    }
+} else {
+    // Enroll with JWT file
+    Ziti.enroll(jwtFile!) { zid, zErr in
+        guard let zid = zid else {
+            fputs("Invalid enrollment response, \(String(describing: zErr))\n", stderr)
+            exit(-1)
+        }
+        guard zid.save(outFile!) else {
+            fputs("Unable to save to file \(outFile!)\n", stderr)
+            exit(-1)
+        }
+
+        print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
+
+        trustCaIfNeeded(zid)
     }
 }

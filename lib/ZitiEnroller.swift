@@ -328,22 +328,27 @@ import CZitiPrivate
                 i = model_list_it_next(i)
             }
         }
-        guard let ztAPI = String(cString: zc.controller_url, encoding: .utf8) else {
-            let errStr = "Invaid ztAPI response"
+        // controller_url may be nil for bootstrap-only enrollment (ziti_enroll_url)
+        if zc.controller_url != nil {
+            if let ztAPI = String(cString: zc.controller_url, encoding: .utf8) {
+                if !controllers.contains(ztAPI) {
+                    controllers.insert(ztAPI, at: 0)
+                }
+            }
+        }
+        guard !controllers.isEmpty else {
+            let errStr = "No controller URLs in enrollment response"
             log.error(errStr, function:"on_enroll()")
             let ze = ZitiError(errStr, errorCode: -1)
             enrollData.pointee.enrollmentCallback?(nil, nil, ze)
             return
         }
-        
+
         let cert:String? = zc.id.cert != nil ? String(cString: zc.id.cert, encoding: .utf8)! : nil
         let key:String? = zc.id.key != nil ? String(cString: zc.id.key, encoding: .utf8)! : nil
         let ca:String? = zc.id.ca != nil ? String(cString: zc.id.ca, encoding: .utf8)! : nil
-        
+
         let id = EnrollmentResponse.Identity(cert: cert, key: key, ca: ca)
-        //let id = EnrollmentResponse.Identity(cert: cert,
-        //                                     key: String(cString: zc.id.key, encoding: .utf8),
-        //                                     ca: String(cString: zc.id.ca, encoding: .utf8))
         let enrollResp = EnrollmentResponse(ztAPIs: controllers, id: id)
         enrollData.pointee.enrollmentCallback?(enrollResp, enrollData.pointee.subj, nil)
     }
