@@ -383,8 +383,38 @@ import CZitiPrivate
         }
     }
     
+    /// Bootstrap trust with a controller URL for enrollToCert flows.
+    ///
+    /// Fetches only the CA bundle from the controller. No identity is created and no auth
+    /// policy is selected. After bootstrapping, create a `Ziti` instance from the returned
+    /// `ZitiIdentity`, set `setEnrollKeyCallback`, and run the context. The ext-jwt auth
+    /// flow and certificate enrollment happen automatically in the context lifecycle.
+    ///
+    /// - Parameters:
+    ///     - controllerURL: controller URL (e.g., "https://ctrl.example.com:1280")
+    ///     - enrollCallback: callback with bootstrapped `ZitiIdentity` (CA + controller URL only)
+    @objc public static func bootstrap(controllerURL:String, _ enrollCallback: @escaping EnrollmentCallback) {
+        ZitiEnroller.bootstrap(url: controllerURL) { resp, _, zErr in
+            guard let resp = resp, zErr == nil else {
+                log.error(String(describing: zErr), function:"bootstrap()")
+                enrollCallback(nil, zErr)
+                return
+            }
+
+            var ca = resp.id.ca
+            if let idCa = resp.id.ca {
+                ca = dropFirst("pem:", idCa)
+            }
+
+            let zid = ZitiIdentity(id: controllerURL, ztAPIs: resp.ztAPIs, ca: ca)
+            log.info("Bootstrapped controller: \(zid.ztAPI)", function:"bootstrap()")
+
+            enrollCallback(zid, nil)
+        }
+    }
+
     // MARK: Ziti Operational Methods
-    
+
     /// Convienience method for calling `run(_:_)` with `nil` posture check support
     ///
     /// - Parameters:
