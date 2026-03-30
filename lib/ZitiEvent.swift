@@ -176,31 +176,35 @@ import CZitiPrivate
         /// Request for HSM/TPM key pin (not yet implemented)
         case PromptPin
              
+        /// Request for app to select an external auth provider from [providers] list, then call `extAuth(provider:)`
+        case SelectExternal
+
         /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
         case LoginExternal
-        
+
         case Unknown
-        
+
         init(_ action:ziti_auth_action) {
             switch action {
             case ziti_auth_cannot_continue: self = .CannotContinue
             case ziti_auth_prompt_totp:     self = .PromptTotp
             case ziti_auth_prompt_pin:      self = .PromptPin
+            case ziti_auth_select_external: self = .SelectExternal
             case ziti_auth_login_external:  self = .LoginExternal
-            case ziti_auth_select_external: self = .LoginExternal
             default: self = .Unknown
             }
         }
-        
+
         /// Returns string representation of AuthAction
         public var debug: String {
             switch self {
-            case .CannotContinue: return ".CannotContinue"
-            case .PromptTotp:     return ".PromptTotp"
-            case .PromptPin:      return ".PromptPin"
-            case .LoginExternal:  return ".LoginExternal"
-            case .Unknown:        return ".Unknown"
-            @unknown default:     return "unknown \(self.rawValue)"
+            case .CannotContinue:  return ".CannotContinue"
+            case .PromptTotp:      return ".PromptTotp"
+            case .PromptPin:       return ".PromptPin"
+            case .SelectExternal:  return ".SelectExternal"
+            case .LoginExternal:   return ".LoginExternal"
+            case .Unknown:         return ".Unknown"
+            @unknown default:      return "unknown \(self.rawValue)"
             }
         }
     }
@@ -228,10 +232,14 @@ import CZitiPrivate
         /// Claim
         @objc public var scopes:[String]?
         
+        /// Whether this signer supports enrollToCert
+        @objc public let canCertEnroll:Bool
+
         init(_ cSigner:UnsafeMutablePointer<ziti_jwt_signer>) {
             id = cSigner.pointee.id != nil ? String(cString: cSigner.pointee.id) : ""
             name = cSigner.pointee.name != nil ? String(cString: cSigner.pointee.name) : ""
             enabled = cSigner.pointee.enabled
+            canCertEnroll = cSigner.pointee.can_cert_enroll
             providerUrl = cSigner.pointee.provider_url != nil ? String(cString: cSigner.pointee.provider_url) : ""
             clientId = cSigner.pointee.client_id != nil ? String(cString: cSigner.pointee.client_id) : ""
             audience = cSigner.pointee.audience != nil ? String(cString: cSigner.pointee.audience) : ""
@@ -266,7 +274,13 @@ import CZitiPrivate
             action = AuthAction(cEvent.action)
             type = cEvent.type != nil ? String(cString: cEvent.type) : ""
             detail = cEvent.detail != nil ? String(cString: cEvent.detail) : ""
-            providers = [] // todo populate
+            providers = []
+            if var ptr = cEvent.providers {
+                while let signer = ptr.pointee {
+                    providers.append(JwtSigner(signer))
+                    ptr += 1
+                }
+            }
         }
     }
     
