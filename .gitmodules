@@ -1,3 +1,4 @@
 [submodule "deps/ziti-tunnel-sdk-c"]
 	path = deps/ziti-tunnel-sdk-c
 	url = https://github.com/openziti/ziti-tunnel-sdk-c.git
+	branch = enroll-to-cert
