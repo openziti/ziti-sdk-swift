@@ -52,7 +52,7 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "/Users/dhart/Downloads/dave000.jwt"
+            argument = "--url https://localhost:1280 /tmp/test-enroll.zid"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

@@ -413,6 +413,117 @@ import CZitiPrivate
         }
     }
 
+    /// End-to-end enrollToCert: bootstrap, run context, handle ext-jwt auth, create keychain
+    /// key on demand, wait for certificate, and return a completed ZitiIdentity.
+    ///
+    /// - Parameters:
+    ///     - controllerURL: controller URL (e.g., "https://ctrl.example.com:1280")
+    ///     - provider: optional provider name to use for ext-jwt auth. If nil, picks the first
+    ///       provider with `canCertEnroll`. If specified and no matching provider is found, returns an error.
+    ///     - onAuth: called with the OIDC URL the user must open to authenticate
+    ///     - enrollCallback: called with the completed ZitiIdentity (cert, key, ca) or error
+    @objc public static func enrollToCert(controllerURL:String,
+                                          provider:String? = nil,
+                                          onAuth: @escaping (_ url:String) -> Void,
+                                          _ enrollCallback: @escaping EnrollmentCallback) {
+        bootstrap(controllerURL: controllerURL) { zid, zErr in
+            guard let zid = zid else {
+                enrollCallback(nil, zErr)
+                return
+            }
+
+            // Create Ziti instance and wire up enrollToCert flow
+            let ziti = Ziti(withId: zid)
+
+            // Create keychain key on demand when C SDK requests it during cert enrollment
+            // (after successful OIDC auth, not before)
+            ziti.enrollKeyCallback = { _ in
+                let zkc = ZitiKeychain(tag: zid.id)
+                _ = zkc.deleteKeyPair(silent: true)
+                guard let privKey = zkc.createPrivateKey() else {
+                    log.error("unable to generate private key", function:"enrollToCert()")
+                    return nil
+                }
+                return zkc.getKeyPEM(privKey)
+            }
+
+            // Listen for auth and config events
+            ziti.registerEventCallback({ event in
+                guard let event = event, let ziti = event.ziti else { return }
+                log.info("enrollToCert event: \(event.type.debug)", function:"enrollToCert()")
+
+                if event.type == .Auth, let authEvent = event.authEvent {
+                    let providerInfo = authEvent.providers.map { "\($0.name)(canCertEnroll=\($0.canCertEnroll))" }.joined(separator: ", ")
+                    log.info("enrollToCert auth action=\(authEvent.action.debug) type=\(authEvent.type) detail=\(authEvent.detail) providers=[\(providerInfo)]", function:"enrollToCert()")
+                    switch authEvent.action {
+                    case .SelectExternal:
+                        // Find a provider with canCertEnroll
+                        let selected: ZitiEvent.JwtSigner?
+                        if let providerName = provider {
+                            selected = authEvent.providers.first(where: {
+                                $0.name == providerName && $0.canCertEnroll
+                            })
+                            if selected == nil {
+                                ziti.shutdown()
+                                enrollCallback(nil, ZitiError(
+                                    "provider '\(providerName)' not found or does not support enrollToCert"))
+                                return
+                            }
+                        } else {
+                            selected = authEvent.providers.first(where: { $0.canCertEnroll })
+                            if selected == nil {
+                                ziti.shutdown()
+                                enrollCallback(nil, ZitiError(
+                                    "no providers with enrollToCert support found"))
+                                return
+                            }
+                        }
+                        let providerName = selected!.name
+                        log.info("enrollToCert selecting provider: \(providerName)", function:"enrollToCert()")
+                        // Schedule on next loop iteration to avoid deadlock with eventCallbacksLock
+                        ziti.perform {
+                            ziti.extAuth(providerName) { _, url, _ in
+                                log.info("enrollToCert extAuth URL: \(url)", function:"enrollToCert()")
+                                onAuth(url)
+                            }
+                        }
+
+                    case .LoginExternal:
+                        onAuth(authEvent.detail)
+
+                    default:
+                        break
+                    }
+                }
+
+                if event.type == .ConfigEvent, let cfgEvent = event.configEvent {
+                    // cert is stored in keychain and identity updated by onEvent already
+                    if !cfgEvent.cert.isEmpty {
+                        ziti.shutdown()
+                        enrollCallback(ziti.id, nil)
+                    }
+                }
+            }, ZitiEvent.EventType.Auth.rawValue | ZitiEvent.EventType.ConfigEvent.rawValue)
+
+            // Listen for all events to aid debugging
+            ziti.registerEventCallback({ event in
+                guard let event = event else { return }
+                log.info("enrollToCert context event: \(event.type.debug) \(event.contextEvent?.err ?? "") status=\(event.contextEvent?.status ?? 0)", function:"enrollToCert()")
+            }, ZitiEvent.EventType.Context.rawValue)
+
+            // Run context on background thread
+            ziti.runAsync { zErr in
+                log.info("enrollToCert initCallback, error=\(String(describing: zErr))", function:"enrollToCert()")
+                if let zErr = zErr {
+                    enrollCallback(nil, zErr)
+                    return
+                }
+                // Register the callback with the C SDK now that ztx exists
+                ziti.setEnrollKeyCallback(ziti.enrollKeyCallback)
+            }
+        }
+    }
+
     // MARK: Ziti Operational Methods
 
     /// Convienience method for calling `run(_:_)` with `nil` posture check support

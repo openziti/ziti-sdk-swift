@@ -16,6 +16,8 @@ limitations under the License.
 import Foundation
 import CZiti
 
+ZitiLog.setLogLevel(.INFO)
+
 let args = CommandLine.arguments
 let nm = URL(fileURLWithPath: args[0]).lastPathComponent
 
@@ -97,10 +99,12 @@ func trustCaIfNeeded(_ zid:ZitiIdentity) {
 }
 
 if isUrlMode {
-    // Bootstrap with controller URL (for enrollToCert)
-    Ziti.bootstrap(controllerURL: urlStr!) { zid, zErr in
+    // Full enrollToCert flow via controller URL
+    Ziti.enrollToCert(controllerURL: urlStr!, onAuth: { url in
+        print("Authenticate at: \(url)")
+    }) { zid, zErr in
         guard let zid = zid else {
-            fputs("Bootstrap failed, \(String(describing: zErr))\n", stderr)
+            fputs("EnrollToCert failed, \(String(describing: zErr))\n", stderr)
             exit(-1)
         }
         guard zid.save(outFile!) else {
@@ -108,12 +112,11 @@ if isUrlMode {
             exit(-1)
         }
 
-        print("Successfully bootstrapped with controller \"\(zid.ztAPI)\"")
-        print("Identity saved to \(outFile!)")
-        print("Run this identity to complete enrollToCert via ext-jwt auth")
+        print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
 
         trustCaIfNeeded(zid)
     }
+    dispatchMain()
 } else {
     // Enroll with JWT file
     Ziti.enroll(jwtFile!) { zid, zErr in
