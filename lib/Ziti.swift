@@ -399,7 +399,7 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
 
-            let zid = ZitiIdentity(id: controllerURL, ztAPIs: resp.ztAPIs, ca: ca)
+            let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Enrolled id:\(zid.id) with controller: \(zid.ztAPI)", function:"enroll()")
 
             if let onAuth = onAuth {
@@ -444,9 +444,7 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
 
-            // Use first controller URL as identity ID
-            let idStr = resp.ztAPIs.first ?? jwtFile
-            let zid = ZitiIdentity(id: idStr, ztAPIs: resp.ztAPIs, ca: ca)
+            let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Network JWT enrolled, controller: \(zid.ztAPI)", function:"enrollToCert()")
 
             runEnrollToCert(zid: zid, provider: provider, onAuth: onAuth, enrollCallback)
