@@ -290,30 +290,47 @@ import CZitiPrivate
     ///      - error: `ZitiError` containing error information on failed enrollment attempt
     public typealias EnrollmentCallback = (_ zid:ZitiIdentity?, _ error:ZitiError?) -> Void
     
-    /// Enroll a Ziti identity using a JWT file
+    /// Enroll a Ziti identity using a JWT file.
     ///
-    /// Enrollment consists of parsing the JWT to determine controller address, verifying the given JWT was signed with the controller's public key,
-    /// downloading the CA chain from the controller (to be used as part of establishing trust in future interactions with the controller), generating a
-    /// private key (stored in the Keychain), creating a Certificate Signing Request (CSR), sending the CSR to the controller and receiving our signed
-    /// certificate.  This certificate is stored in the Keychain and required for future interactions with the controller.
-    ///
-    /// A `ZitiIdentity` is passed back in the `EnrollmentCallback` that can be stored and using to create an instance of `Ziti`
+    /// The C SDK auto-detects the JWT type from the `em` claim:
+    /// - **OTT/OTTCA/CA**: Standard enrollment. Generates a keychain key, creates a CSR,
+    ///   and receives a signed certificate. `onAuth` is ignored.
+    /// - **Network JWT**: Bootstrap enrollment (CA + controller URL). If `onAuth` is provided,
+    ///   runs the full enrollToCert flow (OIDC auth, key creation, cert issuance). If `onAuth`
+    ///   is nil, returns an error.
     ///
     /// - Parameters:
-    ///      - jwtFile:  file containing one-time JWT token for enrollment
-    ///      - cb: callback called indicating status of enrollment attempt
-    @objc public static func enroll( _ jwtFile:String, _ enrollCallback: @escaping EnrollmentCallback) {
+    ///      - jwtFile: file containing the JWT token
+    ///      - onAuth: optional callback for the OIDC URL (required for network JWTs, ignored for OTT)
+    ///      - enrollCallback: callback called indicating status of enrollment attempt
+    @objc public static func enroll(_ jwtFile:String,
+                                    onAuth: ((_ url:String) -> Void)? = nil,
+                                    _ enrollCallback: @escaping EnrollmentCallback) {
         let enroller = ZitiEnroller(jwtFile)
-        guard let subj = enroller.getSubj() else {
-            let errStr = "unable to extract sub from JWT"
+        guard let claims = enroller.getClaims() else {
+            let errStr = "unable to parse JWT file"
             log.error(errStr, function:"enroll()")
             enrollCallback(nil, ZitiError(errStr))
             return
         }
-        
+
+        if claims.em == "network" {
+            guard let onAuth = onAuth else {
+                let errStr = "network JWT requires onAuth callback - use enroll(jwtFile, onAuth:, cb:)"
+                log.error(errStr, function:"enroll()")
+                enrollCallback(nil, ZitiError(errStr))
+                return
+            }
+            enrollToCert(jwtFile: jwtFile, onAuth: onAuth, enrollCallback)
+            return
+        }
+
+        // OTT/OTTCA/CA enrollment
+        let subj = claims.sub
+
         // Create private key
         let zkc = ZitiKeychain(tag: subj)
-        _ = zkc.deleteKeyPair(silent:true) // certain failure/retry scenarios can cause the key & cert to already exist
+        _ = zkc.deleteKeyPair(silent:true)
         guard let privKey = zkc.createPrivateKey() else {
             let errStr = "unable to generate private key"
             log.error(errStr, function:"enroll()")
@@ -321,7 +338,7 @@ import CZitiPrivate
             return
         }
         let pem = zkc.getKeyPEM(privKey)
-        
+
         // Enroll
         enroller.enroll(privatePem: pem) { resp, _, zErr in
             guard let resp = resp, zErr == nil else {
@@ -329,7 +346,7 @@ import CZitiPrivate
                 enrollCallback(nil, zErr)
                 return
             }
-            
+
             // Store certificates
             guard let respCert = resp.id.cert else {
                 let errStr = "enrollment response missing certificate"
@@ -337,66 +354,87 @@ import CZitiPrivate
                 enrollCallback(nil, ZitiError(errStr))
                 return
             }
-            
+
             let certs = dropFirst("pem:", respCert)
             _ = zkc.deleteCertificate(silent: true)
-            // storeCertificate only stores the first (leaf) certificate in the pem. that's ok - the full chain of certs is stored in the .zid
-            // file. only the leaf/pubkey needs to be in the keychain.
             guard zkc.storeCertificate(fromPem: certs) == nil else {
                 let errStr = "Unable to store certificate\n"
                 log.error(errStr, function:"enroll()")
                 enrollCallback(nil, ZitiError(errStr))
                 return
             }
-            
-            // Grab CA if specified
+
             var ca = resp.id.ca
             if let idCa = resp.id.ca {
                 ca = dropFirst("pem:", idCa)
             }
-            
+
             let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
-            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI), cert: \(respCert)", function:"enroll()")
-            
+            log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
+
             enrollCallback(zid, nil)
         }
     }
-    
-    @objc public static func enroll(controllerURL:String, _ enrollCallback: @escaping EnrollmentCallback) {
+
+    /// Enroll using a controller URL. Requires the controller to have a publicly-trusted
+    /// TLS certificate. For private CA controllers, use a network JWT instead.
+    ///
+    /// - Parameters:
+    ///     - controllerURL: controller URL (e.g., "https://ctrl.example.com:1280")
+    ///     - onAuth: optional callback for the OIDC URL. If provided, runs the full enrollToCert
+    ///       flow after the initial enrollment.
+    ///     - enrollCallback: callback with the enrollment result
+    @objc public static func enroll(controllerURL:String,
+                                    onAuth: ((_ url:String) -> Void)? = nil,
+                                    _ enrollCallback: @escaping EnrollmentCallback) {
         ZitiEnroller.enroll(url: controllerURL) { resp, _, zErr in
             guard let resp = resp, zErr == nil else {
                 log.error(String(describing: zErr), function:"enroll()")
                 enrollCallback(nil, zErr)
                 return
             }
-            
-            // Grab CA if specified
+
             var ca = resp.id.ca
             if let idCa = resp.id.ca {
                 ca = dropFirst("pem:", idCa)
             }
-            
+
             let zid = ZitiIdentity(id: controllerURL, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Enrolled id:\(zid.id) with controller: \(zid.ztAPI)", function:"enroll()")
-            
-            enrollCallback(zid, nil)
+
+            if let onAuth = onAuth {
+                runEnrollToCert(zid: zid, provider: nil, onAuth: onAuth, enrollCallback)
+            } else {
+                enrollCallback(zid, nil)
+            }
         }
     }
-    
-    /// Bootstrap trust with a controller URL for enrollToCert flows.
-    ///
-    /// Fetches only the CA bundle from the controller. No identity is created and no auth
-    /// policy is selected. After bootstrapping, create a `Ziti` instance from the returned
-    /// `ZitiIdentity`, set `setEnrollKeyCallback`, and run the context. The ext-jwt auth
-    /// flow and certificate enrollment happen automatically in the context lifecycle.
+
+    /// End-to-end enrollToCert using a network JWT file. The C SDK uses the JWT for trust
+    /// bootstrapping (private CA support), then runs a context for OIDC auth and cert enrollment.
     ///
     /// - Parameters:
-    ///     - controllerURL: controller URL (e.g., "https://ctrl.example.com:1280")
-    ///     - enrollCallback: callback with bootstrapped `ZitiIdentity` (CA + controller URL only)
-    @objc public static func bootstrap(controllerURL:String, _ enrollCallback: @escaping EnrollmentCallback) {
-        ZitiEnroller.bootstrap(url: controllerURL) { resp, _, zErr in
+    ///     - jwtFile: file containing a network JWT
+    ///     - provider: optional provider name. If nil, picks first with canCertEnroll.
+    ///     - onAuth: called with the OIDC URL the user must open to authenticate
+    ///     - enrollCallback: called with the completed ZitiIdentity or error
+    @objc public static func enrollToCert(jwtFile:String,
+                                          provider:String? = nil,
+                                          onAuth: @escaping (_ url:String) -> Void,
+                                          _ enrollCallback: @escaping EnrollmentCallback) {
+        let jwtContent: String
+        do {
+            jwtContent = try String(contentsOfFile: jwtFile, encoding: .utf8)
+        } catch {
+            let errStr = "unable to read JWT file: \(error.localizedDescription)"
+            log.error(errStr, function:"enrollToCert()")
+            enrollCallback(nil, ZitiError(errStr))
+            return
+        }
+
+        ZitiEnroller.enroll(jwtContent: jwtContent) { resp, _, zErr in
             guard let resp = resp, zErr == nil else {
-                log.error(String(describing: zErr), function:"bootstrap()")
+                log.error(String(describing: zErr), function:"enrollToCert()")
                 enrollCallback(nil, zErr)
                 return
             }
@@ -406,121 +444,116 @@ import CZitiPrivate
                 ca = dropFirst("pem:", idCa)
             }
 
-            let zid = ZitiIdentity(id: controllerURL, ztAPIs: resp.ztAPIs, ca: ca)
-            log.info("Bootstrapped controller: \(zid.ztAPI)", function:"bootstrap()")
+            // Use first controller URL as identity ID
+            let idStr = resp.ztAPIs.first ?? jwtFile
+            let zid = ZitiIdentity(id: idStr, ztAPIs: resp.ztAPIs, ca: ca)
+            log.info("Network JWT enrolled, controller: \(zid.ztAPI)", function:"enrollToCert()")
 
-            enrollCallback(zid, nil)
+            runEnrollToCert(zid: zid, provider: provider, onAuth: onAuth, enrollCallback)
         }
     }
 
-    /// End-to-end enrollToCert: bootstrap, run context, handle ext-jwt auth, create keychain
-    /// key on demand, wait for certificate, and return a completed ZitiIdentity.
+    /// End-to-end enrollToCert using a controller URL. Requires public CA on the controller.
     ///
     /// - Parameters:
     ///     - controllerURL: controller URL (e.g., "https://ctrl.example.com:1280")
-    ///     - provider: optional provider name to use for ext-jwt auth. If nil, picks the first
-    ///       provider with `canCertEnroll`. If specified and no matching provider is found, returns an error.
+    ///     - provider: optional provider name. If nil, picks first with canCertEnroll.
     ///     - onAuth: called with the OIDC URL the user must open to authenticate
-    ///     - enrollCallback: called with the completed ZitiIdentity (cert, key, ca) or error
+    ///     - enrollCallback: called with the completed ZitiIdentity or error
     @objc public static func enrollToCert(controllerURL:String,
                                           provider:String? = nil,
                                           onAuth: @escaping (_ url:String) -> Void,
                                           _ enrollCallback: @escaping EnrollmentCallback) {
-        bootstrap(controllerURL: controllerURL) { zid, zErr in
-            guard let zid = zid else {
+        enroll(controllerURL: controllerURL, onAuth: onAuth, enrollCallback)
+    }
+
+    /// Internal: run the enrollToCert context lifecycle after initial enrollment/bootstrap.
+    /// Creates a Ziti context, sets up keychain key callback, handles ext-jwt auth events,
+    /// waits for certificate, and returns the completed identity.
+    private static func runEnrollToCert(zid:ZitiIdentity,
+                                        provider:String? = nil,
+                                        onAuth: @escaping (_ url:String) -> Void,
+                                        _ enrollCallback: @escaping EnrollmentCallback) {
+        let ziti = Ziti(withId: zid)
+
+        // Create keychain key on demand when C SDK requests it during cert enrollment
+        ziti.enrollKeyCallback = { _ in
+            let zkc = ZitiKeychain(tag: zid.id)
+            _ = zkc.deleteKeyPair(silent: true)
+            guard let privKey = zkc.createPrivateKey() else {
+                log.error("unable to generate private key", function:"enrollToCert()")
+                return nil
+            }
+            return zkc.getKeyPEM(privKey)
+        }
+
+        // Listen for auth and config events
+        ziti.registerEventCallback({ event in
+            guard let event = event, let ziti = event.ziti else { return }
+            log.info("enrollToCert event: \(event.type.debug)", function:"enrollToCert()")
+
+            if event.type == .Auth, let authEvent = event.authEvent {
+                let providerInfo = authEvent.providers.map { "\($0.name)(canCertEnroll=\($0.canCertEnroll))" }.joined(separator: ", ")
+                log.info("enrollToCert auth action=\(authEvent.action.debug) type=\(authEvent.type) detail=\(authEvent.detail) providers=[\(providerInfo)]", function:"enrollToCert()")
+                switch authEvent.action {
+                case .SelectExternal:
+                    let selected: ZitiEvent.JwtSigner?
+                    if let providerName = provider {
+                        selected = authEvent.providers.first(where: {
+                            $0.name == providerName && $0.canCertEnroll
+                        })
+                        if selected == nil {
+                            ziti.shutdown()
+                            enrollCallback(nil, ZitiError(
+                                "provider '\(providerName)' not found or does not support enrollToCert"))
+                            return
+                        }
+                    } else {
+                        selected = authEvent.providers.first(where: { $0.canCertEnroll })
+                        if selected == nil {
+                            ziti.shutdown()
+                            enrollCallback(nil, ZitiError(
+                                "no providers with enrollToCert support found"))
+                            return
+                        }
+                    }
+                    let providerName = selected!.name
+                    log.info("enrollToCert selecting provider: \(providerName)", function:"enrollToCert()")
+                    ziti.perform {
+                        ziti.extAuth(providerName) { _, url, _ in
+                            log.info("enrollToCert extAuth URL: \(url)", function:"enrollToCert()")
+                            onAuth(url)
+                        }
+                    }
+
+                case .LoginExternal:
+                    onAuth(authEvent.detail)
+
+                default:
+                    break
+                }
+            }
+
+            if event.type == .ConfigEvent, let cfgEvent = event.configEvent {
+                if !cfgEvent.cert.isEmpty {
+                    ziti.shutdown()
+                    enrollCallback(ziti.id, nil)
+                }
+            }
+        }, ZitiEvent.EventType.Auth.rawValue | ZitiEvent.EventType.ConfigEvent.rawValue)
+
+        ziti.registerEventCallback({ event in
+            guard let event = event else { return }
+            log.info("enrollToCert context event: \(event.type.debug) \(event.contextEvent?.err ?? "") status=\(event.contextEvent?.status ?? 0)", function:"enrollToCert()")
+        }, ZitiEvent.EventType.Context.rawValue)
+
+        ziti.runAsync { zErr in
+            log.info("enrollToCert initCallback, error=\(String(describing: zErr))", function:"enrollToCert()")
+            if let zErr = zErr {
                 enrollCallback(nil, zErr)
                 return
             }
-
-            // Create Ziti instance and wire up enrollToCert flow
-            let ziti = Ziti(withId: zid)
-
-            // Create keychain key on demand when C SDK requests it during cert enrollment
-            // (after successful OIDC auth, not before)
-            ziti.enrollKeyCallback = { _ in
-                let zkc = ZitiKeychain(tag: zid.id)
-                _ = zkc.deleteKeyPair(silent: true)
-                guard let privKey = zkc.createPrivateKey() else {
-                    log.error("unable to generate private key", function:"enrollToCert()")
-                    return nil
-                }
-                return zkc.getKeyPEM(privKey)
-            }
-
-            // Listen for auth and config events
-            ziti.registerEventCallback({ event in
-                guard let event = event, let ziti = event.ziti else { return }
-                log.info("enrollToCert event: \(event.type.debug)", function:"enrollToCert()")
-
-                if event.type == .Auth, let authEvent = event.authEvent {
-                    let providerInfo = authEvent.providers.map { "\($0.name)(canCertEnroll=\($0.canCertEnroll))" }.joined(separator: ", ")
-                    log.info("enrollToCert auth action=\(authEvent.action.debug) type=\(authEvent.type) detail=\(authEvent.detail) providers=[\(providerInfo)]", function:"enrollToCert()")
-                    switch authEvent.action {
-                    case .SelectExternal:
-                        // Find a provider with canCertEnroll
-                        let selected: ZitiEvent.JwtSigner?
-                        if let providerName = provider {
-                            selected = authEvent.providers.first(where: {
-                                $0.name == providerName && $0.canCertEnroll
-                            })
-                            if selected == nil {
-                                ziti.shutdown()
-                                enrollCallback(nil, ZitiError(
-                                    "provider '\(providerName)' not found or does not support enrollToCert"))
-                                return
-                            }
-                        } else {
-                            selected = authEvent.providers.first(where: { $0.canCertEnroll })
-                            if selected == nil {
-                                ziti.shutdown()
-                                enrollCallback(nil, ZitiError(
-                                    "no providers with enrollToCert support found"))
-                                return
-                            }
-                        }
-                        let providerName = selected!.name
-                        log.info("enrollToCert selecting provider: \(providerName)", function:"enrollToCert()")
-                        // Schedule on next loop iteration to avoid deadlock with eventCallbacksLock
-                        ziti.perform {
-                            ziti.extAuth(providerName) { _, url, _ in
-                                log.info("enrollToCert extAuth URL: \(url)", function:"enrollToCert()")
-                                onAuth(url)
-                            }
-                        }
-
-                    case .LoginExternal:
-                        onAuth(authEvent.detail)
-
-                    default:
-                        break
-                    }
-                }
-
-                if event.type == .ConfigEvent, let cfgEvent = event.configEvent {
-                    // cert is stored in keychain and identity updated by onEvent already
-                    if !cfgEvent.cert.isEmpty {
-                        ziti.shutdown()
-                        enrollCallback(ziti.id, nil)
-                    }
-                }
-            }, ZitiEvent.EventType.Auth.rawValue | ZitiEvent.EventType.ConfigEvent.rawValue)
-
-            // Listen for all events to aid debugging
-            ziti.registerEventCallback({ event in
-                guard let event = event else { return }
-                log.info("enrollToCert context event: \(event.type.debug) \(event.contextEvent?.err ?? "") status=\(event.contextEvent?.status ?? 0)", function:"enrollToCert()")
-            }, ZitiEvent.EventType.Context.rawValue)
-
-            // Run context on background thread
-            ziti.runAsync { zErr in
-                log.info("enrollToCert initCallback, error=\(String(describing: zErr))", function:"enrollToCert()")
-                if let zErr = zErr {
-                    enrollCallback(nil, zErr)
-                    return
-                }
-                // Register the callback with the C SDK now that ztx exists
-                ziti.setEnrollKeyCallback(ziti.enrollKeyCallback)
-            }
+            ziti.setEnrollKeyCallback(ziti.enrollKeyCallback)
         }
     }
 

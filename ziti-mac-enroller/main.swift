@@ -23,8 +23,8 @@ let nm = URL(fileURLWithPath: args[0]).lastPathComponent
 
 func usage() {
     print("Usage:")
-    print("  \(nm) file.jwt out.zid [--trustca]       Enroll with JWT")
-    print("  \(nm) --url <url> out.zid [--trustca]     Bootstrap with controller URL")
+    print("  \(nm) file.jwt out.zid [--trustca]       Enroll with JWT (OTT or network)")
+    print("  \(nm) --url <url> out.zid [--trustca]     Enroll with controller URL (public CA)")
 }
 
 // Parse --url mode vs JWT mode
@@ -99,7 +99,7 @@ func trustCaIfNeeded(_ zid:ZitiIdentity) {
 }
 
 if isUrlMode {
-    // Full enrollToCert flow via controller URL
+    // EnrollToCert via controller URL (requires public CA)
     Ziti.enrollToCert(controllerURL: urlStr!, onAuth: { url in
         print("Authenticate at: \(url)")
     }) { zid, zErr in
@@ -118,10 +118,12 @@ if isUrlMode {
     }
     dispatchMain()
 } else {
-    // Enroll with JWT file
-    Ziti.enroll(jwtFile!) { zid, zErr in
+    // Enroll with JWT - handles both OTT and network JWTs
+    Ziti.enroll(jwtFile!, onAuth: { url in
+        print("Authenticate at: \(url)")
+    }) { zid, zErr in
         guard let zid = zid else {
-            fputs("Invalid enrollment response, \(String(describing: zErr))\n", stderr)
+            fputs("Enrollment failed, \(String(describing: zErr))\n", stderr)
             exit(-1)
         }
         guard zid.save(outFile!) else {
@@ -133,4 +135,5 @@ if isUrlMode {
 
         trustCaIfNeeded(zid)
     }
+    dispatchMain()
 }

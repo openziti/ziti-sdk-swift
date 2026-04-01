@@ -124,7 +124,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         
         tunneler_opts = UnsafeMutablePointer<tunneler_sdk_options>.allocate(capacity: 1)
         tunneler_opts.initialize(to: tunneler_sdk_options(
-            netif_driver: self.netifDriver.open(),
+            l3_netif_driver: self.netifDriver.open(),
+            l2_netif_driver: nil,
             ziti_dial: ziti_sdk_c_dial,
             ziti_close: ziti_sdk_c_close,
             ziti_close_write: ziti_sdk_c_close_write,
