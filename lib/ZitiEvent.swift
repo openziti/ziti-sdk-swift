@@ -168,21 +168,21 @@ import CZitiPrivate
     /// Enumeration of possible authentication actions
     @objc public enum AuthAction : UInt32 {
         /// Authentication flow is stuck, most likely due to (external auth) configuration
-        case CannotContinue
-        
+        case CannotContinue = 0
+
         /// Request for MFA code
-        case PromptTotp
-             
+        case PromptTotp = 1
+
         /// Request for HSM/TPM key pin (not yet implemented)
-        case PromptPin
-             
-        /// Request for app to select an external auth provider from [providers] list, then call `extAuth(provider:)`
-        case SelectExternal
+        case PromptPin = 2
 
         /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
-        case LoginExternal
+        case LoginExternal = 3
 
-        case Unknown
+        case Unknown = 4
+
+        /// Request for app to select an external auth provider from [providers] list, then call `extAuth(provider:)`
+        case SelectExternal = 5
 
         init(_ action:ziti_auth_action) {
             switch action {

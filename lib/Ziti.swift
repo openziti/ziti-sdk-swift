@@ -527,6 +527,12 @@ import CZitiPrivate
                 case .LoginExternal:
                     onAuth(authEvent.detail)
 
+                case .CannotContinue:
+                    let detail = authEvent.detail.isEmpty ? "authentication cannot continue" : authEvent.detail
+                    log.error("enrollToCert: \(detail)", function:"enrollToCert()")
+                    ziti.shutdown()
+                    enrollCallback(nil, ZitiError(detail))
+
                 default:
                     break
                 }
@@ -540,9 +546,16 @@ import CZitiPrivate
             }
         }, ZitiEvent.EventType.Auth.rawValue | ZitiEvent.EventType.ConfigEvent.rawValue)
 
+        // Propagate context errors to the caller
         ziti.registerEventCallback({ event in
-            guard let event = event else { return }
+            guard let event = event, let ziti = event.ziti else { return }
             log.info("enrollToCert context event: \(event.type.debug) \(event.contextEvent?.err ?? "") status=\(event.contextEvent?.status ?? 0)", function:"enrollToCert()")
+            if let ctxEvent = event.contextEvent, ctxEvent.status != 0 {
+                let errMsg = ctxEvent.err ?? "context error (status \(ctxEvent.status))"
+                log.error("enrollToCert context failed: \(errMsg)", function:"enrollToCert()")
+                ziti.shutdown()
+                enrollCallback(nil, ZitiError(errMsg, errorCode: Int(ctxEvent.status)))
+            }
         }, ZitiEvent.EventType.Context.rawValue)
 
         ziti.runAsync { zErr in
