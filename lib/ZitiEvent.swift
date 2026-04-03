@@ -235,11 +235,15 @@ import CZitiPrivate
         /// Whether this signer supports enrollToCert
         @objc public let canCertEnroll:Bool
 
+        /// Whether this signer supports enrollToToken
+        @objc public let canTokenEnroll:Bool
+
         init(_ cSigner:UnsafeMutablePointer<ziti_jwt_signer>) {
             id = cSigner.pointee.id != nil ? String(cString: cSigner.pointee.id) : ""
             name = cSigner.pointee.name != nil ? String(cString: cSigner.pointee.name) : ""
             enabled = cSigner.pointee.enabled
             canCertEnroll = cSigner.pointee.can_cert_enroll
+            canTokenEnroll = cSigner.pointee.can_token_enroll
             providerUrl = cSigner.pointee.provider_url != nil ? String(cString: cSigner.pointee.provider_url) : ""
             clientId = cSigner.pointee.client_id != nil ? String(cString: cSigner.pointee.client_id) : ""
             audience = cSigner.pointee.audience != nil ? String(cString: cSigner.pointee.audience) : ""
@@ -266,7 +270,10 @@ import CZitiPrivate
         
         /// The authentication detail
         @objc public var detail:String
-        
+
+        /// Machine-parseable error code from the controller (e.g. "ENROLLMENT_IDENTITY_ALREADY_ENROLLED")
+        @objc public var errorCode:String
+
         /// Authentication providers
         @objc public var providers:Array<JwtSigner>
         
@@ -274,6 +281,7 @@ import CZitiPrivate
             action = AuthAction(cEvent.action)
             type = cEvent.type != nil ? String(cString: cEvent.type) : ""
             detail = cEvent.detail != nil ? String(cString: cEvent.detail) : ""
+            errorCode = cEvent.error_code != nil ? String(cString: cEvent.error_code) : ""
             providers = []
             if var ptr = cEvent.providers {
                 while let signer = ptr.pointee {

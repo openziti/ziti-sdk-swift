@@ -23,30 +23,55 @@ let nm = URL(fileURLWithPath: args[0]).lastPathComponent
 
 func usage() {
     print("Usage:")
-    print("  \(nm) file.jwt out.zid [--trustca]       Enroll with JWT (OTT or network)")
-    print("  \(nm) --url <url> out.zid [--trustca]     Enroll with controller URL (public CA)")
+    print("  \(nm) file.jwt out.zid [--enroll-to cert|token] [--trustca]")
+    print("  \(nm) --url <url> out.zid [--enroll-to cert|token] [--trustca]")
+    print("")
+    print("Options:")
+    print("  --enroll-to cert    enrollToCert (generate CSR, receive client certificate)")
+    print("  --enroll-to token   enrollToToken (auto-create identity, no certificate)")
+    print("  --trustca           trust the CA bundle from enrollment")
 }
 
-// Parse --url mode vs JWT mode
+// Parse arguments
 var isUrlMode = false
 var urlStr:String?
 var jwtFile:String?
 var outFile:String?
 var trustCa = false
+var enrollTo:String?
 
-if CommandLine.argc >= 3 && args[1] == "--url" {
-    isUrlMode = true
-    guard CommandLine.argc >= 4 else { usage(); exit(-1) }
-    urlStr = args[2]
-    outFile = args[3]
-    trustCa = (CommandLine.argc >= 5 && args[4] == "--trustca")
-} else {
-    guard CommandLine.argc >= 3 else { usage(); exit(-1) }
-    jwtFile = args[1]
-    outFile = args[2]
-    if CommandLine.argc == 4 && args[3] != "--trustca" { usage(); exit(-1) }
-    trustCa = (CommandLine.argc == 4)
+var i = 1
+while i < args.count {
+    switch args[i] {
+    case "--url":
+        isUrlMode = true
+        i += 1
+        guard i < args.count else { usage(); exit(-1) }
+        urlStr = args[i]
+    case "--enroll-to":
+        i += 1
+        guard i < args.count else { usage(); exit(-1) }
+        enrollTo = args[i]
+        guard enrollTo == "cert" || enrollTo == "token" else {
+            fputs("Invalid --enroll-to value: \(enrollTo!). Must be 'cert' or 'token'.\n", stderr)
+            exit(-1)
+        }
+    case "--trustca":
+        trustCa = true
+    default:
+        if outFile != nil {
+            usage(); exit(-1)
+        } else if !isUrlMode && jwtFile == nil {
+            jwtFile = args[i]
+        } else {
+            outFile = args[i]
+        }
+    }
+    i += 1
 }
+guard outFile != nil else { usage(); exit(-1) }
+if isUrlMode { guard urlStr != nil else { usage(); exit(-1) } }
+else { guard jwtFile != nil else { usage(); exit(-1) } }
 
 func trustCaIfNeeded(_ zid:ZitiIdentity) {
     guard trustCa, let ca = zid.ca else {
@@ -98,42 +123,40 @@ func trustCaIfNeeded(_ zid:ZitiIdentity) {
     dispatchMain()
 }
 
-if isUrlMode {
-    // EnrollToCert via controller URL (requires public CA)
-    Ziti.enrollToCert(controllerURL: urlStr!, onAuth: { url in
-        print("Authenticate at: \(url)")
-    }) { zid, zErr in
-        guard let zid = zid else {
-            fputs("EnrollToCert failed, \(String(describing: zErr))\n", stderr)
-            exit(-1)
-        }
-        guard zid.save(outFile!) else {
-            fputs("Unable to save to file \(outFile!)\n", stderr)
-            exit(-1)
-        }
-
-        print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
-
-        trustCaIfNeeded(zid)
+let enrollHandler: (ZitiIdentity?, ZitiError?) -> Void = { zid, zErr in
+    guard let zid = zid else {
+        fputs("Enrollment failed, \(String(describing: zErr))\n", stderr)
+        exit(-1)
     }
-    dispatchMain()
-} else {
-    // Enroll with JWT - handles both OTT and network JWTs
-    Ziti.enroll(jwtFile!, onAuth: { url in
-        print("Authenticate at: \(url)")
-    }) { zid, zErr in
-        guard let zid = zid else {
-            fputs("Enrollment failed, \(String(describing: zErr))\n", stderr)
-            exit(-1)
-        }
-        guard zid.save(outFile!) else {
-            fputs("Unable to save to file \(outFile!)\n", stderr)
-            exit(-1)
-        }
-
-        print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
-
-        trustCaIfNeeded(zid)
+    guard zid.save(outFile!) else {
+        fputs("Unable to save to file \(outFile!)\n", stderr)
+        exit(-1)
     }
-    dispatchMain()
+
+    print("Successfully enrolled id \"\(zid.id)\" with controller \"\(zid.ztAPI)\"")
+    trustCaIfNeeded(zid)
 }
+
+let onAuth: (String) -> Void = { url in
+    print("Authenticate at: \(url)")
+}
+
+if isUrlMode {
+    switch enrollTo {
+    case "token":
+        Ziti.enrollToToken(controllerURL: urlStr!, onAuth: onAuth, enrollHandler)
+    default:
+        Ziti.enrollToCert(controllerURL: urlStr!, onAuth: onAuth, enrollHandler)
+    }
+} else {
+    switch enrollTo {
+    case "token":
+        Ziti.enrollToToken(jwtFile: jwtFile!, onAuth: onAuth, enrollHandler)
+    case "cert":
+        Ziti.enrollToCert(jwtFile: jwtFile!, onAuth: onAuth, enrollHandler)
+    default:
+        // Auto-detect: OTT gets standard enrollment, network JWT gets enrollToCert
+        Ziti.enroll(jwtFile!, onAuth: onAuth, enrollHandler)
+    }
+}
+dispatchMain()

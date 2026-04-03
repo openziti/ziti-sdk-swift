@@ -52,7 +52,10 @@ import CZitiPrivate
     
     /// Controller event code
     public var code:Int64
-    
+
+    /// Machine-parseable error code from the controller
+    public var errorCode:String = ""
+
     init(_ ziti:Ziti, _ evt:UnsafePointer<ziti_ctx_event>) {
         self.code = evt.pointee.code
         super.init(ziti)
@@ -60,6 +63,7 @@ import CZitiPrivate
         self.name = toStr(evt.pointee.name)
         self.version = toStr(evt.pointee.version)
         self.controller = toStr(evt.pointee.controller)
+        self.errorCode = toStr(evt.pointee.error_code)
     }
     
     /// Debug description of event
@@ -263,11 +267,13 @@ import CZitiPrivate
     public var name:String = ""
     public var issuer:String = ""
     public var canCertEnroll:Bool = false
+    public var canTokenEnroll:Bool = false
 
     init(provider_c: UnsafeMutablePointer<jwt_provider>) {
         self.name = toStr(provider_c.pointee.name)
         self.issuer = toStr(provider_c.pointee.issuer)
         self.canCertEnroll = provider_c.pointee.can_cert_enroll
+        self.canTokenEnroll = provider_c.pointee.can_token_enroll
     }
 }
 
