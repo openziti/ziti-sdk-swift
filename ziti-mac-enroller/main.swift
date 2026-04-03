@@ -23,13 +23,17 @@ let nm = URL(fileURLWithPath: args[0]).lastPathComponent
 
 func usage() {
     print("Usage:")
-    print("  \(nm) file.jwt out.zid [--enroll-to cert|token] [--trustca]")
-    print("  \(nm) --url <url> out.zid [--enroll-to cert|token] [--trustca]")
+    print("  \(nm) file.jwt out.zid [--enroll-to none|cert|token] [--trustca]")
+    print("  \(nm) --url <url> out.zid [--enroll-to none|cert|token] [--trustca]")
     print("")
     print("Options:")
-    print("  --enroll-to cert    enrollToCert (generate CSR, receive client certificate)")
-    print("  --enroll-to token   enrollToToken (auto-create identity, no certificate)")
+    print("  --enroll-to none    bootstrap only (CA + controller URL, no OIDC)")
+    print("  --enroll-to cert    enrollToCert (OIDC + CSR, receive client certificate)")
+    print("  --enroll-to token   enrollToToken (OIDC, auto-create identity, no certificate)")
     print("  --trustca           trust the CA bundle from enrollment")
+    print("")
+    print("Without --enroll-to, JWT files auto-detect: OTT gets standard enrollment,")
+    print("network JWTs get bootstrap only (same as --enroll-to none).")
 }
 
 // Parse arguments
@@ -52,8 +56,8 @@ while i < args.count {
         i += 1
         guard i < args.count else { usage(); exit(-1) }
         enrollTo = args[i]
-        guard enrollTo == "cert" || enrollTo == "token" else {
-            fputs("Invalid --enroll-to value: \(enrollTo!). Must be 'cert' or 'token'.\n", stderr)
+        guard enrollTo == "none" || enrollTo == "cert" || enrollTo == "token" else {
+            fputs("Invalid --enroll-to value: \(enrollTo!). Must be 'none', 'cert', or 'token'.\n", stderr)
             exit(-1)
         }
     case "--trustca":
@@ -143,20 +147,23 @@ let onAuth: (String) -> Void = { url in
 
 if isUrlMode {
     switch enrollTo {
+    case "cert":
+        Ziti.enrollToCert(controllerURL: urlStr!, onAuth: onAuth, enrollHandler)
     case "token":
         Ziti.enrollToToken(controllerURL: urlStr!, onAuth: onAuth, enrollHandler)
     default:
-        Ziti.enrollToCert(controllerURL: urlStr!, onAuth: onAuth, enrollHandler)
+        // none (or omitted) - bootstrap only
+        Ziti.enroll(controllerURL: urlStr!, enrollHandler)
     }
 } else {
     switch enrollTo {
-    case "token":
-        Ziti.enrollToToken(jwtFile: jwtFile!, onAuth: onAuth, enrollHandler)
     case "cert":
         Ziti.enrollToCert(jwtFile: jwtFile!, onAuth: onAuth, enrollHandler)
+    case "token":
+        Ziti.enrollToToken(jwtFile: jwtFile!, onAuth: onAuth, enrollHandler)
     default:
-        // Auto-detect: OTT gets standard enrollment, network JWT gets enrollToCert
-        Ziti.enroll(jwtFile!, onAuth: onAuth, enrollHandler)
+        // none (or omitted) - OTT auto-detects, network JWT bootstraps
+        Ziti.enroll(jwtFile!, enrollHandler)
     }
 }
 dispatchMain()

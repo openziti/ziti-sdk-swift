@@ -122,6 +122,29 @@ public class ZitiKeychain : NSObject {
         return SecItemDelete(deleteQuery as CFDictionary)
     }
     
+    /// Re-tag the private key from this keychain's tag to a new tag.
+    /// Used after enrollment when the real identity ID replaces a temporary UUID.
+    func retagPrivateKey(to newTag:String) -> ZitiError? {
+        var query: [CFString: Any] = [
+            kSecClass: kSecClassKey,
+            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+            kSecAttrApplicationTag: atag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            query[kSecUseDataProtectionKeychain] = true
+        }
+        let newAtag = newTag.data(using: .utf8)!
+        let update: [CFString: Any] = [
+            kSecAttrApplicationTag: newAtag,
+            kSecAttrLabel: newTag]
+        let status = SecItemUpdate(query as CFDictionary, update as CFDictionary)
+        guard status == errSecSuccess else {
+            let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
+            log.error("Unable to re-tag key from \(tag) to \(newTag): \(errStr)")
+            return ZitiError("Unable to re-tag key: \(errStr)", errorCode: Int(status))
+        }
+        return nil
+    }
+
     func deleteKeyPair(silent:Bool=false) -> ZitiError? {
         _ = deleteKey(kSecAttrKeyClassPublic)
         let status = deleteKey(kSecAttrKeyClassPrivate)
