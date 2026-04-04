@@ -656,10 +656,13 @@ import CZitiPrivate
 
                 case .CannotContinue:
                     completed = true
-                    let detail = authEvent.detail.isEmpty ? "authentication cannot continue" : authEvent.detail
-                    log.error("queryProviders: \(detail)", function:"runQueryProviders()")
+                    let msg = !authEvent.error.isEmpty ? authEvent.error
+                            : !authEvent.detail.isEmpty ? authEvent.detail
+                            : "authentication cannot continue"
+                    let code = !authEvent.errorCode.isEmpty ? authEvent.errorCode : nil
+                    log.error("queryProviders: \(msg) (errorCode=\(code ?? "nil"))", function:"runQueryProviders()")
                     ziti.shutdown()
-                    cb(nil, ZitiError(detail))
+                    cb(nil, ZitiError(msg, errorCodeString: code))
 
                 default:
                     break
@@ -786,13 +789,24 @@ import CZitiPrivate
                     }
 
                 case .LoginExternal:
-                    onAuth(authEvent.detail)
+                    // detail is just the hostname or signer name, not the full OIDC URL.
+                    // Kick off the OIDC flow to get the real auth URL via the launch callback.
+                    ziti.extAuthStatusCallback = { _, url, _ in
+                        log.info("\(modeLabel) extAuth URL: \(url)", function:"runEnrollTo()")
+                        onAuth(url)
+                    }
+                    ziti.perform {
+                        ziti_ext_auth(ziti.ztx, Ziti.onExtAuthStatus, ziti.toVoidPtr())
+                    }
 
                 case .CannotContinue:
-                    let detail = authEvent.detail.isEmpty ? "authentication cannot continue" : authEvent.detail
-                    log.error("\(modeLabel): \(detail)", function:"runEnrollTo()")
+                    let msg = !authEvent.error.isEmpty ? authEvent.error
+                            : !authEvent.detail.isEmpty ? authEvent.detail
+                            : "authentication cannot continue"
+                    let code = !authEvent.errorCode.isEmpty ? authEvent.errorCode : nil
+                    log.error("\(modeLabel): \(msg) (errorCode=\(code ?? "nil"))", function:"runEnrollTo()")
                     ziti.shutdown()
-                    enrollCallback(nil, ZitiError(detail))
+                    enrollCallback(nil, ZitiError(msg, errorCodeString: code))
 
                 default:
                     break

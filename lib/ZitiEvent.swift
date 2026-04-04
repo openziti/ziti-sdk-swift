@@ -271,6 +271,9 @@ import CZitiPrivate
         /// The authentication detail
         @objc public var detail:String
 
+        /// Error message (set when action is CannotContinue)
+        @objc public var error:String
+
         /// Machine-parseable error code from the controller (e.g. "ENROLLMENT_IDENTITY_ALREADY_ENROLLED")
         @objc public var errorCode:String
 
@@ -281,6 +284,7 @@ import CZitiPrivate
             action = AuthAction(cEvent.action)
             type = cEvent.type != nil ? String(cString: cEvent.type) : ""
             detail = cEvent.detail != nil ? String(cString: cEvent.detail) : ""
+            error = cEvent.error != nil ? String(cString: cEvent.error) : ""
             errorCode = cEvent.error_code != nil ? String(cString: cEvent.error_code) : ""
             providers = []
             if var ptr = cEvent.providers {
