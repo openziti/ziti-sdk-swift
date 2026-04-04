@@ -562,6 +562,154 @@ import CZitiPrivate
         }
     }
 
+    // MARK: - Query Providers
+
+    /// Query available auth providers from a controller using a network JWT file.
+    /// Bootstraps trust via the JWT, spins up a temporary context, waits for the
+    /// provider list, then tears everything down. No identity state is persisted.
+    ///
+    /// - Parameters:
+    ///     - jwtFile: file containing a network JWT
+    ///     - cb: called with the provider list (empty if no ext auth) or error
+    @objc public static func queryProviders(jwtFile:String,
+                                            cb: @escaping (_ providers:[ZitiEvent.JwtSigner]?, _ error:ZitiError?) -> Void) {
+        let jwtContent: String
+        do {
+            jwtContent = try String(contentsOfFile: jwtFile, encoding: .utf8)
+        } catch {
+            let errStr = "unable to read JWT file: \(error.localizedDescription)"
+            log.error(errStr, function:"queryProviders()")
+            cb(nil, ZitiError(errStr))
+            return
+        }
+
+        ZitiEnroller.enroll(jwtContent: jwtContent) { resp, _, zErr in
+            guard let resp = resp, zErr == nil else {
+                log.error(String(describing: zErr), function:"queryProviders()")
+                cb(nil, zErr)
+                return
+            }
+
+            var ca = resp.id.ca
+            if let idCa = resp.id.ca {
+                ca = dropFirst("pem:", idCa)
+            }
+
+            let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
+            log.info("Network JWT enrolled, querying providers from: \(zid.ztAPI)", function:"queryProviders()")
+
+            runQueryProviders(zid: zid, cb: cb)
+        }
+    }
+
+    /// Query available auth providers from a controller URL. Requires public CA.
+    /// Bootstraps trust via the URL, spins up a temporary context, waits for the
+    /// provider list, then tears everything down. No identity state is persisted.
+    ///
+    /// - Parameters:
+    ///     - controllerURL: controller URL (e.g., "https://ctrl.example.com:1280")
+    ///     - cb: called with the provider list (empty if no ext auth) or error
+    @objc public static func queryProviders(controllerURL:String,
+                                            cb: @escaping (_ providers:[ZitiEvent.JwtSigner]?, _ error:ZitiError?) -> Void) {
+        ZitiEnroller.enroll(url: controllerURL) { resp, _, zErr in
+            guard let resp = resp, zErr == nil else {
+                log.error(String(describing: zErr), function:"queryProviders()")
+                cb(nil, zErr)
+                return
+            }
+
+            var ca = resp.id.ca
+            if let idCa = resp.id.ca {
+                ca = dropFirst("pem:", idCa)
+            }
+
+            let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
+            log.info("Querying providers from: \(zid.ztAPI)", function:"queryProviders()")
+
+            runQueryProviders(zid: zid, cb: cb)
+        }
+    }
+
+    /// Internal: spin up a temporary context, wait for provider discovery, then tear down.
+    private static func runQueryProviders(zid:ZitiIdentity,
+                                          cb: @escaping (_ providers:[ZitiEvent.JwtSigner]?, _ error:ZitiError?) -> Void) {
+        let ziti = Ziti(withId: zid)
+        var completed = false
+
+        // Listen for auth events - SelectExternal carries the provider list
+        ziti.registerEventCallback({ event in
+            guard let event = event, let ziti = event.ziti else { return }
+            guard !completed else { return }
+
+            if event.type == .Auth, let authEvent = event.authEvent {
+                let providerInfo = authEvent.providers.map {
+                    "\($0.name)(canCertEnroll=\($0.canCertEnroll), canTokenEnroll=\($0.canTokenEnroll))"
+                }.joined(separator: ", ")
+                log.info("queryProviders auth action=\(authEvent.action.debug) providers=[\(providerInfo)]", function:"runQueryProviders()")
+
+                switch authEvent.action {
+                case .SelectExternal:
+                    completed = true
+                    let providers = authEvent.providers
+                    ziti.shutdown()
+                    cb(providers, nil)
+
+                case .CannotContinue:
+                    completed = true
+                    let detail = authEvent.detail.isEmpty ? "authentication cannot continue" : authEvent.detail
+                    log.error("queryProviders: \(detail)", function:"runQueryProviders()")
+                    ziti.shutdown()
+                    cb(nil, ZitiError(detail))
+
+                default:
+                    break
+                }
+            }
+        }, ZitiEvent.EventType.Auth.rawValue)
+
+        // If context authenticates without SelectExternal, no ext auth is configured
+        ziti.registerEventCallback({ event in
+            guard let event = event, let _ = event.ziti else { return }
+            guard let ctxEvent = event.contextEvent else { return }
+            guard !completed else { return }
+
+            if ctxEvent.status == 0 {
+                log.info("queryProviders: context authenticated without ext auth, no providers", function:"runQueryProviders()")
+                completed = true
+                ziti.shutdown()
+                cb([], nil)
+            } else if ctxEvent.status != 0 {
+                let errMsg = ctxEvent.err ?? "context error (status \(ctxEvent.status))"
+                log.error("queryProviders: \(errMsg)", function:"runQueryProviders()")
+                completed = true
+                ziti.shutdown()
+                cb(nil, ZitiError(errMsg, errorCode: Int(ctxEvent.status)))
+            }
+        }, ZitiEvent.EventType.Context.rawValue)
+
+        ziti.runAsync { zErr in
+            log.info("queryProviders initCallback, error=\(String(describing: zErr))", function:"runQueryProviders()")
+            if let zErr = zErr {
+                guard !completed else { return }
+                completed = true
+                cb(nil, zErr)
+                return
+            }
+            // Start a 15s timeout in case the controller never sends an auth event
+            ziti.startTimer(15000, 0) { timer in
+                guard !completed else {
+                    ziti.endTimer(timer)
+                    return
+                }
+                completed = true
+                log.error("queryProviders: timed out waiting for auth event", function:"runQueryProviders()")
+                ziti.endTimer(timer)
+                ziti.shutdown()
+                cb(nil, ZitiError("timed out waiting for provider discovery"))
+            }
+        }
+    }
+
     /// Internal: run the enrollment context lifecycle after initial enrollment/bootstrap.
     /// Creates a Ziti context, handles ext-jwt auth events, and returns the completed identity.
     /// For cert mode, sets up a keychain key callback and waits for cert.
