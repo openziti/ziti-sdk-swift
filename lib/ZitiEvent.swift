@@ -252,7 +252,7 @@ import CZitiPrivate
             while i != nil {
                 let scopePtr = model_list_it_element(i)
                 if let scope = UnsafeMutablePointer<CChar>(OpaquePointer(scopePtr)) {
-                    scopes?.append(String(scope.pointee))
+                    scopes?.append(String(cString: scope))
                 }
                 i = model_list_it_next(i)
             }
