@@ -70,6 +70,11 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     
     /// Type defintion of callback invoked when all identities have loaded (or timed-out)
     public typealias IdentitiesLoadedCallback = (_ error:ZitiError?) -> Void
+
+    /// Type definition of callback to provide a private key PEM during enrollToCert.
+    /// Return the PEM string on success, or nil to indicate failure.
+    public typealias EnrollKeyCallback = (_ ziti:Ziti) -> String?
+    private var enrollKeyCallback:EnrollKeyCallback?
     
     class RunArgs : NSObject {
         var zids:[ZitiIdentity]
@@ -119,7 +124,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         
         tunneler_opts = UnsafeMutablePointer<tunneler_sdk_options>.allocate(capacity: 1)
         tunneler_opts.initialize(to: tunneler_sdk_options(
-            netif_driver: self.netifDriver.open(),
+            l3_netif_driver: self.netifDriver.open(),
+            l2_netif_driver: nil,
             ziti_dial: ziti_sdk_c_dial,
             ziti_close: ziti_sdk_c_close,
             ziti_close_write: ziti_sdk_c_close_write,
@@ -163,6 +169,22 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         return rc
     }
     
+    /// Set a callback to provide a private key during enrollToCert enrollment.
+    /// Applied to every ziti_context created by the command processor.
+    /// Pass nil to use the SDK's default software key generation.
+    ///
+    /// Should be called before `startZiti` or from the loop thread via `perform(_:)`.
+    /// The underlying C SDK does not synchronize access to these fields.
+    /// - Parameter cb: callback that returns a PEM-encoded private key, or nil
+    public func setEnrollKeyCallback(_ cb: EnrollKeyCallback?) {
+        enrollKeyCallback = cb
+        if cb != nil {
+            ziti_tunnel_set_enroll_key_cb(ZitiTunnel.onEnrollKey, self.toVoidPtr())
+        } else {
+            ziti_tunnel_set_enroll_key_cb(nil, nil)
+        }
+    }
+
     /// Perform on operation on the uv_loop managed by this class
     /// - Parameter op: operation to perform
     public func perform(_ op: @escaping Ziti.PerformCallback) {
@@ -423,6 +445,32 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         return (mask, bits)
     }
     
+    static private let onEnrollKey:ziti_enroll_key_cb = { ztx, key_pem, ctx in
+        guard let mySelf = zitiUnretained(ZitiTunnel.self, ctx) else {
+            log.wtf("invalid context in onEnrollKey")
+            return Int32(ZITI_INVALID_STATE)
+        }
+        guard let ztx = ztx else {
+            log.error("nil ziti_context in onEnrollKey")
+            return Int32(ZITI_INVALID_STATE)
+        }
+
+        // find the Ziti instance for this context
+        let ziti = zitiDict.values.first(where: { $0.ztx == ztx })
+        guard let ziti = ziti else {
+            log.error("unable to find Ziti instance for context in onEnrollKey")
+            return Int32(ZITI_INVALID_STATE)
+        }
+
+        guard let pem = mySelf.enrollKeyCallback?(ziti) else {
+            log.error("enrollKeyCallback returned nil")
+            return Int32(ZITI_KEY_GENERATION_FAILED)
+        }
+
+        key_pem?.pointee = strdup(pem)
+        return Int32(ZITI_OK)
+    }
+
     static private let onLoopKeepAlive:uv_async_cb = { _ in
         // noop
     }

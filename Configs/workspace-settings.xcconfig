@@ -9,4 +9,8 @@ VCPKG_OS[sdk=iphoneos*] = ios
 VCPKG_OS[sdk=iphonesimulator*] = iphonesimulator
 VCPKG_OS[sdk=macosx*] = osx
 
+// Prevent macOS SDK netinet/ip6.h from conflicting with lwip's struct ip6_hdr
+// during Swift module compilation (Xcode 26+)
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) _NETINET_IP6_H_=1
+
 #include? "workspace-settings-overrides.xcconfig"

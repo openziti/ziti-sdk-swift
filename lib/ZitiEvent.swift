@@ -168,39 +168,43 @@ import CZitiPrivate
     /// Enumeration of possible authentication actions
     @objc public enum AuthAction : UInt32 {
         /// Authentication flow is stuck, most likely due to (external auth) configuration
-        case CannotContinue
-        
+        case CannotContinue = 0
+
         /// Request for MFA code
-        case PromptTotp
-             
+        case PromptTotp = 1
+
         /// Request for HSM/TPM key pin (not yet implemented)
-        case PromptPin
-             
+        case PromptPin = 2
+
         /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
-        case LoginExternal
-        
-        case Unknown
-        
+        case LoginExternal = 3
+
+        case Unknown = 4
+
+        /// Request for app to select an external auth provider from [providers] list, then call `extAuth(provider:)`
+        case SelectExternal = 5
+
         init(_ action:ziti_auth_action) {
             switch action {
             case ziti_auth_cannot_continue: self = .CannotContinue
             case ziti_auth_prompt_totp:     self = .PromptTotp
             case ziti_auth_prompt_pin:      self = .PromptPin
+            case ziti_auth_select_external: self = .SelectExternal
             case ziti_auth_login_external:  self = .LoginExternal
-            case ziti_auth_select_external: self = .LoginExternal
             default: self = .Unknown
             }
         }
-        
+
         /// Returns string representation of AuthAction
         public var debug: String {
             switch self {
-            case .CannotContinue: return ".CannotContinue"
-            case .PromptTotp:     return ".PromptTotp"
-            case .PromptPin:      return ".PromptPin"
-            case .LoginExternal:  return ".LoginExternal"
-            case .Unknown:        return ".Unknown"
-            @unknown default:     return "unknown \(self.rawValue)"
+            case .CannotContinue:  return ".CannotContinue"
+            case .PromptTotp:      return ".PromptTotp"
+            case .PromptPin:       return ".PromptPin"
+            case .SelectExternal:  return ".SelectExternal"
+            case .LoginExternal:   return ".LoginExternal"
+            case .Unknown:         return ".Unknown"
+            @unknown default:      return "unknown \(self.rawValue)"
             }
         }
     }
@@ -228,10 +232,18 @@ import CZitiPrivate
         /// Claim
         @objc public var scopes:[String]?
         
+        /// Whether this signer supports enrollToCert
+        @objc public let canCertEnroll:Bool
+
+        /// Whether this signer supports enrollToToken
+        @objc public let canTokenEnroll:Bool
+
         init(_ cSigner:UnsafeMutablePointer<ziti_jwt_signer>) {
             id = cSigner.pointee.id != nil ? String(cString: cSigner.pointee.id) : ""
             name = cSigner.pointee.name != nil ? String(cString: cSigner.pointee.name) : ""
             enabled = cSigner.pointee.enabled
+            canCertEnroll = cSigner.pointee.can_cert_enroll
+            canTokenEnroll = cSigner.pointee.can_token_enroll
             providerUrl = cSigner.pointee.provider_url != nil ? String(cString: cSigner.pointee.provider_url) : ""
             clientId = cSigner.pointee.client_id != nil ? String(cString: cSigner.pointee.client_id) : ""
             audience = cSigner.pointee.audience != nil ? String(cString: cSigner.pointee.audience) : ""
@@ -258,7 +270,13 @@ import CZitiPrivate
         
         /// The authentication detail
         @objc public var detail:String
-        
+
+        /// Error message (set when action is CannotContinue)
+        @objc public var error:String
+
+        /// Machine-parseable error code from the controller (e.g. "ENROLLMENT_IDENTITY_ALREADY_ENROLLED")
+        @objc public var errorCode:String
+
         /// Authentication providers
         @objc public var providers:Array<JwtSigner>
         
@@ -266,7 +284,15 @@ import CZitiPrivate
             action = AuthAction(cEvent.action)
             type = cEvent.type != nil ? String(cString: cEvent.type) : ""
             detail = cEvent.detail != nil ? String(cString: cEvent.detail) : ""
-            providers = [] // todo populate
+            error = cEvent.error != nil ? String(cString: cEvent.error) : ""
+            errorCode = cEvent.error_code != nil ? String(cString: cEvent.error_code) : ""
+            providers = []
+            if var ptr = cEvent.providers {
+                while let signer = ptr.pointee {
+                    providers.append(JwtSigner(signer))
+                    ptr += 1
+                }
+            }
         }
     }
     
@@ -315,7 +341,7 @@ import CZitiPrivate
                 while i != nil {
                     let ctrlPtr = model_list_it_element(i)
                     if let ctrl = UnsafeMutablePointer<CChar>(OpaquePointer(ctrlPtr)) {
-                        ctrlsArray.append(String(ctrl.pointee))
+                        ctrlsArray.append(String(cString: ctrl))
                     }
                     i = model_list_it_next(i)
                 }

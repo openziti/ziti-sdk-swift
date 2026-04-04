@@ -91,11 +91,13 @@ import CZitiPrivate
         var subj:String?
         var enrollmentCallback:EnrollmentCallback?
         var jwtFile_c:UnsafeMutablePointer<Int8>?
+        var jwtContent_c:UnsafeMutablePointer<Int8>?
         var privatePem_c:UnsafeMutablePointer<Int8>?
         var url_c:UnsafeMutablePointer<Int8>?
-        
+
         deinit {
             jwtFile_c?.deallocate()
+            jwtContent_c?.deallocate()
             privatePem_c?.deallocate()
             url_c?.deallocate()
         }
@@ -168,7 +170,7 @@ import CZitiPrivate
         enrollData.pointee.enrollmentCallback = cb
         enrollData.pointee.url_c = UnsafeMutablePointer<Int8>.allocate(capacity: controllerURL.count + 1)
         enrollData.pointee.url_c!.initialize(from: controllerURL.cString(using: .utf8)!, count: controllerURL.count + 1)
-        
+
         var enroll_opts = ziti_enroll_opts(url: enrollData.pointee.url_c, token: nil, key: nil,
                                            cert: nil, name: nil, use_keychain: false)
         let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
@@ -179,7 +181,42 @@ import CZitiPrivate
             return
         }
     }
-    
+
+    /// Enroll using JWT content (not a file path). Used for network JWT enrollment where
+    /// the JWT string is passed directly.
+    static func enroll(withLoop loop:UnsafeMutablePointer<uv_loop_t>?,
+                       jwtContent:String,
+                       cb:@escaping EnrollmentCallback) {
+        let enrollData = UnsafeMutablePointer<EnrollmentRequestData>.allocate(capacity: 1)
+        enrollData.initialize(to: EnrollmentRequestData())
+        enrollData.pointee.enrollmentCallback = cb
+        enrollData.pointee.jwtContent_c = UnsafeMutablePointer<Int8>.allocate(capacity: jwtContent.count + 1)
+        enrollData.pointee.jwtContent_c!.initialize(from: jwtContent.cString(using: .utf8)!, count: jwtContent.count + 1)
+
+        var enroll_opts = ziti_enroll_opts(url: nil, token: enrollData.pointee.jwtContent_c, key: nil,
+                                           cert: nil, name: nil, use_keychain: false)
+        let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
+        guard status == ZITI_OK else {
+            let errStr = String(cString: ziti_errorstr(status))
+            log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
+            return
+        }
+    }
+
+    /// Enroll using JWT content string.
+    @objc public static func enroll(jwtContent:String, cb:@escaping EnrollmentCallback) {
+        self.enroll(withLoop: ZitiEnroller.loop, jwtContent: jwtContent, cb: cb)
+
+        let runStatus = uv_run(ZitiEnroller.loop, UV_RUN_DEFAULT)
+        guard runStatus == 0 else {
+            let errStr = String(cString: uv_strerror(runStatus))
+            log.error(errStr)
+            cb(nil, nil, ZitiError(errStr, errorCode: Int(runStatus)))
+            return
+        }
+    }
+
     @objc public static func enroll(url:String, cb:@escaping EnrollmentCallback) {
         // test the connection to avoid assertion in ziti-sdk-c/libuv
         guard let ctrlUrl = URL(string: url) else {
@@ -197,7 +234,7 @@ import CZitiPrivate
         }
 
         self.enroll(withLoop: ZitiEnroller.loop, controllerURL: url, cb: cb)
-        
+
         let runStatus = uv_run(ZitiEnroller.loop, UV_RUN_DEFAULT)
         guard runStatus == 0 else {
             let errStr = String(cString: uv_strerror(runStatus))
@@ -206,7 +243,7 @@ import CZitiPrivate
             return
         }
     }
-    
+
     /**
      * Extract the sub (id) field from JWT file
      */
@@ -289,22 +326,27 @@ import CZitiPrivate
                 i = model_list_it_next(i)
             }
         }
-        guard let ztAPI = String(cString: zc.controller_url, encoding: .utf8) else {
-            let errStr = "Invaid ztAPI response"
+        // controller_url may be nil for bootstrap-only enrollment (ziti_enroll_url)
+        if zc.controller_url != nil {
+            if let ztAPI = String(cString: zc.controller_url, encoding: .utf8) {
+                if !controllers.contains(ztAPI) {
+                    controllers.insert(ztAPI, at: 0)
+                }
+            }
+        }
+        guard !controllers.isEmpty else {
+            let errStr = "No controller URLs in enrollment response"
             log.error(errStr, function:"on_enroll()")
             let ze = ZitiError(errStr, errorCode: -1)
             enrollData.pointee.enrollmentCallback?(nil, nil, ze)
             return
         }
-        
+
         let cert:String? = zc.id.cert != nil ? String(cString: zc.id.cert, encoding: .utf8)! : nil
         let key:String? = zc.id.key != nil ? String(cString: zc.id.key, encoding: .utf8)! : nil
         let ca:String? = zc.id.ca != nil ? String(cString: zc.id.ca, encoding: .utf8)! : nil
-        
+
         let id = EnrollmentResponse.Identity(cert: cert, key: key, ca: ca)
-        //let id = EnrollmentResponse.Identity(cert: cert,
-        //                                     key: String(cString: zc.id.key, encoding: .utf8),
-        //                                     ca: String(cString: zc.id.ca, encoding: .utf8))
         let enrollResp = EnrollmentResponse(ztAPIs: controllers, id: id)
         enrollData.pointee.enrollmentCallback?(enrollResp, enrollData.pointee.subj, nil)
     }

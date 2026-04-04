@@ -17,16 +17,22 @@ import Foundation
 
 /// Class used for passing information about error conditions encountered while using Ziti
 public class ZitiError : NSError, @unchecked Sendable {
+
+    /// Machine-parseable error code string from the controller (e.g. "ENROLLMENT_IDENTITY_ALREADY_ENROLLED")
+    @objc public let errorCodeString:String?
+
     /// Initialize a ZitiError instance
     /// - Parameters:
     ///     - desc: error description
-    ///     - errorCode: error code
-    ///     - userInfo: user info dictionary
-    init(_ desc:String, errorCode:Int=Int(-1)) {
+    ///     - errorCode: numeric error code
+    ///     - errorCodeString: machine-parseable error code string from the controller
+    init(_ desc:String, errorCode:Int=Int(-1), errorCodeString:String?=nil) {
+        self.errorCodeString = errorCodeString
         super.init(domain: "ZitiError", code: errorCode,
                    userInfo: [NSLocalizedDescriptionKey:NSLocalizedString(desc, comment: "")])
     }
     required init?(coder: NSCoder) {
+        self.errorCodeString = nil
         fatalError("init(coder:) has not been implemented")
     }
 }
