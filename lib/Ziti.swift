@@ -634,6 +634,8 @@ import CZitiPrivate
     private static func runQueryProviders(zid:ZitiIdentity,
                                           cb: @escaping (_ providers:[ZitiEvent.JwtSigner]?, _ error:ZitiError?) -> Void) {
         let ziti = Ziti(withId: zid)
+        // All event callbacks, timer callbacks, and perform {} blocks run serially
+        // on the single uv loop thread, so `completed` needs no synchronization.
         var completed = false
 
         // Listen for auth events - SelectExternal carries the provider list
@@ -743,7 +745,9 @@ import CZitiPrivate
             ? { $0.canCertEnroll }
             : { $0.canTokenEnroll }
 
-        // Track whether enrollment config has been received (waiting for context to authenticate)
+        // Track whether enrollment config has been received (waiting for context to authenticate).
+        // All event callbacks and perform {} blocks run serially on the single uv loop thread,
+        // so this flag needs no synchronization.
         var enrollmentConfigReceived = false
         let tempKeychainTag = zid.id // UUID used for keychain until real ID is known
 
@@ -917,7 +921,6 @@ import CZitiPrivate
             certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM!.count + 1)
             certPEMPtr!.initialize(from: certPEM!, count: certPEM!.count + 1)
         } else {
-            // is there any way to know at this point that ext auth is needed? maybe check ext auth signers? add "extAuthEnabled" field?
             log.debug("identity \(id.id) does not have certificates. this is ok if using external authentication")
         }
         
