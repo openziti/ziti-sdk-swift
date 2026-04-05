@@ -2,21 +2,14 @@
   "warnings": [
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/Ziti.swift",
-      "line": 365,
-      "symbol": "Ziti.enroll(controllerURL:_:)",
-      "symbol_kind": "source.lang.swift.decl.function.method.static",
-      "warning": "undocumented"
-    },
-    {
-      "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/Ziti.swift",
-      "line": 859,
+      "line": 1405,
       "symbol": "Ziti.extAuth(_:_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEnroller.swift",
-      "line": 183,
+      "line": 220,
       "symbol": "ZitiEnroller.enroll(url:cb:)",
       "symbol_kind": "source.lang.swift.decl.function.method.static",
       "warning": "undocumented"
@@ -30,28 +23,28 @@
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 278,
+      "line": 304,
       "symbol": "ZitiEvent.ConfigEvent.controllers",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 279,
+      "line": 305,
       "symbol": "ZitiEvent.ConfigEvent.cfgSource",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 280,
+      "line": 306,
       "symbol": "ZitiEvent.ConfigEvent.cert",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 281,
+      "line": 307,
       "symbol": "ZitiEvent.ConfigEvent.caBundle",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
@@ -65,22 +58,36 @@
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiTunnelEvent.swift",
-      "line": 262,
+      "line": 266,
       "symbol": "JWTProvider",
       "symbol_kind": "source.lang.swift.decl.class",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiTunnelEvent.swift",
-      "line": 263,
+      "line": 267,
       "symbol": "JWTProvider.name",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiTunnelEvent.swift",
-      "line": 264,
+      "line": 268,
       "symbol": "JWTProvider.issuer",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiTunnelEvent.swift",
+      "line": 269,
+      "symbol": "JWTProvider.canCertEnroll",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiTunnelEvent.swift",
+      "line": 270,
+      "symbol": "JWTProvider.canTokenEnroll",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     }

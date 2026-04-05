@@ -50,6 +50,9 @@
                 <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/Ziti/EnrollMode.html">– EnrollMode</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
               </li>
               <li class="nav-group-task">
@@ -62,7 +65,7 @@
                 <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+                <a href="../Classes/ZitiError.html">ZitiError</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
@@ -286,7 +289,35 @@ This is done to allow the <code><a href="../Protocols/ZitiTunnelProvider.html">Z
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">IdentitiesLoadedCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">IdentitiesLoadedCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC17EnrollKeyCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/EnrollKeyCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC17EnrollKeyCallbacka">EnrollKeyCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Type definition of callback to provide a private key PEM during enrollToCert.
+Return the PEM string on success, or nil to indicate failure.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">EnrollKeyCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">ziti</span><span class="p">:</span> <span class="kt"><a href="../Classes/Ziti.html">Ziti</a></span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span></code></pre>
 
                         </div>
                       </div>
@@ -450,6 +481,57 @@ This is done to allow the <code><a href="../Protocols/ZitiTunnelProvider.html">Z
                       <div>
                         <h4>Return Value</h4>
                         <p>Returns 0 on success</p>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti10ZitiTunnelC20setEnrollKeyCallbackyySSSgAA0B0CcSgF"></a>
+                    <a name="//apple_ref/swift/Method/setEnrollKeyCallback(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti10ZitiTunnelC20setEnrollKeyCallbackyySSSgAA0B0CcSgF">setEnrollKeyCallback(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set a callback to provide a private key during enrollToCert enrollment.
+Applied to every ziti_context created by the command processor.
+Pass nil to use the SDK&rsquo;s default software key generation.</p>
+
+<p>Should be called before <code>startZiti</code> or from the loop thread via <code><a href="../Classes/ZitiTunnel.html#/s:5CZiti10ZitiTunnelC7performyyyycF">perform(_:)</a></code>.
+The underlying C SDK does not synchronize access to these fields.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setEnrollKeyCallback</span><span class="p">(</span><span class="n">_</span> <span class="nv">cb</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiTunnel.html#/s:5CZiti10ZitiTunnelC17EnrollKeyCallbacka">EnrollKeyCallback</a></span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cb</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback that returns a PEM-encoded private key, or nil</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -667,7 +749,7 @@ This is done to allow the <code><a href="../Protocols/ZitiTunnelProvider.html">Z
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-03-09)</p>
+          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-04-05)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>AuthAction Enumeration Reference</title>
+    <title>EnrollMode Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Enum/AuthAction" class="dashAnchor"></a>
-    <a title="AuthAction Enumeration Reference"></a>
+    <a name="//apple_ref/swift/Enum/EnrollMode" class="dashAnchor"></a>
+    <a title="EnrollMode Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../../index.html">CZiti Docs</a></p>
@@ -31,9 +31,9 @@
         <img id="carat" src="../../img/carat.png" alt=""/>
         <a href="../../Classes.html">Classes</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        <a href="../../Classes/ZitiEvent.html">ZitiEvent</a>
+        <a href="../../Classes/Ziti.html">Ziti</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        AuthAction Enumeration Reference
+        EnrollMode Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -201,16 +201,16 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>AuthAction</h1>
+            <h1>EnrollMode</h1>
               <div class="declaration">
                 <div class="language">
                   
                   <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">enum</span> <span class="kt">AuthAction</span> <span class="p">:</span> <span class="kt">UInt32</span></code></pre>
+<span class="kd">public</span> <span class="kd">enum</span> <span class="kt">EnrollMode</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
 
                 </div>
               </div>
-            <p>Enumeration of possible authentication actions</p>
+            <p>Enrollment mode for just-in-time identity creation via external JWT auth.</p>
 
           </section>
           <section class="section task-group-section">
@@ -219,9 +219,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti9ZitiEventC10AuthActionO14CannotContinueyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/CannotContinue" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO14CannotContinueyA2EmF">CannotContinue</a>
+                    <a name="/s:5CZiti4ZitiC10EnrollModeO4noneyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/none" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC10EnrollModeO4noneyA2EmF">none</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -229,14 +229,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Authentication flow is stuck, most likely due to (external auth) configuration</p>
+                        <p>No enrollment - identity must be pre-created by admin (default)</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">CannotContinue</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="k">none</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
 
                         </div>
                       </div>
@@ -246,9 +246,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti9ZitiEventC10AuthActionO10PromptTotpyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/PromptTotp" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO10PromptTotpyA2EmF">PromptTotp</a>
+                    <a name="/s:5CZiti4ZitiC10EnrollModeO4certyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/cert" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC10EnrollModeO4certyA2EmF">cert</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -256,14 +256,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Request for MFA code</p>
+                        <p>Generate CSR, exchange for client certificate</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">PromptTotp</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">cert</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
 
                         </div>
                       </div>
@@ -273,9 +273,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti9ZitiEventC10AuthActionO9PromptPinyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/PromptPin" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO9PromptPinyA2EmF">PromptPin</a>
+                    <a name="/s:5CZiti4ZitiC10EnrollModeO5tokenyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/token" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC10EnrollModeO5tokenyA2EmF">token</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -283,122 +283,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Request for HSM/TPM key pin (not yet implemented)</p>
+                        <p>Auto-create identity on controller, no certificate</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">PromptPin</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5CZiti9ZitiEventC10AuthActionO13LoginExternalyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/LoginExternal" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO13LoginExternalyA2EmF">LoginExternal</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">LoginExternal</span> <span class="o">=</span> <span class="mi">3</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5CZiti9ZitiEventC10AuthActionO7UnknownyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/Unknown" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO7UnknownyA2EmF">Unknown</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Undocumented</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Unknown</span> <span class="o">=</span> <span class="mi">4</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5CZiti9ZitiEventC10AuthActionO14SelectExternalyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/SelectExternal" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO14SelectExternalyA2EmF">SelectExternal</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Request for app to select an external auth provider from [providers] list, then call <code>extAuth(provider:)</code></p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">SelectExternal</span> <span class="o">=</span> <span class="mi">5</span></code></pre>
-
-                        </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/s:5CZiti9ZitiEventC10AuthActionO5debugSSvp"></a>
-                    <a name="//apple_ref/swift/Property/debug" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti9ZitiEventC10AuthActionO5debugSSvp">debug</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Returns string representation of AuthAction</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">debug</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">token</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
 
                         </div>
                       </div>

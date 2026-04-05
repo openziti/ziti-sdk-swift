@@ -50,6 +50,9 @@
                 <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/Ziti/EnrollMode.html">– EnrollMode</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
               </li>
               <li class="nav-group-task">
@@ -62,7 +65,7 @@
                 <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+                <a href="../Classes/ZitiError.html">ZitiError</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
@@ -335,7 +338,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">EnrollmentCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">resp</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiEnroller/EnrollmentResponse.html">EnrollmentResponse</a></span><span class="p">?,</span> <span class="n">_</span> <span class="nv">subj</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">EnrollmentCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">resp</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiEnroller/EnrollmentResponse.html">EnrollmentResponse</a></span><span class="p">?,</span> <span class="n">_</span> <span class="nv">subj</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>
@@ -375,7 +378,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p><code><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></code> containing error information on failed enrollment attempt</p>
+                                  <p><code><a href="../Classes/ZitiError.html">ZitiError</a></code> containing error information on failed enrollment attempt</p>
                                 </div>
                               </td>
                             </tr>
@@ -440,6 +443,34 @@
                             </tr>
                           </tbody>
                         </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiEnroller(cm)enrollWithJwtContent:cb:"></a>
+                    <a name="//apple_ref/swift/Method/enroll(jwtContent:cb:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiEnroller(cm)enrollWithJwtContent:cb:">enroll(jwtContent:<wbr>cb:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Enroll using JWT content string.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enroll</span><span class="p">(</span><span class="nv">jwtContent</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="nv">cb</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/ZitiEnroller.html#/s:5CZiti12ZitiEnrollerC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
                       </div>
                     </section>
                   </div>
@@ -536,7 +567,7 @@
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-03-09)</p>
+          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-04-05)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

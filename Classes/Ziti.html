@@ -50,6 +50,9 @@
                 <a href="../Classes/Ziti/ZitiRunloop.html">– ZitiRunloop</a>
               </li>
               <li class="nav-group-task">
+                <a href="../Classes/Ziti/EnrollMode.html">– EnrollMode</a>
+              </li>
+              <li class="nav-group-task">
                 <a href="../Classes/ZitiClaims.html">ZitiClaims</a>
               </li>
               <li class="nav-group-task">
@@ -62,7 +65,7 @@
                 <a href="../Classes/ZitiEnroller/EnrollmentResponse.html">– EnrollmentResponse</a>
               </li>
               <li class="nav-group-task">
-                <a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a>
+                <a href="../Classes/ZitiError.html">ZitiError</a>
               </li>
               <li class="nav-group-task">
                 <a href="../Classes/ZitiEvent.html">ZitiEvent</a>
@@ -357,7 +360,7 @@
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">InitCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">InitCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>
@@ -373,7 +376,7 @@
                               </td>
                               <td>
                                 <div>
-                                  <p><code><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></code> containing error information on failed initialization attempt</p>
+                                  <p><code><a href="../Classes/ZitiError.html">ZitiError</a></code> containing error information on failed initialization attempt</p>
                                 </div>
                               </td>
                             </tr>
@@ -1220,7 +1223,7 @@ multiple identities</p>
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">EnrollmentCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">zid</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiIdentity.html">ZitiIdentity</a></span><span class="p">?,</span> <span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">EnrollmentCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">zid</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiIdentity.html">ZitiIdentity</a></span><span class="p">?,</span> <span class="n">_</span> <span class="nv">error</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
                       </div>
@@ -1248,7 +1251,7 @@ multiple identities</p>
                               </td>
                               <td>
                                 <div>
-                                  <p><code><a href="../Classes.html#/c:@M@CZiti@objc(cs)ZitiError">ZitiError</a></code> containing error information on failed enrollment attempt</p>
+                                  <p><code><a href="../Classes/ZitiError.html">ZitiError</a></code> containing error information on failed enrollment attempt</p>
                                 </div>
                               </td>
                             </tr>
@@ -1271,14 +1274,17 @@ multiple identities</p>
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Enroll a Ziti identity using a JWT file</p>
+                        <p>Enroll a Ziti identity using a JWT file.</p>
 
-<p>Enrollment consists of parsing the JWT to determine controller address, verifying the given JWT was signed with the controller&rsquo;s public key,
-downloading the CA chain from the controller (to be used as part of establishing trust in future interactions with the controller), generating a
-private key (stored in the Keychain), creating a Certificate Signing Request (CSR), sending the CSR to the controller and receiving our signed
-certificate.  This certificate is stored in the Keychain and required for future interactions with the controller.</p>
+<p>The C SDK auto-detects the JWT type from the <code>em</code> claim:</p>
 
-<p>A <code><a href="../Classes/ZitiIdentity.html">ZitiIdentity</a></code> is passed back in the <code><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></code> that can be stored and using to create an instance of <code>Ziti</code></p>
+<ul>
+<li><strong>OTT/OTTCA/CA</strong>: Standard enrollment. Generates a keychain key, creates a CSR,
+and receives a signed certificate.</li>
+<li><p><strong>Network JWT</strong>: Bootstrap only (CA + controller URL). No OIDC auth or identity
+creation. For enrollment with OIDC, use <code>enrollToCert(jwtFile:...)</code> or
+<code>enrollToToken(jwtFile:...)</code>.</p></li>
+</ul>
 
                       </div>
                       <div class="declaration">
@@ -1286,7 +1292,8 @@ certificate.  This certificate is stored in the Keychain and required for future
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enroll</span><span class="p">(</span><span class="n">_</span> <span class="nv">jwtFile</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enroll</span><span class="p">(</span><span class="n">_</span> <span class="nv">jwtFile</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                          <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
 
                         </div>
                       </div>
@@ -1302,14 +1309,14 @@ certificate.  This certificate is stored in the Keychain and required for future
                               </td>
                               <td>
                                 <div>
-                                  <p>file containing one-time JWT token for enrollment</p>
+                                  <p>file containing the JWT token</p>
                                 </div>
                               </td>
                             </tr>
                             <tr>
                               <td>
                                 <code>
-                                <em>cb</em>
+                                <em>enrollCallback</em>
                                 </code>
                               </td>
                               <td>
@@ -1337,7 +1344,12 @@ certificate.  This certificate is stored in the Keychain and required for future
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Undocumented</p>
+                        <p>Bootstrap from a controller URL. Returns the CA bundle and controller URL only -
+no OIDC auth or identity enrollment. Requires the controller to have a publicly-trusted
+TLS certificate. For private CA controllers, use a network JWT instead.</p>
+
+<p>For enrollment with OIDC, use <code>enrollToCert(controllerURL:...)</code> or
+<code>enrollToToken(controllerURL:...)</code>.</p>
 
                       </div>
                       <div class="declaration">
@@ -1345,9 +1357,526 @@ certificate.  This certificate is stored in the Keychain and required for future
                         <div class="language">
                           <p class="aside-title">Swift</p>
                           <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enroll</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enroll</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                          <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
 
                         </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>controllerURL</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>controller URL (e.g., &ldquo;<a href="https://ctrl.example.com:1280%22">https://ctrl.example.com:1280&rdquo;</a>)</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>enrollCallback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback with the bootstrap result</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithJwtFile:provider:onAuth::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToCert(jwtFile:provider:onAuth:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithJwtFile:provider:onAuth::">enrollToCert(jwtFile:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>End-to-end enrollToCert using a network JWT file. The C SDK uses the JWT for trust
+bootstrapping (private CA support), then runs a context for OIDC auth and cert enrollment.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToCert</span><span class="p">(</span><span class="nv">jwtFile</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                                <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                                <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>jwtFile</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>file containing a network JWT</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>provider</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>optional provider name. If nil, picks first with canCertEnroll.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onAuth</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the OIDC URL the user must open to authenticate</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>enrollCallback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the completed ZitiIdentity or error</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithControllerURL:provider:onAuth::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToCert(controllerURL:provider:onAuth:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithControllerURL:provider:onAuth::">enrollToCert(controllerURL:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>End-to-end enrollToCert using a controller URL. Requires public CA on the controller.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToCert</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                                <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                                <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>controllerURL</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>controller URL (e.g., &ldquo;<a href="https://ctrl.example.com:1280%22">https://ctrl.example.com:1280&rdquo;</a>)</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>provider</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>optional provider name. If nil, picks first with canCertEnroll.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onAuth</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the OIDC URL the user must open to authenticate</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>enrollCallback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the completed ZitiIdentity or error</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithJwtFile:provider:onAuth::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToToken(jwtFile:provider:onAuth:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithJwtFile:provider:onAuth::">enrollToToken(jwtFile:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>End-to-end enrollToToken using a network JWT file. The C SDK uses the JWT for trust
+bootstrapping (private CA support), then runs a context for OIDC auth and token-based
+identity enrollment (no CSR or client certificate).</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToToken</span><span class="p">(</span><span class="nv">jwtFile</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                                 <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                                 <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                 <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>jwtFile</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>file containing a network JWT</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>provider</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>optional provider name. If nil, picks first with canTokenEnroll.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onAuth</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the OIDC URL the user must open to authenticate</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>enrollCallback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the completed ZitiIdentity or error</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithControllerURL:provider:onAuth::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToToken(controllerURL:provider:onAuth:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithControllerURL:provider:onAuth::">enrollToToken(controllerURL:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>End-to-end enrollToToken using a controller URL. Requires public CA on the controller.
+Uses OIDC auth to auto-create the identity on the controller (no CSR or client certificate).</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToToken</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                                 <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
+                                 <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                 <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>controllerURL</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>controller URL (e.g., &ldquo;<a href="https://ctrl.example.com:1280%22">https://ctrl.example.com:1280&rdquo;</a>)</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>provider</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>optional provider name. If nil, picks first with canTokenEnroll.</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>onAuth</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the OIDC URL the user must open to authenticate</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>enrollCallback</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the completed ZitiIdentity or error</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="task-group">
+              <div class="task-name-container">
+                <a name="/Query%20Providers"></a>
+                <a name="//apple_ref/swift/Section/Query Providers" class="dashAnchor"></a>
+                <div class="section-name-container">
+                  <a class="section-name-link" href="#/Query%20Providers"></a>
+                  <h3 class="section-name"><span>Query Providers</span>
+</h3>
+                </div>
+              </div>
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)queryProvidersWithJwtFile:cb:"></a>
+                    <a name="//apple_ref/swift/Method/queryProviders(jwtFile:cb:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)queryProvidersWithJwtFile:cb:">queryProviders(jwtFile:<wbr>cb:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Query available auth providers from a controller using a network JWT file.
+Bootstraps trust via the JWT, spins up a temporary context, waits for the
+provider list, then tears everything down. No identity state is persisted.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">queryProviders</span><span class="p">(</span><span class="nv">jwtFile</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                                  <span class="nv">cb</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">providers</span><span class="p">:[</span><span class="kt"><a href="../Classes/ZitiEvent.html">ZitiEvent</a></span><span class="o">.</span><span class="kt">JwtSigner</span><span class="p">]?,</span> <span class="n">_</span> <span class="nv">error</span><span class="p">:</span><span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>jwtFile</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>file containing a network JWT</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cb</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the provider list (empty if no ext auth) or error</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)queryProvidersWithControllerURL:cb:"></a>
+                    <a name="//apple_ref/swift/Method/queryProviders(controllerURL:cb:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)queryProvidersWithControllerURL:cb:">queryProviders(controllerURL:<wbr>cb:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Query available auth providers from a controller URL. Requires public CA.
+Bootstraps trust via the URL, spins up a temporary context, waits for the
+provider list, then tears everything down. No identity state is persisted.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">queryProviders</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
+                                  <span class="nv">cb</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">providers</span><span class="p">:[</span><span class="kt"><a href="../Classes/ZitiEvent.html">ZitiEvent</a></span><span class="o">.</span><span class="kt">JwtSigner</span><span class="p">]?,</span> <span class="n">_</span> <span class="nv">error</span><span class="p">:</span><span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>controllerURL</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>controller URL (e.g., &ldquo;<a href="https://ctrl.example.com:1280%22">https://ctrl.example.com:1280&rdquo;</a>)</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cb</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>called with the provider list (empty if no ext auth) or error</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -2524,6 +3053,63 @@ the operation on the Ziti thread</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:5CZiti4ZitiC10EnrollModeO"></a>
+                    <a name="//apple_ref/swift/Enum/EnrollMode" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC10EnrollModeO">EnrollMode</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Enrollment mode for just-in-time identity creation via external JWT auth.</p>
+
+                        <a href="../Classes/Ziti/EnrollMode.html" class="slightly-smaller">See more</a>
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">enum</span> <span class="kt">EnrollMode</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti4ZitiC17EnrollKeyCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/EnrollKeyCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC17EnrollKeyCallbacka">EnrollKeyCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Type definition of callback to provide a private key PEM during enrollToCert.
+Return the PEM string on success, or nil to indicate failure.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">EnrollKeyCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">ziti</span><span class="p">:</span> <span class="kt">Ziti</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/s:5CZiti4ZitiC15ExtAuthCallbacka"></a>
                     <a name="//apple_ref/swift/Alias/ExtAuthCallback" class="dashAnchor"></a>
                     <a class="token" href="#/s:5CZiti4ZitiC15ExtAuthCallbacka">ExtAuthCallback</a>
@@ -2544,6 +3130,106 @@ the operation on the Ziti thread</p>
                           <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">ExtAuthCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">ziti</span><span class="p">:</span> <span class="kt">Ziti</span><span class="p">,</span> <span class="n">_</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">String</span><span class="p">,</span> <span class="n">_</span> <span class="nv">ctx</span><span class="p">:</span> <span class="kt">UnsafeMutableRawPointer</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
 
                         </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti4ZitiC13setEnrollModeyyAC0dE0OF"></a>
+                    <a name="//apple_ref/swift/Method/setEnrollMode(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC13setEnrollModeyyAC0dE0OF">setEnrollMode(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set the enrollment mode for just-in-time identity creation.
+Controls what happens when authenticating via an external JWT signer
+and no identity credentials exist yet.</p>
+
+<p>Should be called from the loop thread via <code><a href="../Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)perform:">perform(_:)</a></code>.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setEnrollMode</span><span class="p">(</span><span class="n">_</span> <span class="nv">mode</span><span class="p">:</span> <span class="kt"><a href="../Classes/Ziti/EnrollMode.html">EnrollMode</a></span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>mode</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>the enrollment mode</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti4ZitiC20setEnrollKeyCallbackyySSSgACcSgF"></a>
+                    <a name="//apple_ref/swift/Method/setEnrollKeyCallback(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC20setEnrollKeyCallbackyySSSgACcSgF">setEnrollKeyCallback(_:<wbr>)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set a callback to provide a private key during enrollToCert enrollment.
+Pass nil to use the SDK&rsquo;s default software key generation.</p>
+
+<p>Should be called before the loop is started or from the loop thread via <code><a href="../Classes/Ziti.html#/c:@M@CZiti@objc(cs)Ziti(im)perform:">perform(_:)</a></code>.
+The underlying C SDK does not synchronize access to these fields.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">setEnrollKeyCallback</span><span class="p">(</span><span class="n">_</span> <span class="nv">cb</span><span class="p">:</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC17EnrollKeyCallbacka">EnrollKeyCallback</a></span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cb</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>callback that returns a PEM-encoded private key, or nil</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
                       </div>
                     </section>
                   </div>
@@ -2580,7 +3266,7 @@ the operation on the Ziti thread</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-03-09)</p>
+          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-04-05)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>

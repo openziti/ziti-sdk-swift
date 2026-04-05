@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ZitiTunnelEvent Class Reference</title>
+    <title>ZitiError Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/ZitiTunnelEvent" class="dashAnchor"></a>
-    <a title="ZitiTunnelEvent Class Reference"></a>
+    <a name="//apple_ref/swift/Class/ZitiError" class="dashAnchor"></a>
+    <a title="ZitiError Class Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">CZiti Docs</a></p>
@@ -31,7 +31,7 @@
         <img id="carat" src="../img/carat.png" alt=""/>
         <a href="../Classes.html">Classes</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        ZitiTunnelEvent Class Reference
+        ZitiError Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -199,16 +199,15 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>ZitiTunnelEvent</h1>
+            <h1>ZitiError</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelEvent</span> <span class="p">:</span> <span class="kt">NSObject</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiError</span> <span class="p">:</span> <span class="kt">NSError</span><span class="p">,</span> <span class="kd">@unchecked</span> <span class="kt">Sendable</span></code></pre>
 
                 </div>
               </div>
-            <p>Class to encapsulate a Ziti Tunneler SDK event</p>
+            <p>Class used for passing information about error conditions encountered while using Ziti</p>
 
           </section>
           <section class="section task-group-section">
@@ -217,9 +216,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti15ZitiTunnelEventC4zitiAA0B0CSgvp"></a>
-                    <a name="//apple_ref/swift/Property/ziti" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti15ZitiTunnelEventC4zitiAA0B0CSgvp">ziti</a>
+                    <a name="/c:@M@CZiti@objc(cs)ZitiError(py)errorCodeString"></a>
+                    <a name="//apple_ref/swift/Property/errorCodeString" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiError(py)errorCodeString">errorCodeString</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -227,47 +226,17 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Weak reference to Ziti instnace associated with this event</p>
+                        <p>Machine-parseable error code string from the controller (e.g. &ldquo;ENROLLMENT_IDENTITY_ALREADY_ENROLLED&rdquo;)</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">weak</span> <span class="k">var</span> <span class="nv">ziti</span><span class="p">:</span> <span class="kt"><a href="../Classes/Ziti.html">Ziti</a></span><span class="p">?</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="k">let</span> <span class="nv">errorCodeString</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
 
                         </div>
-                      </div>
-                    </section>
-                  </div>
-                </li>
-                <li class="item">
-                  <div>
-                    <code>
-                    <a name="/c:@M@CZiti@objc(cs)ZitiTunnelEvent(py)debugDescription"></a>
-                    <a name="//apple_ref/swift/Property/debugDescription" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)ZitiTunnelEvent(py)debugDescription">debugDescription</a>
-                    </code>
-                  </div>
-                  <div class="height-container">
-                    <div class="pointer-container"></div>
-                    <section class="section">
-                      <div class="pointer"></div>
-                      <div class="abstract">
-                        <p>Provide a debug description of the event</p>
-
-                      </div>
-                      <div class="declaration">
-                        <h4>Declaration</h4>
-                        <div class="language">
-                          <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">override</span> <span class="k">var</span> <span class="nv">debugDescription</span><span class="p">:</span> <span class="kt">String</span> <span class="p">{</span> <span class="k">get</span> <span class="p">}</span></code></pre>
-
-                        </div>
-                      </div>
-                      <div>
-                        <h4>Return Value</h4>
-                        <p>String containing the debug description</p>
                       </div>
                     </section>
                   </div>
