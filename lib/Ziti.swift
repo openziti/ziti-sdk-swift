@@ -826,51 +826,82 @@ import CZitiPrivate
             }
         }, ZitiEvent.EventType.Auth.rawValue | ZitiEvent.EventType.ConfigEvent.rawValue)
 
-        // Wait for context to authenticate after enrollment, then read the real identity
+        // Wait for context to authenticate after enrollment, then read the real identity.
+        // The identity fetch (ziti_ctrl_current_identity) is async and can complete after
+        // the first context event. We try on every event, and use a one-shot 3s fallback
+        // timer for the no-services case where no further events would arrive.
+        // All callbacks run on the single uv loop thread, so these flags need no locks.
+        var contextAuthenticated = false
+        var enrollmentCompleted = false
+
+        // Try to read the real identity and finish enrollment. Returns true if successful.
+        let tryCompleteEnrollment: () -> Bool = {
+            guard !enrollmentCompleted else { return true }
+            guard let ztx = ziti.ztx, let czid = ziti_get_identity(ztx), let cId = czid.pointee.id else {
+                return false
+            }
+            enrollmentCompleted = true
+            let realId = String(cString: cId)
+            log.info("\(modeLabel) identity id: \(realId)", function:"runEnrollTo()")
+
+            if mode == .cert && realId != tempKeychainTag {
+                let zkc = ZitiKeychain(tag: tempKeychainTag)
+                if let zErr = zkc.retagPrivateKey(to: realId) {
+                    log.error("\(modeLabel) \(zErr.localizedDescription)", function:"runEnrollTo()")
+                } else {
+                    log.info("\(modeLabel) re-tagged keychain key to \(realId)", function:"runEnrollTo()")
+                }
+            }
+            let finalId = ZitiIdentity(id: realId,
+                                       ztAPIs: ziti.id.ztAPIs ?? [ziti.id.ztAPI],
+                                       name: ziti.id.name,
+                                       certs: ziti.id.certs,
+                                       ca: ziti.id.ca)
+            if let cName = czid.pointee.name {
+                finalId.name = String(cString: cName)
+            }
+            ziti.shutdown()
+            enrollCallback(finalId, nil)
+            return true
+        }
+
         ziti.registerEventCallback({ event in
             guard let event = event, let ziti = event.ziti else { return }
-            guard let ctxEvent = event.contextEvent else { return }
-            log.info("\(modeLabel) context event: \(event.type.debug) \(ctxEvent.err ?? "") status=\(ctxEvent.status)", function:"runEnrollTo()")
+            guard !enrollmentCompleted else { return }
 
-            if ctxEvent.status == 0 && enrollmentConfigReceived {
-                // Context authenticated - read the real identity ID from the controller
-                if let ztx = ziti.ztx, let czid = ziti_get_identity(ztx) {
-                    if let cId = czid.pointee.id {
-                        let realId = String(cString: cId)
-                        log.info("\(modeLabel) identity id: \(realId)", function:"runEnrollTo()")
-
-                        // Re-tag keychain key from temp UUID to real identity ID
-                        if mode == .cert && realId != tempKeychainTag {
-                            let zkc = ZitiKeychain(tag: tempKeychainTag)
-                            if let zErr = zkc.retagPrivateKey(to: realId) {
-                                log.error("\(modeLabel) \(zErr.localizedDescription)", function:"runEnrollTo()")
-                            } else {
-                                log.info("\(modeLabel) re-tagged keychain key to \(realId)", function:"runEnrollTo()")
+            if event.type == .Context, let ctxEvent = event.contextEvent {
+                log.info("\(modeLabel) context event: \(event.type.debug) \(ctxEvent.err ?? "") status=\(ctxEvent.status)", function:"runEnrollTo()")
+                if ctxEvent.status == 0 && enrollmentConfigReceived {
+                    contextAuthenticated = true
+                    // Start a one-shot 3s fallback timer in case no further events arrive
+                    // (e.g. identity has no services). If identity is already available the
+                    // tryCompleteEnrollment call below handles it and the timer is a no-op.
+                    ziti.startTimer(3000, 0) { timer in
+                        ziti.endTimer(timer)
+                        if !enrollmentCompleted {
+                            log.info("\(modeLabel) identity fallback timer fired", function:"runEnrollTo()")
+                            if !tryCompleteEnrollment() {
+                                log.warn("\(modeLabel) identity not available after fallback, using temp ID", function:"runEnrollTo()")
+                                enrollmentCompleted = true
+                                ziti.shutdown()
+                                enrollCallback(ziti.id, nil)
                             }
                         }
-                        let finalId = ZitiIdentity(id: realId,
-                                                   ztAPIs: ziti.id.ztAPIs ?? [ziti.id.ztAPI],
-                                                   name: ziti.id.name,
-                                                   certs: ziti.id.certs,
-                                                   ca: ziti.id.ca)
-                        if let cName = czid.pointee.name {
-                            finalId.name = String(cString: cName)
-                        }
-                        ziti.shutdown()
-                        enrollCallback(finalId, nil)
-                        return
                     }
+                } else if ctxEvent.status != 0 {
+                    enrollmentCompleted = true
+                    let errMsg = ctxEvent.err ?? "context error (status \(ctxEvent.status))"
+                    log.error("\(modeLabel) context failed: \(errMsg)", function:"runEnrollTo()")
+                    ziti.shutdown()
+                    enrollCallback(nil, ZitiError(errMsg, errorCode: Int(ctxEvent.status)))
+                    return
                 }
-                // Fallback: no identity from controller, use what we have
-                ziti.shutdown()
-                enrollCallback(ziti.id, nil)
-            } else if ctxEvent.status != 0 {
-                let errMsg = ctxEvent.err ?? "context error (status \(ctxEvent.status))"
-                log.error("\(modeLabel) context failed: \(errMsg)", function:"runEnrollTo()")
-                ziti.shutdown()
-                enrollCallback(nil, ZitiError(errMsg, errorCode: Int(ctxEvent.status)))
             }
-        }, ZitiEvent.EventType.Context.rawValue)
+
+            // On every event after authentication, try to read the real identity ID.
+            guard contextAuthenticated else { return }
+            let _ = tryCompleteEnrollment()
+        }, ZitiEvent.EventType.Context.rawValue | ZitiEvent.EventType.Service.rawValue)
 
         ziti.runAsync { zErr in
             log.info("\(modeLabel) initCallback, error=\(String(describing: zErr))", function:"runEnrollTo()")
