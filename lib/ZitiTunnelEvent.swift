@@ -275,6 +275,14 @@ import CZitiPrivate
         self.canCertEnroll = provider_c.pointee.can_cert_enroll
         self.canTokenEnroll = provider_c.pointee.can_token_enroll
     }
+
+    public required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
+        issuer = try container.decode(String.self, forKey: .issuer)
+        canCertEnroll = try container.decodeIfPresent(Bool.self, forKey: .canCertEnroll) ?? false
+        canTokenEnroll = try container.decodeIfPresent(Bool.self, forKey: .canTokenEnroll) ?? false
+    }
 }
 
 /// Class encapsulating Ziti Tunnel SDK C External JWT Event
