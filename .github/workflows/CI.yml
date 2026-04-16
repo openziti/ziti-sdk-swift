@@ -128,12 +128,16 @@ jobs:
           CODE_SIGNING_ALLOWED=NO | xcpretty
 
     - name: Install ziti CLI
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         set -euo pipefail
-        ZITI_URL=$(curl -s https://api.github.com/repos/openziti/ziti/releases/latest \
-          | grep browser_download_url | grep darwin-arm64 | head -1 | cut -d\" -f4)
-        echo "Downloading $ZITI_URL"
-        curl -sL "$ZITI_URL" -o /tmp/ziti.tgz
+        gh release download --repo openziti/ziti \
+          --pattern '*darwin-arm64*.tar.gz' \
+          --output /tmp/ziti.tgz
+        ls -la /tmp/ziti.tgz
+        # Inspect archive layout (first run proves extraction path is right)
+        tar -tzf /tmp/ziti.tgz | head -5
         sudo tar -xzf /tmp/ziti.tgz -C /usr/local/bin --strip-components=1 ziti/ziti
         ziti version
 
