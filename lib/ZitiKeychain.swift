@@ -16,6 +16,15 @@ limitations under the License.
 
 import Foundation
 
+#if CZITI_TEST_INSECURE_KEYS
+// Lazy-initialized so the warning prints at most once per process, the first time
+// anything in this module actually generates an ephemeral key.
+internal let _cztiInsecureBuildWarningPrinted: Void = {
+    let msg = "⚠️  CZITI_TEST_INSECURE_KEYS build: private keys are generated ephemerally and written into .zid files in plaintext. NEVER SHIP THIS BUILD.\n"
+    FileHandle.standardError.write(Data(msg.utf8))
+}()
+#endif
+
 /// This class manages access to the Keychain, creating and storing keys and certificates needed to access a Ziti network.
 ///
 /// This is primarily an internally used class, though certain methods are marked public in order to support senarios where the enrollment is
@@ -41,11 +50,27 @@ public class ZitiKeychain : NSObject {
     
     private let keySize = 3072
     func createPrivateKey() -> SecKey? {
+#if CZITI_TEST_INSECURE_KEYS
+        // Insecure test build: generate an ephemeral key with no keychain interaction.
+        // Caller is expected to stash the extracted PEM in the ZitiIdentity for persistence.
+        _ = _cztiInsecureBuildWarningPrinted   // fire once, first time anyone mints a key
+        let parameters: [CFString: Any] = [
+            kSecAttrKeyType: kSecAttrKeyTypeRSA,
+            kSecAttrKeySizeInBits: keySize,
+            kSecAttrIsPermanent: false,
+        ]
+        var error: Unmanaged<CFError>?
+        guard let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error) else {
+            log.error("Unable to create ephemeral private key for \(tag): \(error!.takeRetainedValue() as Error)")
+            return nil
+        }
+        return privateKey
+#else
         let privateKeyParams: [CFString: Any] = [ // iOS
             kSecAttrIsPermanent: true,
             kSecAttrLabel: tag,
             kSecAttrApplicationTag: atag]
-        
+
         var parameters: [CFString: Any] = [
             kSecAttrKeyType: kSecAttrKeyTypeRSA,
             kSecAttrKeySizeInBits: keySize,
@@ -57,13 +82,14 @@ public class ZitiKeychain : NSObject {
         if #available(iOS 13.0, OSX 10.15, *) {
             parameters[kSecUseDataProtectionKeychain] = true
         }
-        
+
         var error: Unmanaged<CFError>?
         guard let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error) else {
             log.error("Unable to create private key for \(tag): \(error!.takeRetainedValue() as Error)")
             return nil
         }
         return privateKey
+#endif
     }
     
     func getPrivateKey() -> SecKey? {
