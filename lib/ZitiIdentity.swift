@@ -53,14 +53,12 @@ import Foundation
     /// Certificates (PEM)
     @objc public var certs:String?
 
-    /// Private key (PEM).
-    ///
-    /// Only populated by builds compiled with `CZITI_TEST_INSECURE_KEYS`. Release builds
-    /// keep the private key in the keychain and leave this field nil. If this field is
-    /// populated in a loaded identity, `Ziti.run()` (in an insecure-keys build) will use
-    /// it directly instead of reading from the keychain. This field is never populated
-    /// or read by release builds.
+#if CZITI_TEST_INSECURE_KEYS
+    /// Private key (PEM). Only present in builds compiled with `CZITI_TEST_INSECURE_KEYS`.
+    /// The enrollment flow writes the ephemeral key here so `Ziti.run()` can use it
+    /// without touching the data protection keychain.
     @objc public var key:String?
+#endif
 
     /// CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
     @objc public var ca:String?
