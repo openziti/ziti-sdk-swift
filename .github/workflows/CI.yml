@@ -114,16 +114,64 @@ jobs:
         xcodebuild test -scheme CZitiTests -derivedDataPath ./DerivedData/CZiti \
           -sdk macosx -destination 'platform=macOS' ONLY_ACTIVE_ARCH=YES | xcpretty
 
-    # Builds the integration test tool to catch compile regressions. End-to-end
-    # execution against `ziti edge quickstart` is deferred until the macOS data
-    # protection keychain / entitlement issue is resolved (see ziti-test-runner/main.swift).
-    - name: Build ziti-test-runner
+    # Build ziti-test-runner with the insecure-keys test flag so enrollment can generate
+    # ephemeral keys and store them in the .zid file instead of the macOS data protection
+    # keychain (which requires provisioning-profile-backed entitlements CI doesn't have).
+    # NEVER use this flag in a release build.
+    - name: Build ziti-test-runner (insecure test keys)
       run: |
         set -o pipefail
         xcodebuild build -configuration Debug -scheme ziti-test-runner \
           -derivedDataPath ./DerivedData/CZiti -sdk macosx \
           -destination 'platform=macOS' ONLY_ACTIVE_ARCH=YES \
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) CZITI_TEST_INSECURE_KEYS' \
           CODE_SIGNING_ALLOWED=NO | xcpretty
+
+    - name: Install ziti CLI
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        set -euo pipefail
+        gh release download --repo openziti/ziti \
+          --pattern '*darwin-arm64*.tar.gz' \
+          --output /tmp/ziti.tgz
+        sudo tar -xzf /tmp/ziti.tgz -C /usr/local/bin ziti
+        ziti version
+
+    - name: Integration test (OTT enrollment against quickstart)
+      run: |
+        set -euo pipefail
+        rm -rf /tmp/qs && mkdir /tmp/qs
+        nohup ziti edge quickstart --home /tmp/qs > /tmp/qs.log 2>&1 &
+        QS_PID=$!
+        trap "kill $QS_PID 2>/dev/null || true; cat /tmp/qs.log | tail -60" EXIT
+
+        # Wait for controller
+        for i in $(seq 1 60); do
+          if curl -sk https://localhost:1280/edge/client/v1/version >/dev/null 2>&1; then
+            echo "controller ready after ${i}s"; break
+          fi
+          sleep 1
+        done
+
+        # Login, create an OTT identity, and preseed a service + dial policy so the
+        # test verifies service discovery after auth (not just auth).
+        ziti edge login localhost:1280 -u admin -p admin -y
+        ziti edge create identity ztr-integ -a ztr-integ -o /tmp/ztr.jwt
+        ziti edge create service ztr-svc -a ztr-svc
+        ziti edge create service-policy ztr-svc-dial Dial \
+          --identity-roles '#ztr-integ' --service-roles '#ztr-svc'
+
+        TOOL=./DerivedData/CZiti/Build/Products/Debug/ziti-test-runner
+
+        # Pass 1: enroll and verify context auth, keeping the .zid for pass 2.
+        echo "=== Pass 1: enroll + run ==="
+        "$TOOL" --timeout 60 --keep-zid /tmp/ztr.zid /tmp/ztr.jwt
+
+        # Pass 2: fresh process, load the .zid and re-auth. Verifies that the persisted
+        # key+cert are sufficient to start Ziti without any in-memory state carryover.
+        echo "=== Pass 2: only-run from saved zid ==="
+        "$TOOL" --timeout 60 --only-run /tmp/ztr.zid
 
     - name: Create Frameworks
       run: |

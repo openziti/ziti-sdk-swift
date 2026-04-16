@@ -368,6 +368,8 @@ import CZitiPrivate
             }
 
             let certs = dropFirst("pem:", respCert)
+#if !CZITI_TEST_INSECURE_KEYS
+            // Release build: persist the signed cert in the keychain alongside the private key.
             _ = zkc.deleteCertificate(silent: true)
             guard zkc.storeCertificate(fromPem: certs) == nil else {
                 let errStr = "Unable to store certificate\n"
@@ -375,6 +377,7 @@ import CZitiPrivate
                 enrollCallback(nil, ZitiError(errStr))
                 return
             }
+#endif
 
             var ca = resp.id.ca
             if let idCa = resp.id.ca {
@@ -382,6 +385,11 @@ import CZitiPrivate
             }
 
             let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
+#if CZITI_TEST_INSECURE_KEYS
+            // Insecure test build: stash the ephemeral PEM in the identity so run() can use
+            // it without a keychain lookup.
+            zid.key = pem
+#endif
             log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
 
             enrollCallback(zid, nil)
@@ -955,10 +963,20 @@ import CZitiPrivate
             log.debug("identity \(id.id) does not have certificates. this is ok if using external authentication")
         }
         
-        // Get private key
+        // Get private key. Under CZITI_TEST_INSECURE_KEYS, prefer a PEM stored in the
+        // identity file so ad-hoc-signed CLI tools can use enrolled identities without
+        // touching the data protection keychain.
         var privKeyPEMPtr: UnsafeMutablePointer<Int8>? = nil
-        if let privKey = zkc.getPrivateKey() {
-            let privKeyPEM = zkc.getKeyPEM(privKey)
+        let privKeyPEM: String? = {
+#if CZITI_TEST_INSECURE_KEYS
+            if let idKey = id.key, !idKey.isEmpty { return idKey }
+#endif
+            if let privKey = zkc.getPrivateKey() {
+                return zkc.getKeyPEM(privKey)
+            }
+            return nil
+        }()
+        if let privKeyPEM = privKeyPEM {
             privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
             privKeyPEMPtr!.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
         } else {

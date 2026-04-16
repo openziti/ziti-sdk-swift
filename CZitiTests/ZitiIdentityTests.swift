@@ -85,4 +85,34 @@ class ZitiIdentityTests: XCTestCase {
         let decoded = try JSONDecoder().decode(ZitiIdentity.self, from: data)
         XCTAssertEqual(decoded.startDisabled, true)
     }
+
+#if CZITI_TEST_INSECURE_KEYS
+    func testKeyDefaultsToNil() throws {
+        let id = ZitiIdentity(id: "x", ztAPIs: ["https://ctrl:1280"])
+        XCTAssertNil(id.key)
+
+        let data = try JSONEncoder().encode(id)
+        let decoded = try JSONDecoder().decode(ZitiIdentity.self, from: data)
+        XCTAssertNil(decoded.key)
+    }
+
+    func testKeyRoundTrip() throws {
+        let pem = "-----BEGIN RSA PRIVATE KEY-----\nMIIBOgIBAAJB...\n-----END RSA PRIVATE KEY-----\n"
+        let id = ZitiIdentity(id: "x", ztAPIs: ["https://ctrl:1280"])
+        id.key = pem
+
+        let data = try JSONEncoder().encode(id)
+        let decoded = try JSONDecoder().decode(ZitiIdentity.self, from: data)
+        XCTAssertEqual(decoded.key, pem)
+    }
+#endif
+
+    func testDecodeOldZidWithoutKeyField() throws {
+        // Existing .zid files in the wild never have a key field. Must still decode.
+        let json = """
+        {"id":"legacy","ztAPI":"https://ctrl:1280","certs":"CERT","ca":"CA"}
+        """
+        let decoded = try JSONDecoder().decode(ZitiIdentity.self, from: json.data(using: .utf8)!)
+        XCTAssertEqual(decoded.id, "legacy")
+    }
 }

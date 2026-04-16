@@ -36,8 +36,7 @@ import Foundation
     
     /// Common names for the certificates in this identities certificate chain.
     /// This is only set when the identity is decoded from an older representation. When `certs` is not set, this value can be used to
-    /// retrieve the identity's certificates from the Keychain.
-    @available(*, deprecated, message: "store certificates in `certs` instead")
+    /// retrieve the identity's certificates from the Keychain. Legacy-only; new identities store certs in `certs` instead.
     @objc private var certCNs:[String]?
     
     /// scheme, host, and port used to communicate with Ziti controller
@@ -54,18 +53,25 @@ import Foundation
     /// Certificates (PEM)
     @objc public var certs:String?
 
+#if CZITI_TEST_INSECURE_KEYS
+    /// Private key (PEM). Only present in builds compiled with `CZITI_TEST_INSECURE_KEYS`.
+    /// The enrollment flow writes the ephemeral key here so `Ziti.run()` can use it
+    /// without touching the data protection keychain.
+    @objc public var key:String?
+#endif
+
     /// CA pool verified as part of enrollment that can be used to establish trust with of the  Ziti controller
     @objc public var ca:String?
-    
+
     /// Request `Ziti` to start this identity in disabled state
     public var startDisabled:Bool? = false
-    
+
     /// Initialize a `ZitiIdentity` given the provided identity infomation
     ///
     /// - Parameters:
     ///     - id: unique identifier of this identity
     ///     - ztAPIs: URLs for accessing Ziti controller API
-    ///     - certCNs: common names of certififcates 
+    ///     - certCNs: common names of certififcates
     ///     - name: name currently configured for this identity
     ///     - ca: CA pool that can be used to verify trust of the Ziti controller
     @objc public init(id:String, ztAPIs:[String], name:String?=nil, certs:String?=nil, ca:String?=nil) {

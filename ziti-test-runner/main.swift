@@ -19,23 +19,21 @@ limitations under the License.
 // End-to-end integration test tool. Drives real enrollment and context bring-up
 // against a live Ziti controller, producing a pass/fail exit code suitable for CI.
 //
+// Modes:
+//   default      enroll (OTT/cert-jwt/token-jwt), save zid, load zid, run, verify
+//   --only-run   load an existing zid from disk, run, verify (no enrollment)
+//
 // Exit codes:
-//   0  success: enrolled, loaded identity, received context event with status OK
+//   0  success: received context event with status OK (and shutdown cleanly)
 //   1  enrollment failed
 //   2  identity load / run failed
 //   3  context status != OK, or timeout reached
 //   64 usage error (argv / input file)
 //
-// Local use:
-//   ./ziti-test-runner /path/to/ott.jwt
-//
 // Known issue: macOS enrollment requires access to the data protection keychain,
-// which fails with -34018 (errSecMissingEntitlement) under ad-hoc signing. The
-// tool currently fails the same way in `ziti-mac-enroller`. CI builds the tool
-// to catch compile regressions but does not run it end-to-end until the keychain
-// access problem is resolved (either by signing with a real team cert or by
-// changing the SDK to fall back to file-based keys when no proper entitlement
-// is available).
+// which fails under ad-hoc signing. Build with SWIFT_ACTIVE_COMPILATION_CONDITIONS
+// containing CZITI_TEST_INSECURE_KEYS to have the SDK generate ephemeral keys and
+// store them in the .zid file instead. NEVER ship such a build.
 
 import Foundation
 import CZiti
@@ -52,13 +50,16 @@ enum Mode: String {
 func usage() -> Never {
     print("""
     Usage:
-      \(nm) [options] <jwt-file>
+      \(nm) [options] <jwt-file>             # enroll, save, load, run, verify
+      \(nm) --only-run [options] <zid-file>  # load an existing zid and run
 
     Options:
-      --mode <ott|cert-jwt|token-jwt>   Enrollment mode (default: ott)
+      --mode <ott|cert-jwt|token-jwt>   Enrollment mode (default: ott, enroll modes only)
       --timeout <seconds>               Total test timeout (default: 60)
-      --keep-zid <path>                 Keep the .zid file at this path (default: temp file, deleted)
+      --keep-zid <path>                 Keep enrolled .zid at this path (enroll modes only)
       --log-level <level>               WTF|ERROR|WARN|INFO|DEBUG|VERBOSE|TRACE (default: INFO)
+      --only-run                        Input is a .zid file; skip enrollment
+      -h, --help                        Show this message
 
     Exit codes:
       0   success
@@ -74,7 +75,8 @@ func usage() -> Never {
 var mode: Mode = .ott
 var timeoutSeconds: Int = 60
 var keepZid: String?
-var jwtFile: String?
+var onlyRun: Bool = false
+var inputFile: String?
 
 var i = 1
 while i < args.count {
@@ -95,10 +97,12 @@ while i < args.count {
         i += 1
         guard i < args.count, let lvl = ZitiLog.LogLevel(rawValue: levelFromString(args[i])) else { usage() }
         ZitiLog.setLogLevel(lvl)
+    case "--only-run":
+        onlyRun = true
     case "-h", "--help":
         usage()
     default:
-        if jwtFile == nil { jwtFile = args[i] }
+        if inputFile == nil { inputFile = args[i] }
         else { usage() }
     }
     i += 1
@@ -117,28 +121,29 @@ func levelFromString(_ s: String) -> Int32 {
     }
 }
 
-guard let jwtFile = jwtFile else { usage() }
-guard FileManager.default.fileExists(atPath: jwtFile) else {
-    fputs("error: JWT file not found: \(jwtFile)\n", stderr)
+guard let inputFile = inputFile else { usage() }
+guard FileManager.default.fileExists(atPath: inputFile) else {
+    fputs("error: input file not found: \(inputFile)\n", stderr)
     exit(64)
 }
 
-// Decide where to save the enrolled .zid file.
-let zidPath: String = keepZid ?? {
-    let tmp = NSTemporaryDirectory() + "ziti-test-runner-\(UUID().uuidString).zid"
-    return tmp
-}()
+// Where the .zid lives during this test run.
+// - In enroll mode: tmp path (or --keep-zid) to save the freshly enrolled identity.
+// - In --only-run mode: the input file itself (we do not delete it on cleanup).
+let zidPath: String = onlyRun
+    ? inputFile
+    : (keepZid ?? NSTemporaryDirectory() + "ziti-test-runner-\(UUID().uuidString).zid")
 
-// Guard against leftover temp files if we're not keeping them.
+// Only clean up the zid in enroll mode when the user didn't ask to keep it.
 func cleanupZidIfNeeded() {
-    if keepZid == nil {
+    if !onlyRun && keepZid == nil {
         try? FileManager.default.removeItem(atPath: zidPath)
     }
 }
 
-print("ziti-test-runner: mode=\(mode.rawValue) jwt=\(jwtFile) timeout=\(timeoutSeconds)s zid=\(zidPath)")
+let modeLabel = onlyRun ? "only-run" : mode.rawValue
+print("ziti-test-runner: mode=\(modeLabel) input=\(inputFile) timeout=\(timeoutSeconds)s zid=\(zidPath)")
 
-// We'll drive the whole test through Ziti's uv loop via dispatchMain + exit().
 // `done` guards against double-exit if multiple events arrive.
 var done = false
 func finish(_ code: Int32, _ msg: String) {
@@ -153,42 +158,49 @@ func finish(_ code: Int32, _ msg: String) {
     exit(code)
 }
 
-let onAuth: (String) -> Void = { url in
-    print("Authenticate at: \(url)")
-}
-
-let enrollHandler: (ZitiIdentity?, ZitiError?) -> Void = { zid, zErr in
-    guard let zid = zid else {
-        finish(1, "enrollment failed: \(zErr?.localizedDescription ?? "unknown error")")
-        return
-    }
-    guard zid.save(zidPath) else {
-        finish(1, "failed to save enrolled identity to \(zidPath)")
-        return
-    }
-    print("enrolled id=\"\(zid.id)\" ztAPI=\"\(zid.ztAPI)\"")
-
-    // Load the saved identity and run.
+/// Load a saved identity, run Ziti, and succeed once we've seen:
+///   1. A ContextEvent with status OK (authenticated with the controller)
+///   2. A ServiceEvent with at least one service in `added`
+/// The second check verifies the service channel works end-to-end, not just auth.
+/// CI must configure at least one service + service-policy for the test identity,
+/// otherwise this will time out.
+func runFromZidFile(_ zidPath: String) {
     guard let ziti = Ziti(fromFile: zidPath) else {
         finish(2, "failed to load Ziti identity from \(zidPath)")
         return
     }
 
-    // Register a context-event listener before calling run().
+    var contextOK = false
+    var servicesSeen = false
+
     ziti.registerEventCallback({ event in
-        guard !done else { return }
-        guard let event = event, event.type == .Context, let ctx = event.contextEvent else { return }
-        if ctx.status == 0 {
-            finish(0, "context authenticated (ztAPI=\(zid.ztAPI))")
-            ziti.shutdown()
-        } else {
-            let msg = ctx.err ?? "context error status=\(ctx.status)"
-            finish(3, msg)
+        guard !done, let event = event else { return }
+        switch event.type {
+        case .Context:
+            guard let ctx = event.contextEvent else { return }
+            if ctx.status == 0 {
+                print("context authenticated")
+                contextOK = true
+            } else {
+                let msg = ctx.err ?? "context error status=\(ctx.status)"
+                finish(3, msg)
+                ziti.shutdown()
+                return
+            }
+        case .Service:
+            guard let svc = event.serviceEvent, !svc.added.isEmpty else { return }
+            let names = svc.added.compactMap { $0.name }.joined(separator: ", ")
+            print("services received: [\(names)]")
+            servicesSeen = true
+        default:
+            return
+        }
+        if contextOK && servicesSeen {
+            finish(0, "context+service OK (id=\(ziti.id.id) ztAPI=\(ziti.id.ztAPI))")
             ziti.shutdown()
         }
-    }, ZitiEvent.EventType.Context.rawValue)
+    }, ZitiEvent.EventType.Context.rawValue | ZitiEvent.EventType.Service.rawValue)
 
-    // Overall timeout - if we never see a context event, fail.
     ziti.run { zErr in
         if let zErr = zErr {
             finish(2, "ziti.run init error: \(zErr.localizedDescription)")
@@ -197,21 +209,47 @@ let enrollHandler: (ZitiIdentity?, ZitiError?) -> Void = { zid, zErr in
         ziti.startTimer(UInt64(timeoutSeconds) * 1000, 0) { timer in
             ziti.endTimer(timer)
             if !done {
-                finish(3, "timeout after \(timeoutSeconds)s waiting for context event")
+                let missing = [
+                    contextOK ? nil : "context",
+                    servicesSeen ? nil : "service"
+                ].compactMap { $0 }.joined(separator: "+")
+                finish(3, "timeout after \(timeoutSeconds)s waiting for: \(missing)")
                 ziti.shutdown()
             }
         }
     }
 }
 
-// Kick off enrollment in the chosen mode.
-switch mode {
-case .ott:
-    Ziti.enroll(jwtFile, enrollHandler)
-case .certJwt:
-    Ziti.enrollToCert(jwtFile: jwtFile, onAuth: onAuth, enrollHandler)
-case .tokenJwt:
-    Ziti.enrollToToken(jwtFile: jwtFile, onAuth: onAuth, enrollHandler)
+if onlyRun {
+    // Load the given zid directly and run - no enrollment.
+    runFromZidFile(inputFile)
+} else {
+    // Enroll first, save the zid, then load+run.
+    let onAuth: (String) -> Void = { url in
+        print("Authenticate at: \(url)")
+    }
+
+    let enrollHandler: (ZitiIdentity?, ZitiError?) -> Void = { zid, zErr in
+        guard let zid = zid else {
+            finish(1, "enrollment failed: \(zErr?.localizedDescription ?? "unknown error")")
+            return
+        }
+        guard zid.save(zidPath) else {
+            finish(1, "failed to save enrolled identity to \(zidPath)")
+            return
+        }
+        print("enrolled id=\"\(zid.id)\" ztAPI=\"\(zid.ztAPI)\"")
+        runFromZidFile(zidPath)
+    }
+
+    switch mode {
+    case .ott:
+        Ziti.enroll(inputFile, enrollHandler)
+    case .certJwt:
+        Ziti.enrollToCert(jwtFile: inputFile, onAuth: onAuth, enrollHandler)
+    case .tokenJwt:
+        Ziti.enrollToToken(jwtFile: inputFile, onAuth: onAuth, enrollHandler)
+    }
 }
 
 dispatchMain()
