@@ -108,6 +108,12 @@ jobs:
         xcodebuild build -configuration Release -scheme CZiti-macOS -derivedDataPath ./DerivedData/CZiti \
            -arch x86_64 -arch arm64 ONLY_ACTIVE_ARCH=NO -sdk macosx  | xcpretty
 
+    - name: Run Tests
+      run: |
+        set -o pipefail
+        xcodebuild test -scheme CZitiTests -derivedDataPath ./DerivedData/CZiti \
+          -sdk macosx -destination 'platform=macOS' ONLY_ACTIVE_ARCH=YES | xcpretty
+
     - name: Create Frameworks
       run: |
         ./make_dist.sh
