@@ -154,9 +154,13 @@ jobs:
           sleep 1
         done
 
-        # Login and create an OTT identity
+        # Login, create an OTT identity, and preseed a service + dial policy so the
+        # test verifies service discovery after auth (not just auth).
         ziti edge login localhost:1280 -u admin -p admin -y
-        ziti edge create identity ztr-integ -o /tmp/ztr.jwt
+        ziti edge create identity ztr-integ -a ztr-integ -o /tmp/ztr.jwt
+        ziti edge create service ztr-svc -a ztr-svc
+        ziti edge create service-policy ztr-svc-dial Dial \
+          --identity-roles '#ztr-integ' --service-roles '#ztr-svc'
 
         TOOL=./DerivedData/CZiti/Build/Products/Debug/ziti-test-runner
 

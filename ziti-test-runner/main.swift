@@ -158,25 +158,48 @@ func finish(_ code: Int32, _ msg: String) {
     exit(code)
 }
 
-/// Load a saved identity, run Ziti, and succeed on the first OK context event.
+/// Load a saved identity, run Ziti, and succeed once we've seen:
+///   1. A ContextEvent with status OK (authenticated with the controller)
+///   2. A ServiceEvent with at least one service in `added`
+/// The second check verifies the service channel works end-to-end, not just auth.
+/// CI must configure at least one service + service-policy for the test identity,
+/// otherwise this will time out.
 func runFromZidFile(_ zidPath: String) {
     guard let ziti = Ziti(fromFile: zidPath) else {
         finish(2, "failed to load Ziti identity from \(zidPath)")
         return
     }
 
+    var contextOK = false
+    var servicesSeen = false
+
     ziti.registerEventCallback({ event in
-        guard !done else { return }
-        guard let event = event, event.type == .Context, let ctx = event.contextEvent else { return }
-        if ctx.status == 0 {
-            finish(0, "context authenticated (id=\(ziti.id.id) ztAPI=\(ziti.id.ztAPI))")
-            ziti.shutdown()
-        } else {
-            let msg = ctx.err ?? "context error status=\(ctx.status)"
-            finish(3, msg)
+        guard !done, let event = event else { return }
+        switch event.type {
+        case .Context:
+            guard let ctx = event.contextEvent else { return }
+            if ctx.status == 0 {
+                print("context authenticated")
+                contextOK = true
+            } else {
+                let msg = ctx.err ?? "context error status=\(ctx.status)"
+                finish(3, msg)
+                ziti.shutdown()
+                return
+            }
+        case .Service:
+            guard let svc = event.serviceEvent, !svc.added.isEmpty else { return }
+            let names = svc.added.compactMap { $0.name }.joined(separator: ", ")
+            print("services received: [\(names)]")
+            servicesSeen = true
+        default:
+            return
+        }
+        if contextOK && servicesSeen {
+            finish(0, "context+service OK (id=\(ziti.id.id) ztAPI=\(ziti.id.ztAPI))")
             ziti.shutdown()
         }
-    }, ZitiEvent.EventType.Context.rawValue)
+    }, ZitiEvent.EventType.Context.rawValue | ZitiEvent.EventType.Service.rawValue)
 
     ziti.run { zErr in
         if let zErr = zErr {
@@ -186,7 +209,11 @@ func runFromZidFile(_ zidPath: String) {
         ziti.startTimer(UInt64(timeoutSeconds) * 1000, 0) { timer in
             ziti.endTimer(timer)
             if !done {
-                finish(3, "timeout after \(timeoutSeconds)s waiting for context event")
+                let missing = [
+                    contextOK ? nil : "context",
+                    servicesSeen ? nil : "service"
+                ].compactMap { $0 }.joined(separator: "+")
+                finish(3, "timeout after \(timeoutSeconds)s waiting for: \(missing)")
                 ziti.shutdown()
             }
         }
