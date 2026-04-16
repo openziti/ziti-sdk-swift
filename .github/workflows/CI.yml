@@ -114,6 +114,17 @@ jobs:
         xcodebuild test -scheme CZitiTests -derivedDataPath ./DerivedData/CZiti \
           -sdk macosx -destination 'platform=macOS' ONLY_ACTIVE_ARCH=YES | xcpretty
 
+    # Builds the integration test tool to catch compile regressions. End-to-end
+    # execution against `ziti edge quickstart` is deferred until the macOS data
+    # protection keychain / entitlement issue is resolved (see ziti-test-runner/main.swift).
+    - name: Build ziti-test-runner
+      run: |
+        set -o pipefail
+        xcodebuild build -configuration Debug -scheme ziti-test-runner \
+          -derivedDataPath ./DerivedData/CZiti -sdk macosx \
+          -destination 'platform=macOS' ONLY_ACTIVE_ARCH=YES \
+          CODE_SIGNING_ALLOWED=NO | xcpretty
+
     - name: Create Frameworks
       run: |
         ./make_dist.sh
