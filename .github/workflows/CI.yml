@@ -158,9 +158,16 @@ jobs:
         ziti edge login localhost:1280 -u admin -p admin -y
         ziti edge create identity ztr-integ -o /tmp/ztr.jwt
 
-        # Run the integration test tool
-        ./DerivedData/CZiti/Build/Products/Debug/ziti-test-runner \
-          --timeout 60 /tmp/ztr.jwt
+        TOOL=./DerivedData/CZiti/Build/Products/Debug/ziti-test-runner
+
+        # Pass 1: enroll and verify context auth, keeping the .zid for pass 2.
+        echo "=== Pass 1: enroll + run ==="
+        "$TOOL" --timeout 60 --keep-zid /tmp/ztr.zid /tmp/ztr.jwt
+
+        # Pass 2: fresh process, load the .zid and re-auth. Verifies that the persisted
+        # key+cert are sufficient to start Ziti without any in-memory state carryover.
+        echo "=== Pass 2: only-run from saved zid ==="
+        "$TOOL" --timeout 60 --only-run /tmp/ztr.zid
 
     - name: Create Frameworks
       run: |
