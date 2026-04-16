@@ -135,10 +135,7 @@ jobs:
         gh release download --repo openziti/ziti \
           --pattern '*darwin-arm64*.tar.gz' \
           --output /tmp/ziti.tgz
-        ls -la /tmp/ziti.tgz
-        # Inspect archive layout (first run proves extraction path is right)
-        tar -tzf /tmp/ziti.tgz | head -5
-        sudo tar -xzf /tmp/ziti.tgz -C /usr/local/bin --strip-components=1 ziti/ziti
+        sudo tar -xzf /tmp/ziti.tgz -C /usr/local/bin ziti
         ziti version
 
     - name: Integration test (OTT enrollment against quickstart)
