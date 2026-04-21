@@ -2,7 +2,7 @@
   "warnings": [
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/Ziti.swift",
-      "line": 1436,
+      "line": 1454,
       "symbol": "Ziti.extAuth(_:_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -51,7 +51,7 @@
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiIdentity.swift",
-      "line": 80,
+      "line": 86,
       "symbol": "ZitiIdentity.getCertificates(_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
