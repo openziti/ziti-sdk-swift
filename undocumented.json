@@ -50,6 +50,20 @@
       "warning": "undocumented"
     },
     {
+      "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiHttpProxyConfig.swift",
+      "line": 231,
+      "symbol": "ZitiProxyCredentials.username",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiHttpProxyConfig.swift",
+      "line": 232,
+      "symbol": "ZitiProxyCredentials.password",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiIdentity.swift",
       "line": 86,
       "symbol": "ZitiIdentity.getCertificates(_:)",
