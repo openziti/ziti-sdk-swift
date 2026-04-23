@@ -17,6 +17,7 @@ limitations under the License.
 #include <stdlib.h>
 #include <string.h>
 #include "ziti/ziti_tunnel_cbs.h"
+#include <tlsuv/connector.h>
 #include "Ziti-Bridging-Header.h"
 
 static const char* _ziti_all[] = {
@@ -99,4 +100,30 @@ void addUpstreamDns(tunnel_upstream_dns_array upstreams, const char *host, uint1
     upstream->host = strdup(host);
     upstream->port = port;
     upstreams[i] = upstream;
+}
+
+// --- HTTP proxy ---
+static tlsuv_connector_t *current_proxy_connector = NULL;
+
+void ziti_proxy_set(const char *host, const char *port) {
+    if (current_proxy_connector != NULL) {
+        tlsuv_set_global_connector(NULL);
+        current_proxy_connector->free(current_proxy_connector);
+        current_proxy_connector = NULL;
+    }
+    current_proxy_connector = tlsuv_new_proxy_connector(tlsuv_PROXY_HTTP, host, port);
+    tlsuv_set_global_connector(current_proxy_connector);
+}
+
+int ziti_proxy_set_auth(const char *username, const char *password) {
+    if (current_proxy_connector == NULL) return -1;
+    return current_proxy_connector->set_auth(current_proxy_connector, tlsuv_PROXY_BASIC, username, password);
+}
+
+void ziti_proxy_clear(void) {
+    if (current_proxy_connector != NULL) {
+        tlsuv_set_global_connector(NULL);
+        current_proxy_connector->free(current_proxy_connector);
+        current_proxy_connector = NULL;
+    }
 }
