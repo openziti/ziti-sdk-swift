@@ -41,3 +41,8 @@ void freeString(char *str);
 
 tunnel_upstream_dns_array createUpstreamDnsArray(uint8_t size);
 void addUpstreamDns(tunnel_upstream_dns_array upstreams, const char *host, uint16_t port);
+
+// HTTP proxy
+void ziti_proxy_set(const char *host, const char *port);
+int ziti_proxy_set_auth(const char *username, const char *password);
+void ziti_proxy_clear(void);
