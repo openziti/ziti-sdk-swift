@@ -1051,6 +1051,7 @@ import CZitiPrivate
 
         var zitiOpts = ziti_options(disabled: id.startDisabled ?? false,
                                 config_types: ziti_all_configs,
+                                e2ee_mode: ziti_crypto_none,
                                 api_page_size: 25,
                                 refresh_interval: refresh_interval,
                                 metrics_type: EWMA_1m,

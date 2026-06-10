@@ -140,23 +140,23 @@ jobs:
 
     - name: Integration test (OTT enrollment against quickstart)
       run: |
-        set -euo pipefail
+        set -xeuo pipefail
         rm -rf /tmp/qs && mkdir /tmp/qs
         nohup ziti edge quickstart --home /tmp/qs > /tmp/qs.log 2>&1 &
         QS_PID=$!
         trap "kill $QS_PID 2>/dev/null || true; cat /tmp/qs.log | tail -60" EXIT
 
-        # Wait for controller
+        # Wait for controller. simple port check is insufficent with 2.0 as more time is needed for raft setup,
+        # so use login success as readiness indicator.
         for i in $(seq 1 60); do
-          if curl -sk https://localhost:1280/edge/client/v1/version >/dev/null 2>&1; then
+          if ziti edge login localhost:1280 -u admin -p admin -y; then
             echo "controller ready after ${i}s"; break
           fi
           sleep 1
         done
 
-        # Login, create an OTT identity, and preseed a service + dial policy so the
+        # create an OTT identity, and preseed a service + dial policy so the
         # test verifies service discovery after auth (not just auth).
-        ziti edge login localhost:1280 -u admin -p admin -y
         ziti edge create identity ztr-integ -a ztr-integ -o /tmp/ztr.jwt
         ziti edge create service ztr-svc -a ztr-svc
         ziti edge create service-policy ztr-svc-dial Dial \
