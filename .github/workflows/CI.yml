@@ -140,7 +140,7 @@ jobs:
 
     - name: Integration test (OTT enrollment against quickstart)
       run: |
-        set -euo pipefail
+        set -xeuo pipefail
         rm -rf /tmp/qs && mkdir /tmp/qs
         nohup ziti edge quickstart --home /tmp/qs > /tmp/qs.log 2>&1 &
         QS_PID=$!
