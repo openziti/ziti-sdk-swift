@@ -4,4 +4,3 @@ include($ENV{VCPKG_ROOT}/triplets/community/arm64-ios.cmake)
 # identical --host and --build triples, causing configure to try to run iOS binaries
 # on the host and fail (exit code 77).
 set(VCPKG_MAKE_BUILD_TRIPLET "--host=arm-apple-darwin")
-set(VCPKG_OSX_SYSROOT iphonesimulator)
