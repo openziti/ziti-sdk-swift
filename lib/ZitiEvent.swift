@@ -170,27 +170,36 @@ import CZitiPrivate
         /// Authentication flow is stuck, most likely due to (external auth) configuration
         case CannotContinue = 0
 
+        /// Request for MFA enrollment
+        case EnrollTotp = 1
+
         /// Request for MFA code
-        case PromptTotp = 1
+        case PromptTotp = 2
 
         /// Request for HSM/TPM key pin (not yet implemented)
-        case PromptPin = 2
-
-        /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
-        case LoginExternal = 3
-
-        case Unknown = 4
+        case PromptPin = 3
 
         /// Request for app to select an external auth provider from [providers] list, then call `extAuth(provider:)`
-        case SelectExternal = 5
+        case SelectExternal = 4
+
+        /// Request for app to launch external program/browser that can authenticate with url in [detail] field of auth event
+        case LoginExternal = 5
+
+        /// Fully authenticated
+        case Success = 6
+
+        case Unknown = 7
+
 
         init(_ action:ziti_auth_action) {
             switch action {
             case ziti_auth_cannot_continue: self = .CannotContinue
+            case ziti_auth_enroll_totp:     self = .EnrollTotp
             case ziti_auth_prompt_totp:     self = .PromptTotp
             case ziti_auth_prompt_pin:      self = .PromptPin
             case ziti_auth_select_external: self = .SelectExternal
             case ziti_auth_login_external:  self = .LoginExternal
+            case ziti_auth_success:         self = .Success
             default: self = .Unknown
             }
         }
@@ -199,10 +208,12 @@ import CZitiPrivate
         public var debug: String {
             switch self {
             case .CannotContinue:  return ".CannotContinue"
+            case .EnrollTotp:      return ".EnrollTotp"
             case .PromptTotp:      return ".PromptTotp"
             case .PromptPin:       return ".PromptPin"
             case .SelectExternal:  return ".SelectExternal"
             case .LoginExternal:   return ".LoginExternal"
+            case .Success:         return ".Success"
             case .Unknown:         return ".Unknown"
             @unknown default:      return "unknown \(self.rawValue)"
             }
