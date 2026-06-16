@@ -102,9 +102,6 @@ import CZitiPrivate
         /// MFA Enrollment Challenge
         case EnrollmentChallenge
         
-        /// MFA Successful
-        case Success
-        
         /// Unregognized status
         case Uknown
         
@@ -116,7 +113,6 @@ import CZitiPrivate
             case mfa_status_enrollment_verification: self = .EnrollmentVerification
             case mfa_status_enrollment_remove: self = .EnrollmentRemove
             case mfa_status_enrollment_challenge: self = .EnrollmentChallenge
-            case mfa_status_success: self = .Success
             default: self = .Uknown
             }
         }
@@ -129,7 +125,6 @@ import CZitiPrivate
             case .EnrollmentVerification: return mfa_status_enrollment_verification
             case .EnrollmentRemove: return mfa_status_enrollment_remove
             case .EnrollmentChallenge: return mfa_status_enrollment_challenge
-            case .Success: return mfa_status_success
             case .Uknown: return mfa_status_Unknown
             }
         }
