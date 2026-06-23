@@ -90,6 +90,9 @@ import CZitiPrivate
         /// MFA Authentication Challenge
         case AuthChallenge
         
+        /// MFA Enrollment Required
+        case EnrollmentRequired
+
         /// MFA Enrollment Verification
         case EnrollmentVerification
         
@@ -106,6 +109,7 @@ import CZitiPrivate
             switch mfaStatus {
             case mfa_status_mfa_auth_status: self = .AuthStatus
             case mfa_status_auth_challenge: self = .AuthChallenge
+            case mfa_status_enrollment_required: self = .EnrollmentRequired
             case mfa_status_enrollment_verification: self = .EnrollmentVerification
             case mfa_status_enrollment_remove: self = .EnrollmentRemove
             case mfa_status_enrollment_challenge: self = .EnrollmentChallenge
@@ -117,6 +121,7 @@ import CZitiPrivate
             switch self {
             case .AuthStatus: return mfa_status_mfa_auth_status
             case .AuthChallenge: return mfa_status_auth_challenge
+            case .EnrollmentRequired: return mfa_status_enrollment_required
             case .EnrollmentVerification: return mfa_status_enrollment_verification
             case .EnrollmentRemove: return mfa_status_enrollment_remove
             case .EnrollmentChallenge: return mfa_status_enrollment_challenge
@@ -147,7 +152,7 @@ import CZitiPrivate
     public var code:Int64
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<mfa_event>) {
-        self.operationType = MfaStatus(evt.pointee.operation_type)
+        self.operationType = MfaStatus(mfa_statuss.value_of(evt.pointee.operation))
         self.code = evt.pointee.code
         
         self.recovery_codes = []
@@ -309,6 +314,66 @@ import CZitiPrivate
                 i = model_list_it_next(i)
             }
         }
+    }
+}
+
+/// Class encapsulating Ziti Tunnel SDK C Router Event
+@objc public class ZitiTunnelRouterEvent : ZitiTunnelEvent {
+    /// Enumeration of Router Status
+    public enum RouterStatus  {
+        
+        /// Router Added
+        case Added
+        
+        /// Router Connected
+        case Connected
+        
+        /// Router Disconnected
+        case Disconnected
+
+        /// Router Removed
+        case Removed
+        
+        /// Unregognized status
+        case Uknown
+        
+        init(_ routerStatus:rt_status) {
+            switch routerStatus {
+            case rt_status_added: self = .Added
+            case rt_status_connected: self = .Connected
+            case rt_status_disconnected: self = .Disconnected
+            case rt_status_removed: self = .Removed
+            default: self = .Uknown
+            }
+        }
+        
+        var routerStatus : rt_status {
+            switch self {
+            case .Added: return rt_status_added
+            case .Connected: return rt_status_connected
+            case .Disconnected: return rt_status_disconnected
+            case .Removed: return rt_status_removed
+            case .Uknown: return rt_status_Unknown
+            }
+        }
+    }
+
+    /// Router name
+    public var name:String = ""
+    
+    /// Router status
+    public var status:RouterStatus = .Uknown
+    
+    /// Router address
+    public var address:String = ""
+    
+    /// Router version
+    public var version:String = ""
+    
+    init(_ ziti:Ziti, _ evt:UnsafePointer<router_event>) {
+        super.init(ziti)
+        name = toStr(evt.pointee.name)
+        status = RouterStatus(evt.pointee.status)
     }
 }
 
