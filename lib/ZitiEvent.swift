@@ -127,11 +127,15 @@ import CZitiPrivate
         /// Name of router associated with this event
         @objc public let name:String
         
+        /// Router address:port
+        @objc public let address:String
+        
         /// Version of router associated with this event
         @objc public let version:String
         init(_ cEvent:ziti_router_event) {
             status = RouterStatus(rawValue: cEvent.status.rawValue) ?? RouterStatus.Unavailable
             name = cEvent.name != nil ? String(cString: cEvent.name) : ""
+            address = cEvent.address != nil ? String(cString: cEvent.address) : ""
             version = cEvent.version != nil ? String(cString: cEvent.version) : ""
         }
     }

@@ -317,6 +317,66 @@ import CZitiPrivate
     }
 }
 
+/// Class encapsulating Ziti Tunnel SDK C Router Event
+@objc public class ZitiTunnelRouterEvent : ZitiTunnelEvent {
+    /// Enumeration of Router Status
+    public enum RouterStatus  {
+        
+        /// Router Added
+        case Added
+        
+        /// Router Connected
+        case Connected
+        
+        /// Router Disconnected
+        case Disconnected
+
+        /// Router Removed
+        case Removed
+        
+        /// Unregognized status
+        case Uknown
+        
+        init(_ routerStatus:rt_status) {
+            switch routerStatus {
+            case rt_status_added: self = .Added
+            case rt_status_connected: self = .Connected
+            case rt_status_disconnected: self = .Disconnected
+            case rt_status_removed: self = .Removed
+            default: self = .Uknown
+            }
+        }
+        
+        var routerStatus : rt_status {
+            switch self {
+            case .Added: return rt_status_added
+            case .Connected: return rt_status_connected
+            case .Disconnected: return rt_status_disconnected
+            case .Removed: return rt_status_removed
+            case .Uknown: return rt_status_Unknown
+            }
+        }
+    }
+
+    /// Router name
+    public var name:String = ""
+    
+    /// Router status
+    public var status:RouterStatus = .Uknown
+    
+    /// Router address
+    public var address:String = ""
+    
+    /// Router version
+    public var version:String = ""
+    
+    init(_ ziti:Ziti, _ evt:UnsafePointer<router_event>) {
+        super.init(ziti)
+        name = toStr(evt.pointee.name)
+        status = RouterStatus(evt.pointee.status)
+    }
+}
+
 func toStr(_ cStr:UnsafePointer<CChar>?) -> String {
     if let cStr = cStr { return String(cString: cStr) }
     return ""
