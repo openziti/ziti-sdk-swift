@@ -152,7 +152,7 @@ import CZitiPrivate
     public var code:Int64
     
     init(_ ziti:Ziti, _ evt:UnsafePointer<mfa_event>) {
-        self.operationType = MfaStatus(evt.pointee.operation_type)
+        self.operationType = MfaStatus(mfa_statuss.value_of(evt.pointee.operation))
         self.code = evt.pointee.code
         
         self.recovery_codes = []
