@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>EnrollMode Enumeration Reference</title>
+    <title>RouterStatus Enumeration Reference</title>
     <link rel="stylesheet" type="text/css" href="../../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Enum/EnrollMode" class="dashAnchor"></a>
-    <a title="EnrollMode Enumeration Reference"></a>
+    <a name="//apple_ref/swift/Enum/RouterStatus" class="dashAnchor"></a>
+    <a title="RouterStatus Enumeration Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../../index.html">CZiti Docs</a></p>
@@ -31,9 +31,9 @@
         <img id="carat" src="../../img/carat.png" alt=""/>
         <a href="../../Classes.html">Classes</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        <a href="../../Classes/Ziti.html">Ziti</a>
+        <a href="../../Classes/ZitiTunnelRouterEvent.html">ZitiTunnelRouterEvent</a>
         <img id="carat" src="../../img/carat.png" alt=""/>
-        EnrollMode Enumeration Reference
+        RouterStatus Enumeration Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -213,16 +213,15 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>EnrollMode</h1>
+            <h1>RouterStatus</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">@objc</span>
-<span class="kd">public</span> <span class="kd">enum</span> <span class="kt">EnrollMode</span> <span class="p">:</span> <span class="kt">Int</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">RouterStatus</span></code></pre>
 
                 </div>
               </div>
-            <p>Enrollment mode for just-in-time identity creation via external JWT auth.</p>
+            <p>Enumeration of Router Status</p>
 
           </section>
           <section class="section task-group-section">
@@ -231,9 +230,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti4ZitiC10EnrollModeO4noneyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/none" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti4ZitiC10EnrollModeO4noneyA2EmF">none</a>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO5AddedyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/Added" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO5AddedyA2EmF">Added</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -241,14 +240,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>No enrollment - identity must be pre-created by admin (default)</p>
+                        <p>Router Added</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="k">none</span> <span class="o">=</span> <span class="mi">0</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Added</span></code></pre>
 
                         </div>
                       </div>
@@ -258,9 +257,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti4ZitiC10EnrollModeO4certyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/cert" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti4ZitiC10EnrollModeO4certyA2EmF">cert</a>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO9ConnectedyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/Connected" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO9ConnectedyA2EmF">Connected</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -268,14 +267,14 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Generate CSR, exchange for client certificate</p>
+                        <p>Router Connected</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">cert</span> <span class="o">=</span> <span class="mi">1</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Connected</span></code></pre>
 
                         </div>
                       </div>
@@ -285,9 +284,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti4ZitiC10EnrollModeO5tokenyA2EmF"></a>
-                    <a name="//apple_ref/swift/Element/token" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti4ZitiC10EnrollModeO5tokenyA2EmF">token</a>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO12DisconnectedyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/Disconnected" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO12DisconnectedyA2EmF">Disconnected</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -295,14 +294,68 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>Auto-create identity on controller, no certificate</p>
+                        <p>Router Disconnected</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="k">case</span> <span class="n">token</span> <span class="o">=</span> <span class="mi">2</span></code></pre>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Disconnected</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO7RemovedyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/Removed" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO7RemovedyA2EmF">Removed</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Router Removed</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Removed</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO6UknownyA2EmF"></a>
+                    <a name="//apple_ref/swift/Element/Uknown" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO6UknownyA2EmF">Uknown</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Unregognized status</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="k">case</span> <span class="kt">Uknown</span></code></pre>
 
                         </div>
                       </div>

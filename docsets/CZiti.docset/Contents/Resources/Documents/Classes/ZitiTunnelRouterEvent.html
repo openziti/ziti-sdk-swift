@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>ZitiTunnelClientConfigV1 Class Reference</title>
+    <title>ZitiTunnelRouterEvent Class Reference</title>
     <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
     <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
     <meta charset='utf-8'>
@@ -13,8 +13,8 @@
     <script src="../js/jazzy.search.js" defer></script>
   </head>
   <body>
-    <a name="//apple_ref/swift/Class/ZitiTunnelClientConfigV1" class="dashAnchor"></a>
-    <a title="ZitiTunnelClientConfigV1 Class Reference"></a>
+    <a name="//apple_ref/swift/Class/ZitiTunnelRouterEvent" class="dashAnchor"></a>
+    <a title="ZitiTunnelRouterEvent Class Reference"></a>
     <header>
       <div class="content-wrapper">
         <p><a href="../index.html">CZiti Docs</a></p>
@@ -31,7 +31,7 @@
         <img id="carat" src="../img/carat.png" alt=""/>
         <a href="../Classes.html">Classes</a>
         <img id="carat" src="../img/carat.png" alt=""/>
-        ZitiTunnelClientConfigV1 Class Reference
+        ZitiTunnelRouterEvent Class Reference
       </p>
     </div>
     <div class="content-wrapper">
@@ -211,15 +211,16 @@
       <article class="main-content">
         <section>
           <section class="section">
-            <h1>ZitiTunnelClientConfigV1</h1>
+            <h1>ZitiTunnelRouterEvent</h1>
               <div class="declaration">
                 <div class="language">
                   
-                  <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelClientConfigV1</span> <span class="p">:</span> <span class="kt">Codable</span><span class="p">,</span> <span class="kt">ZitiServiceConfig</span></code></pre>
+                  <pre class="highlight swift"><code><span class="kd">@objc</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="kt">ZitiTunnelRouterEvent</span> <span class="p">:</span> <span class="kt"><a href="../Classes/ZitiTunnelEvent.html">ZitiTunnelEvent</a></span></code></pre>
 
                 </div>
               </div>
-            <p>Class representation of ziti-tunneler-client.v1 service configuration</p>
+            <p>Class encapsulating Ziti Tunnel SDK C Router Event</p>
 
           </section>
           <section class="section task-group-section">
@@ -228,9 +229,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti24ZitiTunnelClientConfigV1C8hostnameSSvp"></a>
-                    <a name="//apple_ref/swift/Property/hostname" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti24ZitiTunnelClientConfigV1C8hostnameSSvp">hostname</a>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO"></a>
+                    <a name="//apple_ref/swift/Enum/RouterStatus" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC0D6StatusO">RouterStatus</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -238,14 +239,15 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>hostname to intercept</p>
+                        <p>Enumeration of Router Status</p>
 
+                        <a href="../Classes/ZitiTunnelRouterEvent/RouterStatus.html" class="slightly-smaller">See more</a>
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">hostname</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">enum</span> <span class="kt">RouterStatus</span></code></pre>
 
                         </div>
                       </div>
@@ -255,9 +257,9 @@
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/s:5CZiti24ZitiTunnelClientConfigV1C4portSivp"></a>
-                    <a name="//apple_ref/swift/Property/port" class="dashAnchor"></a>
-                    <a class="token" href="#/s:5CZiti24ZitiTunnelClientConfigV1C4portSivp">port</a>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC4nameSSvp"></a>
+                    <a name="//apple_ref/swift/Property/name" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC4nameSSvp">name</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -265,14 +267,95 @@
                     <section class="section">
                       <div class="pointer"></div>
                       <div class="abstract">
-                        <p>port number of <code><a href="../Classes/ZitiTunnelClientConfigV1.html#/s:5CZiti24ZitiTunnelClientConfigV1C8hostnameSSvp">hostname</a></code> to intercept</p>
+                        <p>Router name</p>
 
                       </div>
                       <div class="declaration">
                         <h4>Declaration</h4>
                         <div class="language">
                           <p class="aside-title">Swift</p>
-                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">let</span> <span class="nv">port</span><span class="p">:</span> <span class="kt">Int</span></code></pre>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">name</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC6statusAC0D6StatusOvp"></a>
+                    <a name="//apple_ref/swift/Property/status" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC6statusAC0D6StatusOvp">status</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Router status</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">status</span><span class="p">:</span> <span class="kt"><a href="../Classes/ZitiTunnelRouterEvent/RouterStatus.html">RouterStatus</a></span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC7addressSSvp"></a>
+                    <a name="//apple_ref/swift/Property/address" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC7addressSSvp">address</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Router address</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">address</span><span class="p">:</span> <span class="kt">String</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti21ZitiTunnelRouterEventC7versionSSvp"></a>
+                    <a name="//apple_ref/swift/Property/version" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti21ZitiTunnelRouterEventC7versionSSvp">version</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Router version</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">version</span><span class="p">:</span> <span class="kt">String</span></code></pre>
 
                         </div>
                       </div>
