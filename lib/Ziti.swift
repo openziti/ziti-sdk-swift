@@ -289,7 +289,27 @@ import CZitiPrivate
     ///      - zid: `ZitiIdentity` returned on successful enrollment.  `nil` on failed attempt
     ///      - error: `ZitiError` containing error information on failed enrollment attempt
     public typealias EnrollmentCallback = (_ zid:ZitiIdentity?, _ error:ZitiError?) -> Void
-    
+
+    /// Type used for the closure called when the controller's auth policy requires enrolling a new
+    /// TOTP authenticator before enroll-to-URL can complete.
+    ///
+    /// - Parameters:
+    ///      - mfaEnrollment: provisioning URL and recovery codes for the new TOTP authenticator
+    ///      - error: non-nil if a previously-submitted code was rejected (retry with a fresh code)
+    ///      - submit: call with the user's TOTP code, or `nil` to cancel enrollment
+    public typealias MfaEnrollRequiredCallback = (_ mfaEnrollment:ZitiMfaEnrollment,
+                                                   _ error:ZitiError?,
+                                                   _ submit: @escaping (_ code:String?) -> Void) -> Void
+
+    /// Type used for the closure called when the controller's auth policy requires a TOTP code
+    /// from an already-enrolled authenticator before enroll-to-URL can complete.
+    ///
+    /// - Parameters:
+    ///      - error: non-nil if a previously-submitted code was rejected (retry with a fresh code)
+    ///      - submit: call with the user's TOTP code, or `nil` to cancel enrollment
+    public typealias MfaCodeRequiredCallback = (_ error:ZitiError?,
+                                                  _ submit: @escaping (_ code:String?) -> Void) -> Void
+
     /// Enroll a Ziti identity using a JWT file.
     ///
     /// The C SDK auto-detects the JWT type from the `em` claim:
@@ -437,6 +457,8 @@ import CZitiPrivate
     @objc public static func enrollToCert(jwtFile:String,
                                           provider:String? = nil,
                                           onAuth: @escaping (_ url:String) -> Void,
+                                          onMfaEnrollRequired: @escaping MfaEnrollRequiredCallback = { _, _, submit in submit(nil) },
+                                          onMfaCodeRequired: @escaping MfaCodeRequiredCallback = { _, submit in submit(nil) },
                                           _ enrollCallback: @escaping EnrollmentCallback) {
         let jwtContent: String
         do {
@@ -463,7 +485,9 @@ import CZitiPrivate
             let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Network JWT enrolled, controller: \(zid.ztAPI)", function:"enrollToCert()")
 
-            runEnrollTo(mode: .cert, zid: zid, provider: provider, onAuth: onAuth, enrollCallback)
+            runEnrollTo(mode: .cert, zid: zid, provider: provider, onAuth: onAuth,
+                        onMfaEnrollRequired: onMfaEnrollRequired, onMfaCodeRequired: onMfaCodeRequired,
+                        enrollCallback)
         }
     }
 
@@ -477,6 +501,8 @@ import CZitiPrivate
     @objc public static func enrollToCert(controllerURL:String,
                                           provider:String? = nil,
                                           onAuth: @escaping (_ url:String) -> Void,
+                                          onMfaEnrollRequired: @escaping MfaEnrollRequiredCallback = { _, _, submit in submit(nil) },
+                                          onMfaCodeRequired: @escaping MfaCodeRequiredCallback = { _, submit in submit(nil) },
                                           _ enrollCallback: @escaping EnrollmentCallback) {
         ZitiEnroller.enroll(url: controllerURL) { resp, _, zErr in
             guard let resp = resp, zErr == nil else {
@@ -493,7 +519,9 @@ import CZitiPrivate
             let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Enrolled with controller: \(zid.ztAPI)", function:"enrollToCert()")
 
-            runEnrollTo(mode: .cert, zid: zid, provider: provider, onAuth: onAuth, enrollCallback)
+            runEnrollTo(mode: .cert, zid: zid, provider: provider, onAuth: onAuth,
+                        onMfaEnrollRequired: onMfaEnrollRequired, onMfaCodeRequired: onMfaCodeRequired,
+                        enrollCallback)
         }
     }
 
@@ -509,6 +537,8 @@ import CZitiPrivate
     @objc public static func enrollToToken(jwtFile:String,
                                            provider:String? = nil,
                                            onAuth: @escaping (_ url:String) -> Void,
+                                           onMfaEnrollRequired: @escaping MfaEnrollRequiredCallback = { _, _, submit in submit(nil) },
+                                           onMfaCodeRequired: @escaping MfaCodeRequiredCallback = { _, submit in submit(nil) },
                                            _ enrollCallback: @escaping EnrollmentCallback) {
         let jwtContent: String
         do {
@@ -535,7 +565,9 @@ import CZitiPrivate
             let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Network JWT enrolled, controller: \(zid.ztAPI)", function:"enrollToToken()")
 
-            runEnrollTo(mode: .token, zid: zid, provider: provider, onAuth: onAuth, enrollCallback)
+            runEnrollTo(mode: .token, zid: zid, provider: provider, onAuth: onAuth,
+                        onMfaEnrollRequired: onMfaEnrollRequired, onMfaCodeRequired: onMfaCodeRequired,
+                        enrollCallback)
         }
     }
 
@@ -550,6 +582,8 @@ import CZitiPrivate
     @objc public static func enrollToToken(controllerURL:String,
                                            provider:String? = nil,
                                            onAuth: @escaping (_ url:String) -> Void,
+                                           onMfaEnrollRequired: @escaping MfaEnrollRequiredCallback = { _, _, submit in submit(nil) },
+                                           onMfaCodeRequired: @escaping MfaCodeRequiredCallback = { _, submit in submit(nil) },
                                            _ enrollCallback: @escaping EnrollmentCallback) {
         ZitiEnroller.enroll(url: controllerURL) { resp, _, zErr in
             guard let resp = resp, zErr == nil else {
@@ -566,7 +600,9 @@ import CZitiPrivate
             let zid = ZitiIdentity(id: UUID().uuidString, ztAPIs: resp.ztAPIs, ca: ca)
             log.info("Enrolled with controller: \(zid.ztAPI)", function:"enrollToToken()")
 
-            runEnrollTo(mode: .token, zid: zid, provider: provider, onAuth: onAuth, enrollCallback)
+            runEnrollTo(mode: .token, zid: zid, provider: provider, onAuth: onAuth,
+                        onMfaEnrollRequired: onMfaEnrollRequired, onMfaCodeRequired: onMfaCodeRequired,
+                        enrollCallback)
         }
     }
 
@@ -686,7 +722,10 @@ import CZitiPrivate
             guard let ctxEvent = event.contextEvent else { return }
             guard !completed else { return }
 
-            if ctxEvent.status == 0 {
+            if ctxEvent.status == 0 || ctxEvent.status == Int32(CZitiPrivate.ZITI_PARTIALLY_AUTHENTICATED) {
+                // No SelectExternal auth event arrived, so no ext auth is configured. Partial
+                // authentication (TOTP required) is reported the same way here since queryProviders
+                // only cares about ext auth providers - actual TOTP handling happens in runEnrollTo.
                 log.info("queryProviders: context authenticated without ext auth, no providers", function:"runQueryProviders()")
                 completed = true
                 ziti.shutdown()
@@ -731,6 +770,8 @@ import CZitiPrivate
                                     zid:ZitiIdentity,
                                     provider:String? = nil,
                                     onAuth: @escaping (_ url:String) -> Void,
+                                    onMfaEnrollRequired: @escaping MfaEnrollRequiredCallback = { _, _, submit in submit(nil) },
+                                    onMfaCodeRequired: @escaping MfaCodeRequiredCallback = { _, submit in submit(nil) },
                                     _ enrollCallback: @escaping EnrollmentCallback) {
         let modeLabel = mode == .cert ? "enrollToCert" : "enrollToToken"
         let ziti = Ziti(withId: zid)
@@ -811,6 +852,67 @@ import CZitiPrivate
                         ziti_ext_auth(ziti.ztx, Ziti.onExtAuthStatus, ziti.toVoidPtr())
                     }
 
+                case .EnrollTotp:
+                    ziti.perform {
+                        ziti.mfaEnroll { _, status, mfaEnrollment in
+                            guard status == Int32(Ziti.ZITI_OK), let mfaEnrollment = mfaEnrollment else {
+                                log.error("\(modeLabel) mfa enrollment failed: \(Ziti.zitiErrorString(status: status))", function:"runEnrollTo()")
+                                ziti.shutdown()
+                                enrollCallback(nil, ZitiError("mfa enrollment failed", errorCode: Int(status)))
+                                return
+                            }
+
+                            var promptForTotpEnrollCode: ((ZitiError?) -> Void)!
+                            promptForTotpEnrollCode = { priorError in
+                                onMfaEnrollRequired(mfaEnrollment, priorError) { code in
+                                    guard let code = code else {
+                                        log.info("\(modeLabel) mfa enrollment cancelled by user", function:"runEnrollTo()")
+                                        ziti.shutdown()
+                                        enrollCallback(nil, ZitiError("mfa enrollment cancelled"))
+                                        return
+                                    }
+                                    ziti.perform {
+                                        ziti.mfaVerify(code) { _, vStatus in
+                                            guard vStatus == Int32(Ziti.ZITI_OK) else {
+                                                log.error("\(modeLabel) mfa verify failed: \(Ziti.zitiErrorString(status: vStatus))", function:"runEnrollTo()")
+                                                promptForTotpEnrollCode(ZitiError("invalid MFA code", errorCode: Int(vStatus)))
+                                                return
+                                            }
+                                            log.info("\(modeLabel) mfa enrollment verified, waiting for authentication to continue", function:"runEnrollTo()")
+                                            // enrollCallback fires later, once auth completes normally (see ConfigEvent/Context handling below)
+                                        }
+                                    }
+                                }
+                            }
+                            promptForTotpEnrollCode(nil)
+                        }
+                    }
+
+                case .PromptTotp:
+                    var promptForTotpCode: ((ZitiError?) -> Void)!
+                    promptForTotpCode = { priorError in
+                        onMfaCodeRequired(priorError) { code in
+                            guard let code = code else {
+                                log.info("\(modeLabel) mfa authentication cancelled by user", function:"runEnrollTo()")
+                                ziti.shutdown()
+                                enrollCallback(nil, ZitiError("mfa authentication cancelled"))
+                                return
+                            }
+                            ziti.perform {
+                                ziti.mfaAuth(code) { _, status in
+                                    guard status == Int32(Ziti.ZITI_OK) else {
+                                        log.error("\(modeLabel) mfa auth failed: \(Ziti.zitiErrorString(status: status))", function:"runEnrollTo()")
+                                        promptForTotpCode(ZitiError("invalid MFA code", errorCode: Int(status)))
+                                        return
+                                    }
+                                    log.info("\(modeLabel) mfa authentication succeeded, waiting for authentication to continue", function:"runEnrollTo()")
+                                    // enrollCallback fires later, once auth completes normally (see ConfigEvent/Context handling below)
+                                }
+                            }
+                        }
+                    }
+                    promptForTotpCode(nil)
+
                 case .CannotContinue:
                     let msg = !authEvent.error.isEmpty ? authEvent.error
                             : !authEvent.detail.isEmpty ? authEvent.detail
@@ -821,6 +923,7 @@ import CZitiPrivate
                     enrollCallback(nil, ZitiError(msg, errorCodeString: code))
 
                 default:
+                    log.warn("\(modeLabel): unhandled auth event action \(authEvent.action)", function:"runEnrollTo()")
                     break
                 }
             }
@@ -896,6 +999,11 @@ import CZitiPrivate
                             }
                         }
                     }
+                } else if ctxEvent.status == Int32(CZitiPrivate.ZITI_PARTIALLY_AUTHENTICATED) {
+                    // Expected mid-flow when the auth policy requires TOTP: the .EnrollTotp/.PromptTotp
+                    // auth-event handlers above are already driving the MFA prompt to completion, after
+                    // which a follow-up context event with status 0 will arrive. Not an error.
+                    log.info("\(modeLabel) context partially authenticated, awaiting MFA", function:"runEnrollTo()")
                 } else if ctxEvent.status != 0 {
                     enrollmentCompleted = true
                     let errMsg = ctxEvent.err ?? "context error (status \(ctxEvent.status))"
