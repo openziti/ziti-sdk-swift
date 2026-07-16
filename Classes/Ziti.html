@@ -1276,6 +1276,139 @@ multiple identities</p>
                 <li class="item">
                   <div>
                     <code>
+                    <a name="/s:5CZiti4ZitiC25MfaEnrollRequiredCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/MfaEnrollRequiredCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC25MfaEnrollRequiredCallbacka">MfaEnrollRequiredCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Type used for the closure called when the controller&rsquo;s auth policy requires enrolling a new
+TOTP authenticator before enroll-to-URL can complete.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">MfaEnrollRequiredCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">mfaEnrollment</span><span class="p">:</span><span class="kt"><a href="../Classes/ZitiMfaEnrollment.html">ZitiMfaEnrollment</a></span><span class="p">,</span>
+                                               <span class="n">_</span> <span class="nv">error</span><span class="p">:</span><span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?,</span>
+                                               <span class="n">_</span> <span class="nv">submit</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">code</span><span class="p">:</span><span class="kt">String</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>mfaEnrollment</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>provisioning URL and recovery codes for the new TOTP authenticator</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>error</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>non-nil if a previously-submitted code was rejected (retry with a fresh code)</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>submit</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>call with the user&rsquo;s TOTP code, or <code>nil</code> to cancel enrollment</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:5CZiti4ZitiC23MfaCodeRequiredCallbacka"></a>
+                    <a name="//apple_ref/swift/Alias/MfaCodeRequiredCallback" class="dashAnchor"></a>
+                    <a class="token" href="#/s:5CZiti4ZitiC23MfaCodeRequiredCallbacka">MfaCodeRequiredCallback</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Type used for the closure called when the controller&rsquo;s auth policy requires a TOTP code
+from an already-enrolled authenticator before enroll-to-URL can complete.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight swift"><code><span class="kd">public</span> <span class="kd">typealias</span> <span class="kt">MfaCodeRequiredCallback</span> <span class="o">=</span> <span class="p">(</span><span class="n">_</span> <span class="nv">error</span><span class="p">:</span><span class="kt"><a href="../Classes/ZitiError.html">ZitiError</a></span><span class="p">?,</span>
+                                              <span class="n">_</span> <span class="nv">submit</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">code</span><span class="p">:</span><span class="kt">String</span><span class="p">?)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>error</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>non-nil if a previously-submitted code was rejected (retry with a fresh code)</p>
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>submit</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>call with the user&rsquo;s TOTP code, or <code>nil</code> to cancel enrollment</p>
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
                     <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enroll::"></a>
                     <a name="//apple_ref/swift/Method/enroll(_:_:)" class="dashAnchor"></a>
                     <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enroll::">enroll(_:<wbr>_:<wbr>)</a>
@@ -1411,9 +1544,9 @@ TLS certificate. For private CA controllers, use a network JWT instead.</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithJwtFile:provider:onAuth::"></a>
-                    <a name="//apple_ref/swift/Method/enrollToCert(jwtFile:provider:onAuth:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithJwtFile:provider:onAuth::">enrollToCert(jwtFile:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithJwtFile:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToCert(jwtFile:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithJwtFile:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::">enrollToCert(jwtFile:<wbr>provider:<wbr>onAuth:<wbr>onMfaEnrollRequired:<wbr>onMfaCodeRequired:<wbr>_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1433,6 +1566,8 @@ bootstrapping (private CA support), then runs a context for OIDC auth and cert e
 <span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToCert</span><span class="p">(</span><span class="nv">jwtFile</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
                                 <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                                 <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                <span class="nv">onMfaEnrollRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC25MfaEnrollRequiredCallbacka">MfaEnrollRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
+                                <span class="nv">onMfaCodeRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC23MfaCodeRequiredCallbacka">MfaCodeRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
                                 <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
 
                         </div>
@@ -1498,9 +1633,9 @@ bootstrapping (private CA support), then runs a context for OIDC auth and cert e
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithControllerURL:provider:onAuth::"></a>
-                    <a name="//apple_ref/swift/Method/enrollToCert(controllerURL:provider:onAuth:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithControllerURL:provider:onAuth::">enrollToCert(controllerURL:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithControllerURL:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToCert(controllerURL:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToCertWithControllerURL:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::">enrollToCert(controllerURL:<wbr>provider:<wbr>onAuth:<wbr>onMfaEnrollRequired:<wbr>onMfaCodeRequired:<wbr>_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1519,6 +1654,8 @@ bootstrapping (private CA support), then runs a context for OIDC auth and cert e
 <span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToCert</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
                                 <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                                 <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                <span class="nv">onMfaEnrollRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC25MfaEnrollRequiredCallbacka">MfaEnrollRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
+                                <span class="nv">onMfaCodeRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC23MfaCodeRequiredCallbacka">MfaCodeRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
                                 <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
 
                         </div>
@@ -1584,9 +1721,9 @@ bootstrapping (private CA support), then runs a context for OIDC auth and cert e
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithJwtFile:provider:onAuth::"></a>
-                    <a name="//apple_ref/swift/Method/enrollToToken(jwtFile:provider:onAuth:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithJwtFile:provider:onAuth::">enrollToToken(jwtFile:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithJwtFile:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToToken(jwtFile:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithJwtFile:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::">enrollToToken(jwtFile:<wbr>provider:<wbr>onAuth:<wbr>onMfaEnrollRequired:<wbr>onMfaCodeRequired:<wbr>_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1607,6 +1744,8 @@ identity enrollment (no CSR or client certificate).</p>
 <span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToToken</span><span class="p">(</span><span class="nv">jwtFile</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
                                  <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                                  <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                 <span class="nv">onMfaEnrollRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC25MfaEnrollRequiredCallbacka">MfaEnrollRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
+                                 <span class="nv">onMfaCodeRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC23MfaCodeRequiredCallbacka">MfaCodeRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
                                  <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
 
                         </div>
@@ -1672,9 +1811,9 @@ identity enrollment (no CSR or client certificate).</p>
                 <li class="item">
                   <div>
                     <code>
-                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithControllerURL:provider:onAuth::"></a>
-                    <a name="//apple_ref/swift/Method/enrollToToken(controllerURL:provider:onAuth:_:)" class="dashAnchor"></a>
-                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithControllerURL:provider:onAuth::">enrollToToken(controllerURL:<wbr>provider:<wbr>onAuth:<wbr>_:<wbr>)</a>
+                    <a name="/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithControllerURL:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::"></a>
+                    <a name="//apple_ref/swift/Method/enrollToToken(controllerURL:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired:_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/c:@M@CZiti@objc(cs)Ziti(cm)enrollToTokenWithControllerURL:provider:onAuth:onMfaEnrollRequired:onMfaCodeRequired::">enrollToToken(controllerURL:<wbr>provider:<wbr>onAuth:<wbr>onMfaEnrollRequired:<wbr>onMfaCodeRequired:<wbr>_:<wbr>)</a>
                     </code>
                   </div>
                   <div class="height-container">
@@ -1694,6 +1833,8 @@ Uses OIDC auth to auto-create the identity on the controller (no CSR or client c
 <span class="kd">public</span> <span class="kd">static</span> <span class="kd">func</span> <span class="nf">enrollToToken</span><span class="p">(</span><span class="nv">controllerURL</span><span class="p">:</span><span class="kt">String</span><span class="p">,</span>
                                  <span class="nv">provider</span><span class="p">:</span><span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span>
                                  <span class="nv">onAuth</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="p">(</span><span class="n">_</span> <span class="nv">url</span><span class="p">:</span><span class="kt">String</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">Void</span><span class="p">,</span>
+                                 <span class="nv">onMfaEnrollRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC25MfaEnrollRequiredCallbacka">MfaEnrollRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
+                                 <span class="nv">onMfaCodeRequired</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC23MfaCodeRequiredCallbacka">MfaCodeRequiredCallback</a></span> <span class="o">=</span> <span class="p">{</span> <span class="n">_</span><span class="p">,</span> <span class="n">submit</span> <span class="k">in</span> <span class="nf">submit</span><span class="p">(</span><span class="kc">nil</span><span class="p">)</span> <span class="p">},</span>
                                  <span class="n">_</span> <span class="nv">enrollCallback</span><span class="p">:</span> <span class="kd">@escaping</span> <span class="kt"><a href="../Classes/Ziti.html#/s:5CZiti4ZitiC18EnrollmentCallbacka">EnrollmentCallback</a></span><span class="p">)</span></code></pre>
 
                         </div>
@@ -3278,7 +3419,7 @@ The underlying C SDK does not synchronize access to these fields.</p>
           </section>
         </section>
         <section id="footer">
-          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-07-02)</p>
+          <p>&copy; 2026 <a class="link" href="" target="_blank" rel="external noopener"></a>. All rights reserved. (Last updated: 2026-07-16)</p>
           <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external noopener">jazzy ♪♫ v0.15.4</a>, a <a class="link" href="https://realm.io" target="_blank" rel="external noopener">Realm</a> project.</p>
         </section>
       </article>
