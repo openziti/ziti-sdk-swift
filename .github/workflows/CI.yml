@@ -187,6 +187,9 @@ jobs:
     - name: Gen Docs
       run: |
         gem install jazzy
+        gem list mustache
+        gem uninstall mustache
+        gem install mustache -v 1.1.1
         jazzy --hide-documentation-coverage -x '-arch,x86_64,-scheme,CZiti-macOS,-sdk,macosx' -m CZiti
         tar -cvzf ./ziti-sdk-swift-docs.tgz -C ./docs .
 
