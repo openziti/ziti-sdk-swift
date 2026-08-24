@@ -188,6 +188,7 @@ jobs:
       run: |
         gem install jazzy
         gem list mustache
+        # avoid jazzy/mustache compat issue ("`setup_path': undefined method `map' for an instance of Pathname (NoMethodError)")
         gem install mustache -v 1.1.1
         gem uninstall mustache -v 1.1.3 --ignore-dependencies --force
         gem list mustache
