@@ -389,6 +389,9 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         case TunnelEvents.RouterEvent.rawValue:
             var cRouterEvent = UnsafeRawPointer(cEvent).bindMemory(to: router_event.self, capacity: 1)
             mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelRouterEvent(ziti, cRouterEvent))
+        case TunnelEvents.PostureStatusEvent.rawValue:
+            var cPostureStatusEvent = UnsafeRawPointer(cEvent).bindMemory(to: posture_status_event.self, capacity: 1)
+            mySelf.tunnelProvider?.tunnelEventCallback(ZitiTunnelPostureStatusEvent(ziti, cPostureStatusEvent))
         default:
             log.warn("Unrecognized event type \(cEvent.pointee.event_type.rawValue)")
             return

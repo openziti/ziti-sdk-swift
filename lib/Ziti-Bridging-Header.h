@@ -20,7 +20,7 @@ limitations under the License.
 #include "ziti/ziti_dns.h"
 
 extern const char** ziti_all_configs;
-extern tls_context *default_tls_context(const char *ca, size_t ca_len);
+extern tls_context *default_tls_context();
 
 void ziti_log_init_wrapper(uv_loop_t *loop);
 void set_tunnel_logger(void);

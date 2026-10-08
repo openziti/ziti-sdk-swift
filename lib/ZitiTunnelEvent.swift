@@ -377,6 +377,54 @@ import CZitiPrivate
     }
 }
 
+/// Class encapsulating Ziti Tunnel SDK C Posture Status Event
+@objc public class ZitiTunnelPostureStatusEvent : ZitiTunnelEvent {
+
+    /// Type of posture query (e.g. "PROCESS", "PROCESS_MULTI", "MAC", "MFA", etc.)
+    public var queryType:String = ""
+
+    /// Every service this posture check currently governs
+    public var services:[ZitiService] = []
+
+    /// Configured paths for this check's PROCESS/PROCESS_MULTI requirement (empty for other query types)
+    public var paths:[String] = []
+
+    /// Subset of `paths` not currently observed running (empty for other query types, or when all paths are running)
+    public var missingPaths:[String] = []
+
+    init(_ ziti:Ziti, _ evt:UnsafePointer<posture_status_event>) {
+        if let name = ziti_posture_query_types.self.name(Int32(evt.pointee.query_type.rawValue)) {
+            queryType = String(cString: name)
+        }
+        super.init(ziti)
+
+        ZitiEvent.ServiceEvent.convert(evt.pointee.services, &services)
+
+        if var ptr = evt.pointee.paths {
+            while let s = ptr.pointee {
+                paths.append(String(cString: s))
+                ptr += 1
+            }
+        }
+        if var ptr = evt.pointee.missing_paths {
+            while let s = ptr.pointee {
+                missingPaths.append(String(cString: s))
+                ptr += 1
+            }
+        }
+    }
+
+    /// Debug description
+    /// - returns: String containing debug description of this event
+    public override var debugDescription: String {
+        return super.debugDescription + "\n" +
+            "   queryType: \(queryType)\n" +
+            "   services: (\(services.count))\n\(ZitiEvent.svcArrToStr(services))" +
+            "   paths: \(paths)\n" +
+            "   missingPaths: \(missingPaths)"
+    }
+}
+
 func toStr(_ cStr:UnsafePointer<CChar>?) -> String {
     if let cStr = cStr { return String(cString: cStr) }
     return ""

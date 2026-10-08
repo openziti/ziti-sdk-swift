@@ -43,27 +43,33 @@ import CZitiPrivate
         
         /// Indicates an `ApiEvent`
         case ConfigEvent = 0x10 // ZitiConfigEvent.rawValue
-        
+
+        /// Indicates a `PostureStatusEvent`
+        case PostureStatus = 0x20 // ZitiPostureStatusEvent.rawValue
+
         /// Generates a string describing the event
         /// - returns: String describing the event
         public var debug: String {
             switch self {
-                
+
             /// Indicates `ContextEvent`
             case .Context:  return ".Context"
-                
+
             /// Indicates `RouterEvent`
             case .Router:   return ".Router"
-                
+
             /// Indicates `ServiceEvent`
             case .Service:  return ".Service"
-                
+
             /// Indicates `AuthEvent`
             case .Auth:     return ".Auth"
-                
+
             /// Indicates `ConfigEvent`
             case .ConfigEvent: return ".ConfigEvent"
-                
+
+            /// Indicates `PostureStatusEvent`
+            case .PostureStatus: return ".PostureStatus"
+
             /// Indicates unrecognized event
             case .Invalid:  return ".Invalid"
             @unknown default: return "unknown \(self.rawValue)"
@@ -365,6 +371,48 @@ import CZitiPrivate
         }
     }
     
+    /// Encapsulation of Ziti SDK C's Posture Status Event
+    @objc public class PostureStatusEvent : NSObject {
+
+        /// Every service this posture check currently governs
+        @objc public var services:[ZitiService] = []
+
+        /// Type of posture query (e.g. "PROCESS", "PROCESS_MULTI", "MAC", "MFA", etc.)
+        @objc public var queryType:String
+
+        /// Configured paths for this check's PROCESS/PROCESS_MULTI requirement (empty for other query types)
+        @objc public var paths:[String] = []
+
+        /// Subset of `paths` not currently observed running (empty for other query types, or when all paths are running)
+        @objc public var missingPaths:[String] = []
+
+        init(_ cEvent:ziti_posture_status_event) {
+            if let name = ziti_posture_query_types.self.name(Int32(cEvent.query_type.rawValue)) {
+                queryType = String(cString: name)
+            } else {
+                queryType = ""
+            }
+            super.init()
+            ZitiEvent.ServiceEvent.convert(cEvent.services, &services)
+
+            if cEvent.query_type == ziti_posture_query_type_PC_Process ||
+                cEvent.query_type == ziti_posture_query_type_PC_Process_Multi {
+                if var ptr = cEvent.process.paths {
+                    while let s = ptr.pointee {
+                        paths.append(String(cString: s))
+                        ptr += 1
+                    }
+                }
+                if var ptr = cEvent.process.missing_paths {
+                    while let s = ptr.pointee {
+                        missingPaths.append(String(cString: s))
+                        ptr += 1
+                    }
+                }
+            }
+        }
+    }
+
     /// The type of event
     @objc public let type:EventType
     
@@ -383,6 +431,9 @@ import CZitiPrivate
     /// Populated based on event `type`
     @objc public var configEvent:ConfigEvent?
     
+    /// Populated based on event `type`
+    @objc public var postureStatusEvent:PostureStatusEvent?
+    
     init(_ ziti:Ziti, _ cEvent:UnsafePointer<ziti_event_t>) {
         self.ziti = ziti
         type = EventType(rawValue: cEvent.pointee.type.rawValue) ?? .Invalid
@@ -396,6 +447,8 @@ import CZitiPrivate
             authEvent = AuthEvent(cEvent.pointee.auth)
         } else if type == .ConfigEvent {
             configEvent = ConfigEvent(cEvent.pointee.cfg)
+        } else if type == .PostureStatus {
+            postureStatusEvent = PostureStatusEvent(cEvent.pointee.posture_status)
         } else {
             log.error("unrecognized event type \(cEvent.pointee.type.rawValue)")
         }
@@ -437,6 +490,13 @@ import CZitiPrivate
             str += "   cfgSource: \(e.cfgSource)\n"
             str += "   caBundle: \(e.caBundle)\n"
             str += "   cert: \(e.cert)\n"
+        }
+
+        if let e = postureStatusEvent {
+            str += "   queryType: \(e.queryType)\n"
+            str += "   services: (\(e.services.count))\n\(ZitiEvent.svcArrToStr(e.services))"
+            str += "   paths: \(e.paths)\n"
+            str += "   missingPaths: \(e.missingPaths)\n"
         }
         return str
     }
