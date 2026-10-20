@@ -93,8 +93,12 @@ import CZitiPrivate
         if let svcName = svc.name {
             log.debug("Removing service \(svcName)")
             interceptsLock.lock()
+            let removed = intercepts.filter { $0.value.name == svcName }
             intercepts = intercepts.filter { $0.value.name !=  svcName }
             interceptsLock.unlock()
+
+            // close the removed intercepts so their uv handles are released before they are deallocated
+            removed.values.forEach { $0.close() }
         }
     }
     
