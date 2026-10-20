@@ -115,6 +115,7 @@
 		83A7F07414EFD2894611AABF /* ZitiPostureTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85301ED2D915DB71C27F228F /* ZitiPostureTests.swift */; };
 		849771D60D408BDFD878E603 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B07CDB3FA20C5A8D39B671E4 /* main.swift */; };
 		8537294C64AFB78FAA36BDD4 /* ZitiUrlClientConfigV1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10590B6CE9FC16E8646002BB /* ZitiUrlClientConfigV1Tests.swift */; };
+		CD3BFD53186541748D810A1D /* ZitiUrlProtocolTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 972015E4D5264F7FA4445C9E /* ZitiUrlProtocolTests.swift */; };
 		9618DECF515556B830C97A3F /* libCZiti.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AB6DF68244B7C3C00F4B4E0 /* libCZiti.a */; };
 		A55E6A56BB6E78085DB2F6CD /* ZitiClaimsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 51CD33D808C502A2CBC611D1 /* ZitiClaimsTests.swift */; };
 		A7D99572369F0EE79B7C19E1 /* ZitiHttpProxyConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429654BBCAA3D079DD244FE3 /* ZitiHttpProxyConfig.swift */; };
@@ -215,6 +216,7 @@
 /* Begin PBXFileReference section */
 		0E27FFBD4B1AF28D578B7B6A /* ZitiMfaEnrollmentTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZitiMfaEnrollmentTests.swift; sourceTree = "<group>"; };
 		10590B6CE9FC16E8646002BB /* ZitiUrlClientConfigV1Tests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZitiUrlClientConfigV1Tests.swift; sourceTree = "<group>"; };
+		972015E4D5264F7FA4445C9E /* ZitiUrlProtocolTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZitiUrlProtocolTests.swift; sourceTree = "<group>"; };
 		19B8CBAEB9ECAEBA3A713DE4 /* ZitiTunnelServerConfigV1Tests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZitiTunnelServerConfigV1Tests.swift; sourceTree = "<group>"; };
 		37173CE9DEB8C0224972518D /* ZitiHostConfigV1Tests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZitiHostConfigV1Tests.swift; sourceTree = "<group>"; };
 		429654BBCAA3D079DD244FE3 /* ZitiHttpProxyConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZitiHttpProxyConfig.swift; sourceTree = "<group>"; };
@@ -609,6 +611,7 @@
 				37173CE9DEB8C0224972518D /* ZitiHostConfigV1Tests.swift */,
 				19B8CBAEB9ECAEBA3A713DE4 /* ZitiTunnelServerConfigV1Tests.swift */,
 				10590B6CE9FC16E8646002BB /* ZitiUrlClientConfigV1Tests.swift */,
+				972015E4D5264F7FA4445C9E /* ZitiUrlProtocolTests.swift */,
 				85301ED2D915DB71C27F228F /* ZitiPostureTests.swift */,
 				0E27FFBD4B1AF28D578B7B6A /* ZitiMfaEnrollmentTests.swift */,
 			);
@@ -977,6 +980,7 @@
 				AD59365D8C0738D64707DF21 /* ZitiHostConfigV1Tests.swift in Sources */,
 				FB8DF15ECCC628945D6E13A1 /* ZitiTunnelServerConfigV1Tests.swift in Sources */,
 				8537294C64AFB78FAA36BDD4 /* ZitiUrlClientConfigV1Tests.swift in Sources */,
+				CD3BFD53186541748D810A1D /* ZitiUrlProtocolTests.swift in Sources */,
 				83A7F07414EFD2894611AABF /* ZitiPostureTests.swift in Sources */,
 				D30C5785E35EC44D7207D41C /* ZitiMfaEnrollmentTests.swift in Sources */,
 			);
