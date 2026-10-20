@@ -50,7 +50,7 @@ import CZitiPrivate
     /**
      Registers this protocol via `URLProtocol.registerClass` and subscribes for service intercept updates from `Ziti`.
      
-     This metod should be called during the `InitCallback` of  `Ziti` `run(_:)`  to ensure `Ziti` is initialized before
+     This method should be called during the `InitCallback` of  `Ziti` `run(_:)`  to ensure `Ziti` is initialized before
      starting to intercept services.
      
      Note that in some cases `ZitiUrlProtocol` will need to be configured in your `URLSession`'s configuration ala:
@@ -60,7 +60,19 @@ import CZitiPrivate
       configuration.protocolClasses?.insert(ZitiUrlProtocol.self, at: 0)
       urlSession = URLSession(configuration:configuration)
       ```
-     
+
+     Call this method once per `Ziti` instance. Calling it again for the same instance registers a duplicate event callback.
+
+     Enabling or disabling `Ziti` via `setEnabled(_:)` requires no further calls. Intercepts are removed when `Ziti` is disabled and
+     restored from service events when it is enabled.
+
+     To restart, call `shutdown()` on the current `Ziti` instance and wait for a `ZitiEvent.ContextEvent` with status `Ziti.ZITI_DISABLED`,
+     which is reported after the instance's intercepts have been removed. Then create a new `Ziti` instance and call this method
+     from its `InitCallback`.
+
+     Requests made while no services are available (e.g., while `Ziti` is disabled or restarting) are not intercepted, and are handled
+     by the next registered `URLProtocol`.
+
         - Parameters:
             - ziti: The `Ziti` instance we are using to route intercepted URL traffic
             - idleTime: Time, in miliiseconds,  client attempts to keep-alive an idle connection before allowing it to close. Default=10000
