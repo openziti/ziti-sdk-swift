@@ -27,6 +27,9 @@ class ZitiUrlProtocolTests: XCTestCase {
     // without a context nothing keeps the loop alive, and uv_run() returns without processing anything
     var keepAlive:UnsafeMutablePointer<uv_timer_t>!
 
+    // set when a test detects freed memory linked into the loop, so tearDown() doesn't run it
+    var loopCorrupted = false
+
     override func setUp() {
         super.setUp()
         ziti = Ziti("test-id", ["https://ctrl.example.com:443"], name: nil, caPool: nil)
@@ -41,12 +44,14 @@ class ZitiUrlProtocolTests: XCTestCase {
     }
 
     override func tearDown() {
-        ZitiUrlProtocol.intercepts.values.forEach { $0.close() }
+        if !loopCorrupted {
+            ZitiUrlProtocol.intercepts.values.forEach { $0.close() }
+            keepAlive.withMemoryRebound(to: uv_handle_t.self, capacity: 1) { uv_close($0, nil) }
+            runLoopOnce()
+            keepAlive.deinitialize(count: 1)
+            keepAlive.deallocate()
+        } // else leak the loop's handles rather than crash the test run
         ZitiUrlProtocol.intercepts = [:]
-        keepAlive.withMemoryRebound(to: uv_handle_t.self, capacity: 1) { uv_close($0, nil) }
-        runLoopOnce()
-        keepAlive.deinitialize(count: 1)
-        keepAlive.deallocate()
         ZitiUrlProtocol.reqs = []
         ZitiIntercept.releasePending = []
         ZitiUrlProtocol.ziti = nil
@@ -108,6 +113,49 @@ class ZitiUrlProtocolTests: XCTestCase {
 
         runLoopOnce()
         XCTAssertFalse(ZitiIntercept.releasePending.contains(a), "close callback should release the intercept")
+    }
+
+    /// Issue #343: removing a service freed its intercept while the intercept's idle handle was still active
+    /// in the loop, so the next iteration crashed in uv__run_idle.
+    ///
+    /// The use-after-free itself only reliably crashes under ASan, so this checks for the condition that causes it
+    /// and does not run the loop if it is present.
+    func testRemoveServiceDoesNotFreeInterceptWithActiveIdleHandle() throws {
+        let svc = try urlService("svc", "http", "a.example.com", 8080)
+        add(svc)
+
+        // a queued request starts the intercept's idle handle
+        let zup = ZitiUrlProtocol(request: URLRequest(url: URL(string: "http://a.example.com:8080/x")!),
+                                  cachedResponse: nil, client: nil)
+        zup.startLoading()
+        runLoopOnce()
+
+        weak var weakIntercept:ZitiIntercept?
+        autoreleasepool {
+            let intercept = ZitiUrlProtocol.intercepts["http://a.example.com:8080"]
+            XCTAssertNotNil(intercept)
+            if let intercept = intercept {
+                XCTAssertTrue(withUnsafeMutablePointer(to: &intercept.clt.proc) {
+                    $0.withMemoryRebound(to: uv_handle_t.self, capacity: 1) { uv_is_active($0) != 0 }
+                }, "idle handle should be active with a queued request")
+            }
+            weakIntercept = intercept
+
+            ZitiUrlProtocol.removeService(svc)
+        }
+
+        guard weakIntercept != nil else {
+            loopCorrupted = true
+            XCTFail("intercept was freed with its idle handle still in the loop. the next loop iteration would crash in uv__run_idle")
+            return
+        }
+        autoreleasepool {
+            XCTAssertTrue(isClosing(weakIntercept!), "intercept must close its idle handle before it is released")
+        }
+
+        // the intercept is released once the loop runs its close callback
+        autoreleasepool { runLoopOnce() }
+        XCTAssertNil(weakIntercept, "intercept should be released after its close callback")
     }
 
     func testRemoveServiceWithQueuedRequestCancelsAndReleasesRequest() throws {
