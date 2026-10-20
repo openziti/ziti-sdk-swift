@@ -90,6 +90,11 @@ class ZitiUrlProtocolTests: XCTestCase {
         ZitiUrlProtocol.addOrUpdateService(svc, ziti, 10000)
     }
 
+    /// runs client notifications, which `ZitiUrlProtocol` queues on the thread that called `startLoading()`
+    private func runClientThread() {
+        RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+    }
+
     // MARK: - removeService (issue #343)
 
     func testRemoveServiceClosesRemovedIntercepts() throws {
@@ -221,4 +226,98 @@ class ZitiUrlProtocolTests: XCTestCase {
         XCTAssertEqual(ZitiUrlProtocol.intercepts["https://h.example.com:8443"]?.name, "svcNew")
         XCTAssertEqual(ZitiUrlProtocol.intercepts.values.filter { isClosing($0) }.count, 0)
     }
+
+    // MARK: - startLoading
+
+    func testStartLoadingWithoutInterceptFailsRequest() throws {
+        let client = TestClient()
+        let zup = ZitiUrlProtocol(request: URLRequest(url: URL(string: "http://a.example.com:8080/x")!),
+                                  cachedResponse: nil, client: client)
+        zup.startLoading()
+        runLoopOnce()
+
+        XCTAssertNil(zup.req)
+        XCTAssertTrue(zup.finished, "request without an intercept should be marked finished")
+        runClientThread()
+        XCTAssertEqual((client.error as NSError?)?.code, Ziti.ZITI_SERVICE_UNAVAILABLE)
+
+        zup.stopLoading()
+        runLoopOnce()
+        XCTAssertFalse(ZitiUrlProtocol.reqs.contains(zup), "failed request should be released after stopLoading()")
+    }
+
+    func testStartLoadingAfterServiceRemovedFailsRequest() throws {
+        let svc = try urlService("svc", "http", "a.example.com", 8080)
+        add(svc)
+
+        let request = URLRequest(url: URL(string: "http://a.example.com:8080/x")!)
+        XCTAssertTrue(ZitiUrlProtocol.canInit(with: request))
+
+        // the service is removed after canInit() but before the loop runs the queued request
+        let client = TestClient()
+        let zup = ZitiUrlProtocol(request: request, cachedResponse: nil, client: client)
+        zup.startLoading()
+        ZitiUrlProtocol.removeService(svc)
+        runLoopOnce()
+
+        XCTAssertNil(zup.req)
+        XCTAssertTrue(zup.finished)
+        runClientThread()
+        XCTAssertEqual((client.error as NSError?)?.code, Ziti.ZITI_SERVICE_UNAVAILABLE)
+    }
+
+    // MARK: - addOrUpdateService
+
+    func testChangedServiceRemovesInterceptsNotInNewConfig() throws {
+        add(try urlService("svc", "http", "a.example.com", 8080))
+        let old = try XCTUnwrap(ZitiUrlProtocol.intercepts["http://a.example.com:8080"])
+
+        add(try urlService("svc", "http", "b.example.com", 8080))
+
+        XCTAssertNil(ZitiUrlProtocol.intercepts["http://a.example.com:8080"], "intercept from the old config should be removed")
+        XCTAssertTrue(isClosing(old))
+        XCTAssertEqual(ZitiUrlProtocol.intercepts["http://b.example.com:8080"]?.name, "svc")
+        XCTAssertEqual(ZitiUrlProtocol.intercepts.count, 1)
+    }
+
+    func testChangedServiceFromInterceptToUrlConfigRemovesOtherScheme() throws {
+        add(try interceptService("svc", "h.example.com", 8443))
+        let oldHttp = try XCTUnwrap(ZitiUrlProtocol.intercepts["http://h.example.com:8443"])
+        let oldHttps = try XCTUnwrap(ZitiUrlProtocol.intercepts["https://h.example.com:8443"])
+
+        add(try urlService("svc", "https", "h.example.com", 8443))
+
+        XCTAssertNil(ZitiUrlProtocol.intercepts["http://h.example.com:8443"], "http intercept is not in the new config")
+        XCTAssertTrue(isClosing(oldHttp))
+        XCTAssertTrue(isClosing(oldHttps))
+        let https = try XCTUnwrap(ZitiUrlProtocol.intercepts["https://h.example.com:8443"])
+        XCTAssertFalse(isClosing(https))
+        XCTAssertEqual(ZitiUrlProtocol.intercepts.count, 1)
+    }
+
+    func testChangedServiceDoesNotRemoveOtherServices() throws {
+        add(try urlService("svcA", "http", "a.example.com", 8080))
+        add(try urlService("svcB", "http", "b.example.com", 8080))
+        let b = try XCTUnwrap(ZitiUrlProtocol.intercepts["http://b.example.com:8080"])
+
+        add(try urlService("svcA", "http", "c.example.com", 8080))
+
+        XCTAssertTrue(ZitiUrlProtocol.intercepts["http://b.example.com:8080"] === b)
+        XCTAssertFalse(isClosing(b))
+        XCTAssertEqual(ZitiUrlProtocol.intercepts.count, 2)
+    }
+}
+
+/// records the error reported to the client
+private class TestClient: NSObject, URLProtocolClient {
+    var error:Error?
+
+    func urlProtocol(_ protocol: URLProtocol, didFailWithError error: Error) { self.error = error }
+    func urlProtocol(_ protocol: URLProtocol, wasRedirectedTo request: URLRequest, redirectResponse: URLResponse) {}
+    func urlProtocol(_ protocol: URLProtocol, cachedResponseIsValid cachedResponse: CachedURLResponse) {}
+    func urlProtocol(_ protocol: URLProtocol, didReceive response: URLResponse, cacheStoragePolicy policy: URLCache.StoragePolicy) {}
+    func urlProtocol(_ protocol: URLProtocol, didLoad data: Data) {}
+    func urlProtocolDidFinishLoading(_ protocol: URLProtocol) {}
+    func urlProtocol(_ protocol: URLProtocol, didReceive challenge: URLAuthenticationChallenge) {}
+    func urlProtocol(_ protocol: URLProtocol, didCancel challenge: URLAuthenticationChallenge) {}
 }

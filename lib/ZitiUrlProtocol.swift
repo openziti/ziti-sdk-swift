@@ -140,9 +140,11 @@ import CZitiPrivate
             return
         }
         
+        // drop the service's current intercepts, since the updated config may not include all of them
+        removeService(svc)
+
         // Don't include unless CAN_DIAL
         guard UInt32(svc.permFlags ?? 0x0) & ZITI_CAN_DIAL != 0 else {
-            removeService(svc)
             return
         }
         
@@ -236,6 +238,7 @@ import CZitiPrivate
     public override func startLoading() {
         guard let ziti = ZitiUrlProtocol.ziti else {
             log.wtf("Invalid ziti reference")
+            client?.urlProtocol(self, didFailWithError: ZitiError("Invalid ziti reference"))
             return
         }
         
@@ -263,6 +266,14 @@ import CZitiPrivate
                                                   self.toVoidPtr())
             }
             ZitiUrlProtocol.interceptsLock.unlock()
+
+            // the intercept may have been removed since canInit(), and without a request there are no more callbacks
+            if self.req == nil {
+                self.log.error("unable to start request for \(urlStr), service unavailable")
+                self.notifyDidFailWithError(ZitiError("service unavailable for \(urlStr)",
+                                                      errorCode: Ziti.ZITI_SERVICE_UNAVAILABLE))
+                self.finished = true
+            }
         }
     }
     
@@ -342,7 +353,7 @@ import CZitiPrivate
             let str = String(cString: ziti_errorstr(Int32(code)))
             log.error("\(code) \(str)")
             let err = ZitiError(str, errorCode: code)
-            mySelf.notifyDidFailWithError(ZitiError(str, errorCode: code))
+            mySelf.notifyDidFailWithError(err)
 
             // request is freed after an error response, so no more callbacks. see also stopLoading()
             mySelf.finished = true
