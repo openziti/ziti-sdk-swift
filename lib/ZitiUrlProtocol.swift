@@ -107,26 +107,19 @@ import CZitiPrivate
         defer { interceptsLock.unlock() }
         
         let hostPort = "\(hostname):\(port)"
-        if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-            log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
-            curr.close()
-        }
-        if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
-            log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
-            curr.close()
-        }
-        
-        if let scheme = (port == 80 ? "http" : (port == 443 ? "https" : nil)) {
-            let intercept = ZitiIntercept(ziti, svcName, "\(scheme)://\(hostPort)", idleTime)
+        let schemes = port == 80 ? ["http"] : (port == 443 ? ["https"] : ["http", "https"])
+
+        // only close the intercepts being replaced, since closed intercepts must not remain in `intercepts`
+        schemes.forEach { scheme in
+            let urlStr = "\(scheme)://\(hostPort)"
+            if let curr = ZitiUrlProtocol.intercepts[urlStr] {
+                log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                curr.close()
+            }
+            let intercept = ZitiIntercept(ziti, svcName, urlStr, idleTime)
             intercepts[intercept.urlStr] = intercept
-            log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)")
-        } else {
-            var intercept = ZitiIntercept(ziti, svcName, "http://\(hostPort)", idleTime)
-            intercepts[intercept.urlStr] = intercept
-            intercept = ZitiIntercept(ziti, svcName, "https://\(hostPort)", idleTime)
-            intercepts[intercept.urlStr] = intercept
-            log.info("Setting TUN intercept svc \(svcName): \(hostPort)")
         }
+        log.info("Setting TUN intercept svc \(svcName): \(schemes.map { "\($0)://\(hostPort)" })")
     }
     
     class func addOrUpdateService(_ svc:ZitiService, _ ziti:Ziti?, _ idleTime:Int) {
