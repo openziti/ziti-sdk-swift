@@ -331,6 +331,10 @@ import CZitiPrivate
             log.error("\(code) \(str)")
             let err = ZitiError(str, errorCode: code)
             mySelf.notifyDidFailWithError(ZitiError(str, errorCode: code))
+
+            // request is freed after an error response, so no more callbacks. see also stopLoading()
+            mySelf.finished = true
+            ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { !($0.stopped && $0.finished) }
             return
         }
         
@@ -383,6 +387,7 @@ import CZitiPrivate
             let str = String(cString: ziti_errorstr(Int32(len)))
             let err = ZitiError(str, errorCode: len)
             mySelf.notifyDidFailWithError(err)
+            mySelf.finished = true // no more callbacks after an error
         } else {
             let data = Data(bytes: body!, count: len)
             mySelf.notifyDidLoad(data)
