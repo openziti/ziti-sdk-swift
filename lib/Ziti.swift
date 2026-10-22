@@ -772,6 +772,7 @@ import CZitiPrivate
                     log.error("unable to generate private key", function:"runEnrollTo()")
                     return nil
                 }
+                zitiKeyProvider.persistKey(pem, in: zid)
                 return pem
             }
         }
@@ -956,6 +957,7 @@ import CZitiPrivate
             if let cName = czid.pointee.name {
                 finalId.name = String(cString: cName)
             }
+            zitiKeyProvider.copyKey(from: ziti.id, to: finalId)
             ziti.shutdown()
             enrollCallback(finalId, nil)
             return true

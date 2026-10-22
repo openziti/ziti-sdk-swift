@@ -42,6 +42,10 @@ protocol ZitiKeyProvider {
 
     /// Called with the PEM returned by `createKey(tag:)` once the enrolled identity exists.
     func persistKey(_ pem:String, in id:ZitiIdentity)
+
+    /// Carry whatever `persistKey(_:in:)` stored in `src` over to `dst`, for when enrollment
+    /// replaces a temporary identity with the final one.
+    func copyKey(from src:ZitiIdentity, to dst:ZitiIdentity)
 }
 
 /// Keys and certificates live in the keychain, managed by `ZitiKeychain`.
@@ -76,6 +80,10 @@ struct KeychainKeyProvider : ZitiKeyProvider {
     }
 
     func persistKey(_ pem:String, in id:ZitiIdentity) {
+        // the key is already in the keychain
+    }
+
+    func copyKey(from src:ZitiIdentity, to dst:ZitiIdentity) {
         // the key is already in the keychain
     }
 }
@@ -127,6 +135,10 @@ struct InsecureTestKeyProvider : ZitiKeyProvider {
 
     func persistKey(_ pem:String, in id:ZitiIdentity) {
         id.key = pem
+    }
+
+    func copyKey(from src:ZitiIdentity, to dst:ZitiIdentity) {
+        dst.key = src.key
     }
 }
 #endif

@@ -98,12 +98,9 @@ ziti edge create service-policy ztr-dial Dial \
 ## Scope
 
 Only OTT enrollment is exercised end-to-end. The `cert-jwt` and `token-jwt`
-modes compile under the flag but aren't wired through CI because:
-
-- `Ziti.enrollToCert(jwtFile:)` / `enrollToToken(jwtFile:)` use the OIDC flow,
-  which can't be driven non-interactively in CI without a mock JWT signer.
-- The `runEnrollTo(mode:)` path in `lib/Ziti.swift` has a keychain retag step
-  (`retagPrivateKey(to:)`) that isn't bracketed by `CZITI_TEST_INSECURE_KEYS`
-  and would likely fail under the flag.
-
-Fixing either is a legitimate follow-up.
+modes are supported under the flag (for `cert-jwt`, the keychain retag step is
+skipped and the ephemeral key PEM is written to `ZitiIdentity.key`), but they
+aren't exercised end-to-end because `Ziti.enrollToCert(jwtFile:)` /
+`enrollToToken(jwtFile:)` use the OIDC flow, which can't be driven
+non-interactively in CI without a mock JWT signer. Adding one is a legitimate
+follow-up.
