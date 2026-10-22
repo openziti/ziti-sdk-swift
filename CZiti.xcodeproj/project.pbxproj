@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1173FC5AE4A751591E38F2B4 /* ZitiInterceptConfigV1Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D2CE058E93C639D85230E5A /* ZitiInterceptConfigV1Tests.swift */; };
 		14CC88CB4E471239322BED0D /* ZitiIdentityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E21F4DCE44C7CFCFB4C2DAA6 /* ZitiIdentityTests.swift */; };
+		06E8FD46C6BBF465F18D8D40 /* ZitiKeychainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28FA9E1FFF1DF1C83969F57C /* ZitiKeychainTests.swift */; };
 		185AA2A6D160E331971F2C55 /* libresolv.9.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 5AFE864127E3C56000D47A47 /* libresolv.9.tbd */; };
 		297341CB58F1A35CA16AEA4D /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2462DDE1F6300B47602 /* libz.1.tbd */; };
 		3D757974E87F6F67DF38A9B2 /* libz.1.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = AAFBA2462DDE1F6300B47602 /* libz.1.tbd */; };
@@ -314,6 +315,7 @@
 		C5459DDBCB948CD7E608D7E8 /* JWTProviderTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JWTProviderTests.swift; sourceTree = "<group>"; };
 		E03765ABA8E5D4E937256E03 /* ziti-test-runner.entitlements */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.entitlements; path = "ziti-test-runner.entitlements"; sourceTree = "<group>"; };
 		E21F4DCE44C7CFCFB4C2DAA6 /* ZitiIdentityTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZitiIdentityTests.swift; sourceTree = "<group>"; };
+		28FA9E1FFF1DF1C83969F57C /* ZitiKeychainTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ZitiKeychainTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -601,6 +603,7 @@
 			isa = PBXGroup;
 			children = (
 				E21F4DCE44C7CFCFB4C2DAA6 /* ZitiIdentityTests.swift */,
+				28FA9E1FFF1DF1C83969F57C /* ZitiKeychainTests.swift */,
 				51CD33D808C502A2CBC611D1 /* ZitiClaimsTests.swift */,
 				C5459DDBCB948CD7E608D7E8 /* JWTProviderTests.swift */,
 				A9A23D03F24C3A3853462CCE /* ZitiEnrollerTests.swift */,
@@ -969,6 +972,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				14CC88CB4E471239322BED0D /* ZitiIdentityTests.swift in Sources */,
+				06E8FD46C6BBF465F18D8D40 /* ZitiKeychainTests.swift in Sources */,
 				A55E6A56BB6E78085DB2F6CD /* ZitiClaimsTests.swift in Sources */,
 				BB14C8DC9EE744C7C9EAC9CF /* JWTProviderTests.swift in Sources */,
 				E2C3EE6F48610C43BDC7440E /* ZitiEnrollerTests.swift in Sources */,
