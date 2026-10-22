@@ -374,9 +374,8 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
             if !event.certPEM.isEmpty {
                 ziti.id.certs = event.certPEM
                 // store the first/leaf certificate in the keychain so it can be used in a key pair.
-                let zkc = ZitiKeychain(tag: ziti.id.id)
-                _ = zkc.deleteCertificate()
-                let zErr = zkc.storeCertificate(fromPem: event.certPEM)
+                _ = zitiKeyProvider.deleteCertificate(tag: ziti.id.id, silent: false)
+                let zErr = zitiKeyProvider.storeCertificate(tag: ziti.id.id, pem: event.certPEM)
                 if zErr != nil {
                     log.warn("failed to store certificates: \(zErr!.localizedDescription)", function:"onEventCallback()")
                 }

@@ -261,13 +261,11 @@ import CZitiPrivate
     
     /// Remove keys and certificates created during `enroll()` from the keychain
     @objc public func forget() {
-        let zkc = ZitiKeychain(tag: id.id)
-        
-        if let zErr = zkc.deleteKeyPair() {
+        if let zErr = zitiKeyProvider.deleteKey(tag: id.id, silent: false) {
             log.warn("unable to delete keys for \(id.id) from keychain: \(zErr.localizedDescription)")
         }
         
-        if let zErr = zkc.deleteCertificate() {
+        if let zErr = zitiKeyProvider.deleteCertificate(tag: id.id, silent: false) {
             log.warn("unable to delete certificate for \(id.id) from keychain: \(zErr.localizedDescription)")
         }
     }
@@ -361,15 +359,12 @@ import CZitiPrivate
         let subj = claims.sub
 
         // Create private key
-        let zkc = ZitiKeychain(tag: subj)
-        _ = zkc.deleteKeyPair(silent:true)
-        guard let privKey = zkc.createPrivateKey() else {
+        guard let pem = zitiKeyProvider.createKey(tag: subj) else {
             let errStr = "unable to generate private key"
             log.error(errStr, function:"enroll()")
             enrollCallback(nil, ZitiError(errStr))
             return
         }
-        let pem = zkc.getKeyPEM(privKey)
 
         // Enroll
         enroller.enroll(privatePem: pem) { resp, _, zErr in
@@ -388,16 +383,13 @@ import CZitiPrivate
             }
 
             let certs = dropFirst("pem:", respCert)
-#if !CZITI_TEST_INSECURE_KEYS
-            // Release build: persist the signed cert in the keychain alongside the private key.
-            _ = zkc.deleteCertificate(silent: true)
-            guard zkc.storeCertificate(fromPem: certs) == nil else {
+            _ = zitiKeyProvider.deleteCertificate(tag: subj, silent: true)
+            guard zitiKeyProvider.storeCertificate(tag: subj, pem: certs) == nil else {
                 let errStr = "Unable to store certificate\n"
                 log.error(errStr, function:"enroll()")
                 enrollCallback(nil, ZitiError(errStr))
                 return
             }
-#endif
 
             var ca = resp.id.ca
             if let idCa = resp.id.ca {
@@ -405,11 +397,7 @@ import CZitiPrivate
             }
 
             let zid = ZitiIdentity(id: subj, ztAPIs: resp.ztAPIs, certs: certs, ca: ca)
-#if CZITI_TEST_INSECURE_KEYS
-            // Insecure test build: stash the ephemeral PEM in the identity so run() can use
-            // it without a keychain lookup.
-            zid.key = pem
-#endif
+            zitiKeyProvider.persistKey(pem, in: zid)
             log.info("Enrolled id:\(subj) with controller: \(zid.ztAPI)", function:"enroll()")
 
             enrollCallback(zid, nil)
@@ -780,13 +768,11 @@ import CZitiPrivate
         // Create keychain key on demand when C SDK requests it during cert enrollment
         if mode == .cert {
             ziti.enrollKeyCallback = { _ in
-                let zkc = ZitiKeychain(tag: zid.id)
-                _ = zkc.deleteKeyPair(silent: true)
-                guard let privKey = zkc.createPrivateKey() else {
+                guard let pem = zitiKeyProvider.createKey(tag: zid.id) else {
                     log.error("unable to generate private key", function:"runEnrollTo()")
                     return nil
                 }
-                return zkc.getKeyPEM(privKey)
+                return pem
             }
         }
 
@@ -956,8 +942,7 @@ import CZitiPrivate
             log.info("\(modeLabel) identity id: \(realId)", function:"runEnrollTo()")
 
             if mode == .cert && realId != tempKeychainTag {
-                let zkc = ZitiKeychain(tag: tempKeychainTag)
-                if let zErr = zkc.retagPrivateKey(to: realId) {
+                if let zErr = zitiKeyProvider.retagKey(from: tempKeychainTag, to: realId) {
                     log.error("\(modeLabel) \(zErr.localizedDescription)", function:"runEnrollTo()")
                 } else {
                     log.info("\(modeLabel) re-tagged keychain key to \(realId)", function:"runEnrollTo()")
@@ -1071,20 +1056,9 @@ import CZitiPrivate
             log.debug("identity \(id.id) does not have certificates. this is ok if using external authentication")
         }
         
-        // Get private key. Under CZITI_TEST_INSECURE_KEYS, prefer a PEM stored in the
-        // identity file so ad-hoc-signed CLI tools can use enrolled identities without
-        // touching the data protection keychain.
+        // Get private key
         var privKeyPEMPtr: UnsafeMutablePointer<Int8>? = nil
-        let privKeyPEM: String? = {
-#if CZITI_TEST_INSECURE_KEYS
-            if let idKey = id.key, !idKey.isEmpty { return idKey }
-#endif
-            if let privKey = zkc.getPrivateKey() {
-                return zkc.getKeyPEM(privKey)
-            }
-            return nil
-        }()
-        if let privKeyPEM = privKeyPEM {
+        if let privKeyPEM = zitiKeyProvider.keyString(for: id) {
             privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
             privKeyPEMPtr!.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
         } else {
@@ -1691,10 +1665,9 @@ import CZitiPrivate
             if !cfgEvent.controllers.isEmpty { mySelf.id.ztAPIs = cfgEvent.controllers }
             if !cfgEvent.cert.isEmpty {
                 mySelf.id.certs = cfgEvent.cert
-                let zkc = ZitiKeychain(tag: mySelf.id.id)
-                _ = zkc.deleteCertificate()
+                _ = zitiKeyProvider.deleteCertificate(tag: mySelf.id.id, silent: false)
                 // store the first/leaf certificate in the keychain so it can be used in a key pair.
-                let zErr = zkc.storeCertificate(fromPem: event.configEvent!.cert)
+                let zErr = zitiKeyProvider.storeCertificate(tag: mySelf.id.id, pem: event.configEvent!.cert)
                 if zErr != nil {
                     log.warn("failed to store certificate: \(zErr!.localizedDescription)", function:"onEvent()")
                 }

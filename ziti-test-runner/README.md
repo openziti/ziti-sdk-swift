@@ -46,23 +46,23 @@ Exit codes:
 ## Building with the insecure-keys test flag
 
 macOS enrollment in this SDK uses the data protection keychain
-(`kSecUseDataProtectionKeychain = true` in `ZitiKeychain.createPrivateKey()`),
+(`kSecUseDataProtectionKeychain = true` in `ZitiKeychain.createKeyParameters(tag:)`),
 which requires a provisioning-profile-backed `application-identifier`
 entitlement. Ad-hoc signed CLI tools don't have that, so enrollment fails with
 `errSecMissingEntitlement` (-34018) - both in CI and on dev machines using
 "Sign to Run Locally".
 
 To work around this **in test builds only**, the SDK supports the compile-time
-condition `CZITI_TEST_INSECURE_KEYS`. When set:
+condition `CZITI_TEST_INSECURE_KEYS`. It selects `InsecureTestKeyProvider`
+(in `lib/ZitiKeyProvider.swift`) in place of the keychain-backed provider:
 
-- `ZitiKeychain.createPrivateKey()` generates an ephemeral RSA key with no
-  keychain interaction.
-- `Ziti.enroll()` skips `storeCertificate()` in the keychain and writes the
+- New keys are ephemeral RSA keys with no keychain interaction.
+- `Ziti.enroll()` doesn't store the certificate in the keychain and writes the
   ephemeral private key PEM into `ZitiIdentity.key` instead.
-- `Ziti.run()` prefers `id.key` if present, over calling
-  `ZitiKeychain.getPrivateKey()`.
+- `Ziti.run()` prefers `id.key` if present, falling back to the keychain.
 - A one-shot `⚠️ CZITI_TEST_INSECURE_KEYS build` warning prints to stderr the
-  first time a key is minted in the process.
+  first time a key is minted or loaded from a `.zid` in the process, and the
+  build itself emits a compiler warning.
 
 **This flag must never be used in a release build.** Keys end up in plaintext
 in the `.zid` file on disk, with none of the OS-level isolation the keychain
