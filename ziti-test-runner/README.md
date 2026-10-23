@@ -46,23 +46,23 @@ Exit codes:
 ## Building with the insecure-keys test flag
 
 macOS enrollment in this SDK uses the data protection keychain
-(`kSecUseDataProtectionKeychain = true` in `ZitiKeychain.createPrivateKey()`),
+(`kSecUseDataProtectionKeychain = true` in `ZitiKeychain.createKeyParameters(tag:)`),
 which requires a provisioning-profile-backed `application-identifier`
 entitlement. Ad-hoc signed CLI tools don't have that, so enrollment fails with
 `errSecMissingEntitlement` (-34018) - both in CI and on dev machines using
 "Sign to Run Locally".
 
 To work around this **in test builds only**, the SDK supports the compile-time
-condition `CZITI_TEST_INSECURE_KEYS`. When set:
+condition `CZITI_TEST_INSECURE_KEYS`. It selects `InsecureTestKeyProvider`
+(in `lib/ZitiKeyProvider.swift`) in place of the keychain-backed provider:
 
-- `ZitiKeychain.createPrivateKey()` generates an ephemeral RSA key with no
-  keychain interaction.
-- `Ziti.enroll()` skips `storeCertificate()` in the keychain and writes the
+- New keys are ephemeral RSA keys with no keychain interaction.
+- `Ziti.enroll()` doesn't store the certificate in the keychain and writes the
   ephemeral private key PEM into `ZitiIdentity.key` instead.
-- `Ziti.run()` prefers `id.key` if present, over calling
-  `ZitiKeychain.getPrivateKey()`.
+- `Ziti.run()` prefers `id.key` if present, falling back to the keychain.
 - A one-shot `⚠️ CZITI_TEST_INSECURE_KEYS build` warning prints to stderr the
-  first time a key is minted in the process.
+  first time a key is minted or loaded from a `.zid` in the process, and the
+  build itself emits a compiler warning.
 
 **This flag must never be used in a release build.** Keys end up in plaintext
 in the `.zid` file on disk, with none of the OS-level isolation the keychain
@@ -98,12 +98,9 @@ ziti edge create service-policy ztr-dial Dial \
 ## Scope
 
 Only OTT enrollment is exercised end-to-end. The `cert-jwt` and `token-jwt`
-modes compile under the flag but aren't wired through CI because:
-
-- `Ziti.enrollToCert(jwtFile:)` / `enrollToToken(jwtFile:)` use the OIDC flow,
-  which can't be driven non-interactively in CI without a mock JWT signer.
-- The `runEnrollTo(mode:)` path in `lib/Ziti.swift` has a keychain retag step
-  (`retagPrivateKey(to:)`) that isn't bracketed by `CZITI_TEST_INSECURE_KEYS`
-  and would likely fail under the flag.
-
-Fixing either is a legitimate follow-up.
+modes are supported under the flag (for `cert-jwt`, the keychain retag step is
+skipped and the ephemeral key PEM is written to `ZitiIdentity.key`), but they
+aren't exercised end-to-end because `Ziti.enrollToCert(jwtFile:)` /
+`enrollToToken(jwtFile:)` use the OIDC flow, which can't be driven
+non-interactively in CI without a mock JWT signer. Adding one is a legitimate
+follow-up.
