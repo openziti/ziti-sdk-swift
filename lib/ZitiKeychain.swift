@@ -16,15 +16,6 @@ limitations under the License.
 
 import Foundation
 
-#if CZITI_TEST_INSECURE_KEYS
-// Lazy-initialized so the warning prints at most once per process, the first time
-// anything in this module actually generates an ephemeral key.
-internal let _cztiInsecureBuildWarningPrinted: Void = {
-    let msg = "⚠️  CZITI_TEST_INSECURE_KEYS build: private keys are generated ephemerally and written into .zid files in plaintext. NEVER SHIP THIS BUILD.\n"
-    FileHandle.standardError.write(Data(msg.utf8))
-}()
-#endif
-
 /// This class manages access to the Keychain, creating and storing keys and certificates needed to access a Ziti network.
 ///
 /// This is primarily an internally used class, though certain methods are marked public in order to support senarios where the enrollment is
@@ -35,7 +26,6 @@ public class ZitiKeychain : NSObject {
     private let log = ZitiLog(ZitiKeychain.self)
     
     private let tag:String
-    private let atag:Data
     
     /// Initialize an instance of `ZitiKeychain`
     ///
@@ -43,29 +33,19 @@ public class ZitiKeychain : NSObject {
     ///     - tag: a `String` used to identify the application in the keychain.  This is usually set to the `sub` field of the one-time JWT used during enrollment
     public init(tag:String) {
         self.tag = tag
-        self.atag = tag.data(using: .utf8)!
         super.init()
     }
     
     
-    private let keySize = 3072
-    func createPrivateKey() -> SecKey? {
-#if CZITI_TEST_INSECURE_KEYS
-        // Insecure test build: generate an ephemeral key with no keychain interaction.
-        // Caller is expected to stash the extracted PEM in the ZitiIdentity for persistence.
-        _ = _cztiInsecureBuildWarningPrinted   // fire once, first time anyone mints a key
-        let parameters: [CFString: Any] = [
-            kSecAttrKeyType: kSecAttrKeyTypeRSA,
-            kSecAttrKeySizeInBits: keySize,
-            kSecAttrIsPermanent: false,
-        ]
-        var error: Unmanaged<CFError>?
-        guard let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error) else {
-            log.error("Unable to create ephemeral private key for \(tag): \(error!.takeRetainedValue() as Error)")
-            return nil
-        }
-        return privateKey
-#else
+    // MARK: - Keychain query and attribute dictionaries
+    //
+    // Kept as pure functions so the exact attributes used to find existing keys and certificates
+    // can be pinned by unit tests. Changing any of these can orphan keys stored by earlier releases.
+
+    static let keySize = 3072
+
+    static func createKeyParameters(tag:String) -> [CFString:Any] {
+        let atag = tag.data(using: .utf8)!
         let privateKeyParams: [CFString: Any] = [ // iOS
             kSecAttrIsPermanent: true,
             kSecAttrLabel: tag,
@@ -82,6 +62,109 @@ public class ZitiKeychain : NSObject {
         if #available(iOS 13.0, OSX 10.15, *) {
             parameters[kSecUseDataProtectionKeychain] = true
         }
+        return parameters
+    }
+
+    static func privateKeyQuery(tag:String) -> [CFString:Any] {
+        var parameters:[CFString:Any] = [
+            kSecClass: kSecClassKey,
+            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+            kSecAttrApplicationTag: tag.data(using: .utf8)!,
+            kSecReturnRef: kCFBooleanTrue!]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            parameters[kSecUseDataProtectionKeychain] = true
+        }
+        return parameters
+    }
+
+    static func deleteKeyQuery(tag:String, keyClass:CFString) -> [CFString:Any] {
+        var deleteQuery:[CFString:Any] = [
+            kSecClass: kSecClassKey,
+            kSecAttrKeyClass: keyClass,
+            kSecAttrApplicationTag: tag.data(using: .utf8)!]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            deleteQuery[kSecUseDataProtectionKeychain] = true
+        }
+        return deleteQuery
+    }
+
+    static func retagQuery(tag:String) -> [CFString:Any] {
+        var query: [CFString: Any] = [
+            kSecClass: kSecClassKey,
+            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
+            kSecAttrApplicationTag: tag.data(using: .utf8)!]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            query[kSecUseDataProtectionKeychain] = true
+        }
+        return query
+    }
+
+    static func retagUpdate(newTag:String) -> [CFString:Any] {
+        return [
+            kSecAttrApplicationTag: newTag.data(using: .utf8)!,
+            kSecAttrLabel: newTag]
+    }
+
+    static func certificateAddParameters(tag:String, cert:SecCertificate) -> [CFString:Any] {
+        var parameters: [CFString: Any] = [
+            kSecClass: kSecClassCertificate,
+            kSecValueRef: cert,
+            kSecAttrLabel: tag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            parameters[kSecUseDataProtectionKeychain] = true
+        }
+        return parameters
+    }
+
+    /// Parameters for the public `storeCertificates(_:)` / `addCaPool(_:)` path. `label` is omitted when nil.
+    static func certificatesAddParameters(cert:SecCertificate, label:String?) -> [CFString:Any] {
+        var parameters: [CFString: Any] = [
+            kSecClass: kSecClassCertificate,
+            kSecValueRef: cert]
+        if let label = label {
+            parameters[kSecAttrLabel] = label
+        }
+        if #available(iOS 13.0, OSX 10.15, *) {
+            parameters[kSecUseDataProtectionKeychain] = true
+        }
+        return parameters
+    }
+
+    /// Lookup used for certificates stored by earlier releases. Intentionally does not set
+    /// `kSecUseDataProtectionKeychain`.
+    static func legacyCertificateQuery(label:String) -> [CFString:Any] {
+        return [
+            kSecClass: kSecClassCertificate,
+            kSecReturnRef: kCFBooleanTrue!,
+            kSecAttrLabel: label]
+    }
+
+    static func certificateQuery(tag:String) -> [CFString:Any] {
+        var params: [CFString: Any] = [
+            kSecClass: kSecClassCertificate,
+            kSecReturnRef: kCFBooleanTrue!,
+            kSecAttrLabel: tag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            params[kSecUseDataProtectionKeychain] = true
+        }
+        return params
+    }
+
+    static func certificateDeleteParameters(tag:String, cert:CFTypeRef) -> [CFString:Any] {
+        var delParams: [CFString:Any] = [
+            kSecClass: kSecClassCertificate,
+            kSecValueRef: cert,
+            kSecAttrLabel: tag]
+        if #available(iOS 13.0, OSX 10.15, *) {
+            delParams[kSecUseDataProtectionKeychain] = true
+        }
+        return delParams
+    }
+
+    // MARK: -
+
+    func createPrivateKey() -> SecKey? {
+        let parameters = ZitiKeychain.createKeyParameters(tag: tag)
 
         var error: Unmanaged<CFError>?
         guard let privateKey = SecKeyCreateRandomKey(parameters as CFDictionary, &error) else {
@@ -89,7 +172,6 @@ public class ZitiKeychain : NSObject {
             return nil
         }
         return privateKey
-#endif
     }
     
     func getPrivateKey() -> SecKey? {
@@ -98,15 +180,8 @@ public class ZitiKeychain : NSObject {
     }
     
     func getKeyPair() -> (privKey:SecKey?, pubKey:SecKey?, ZitiError?) {
-        var parameters:[CFString:Any] = [
-            kSecClass: kSecClassKey,
-            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-            kSecAttrApplicationTag: atag,
-            kSecReturnRef: kCFBooleanTrue!]
-        if #available(iOS 13.0, OSX 10.15, *) {
-            parameters[kSecUseDataProtectionKeychain] = true
-        }
-        
+        let parameters = ZitiKeychain.privateKeyQuery(tag: tag)
+
         var ref: AnyObject?
         let status = SecItemCopyMatching(parameters as CFDictionary, &ref)
         guard status == errSecSuccess else {
@@ -138,30 +213,15 @@ public class ZitiKeychain : NSObject {
     }
     
     private func deleteKey(_ keyClass:CFString) -> OSStatus {
-        var deleteQuery:[CFString:Any] = [
-            kSecClass: kSecClassKey,
-            kSecAttrKeyClass: keyClass,
-            kSecAttrApplicationTag: atag]
-        if #available(iOS 13.0, OSX 10.15, *) {
-            deleteQuery[kSecUseDataProtectionKeychain] = true
-        }
+        let deleteQuery = ZitiKeychain.deleteKeyQuery(tag: tag, keyClass: keyClass)
         return SecItemDelete(deleteQuery as CFDictionary)
     }
-    
+
     /// Re-tag the private key from this keychain's tag to a new tag.
     /// Used after enrollment when the real identity ID replaces a temporary UUID.
     func retagPrivateKey(to newTag:String) -> ZitiError? {
-        var query: [CFString: Any] = [
-            kSecClass: kSecClassKey,
-            kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-            kSecAttrApplicationTag: atag]
-        if #available(iOS 13.0, OSX 10.15, *) {
-            query[kSecUseDataProtectionKeychain] = true
-        }
-        let newAtag = newTag.data(using: .utf8)!
-        let update: [CFString: Any] = [
-            kSecAttrApplicationTag: newAtag,
-            kSecAttrLabel: newTag]
+        let query = ZitiKeychain.retagQuery(tag: tag)
+        let update = ZitiKeychain.retagUpdate(newTag: newTag)
         let status = SecItemUpdate(query as CFDictionary, update as CFDictionary)
         guard status == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
@@ -255,22 +315,14 @@ public class ZitiKeychain : NSObject {
                 return (ZitiError("Unable to get certificate common name for \(tag): \(errStr)", errorCode: Int(status)), nil)
             }
             let cnStr = String(describing: cn)
-            var parameters: [CFString: Any] = [
-                kSecClass: kSecClassCertificate,
-                kSecValueRef: cert]
-            if (setAttrLabel) {
-                // Setting kSecAttrLabel for a certificate is not effective, at least not on macOS. The cert is always stored with its
-                // common name as the label. This is true both for the file-based keychain (which can be verified with Keychain Access)
-                // and data protection (cloud) keychain (which cannot be inspected, but verified by adding/getting).
-                //
-                // Work around this by explicitly using the cn as the label, so the label is predictable on macOS and iOS, and hopefully
-                // on future macOS versions when/if `kSecAttrLabel` is respected. CNs
-                // to the caller so the app knows which certs to look for when it needs them.
-                parameters[kSecAttrLabel] = cnStr
-            }
-            if #available(iOS 13.0, OSX 10.15, *) {
-                parameters[kSecUseDataProtectionKeychain] = true
-            }
+            // Setting kSecAttrLabel for a certificate is not effective, at least not on macOS. The cert is always stored with its
+            // common name as the label. This is true both for the file-based keychain (which can be verified with Keychain Access)
+            // and data protection (cloud) keychain (which cannot be inspected, but verified by adding/getting).
+            //
+            // Work around this by explicitly using the cn as the label, so the label is predictable on macOS and iOS, and hopefully
+            // on future macOS versions when/if `kSecAttrLabel` is respected. CNs
+            // to the caller so the app knows which certs to look for when it needs them.
+            let parameters = ZitiKeychain.certificatesAddParameters(cert: cert, label: setAttrLabel ? cnStr : nil)
             status = SecItemAdd(parameters as CFDictionary, nil)
             guard status == errSecSuccess || status == errSecDuplicateItem else {
                 let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
@@ -322,13 +374,7 @@ public class ZitiKeychain : NSObject {
             log.error(errStr)
             return (nil, ZitiError(errStr))
         }
-        var parameters: [CFString: Any] = [
-            kSecClass: kSecClassCertificate,
-            kSecValueRef: certificate,
-            kSecAttrLabel: tag]
-        if #available(iOS 13.0, OSX 10.15, *) {
-            parameters[kSecUseDataProtectionKeychain] = true
-        }
+        let parameters = ZitiKeychain.certificateAddParameters(tag: tag, cert: certificate)
         let status = SecItemAdd(parameters as CFDictionary, nil)
         guard status == errSecSuccess || status == errSecDuplicateItem else {
             let errStr = SecCopyErrorMessageString(status, nil) as String? ?? "\(status)"
@@ -344,11 +390,8 @@ public class ZitiKeychain : NSObject {
     }
     
     private func getCertificate(_ label:String) -> (Data?, ZitiError?) {
-        let params: [CFString: Any] = [
-            kSecClass: kSecClassCertificate,
-            kSecReturnRef: kCFBooleanTrue!,
-            kSecAttrLabel: label]
-        
+        let params = ZitiKeychain.legacyCertificateQuery(label: label)
+
         var cert: CFTypeRef?
         let status = SecItemCopyMatching(params as CFDictionary, &cert)
         guard status == errSecSuccess else {
@@ -378,14 +421,8 @@ public class ZitiKeychain : NSObject {
     }
     
     func deleteCertificate(silent:Bool=false) -> ZitiError? {
-        var params: [CFString: Any] = [
-            kSecClass: kSecClassCertificate,
-            kSecReturnRef: kCFBooleanTrue!,
-            kSecAttrLabel: tag]
-        if #available(iOS 13.0, OSX 10.15, *) {
-            params[kSecUseDataProtectionKeychain] = true
-        }
-        
+        let params = ZitiKeychain.certificateQuery(tag: tag)
+
         var cert: CFTypeRef?
         let copyStatus = SecItemCopyMatching(params as CFDictionary, &cert)
         guard copyStatus == errSecSuccess else {
@@ -394,13 +431,7 @@ public class ZitiKeychain : NSObject {
             return ZitiError("Unable to find certificate for \(tag): \(errStr)", errorCode: Int(copyStatus))
         }
         
-        var delParams: [CFString:Any] = [
-            kSecClass: kSecClassCertificate,
-            kSecValueRef: cert!,
-            kSecAttrLabel: tag]
-        if #available(iOS 13.0, OSX 10.15, *) {
-            delParams[kSecUseDataProtectionKeychain] = true
-        }
+        let delParams = ZitiKeychain.certificateDeleteParameters(tag: tag, cert: cert!)
         let deleteStatus = SecItemDelete(delParams as CFDictionary)
         guard deleteStatus == errSecSuccess else {
             let errStr = SecCopyErrorMessageString(deleteStatus, nil) as String? ?? "\(deleteStatus)"
