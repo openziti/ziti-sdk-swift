@@ -22,7 +22,8 @@ import Foundation
 /// `zitiKeyProvider` so storage details stay in one place.
 protocol ZitiKeyProvider {
     /// Delete any existing key pair for `tag`, create a new private key and return it as PEM.
-    /// Returns `nil` if the key could not be created.
+    /// Returns `nil` if the key could not be created, or an empty string if it was created but
+    /// could not be exported.
     func createKey(tag:String) -> String?
 
     /// The private key string `run()` hands to the C SDK for `id`, or `nil` if there is none
