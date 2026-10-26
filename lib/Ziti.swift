@@ -1143,7 +1143,7 @@ import CZitiPrivate
                                 pq_process_cb: postureChecks?.processQuery != nil ? Ziti.onProcessQuery : nil,
                                 pq_domain_cb: postureChecks?.domainQuery != nil ? Ziti.onDomainQuery : nil,
                                 app_ctx: self.toVoidPtr(),
-                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiConfigEvent.rawValue,
+                                events: ZitiContextEvent.rawValue | ZitiRouterEvent.rawValue | ZitiServiceEvent.rawValue | ZitiAuthEvent.rawValue | ZitiConfigEvent.rawValue | ZitiPostureStatusEvent.rawValue,
                                     event_cb: Ziti.onEvent, cert_extension_window: 30,
                                     enroll_mode: ziti_enroll_mode(rawValue: UInt32(enrollMode.rawValue)))
         

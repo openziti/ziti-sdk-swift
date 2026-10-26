@@ -50,7 +50,7 @@ import CZitiPrivate
     /**
      Registers this protocol via `URLProtocol.registerClass` and subscribes for service intercept updates from `Ziti`.
      
-     This metod should be called during the `InitCallback` of  `Ziti` `run(_:)`  to ensure `Ziti` is initialized before
+     This method should be called during the `InitCallback` of  `Ziti` `run(_:)`  to ensure `Ziti` is initialized before
      starting to intercept services.
      
      Note that in some cases `ZitiUrlProtocol` will need to be configured in your `URLSession`'s configuration ala:
@@ -60,7 +60,19 @@ import CZitiPrivate
       configuration.protocolClasses?.insert(ZitiUrlProtocol.self, at: 0)
       urlSession = URLSession(configuration:configuration)
       ```
-     
+
+     Call this method once per `Ziti` instance. Calling it again for the same instance registers a duplicate event callback.
+
+     Enabling or disabling `Ziti` via `setEnabled(_:)` requires no further calls. Intercepts are removed when `Ziti` is disabled and
+     restored from service events when it is enabled.
+
+     To restart, call `shutdown()` on the current `Ziti` instance and wait for a `ZitiEvent.ContextEvent` with status `Ziti.ZITI_DISABLED`,
+     which is reported after the instance's intercepts have been removed. Then create a new `Ziti` instance and call this method
+     from its `InitCallback`.
+
+     Requests made while no services are available (e.g., while `Ziti` is disabled or restarting) are not intercepted, and are handled
+     by the next registered `URLProtocol`.
+
         - Parameters:
             - ziti: The `Ziti` instance we are using to route intercepted URL traffic
             - idleTime: Time, in miliiseconds,  client attempts to keep-alive an idle connection before allowing it to close. Default=10000
@@ -93,8 +105,12 @@ import CZitiPrivate
         if let svcName = svc.name {
             log.debug("Removing service \(svcName)")
             interceptsLock.lock()
+            let removed = intercepts.filter { $0.value.name == svcName }
             intercepts = intercepts.filter { $0.value.name !=  svcName }
             interceptsLock.unlock()
+
+            // close the removed intercepts so their uv handles are released before they are deallocated
+            removed.values.forEach { $0.close() }
         }
     }
     
@@ -103,26 +119,19 @@ import CZitiPrivate
         defer { interceptsLock.unlock() }
         
         let hostPort = "\(hostname):\(port)"
-        if let curr = ZitiUrlProtocol.intercepts["http://\(hostPort)"] {
-            log.info("intercept \"http://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
-            curr.close()
-        }
-        if let curr = ZitiUrlProtocol.intercepts["https://\(hostPort)"] {
-            log.info("intercept \"https://\(hostPort)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
-            curr.close()
-        }
-        
-        if let scheme = (port == 80 ? "http" : (port == 443 ? "https" : nil)) {
-            let intercept = ZitiIntercept(ziti, svcName, "\(scheme)://\(hostPort)", idleTime)
+        let schemes = port == 80 ? ["http"] : (port == 443 ? ["https"] : ["http", "https"])
+
+        // only close the intercepts being replaced, since closed intercepts must not remain in `intercepts`
+        schemes.forEach { scheme in
+            let urlStr = "\(scheme)://\(hostPort)"
+            if let curr = ZitiUrlProtocol.intercepts[urlStr] {
+                log.info("intercept \"\(urlStr)\" changing from \"\(curr.name)\" to \"\(svcName)\"")
+                curr.close()
+            }
+            let intercept = ZitiIntercept(ziti, svcName, urlStr, idleTime)
             intercepts[intercept.urlStr] = intercept
-            log.info("Setting TUN intercept svc \(scheme)://\(hostPort): \(hostPort)")
-        } else {
-            var intercept = ZitiIntercept(ziti, svcName, "http://\(hostPort)", idleTime)
-            intercepts[intercept.urlStr] = intercept
-            intercept = ZitiIntercept(ziti, svcName, "https://\(hostPort)", idleTime)
-            intercepts[intercept.urlStr] = intercept
-            log.info("Setting TUN intercept svc \(svcName): \(hostPort)")
         }
+        log.info("Setting TUN intercept svc \(svcName): \(schemes.map { "\($0)://\(hostPort)" })")
     }
     
     class func addOrUpdateService(_ svc:ZitiService, _ ziti:Ziti?, _ idleTime:Int) {
@@ -131,9 +140,11 @@ import CZitiPrivate
             return
         }
         
+        // drop the service's current intercepts, since the updated config may not include all of them
+        removeService(svc)
+
         // Don't include unless CAN_DIAL
         guard UInt32(svc.permFlags ?? 0x0) & ZITI_CAN_DIAL != 0 else {
-            removeService(svc)
             return
         }
         
@@ -227,6 +238,7 @@ import CZitiPrivate
     public override func startLoading() {
         guard let ziti = ZitiUrlProtocol.ziti else {
             log.wtf("Invalid ziti reference")
+            client?.urlProtocol(self, didFailWithError: ZitiError("Invalid ziti reference"))
             return
         }
         
@@ -254,6 +266,14 @@ import CZitiPrivate
                                                   self.toVoidPtr())
             }
             ZitiUrlProtocol.interceptsLock.unlock()
+
+            // the intercept may have been removed since canInit(), and without a request there are no more callbacks
+            if self.req == nil {
+                self.log.error("unable to start request for \(urlStr), service unavailable")
+                self.notifyDidFailWithError(ZitiError("service unavailable for \(urlStr)",
+                                                      errorCode: Ziti.ZITI_SERVICE_UNAVAILABLE))
+                self.finished = true
+            }
         }
     }
     
@@ -333,7 +353,11 @@ import CZitiPrivate
             let str = String(cString: ziti_errorstr(Int32(code)))
             log.error("\(code) \(str)")
             let err = ZitiError(str, errorCode: code)
-            mySelf.notifyDidFailWithError(ZitiError(str, errorCode: code))
+            mySelf.notifyDidFailWithError(err)
+
+            // request is freed after an error response, so no more callbacks. see also stopLoading()
+            mySelf.finished = true
+            ZitiUrlProtocol.reqs = ZitiUrlProtocol.reqs.filter { !($0.stopped && $0.finished) }
             return
         }
         
@@ -386,6 +410,7 @@ import CZitiPrivate
             let str = String(cString: ziti_errorstr(Int32(len)))
             let err = ZitiError(str, errorCode: len)
             mySelf.notifyDidFailWithError(err)
+            mySelf.finished = true // no more callbacks after an error
         } else {
             let data = Data(bytes: body!, count: len)
             mySelf.notifyDidLoad(data)
