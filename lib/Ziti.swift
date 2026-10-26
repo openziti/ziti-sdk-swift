@@ -1048,9 +1048,8 @@ import CZitiPrivate
     ///     - `runAsync(_:)`
     @objc public func run(_ postureChecks:ZitiPostureChecks?, _ initCallback: @escaping InitCallback) {
         // Get certificates. There won't be any if this identity uses external authentication.
-        let zkc = ZitiKeychain(tag: id.id)
         var certPEMPtr:UnsafeMutablePointer<Int8>? = nil
-        let certPEM = id.getCertificates(zkc)
+        let certPEM = zitiKeyProvider.certificates(for: id)
         if (certPEM != nil) {
             certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM!.count + 1)
             certPEMPtr!.initialize(from: certPEM!, count: certPEM!.count + 1)

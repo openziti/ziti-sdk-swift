@@ -30,6 +30,10 @@ protocol ZitiKeyProvider {
     /// can't leave the keychain would return a `keychain:` reference instead.
     func keyString(for id:ZitiIdentity) -> String?
 
+    /// The certificate PEM `run()` hands to the C SDK for `id`, or `nil` if there is none
+    /// (e.g. external authentication).
+    func certificates(for id:ZitiIdentity) -> String?
+
     func deleteKey(tag:String, silent:Bool) -> ZitiError?
 
     /// Move the private key stored under `oldTag` to `newTag`.
@@ -61,6 +65,10 @@ struct KeychainKeyProvider : ZitiKeyProvider {
         let zkc = ZitiKeychain(tag: id.id)
         guard let privKey = zkc.getPrivateKey() else { return nil }
         return zkc.getKeyPEM(privKey)
+    }
+
+    func certificates(for id:ZitiIdentity) -> String? {
+        return id.getCertificates(ZitiKeychain(tag: id.id))
     }
 
     func deleteKey(tag:String, silent:Bool) -> ZitiError? {
@@ -124,6 +132,10 @@ struct InsecureTestKeyProvider : ZitiKeyProvider {
         guard let key = id.key, !key.isEmpty else { return nil }
         _ = InsecureTestKeyProvider.warning
         return key
+    }
+
+    func certificates(for id:ZitiIdentity) -> String? {
+        return id.getCertificates(nil)
     }
 
     func deleteKey(tag:String, silent:Bool) -> ZitiError? { return nil }

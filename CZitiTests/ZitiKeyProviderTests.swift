@@ -64,6 +64,15 @@ class ZitiKeyProviderTests: XCTestCase {
         XCTAssertNil(InsecureTestKeyProvider().keyString(for: id))
     }
 
+    func testCertificatesFromIdentityOnly() {
+        let id = ZitiIdentity(id: "real-id", ztAPIs: ["https://ctrl:1280"], certs: "cert-pem")
+        XCTAssertEqual(InsecureTestKeyProvider().certificates(for: id), "cert-pem")
+
+        // never falls back to the keychain
+        id.certs = nil
+        XCTAssertNil(InsecureTestKeyProvider().certificates(for: id))
+    }
+
     func testCopyKeyToFinalIdentity() throws {
         // enrollToCert: key is persisted in the temporary identity, then carried to the final one
         let p = InsecureTestKeyProvider()
@@ -87,6 +96,11 @@ class ZitiKeyProviderTests: XCTestCase {
 #else
     func testSelectedProvider() {
         XCTAssertTrue(zitiKeyProvider is KeychainKeyProvider)
+    }
+
+    func testCertificatesPreferIdentity() {
+        let id = ZitiIdentity(id: "real-id", ztAPIs: ["https://ctrl:1280"], certs: "cert-pem")
+        XCTAssertEqual(KeychainKeyProvider().certificates(for: id), "cert-pem")
     }
 #endif
 }
