@@ -92,8 +92,9 @@ struct KeychainKeyProvider : ZitiKeyProvider {
 #warning("CZITI_TEST_INSECURE_KEYS is set: private keys are stored in plaintext. Test builds only.")
 
 /// __Test builds only.__ Generates ephemeral keys and keeps the PEM in `ZitiIdentity.key`
-/// (and so in plaintext in the .zid file). Lets ad-hoc signed tools enroll without the data
-/// protection keychain entitlement. Never use in a release build.
+/// (and so in plaintext in the .zid file). Never reads or writes the keychain, which lets
+/// ad-hoc signed tools enroll without the data protection keychain entitlement. Never use
+/// in a release build.
 struct InsecureTestKeyProvider : ZitiKeyProvider {
     private static let log = ZitiLog()
 
@@ -120,12 +121,9 @@ struct InsecureTestKeyProvider : ZitiKeyProvider {
     }
 
     func keyString(for id:ZitiIdentity) -> String? {
-        if let key = id.key, !key.isEmpty {
-            _ = InsecureTestKeyProvider.warning
-            return key
-        }
-        // identities enrolled by a regular build keep their key in the keychain
-        return KeychainKeyProvider().keyString(for: id)
+        guard let key = id.key, !key.isEmpty else { return nil }
+        _ = InsecureTestKeyProvider.warning
+        return key
     }
 
     func deleteKey(tag:String, silent:Bool) -> ZitiError? { return nil }

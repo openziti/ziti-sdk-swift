@@ -59,7 +59,8 @@ condition `CZITI_TEST_INSECURE_KEYS`. It selects `InsecureTestKeyProvider`
 - New keys are ephemeral RSA keys with no keychain interaction.
 - `Ziti.enroll()` doesn't store the certificate in the keychain and writes the
   ephemeral private key PEM into `ZitiIdentity.key` instead.
-- `Ziti.run()` prefers `id.key` if present, falling back to the keychain.
+- `Ziti.run()` uses `id.key` and never reads the keychain, so identities
+  enrolled by a regular build won't load.
 - A one-shot `⚠️ CZITI_TEST_INSECURE_KEYS build` warning prints to stderr the
   first time a key is minted or loaded from a `.zid` in the process, and the
   build itself emits a compiler warning.
