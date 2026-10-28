@@ -2,7 +2,7 @@
   "warnings": [
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/Ziti.swift",
-      "line": 1563,
+      "line": 1538,
       "symbol": "Ziti.extAuth(_:_:)",
       "symbol_kind": "source.lang.swift.decl.function.method.instance",
       "warning": "undocumented"
@@ -16,35 +16,35 @@
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 195,
+      "line": 201,
       "symbol": "ZitiEvent.AuthAction.Unknown",
       "symbol_kind": "source.lang.swift.decl.enumelement",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 319,
+      "line": 325,
       "symbol": "ZitiEvent.ConfigEvent.controllers",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 320,
+      "line": 326,
       "symbol": "ZitiEvent.ConfigEvent.cfgSource",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 321,
+      "line": 327,
       "symbol": "ZitiEvent.ConfigEvent.cert",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
     },
     {
       "file": "/Users/runner/work/ziti-sdk-swift/ziti-sdk-swift/lib/ZitiEvent.swift",
-      "line": 322,
+      "line": 328,
       "symbol": "ZitiEvent.ConfigEvent.caBundle",
       "symbol_kind": "source.lang.swift.decl.var.instance",
       "warning": "undocumented"
