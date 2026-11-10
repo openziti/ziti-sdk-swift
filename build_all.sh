@@ -39,6 +39,7 @@ function build_tsdk {
    cmake -DCMAKE_BUILD_TYPE=${cmake_build_type} \
       ${clang_asan_flags} \
       -DTLSUV_TLSLIB=openssl \
+      -DVCPKG_INSTALL_OPTIONS="--overlay-ports=./deps/vcpkg-overlays/protobuf-c-runtime-only" \
       -DEXCLUDE_PROGRAMS=ON \
       -DZITI_TUNNEL_BUILD_TESTS=OFF \
       -DCMAKE_TOOLCHAIN_FILE="${toolchain}" \
