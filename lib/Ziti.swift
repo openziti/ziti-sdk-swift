@@ -1118,6 +1118,8 @@ import CZitiPrivate
                 }
                 i = model_list_it_next(i)
             }
+            // the strings are freed above; this frees the list's own nodes
+            model_list_clear(ctrlListPtr, nil)
         }
         
         guard zitiStatus == Ziti.ZITI_OK else {
@@ -1912,9 +1914,9 @@ func scan<
 }
 
 extension String {
-    /// A NUL-terminated UTF-8 copy for the C SDK, which the caller deallocates. Sized in UTF-8 bytes: `count` counts
-    /// characters, which undercounts non-ASCII text and "\r\n" (one character), leaving a copy that's short and not
-    /// NUL-terminated
+    /// A NUL-terminated UTF-8 copy for the C SDK. The caller must release it with `deallocate()` (not `free()`).
+    /// Sized in UTF-8 bytes: `count` counts characters, which undercounts non-ASCII text and "\r\n" (one character),
+    /// leaving a copy that's short and not NUL-terminated.
     func allocatedCString() -> UnsafeMutablePointer<CChar> {
         let utf8 = utf8CString
         let ptr = UnsafeMutablePointer<CChar>.allocate(capacity: utf8.count)

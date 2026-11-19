@@ -134,6 +134,8 @@ import CZitiPrivate
                                            cert: nil, name: nil, use_keychain: false)
         let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
         guard status == ZITI_OK else {
+            // on failure the C SDK doesn't call on_enroll, which would otherwise release the request
+            ZitiEnroller.release(enrollData)
             let errStr = String(cString: ziti_errorstr(status))
             log.error(errStr)
             cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
@@ -172,6 +174,8 @@ import CZitiPrivate
                                            cert: nil, name: nil, use_keychain: false)
         let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
         guard status == ZITI_OK else {
+            // on failure the C SDK doesn't call on_enroll, which would otherwise release the request
+            ZitiEnroller.release(enrollData)
             let errStr = String(cString: ziti_errorstr(status))
             log.error(errStr)
             cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
@@ -193,6 +197,8 @@ import CZitiPrivate
                                            cert: nil, name: nil, use_keychain: false)
         let status = ziti_enroll(&enroll_opts, loop, ZitiEnroller.on_enroll, enrollData)
         guard status == ZITI_OK else {
+            // on failure the C SDK doesn't call on_enroll, which would otherwise release the request
+            ZitiEnroller.release(enrollData)
             let errStr = String(cString: ziti_errorstr(status))
             log.error(errStr)
             cb(nil, nil, ZitiError(errStr, errorCode: Int(status)))
@@ -279,16 +285,19 @@ import CZitiPrivate
     //
     // Private
     //
+    /// Frees a request and, through its deinit, the C strings it holds
+    private static func release(_ enrollData:UnsafeMutablePointer<EnrollmentRequestData>) {
+        enrollData.deinitialize(count: 1)
+        enrollData.deallocate()
+    }
+
     static let on_enroll:ziti_enroll_cb = { zc, status, errMsg, ctx in
         guard let enrollData = ctx?.assumingMemoryBound(to: EnrollmentRequestData.self) else {
             log.wtf("unable to decode context", function:"on_enroll()")
             return
         }
         
-        defer {
-            enrollData.deinitialize(count: 1)
-            enrollData.deallocate()
-        }
+        defer { ZitiEnroller.release(enrollData) }
         
         guard errMsg == nil else {
             let errStr = String(cString: errMsg!)
