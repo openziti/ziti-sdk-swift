@@ -1051,8 +1051,7 @@ import CZitiPrivate
         var certPEMPtr:UnsafeMutablePointer<Int8>? = nil
         let certPEM = zitiKeyProvider.certificates(for: id)
         if (certPEM != nil) {
-            certPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: certPEM!.count + 1)
-            certPEMPtr!.initialize(from: certPEM!, count: certPEM!.count + 1)
+            certPEMPtr = certPEM!.allocatedCString()
         } else {
             log.debug("identity \(id.id) does not have certificates. this is ok if using external authentication")
         }
@@ -1060,8 +1059,7 @@ import CZitiPrivate
         // Get private key
         var privKeyPEMPtr: UnsafeMutablePointer<Int8>? = nil
         if let privKeyPEM = zitiKeyProvider.keyString(for: id) {
-            privKeyPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: privKeyPEM.count + 1)
-            privKeyPEMPtr!.initialize(from: privKeyPEM, count: privKeyPEM.count + 1)
+            privKeyPEMPtr = privKeyPEM.allocatedCString()
         } else {
             log.debug("identity \(id.id) does not have a private key. this is ok if using external authentication")
         }
@@ -1078,20 +1076,17 @@ import CZitiPrivate
         
         // convert key and id info to char * types that ziti-sdk-c can use.
         // also considered .withCString - https://stackoverflow.com/questions/31378120/convert-swift-string-into-cchar-pointer
-        let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ztAPI.count + 1)
-        ctrlPtr.initialize(from: id.ztAPI, count: id.ztAPI.count + 1)
+        let ctrlPtr = id.ztAPI.allocatedCString()
 
         var caPEMPtr:UnsafeMutablePointer<Int8>? = nil // todo empty string
         if (id.ca != nil) {
-            caPEMPtr = UnsafeMutablePointer<Int8>.allocate(capacity: id.ca!.count + 1)
-            caPEMPtr!.initialize(from: id.ca!, count: id.ca!.count + 1)
+            caPEMPtr = id.ca!.allocatedCString()
         }
 
         // set up the ziti_config with our cert, etc.
         var ctrls:model_list = model_list()
         id.ztAPIs?.forEach { c in
-            let ctrlPtr = UnsafeMutablePointer<Int8>.allocate(capacity: c.count + 1)
-            ctrlPtr.initialize(from: c, count: c.count + 1)
+            let ctrlPtr = c.allocatedCString()
             model_list_append(&ctrls, ctrlPtr)
         }
 
@@ -1914,4 +1909,16 @@ func scan<
     result.append(runningResult)
   }
   return result
+}
+
+extension String {
+    /// A NUL-terminated UTF-8 copy for the C SDK, which the caller deallocates. Sized in UTF-8 bytes: `count` counts
+    /// characters, which undercounts non-ASCII text and "\r\n" (one character), leaving a copy that's short and not
+    /// NUL-terminated
+    func allocatedCString() -> UnsafeMutablePointer<CChar> {
+        let utf8 = utf8CString
+        let ptr = UnsafeMutablePointer<CChar>.allocate(capacity: utf8.count)
+        utf8.withUnsafeBufferPointer { ptr.initialize(from: $0.baseAddress!, count: utf8.count) }
+        return ptr
+    }
 }

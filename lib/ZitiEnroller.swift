@@ -126,10 +126,8 @@ import CZitiPrivate
         enrollData.initialize(to: EnrollmentRequestData())
         enrollData.pointee.enrollmentCallback = cb
         enrollData.pointee.subj = subj
-        enrollData.pointee.jwtFile_c = UnsafeMutablePointer<Int8>.allocate(capacity: jwtFile.count + 1)
-        enrollData.pointee.jwtFile_c!.initialize(from: jwtFile.cString(using: .utf8)!, count: jwtFile.count + 1)
-        enrollData.pointee.privatePem_c = UnsafeMutablePointer<Int8>.allocate(capacity: privatePem.count + 1)
-        enrollData.pointee.privatePem_c!.initialize(from: privatePem.cString(using: .utf8)!, count: privatePem.count + 1)
+        enrollData.pointee.jwtFile_c = jwtFile.allocatedCString()
+        enrollData.pointee.privatePem_c = privatePem.allocatedCString()
         
         var enroll_opts = ziti_enroll_opts(url: nil, token: enrollData.pointee.jwtFile_c,
                                            key: enrollData.pointee.privatePem_c,
@@ -168,8 +166,7 @@ import CZitiPrivate
         let enrollData = UnsafeMutablePointer<EnrollmentRequestData>.allocate(capacity: 1)
         enrollData.initialize(to: EnrollmentRequestData())
         enrollData.pointee.enrollmentCallback = cb
-        enrollData.pointee.url_c = UnsafeMutablePointer<Int8>.allocate(capacity: controllerURL.count + 1)
-        enrollData.pointee.url_c!.initialize(from: controllerURL.cString(using: .utf8)!, count: controllerURL.count + 1)
+        enrollData.pointee.url_c = controllerURL.allocatedCString()
 
         var enroll_opts = ziti_enroll_opts(url: enrollData.pointee.url_c, token: nil, key: nil,
                                            cert: nil, name: nil, use_keychain: false)
@@ -190,8 +187,7 @@ import CZitiPrivate
         let enrollData = UnsafeMutablePointer<EnrollmentRequestData>.allocate(capacity: 1)
         enrollData.initialize(to: EnrollmentRequestData())
         enrollData.pointee.enrollmentCallback = cb
-        enrollData.pointee.jwtContent_c = UnsafeMutablePointer<Int8>.allocate(capacity: jwtContent.count + 1)
-        enrollData.pointee.jwtContent_c!.initialize(from: jwtContent.cString(using: .utf8)!, count: jwtContent.count + 1)
+        enrollData.pointee.jwtContent_c = jwtContent.allocatedCString()
 
         var enroll_opts = ziti_enroll_opts(url: nil, token: enrollData.pointee.jwtContent_c, key: nil,
                                            cert: nil, name: nil, use_keychain: false)

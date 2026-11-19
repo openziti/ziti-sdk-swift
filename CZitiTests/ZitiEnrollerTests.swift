@@ -179,4 +179,35 @@ class ZitiEnrollerTests: XCTestCase {
         XCTAssertNil(decoded.id.key)
         XCTAssertNil(decoded.id.ca)
     }
+
+    // MARK: - allocatedCString
+
+    private func copied(_ s: String) -> String {
+        let ptr = s.allocatedCString()
+        defer { ptr.deallocate() }
+        return String(cString: ptr)
+    }
+
+    func testAllocatedCStringCopiesAscii() {
+        XCTAssertEqual(copied("https://ctrl.example.com:1280"), "https://ctrl.example.com:1280")
+        XCTAssertEqual(copied(""), "")
+    }
+
+    // "\r\n" is one Character, so sizing by `count` cut CRLF PEMs short
+    func testAllocatedCStringKeepsCRLF() {
+        let pem = "-----BEGIN CERTIFICATE-----\r\nMIIB\r\n-----END CERTIFICATE-----\r\n"
+        XCTAssertEqual(copied(pem), pem)
+    }
+
+    func testAllocatedCStringKeepsNonAscii() {
+        let path = "/Users/José/Téléchargements/ziti 🔐.jwt"
+        XCTAssertEqual(copied(path), path)
+    }
+
+    func testAllocatedCStringEndsAtTheUtf8Length() {
+        let s = "é\r\n🔐"
+        let ptr = s.allocatedCString()
+        defer { ptr.deallocate() }
+        XCTAssertEqual(strlen(ptr), s.utf8.count)
+    }
 }
