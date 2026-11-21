@@ -53,8 +53,21 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     var tunneler_opts:UnsafeMutablePointer<tunneler_sdk_options>!
     var tnlr_ctx:tunneler_context?
     
-    private let uvDG = DispatchGroup()
+    /// Entered while the loop runs. Internal for tests
+    let uvDG = DispatchGroup()
     private var loopKeepAliveHandle:UnsafeMutablePointer<uv_async_t>?
+
+    /// The intercept-only mode, and where the tunneler SDK is: it's handed over right after `ziti_tunnel_init_cmd`,
+    /// before any identity loads, then on the loop, and not at all once shut down (switching off then would host
+    /// services again on identities being shut down)
+    enum Stage {
+        case notStarted, running, shutDown
+        /// Where Ziti is once started: a shutdown that came first stays
+        var started:Stage { return self == .notStarted ? .running : self }
+    }
+    private let interceptOnlyLock = NSLock()
+    private var interceptOnly = false
+    private var stage = Stage.notStarted
     
     /// instance of Ziti that can be used for general purpose calls for performing operations, timers
     public let opsZiti:Ziti
@@ -185,6 +198,42 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         }
     }
 
+    /// Turns intercept-only on or off. While on, no service is hosted, whatever the identities may bind, and intercepting
+    /// goes on: turning it on stops the services hosted (connections they already accepted run until they end), and
+    /// turning it off hosts the ones held back.
+    ///
+    /// Before `startZiti` the mode applies before any identity loads, so nothing is hosted first. After it, the switch
+    /// runs on the loop thread. Ignored after `shutdownZiti`. May be called from any thread.
+    /// - Parameter interceptOnly: true to host no services, false to host what the identities bind
+    public func setInterceptOnly(_ interceptOnly:Bool) {
+        interceptOnlyLock.lock()
+        self.interceptOnly = interceptOnly
+        let stage = self.stage
+        interceptOnlyLock.unlock()
+        switch stage {
+        case .notStarted:
+            break // loadAndRunZiti hands it over
+        case .running:
+            perform { [weak self] in
+                guard let self = self else { return }
+                // the latest value, not this call's: callers on other threads may queue out of order. Ziti may have
+                // started shutting down since
+                self.interceptOnlyLock.lock()
+                let running = self.stage == .running
+                let latest = self.interceptOnly
+                self.interceptOnlyLock.unlock()
+                if running { ziti_tunnel_set_intercept_only(latest) }
+            }
+        case .shutDown:
+            log.info("Not setting intercept-only \(interceptOnly): Ziti is shut down")
+        }
+    }
+
+    /// Whether the tunneler refuses to host. On the loop thread once Ziti has started
+    var tunnelerIsInterceptOnly:Bool {
+        return tnlr_ctx.map { ziti_tunneler_is_intercept_only($0) } ?? false
+    }
+
     /// Perform on operation on the uv_loop managed by this class
     /// - Parameter op: operation to perform
     public func perform(_ op: @escaping Ziti.PerformCallback) {
@@ -223,7 +272,15 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
         
         // Initialize the tunneler SDK CMDs
         _ = ziti_tunnel_init_cmd(loopPtr.loop, tnlr_ctx, ZitiTunnel.onEventCallback)
-        
+
+        // after ziti_tunnel_init_cmd, so it reaches this tunneler, and before any identity loads, so nothing is
+        // hosted first. A switch from here on goes through perform, which runs once the loop starts
+        interceptOnlyLock.lock()
+        stage = stage.started
+        let interceptOnly = self.interceptOnly
+        interceptOnlyLock.unlock()
+        ziti_tunnel_set_intercept_only(interceptOnly)
+
         // run the identities
         zidsToLoad = args.zids.count
         for (identifier, ziti) in ZitiTunnel.zitiDict {
@@ -275,6 +332,10 @@ public class ZitiTunnel : NSObject, ZitiUnretained {
     /// - Parameters:
     ///     - completionHandler: Callback invoked when shutodwn compete
     public func shutdownZiti(_ completionHandler: @escaping ()->Void) {
+        interceptOnlyLock.lock()
+        stage = .shutDown
+        interceptOnlyLock.unlock()
+
         self.perform {
             // remove reference to loopKeepAliveHandle
             self.loopKeepAliveHandle?.withMemoryRebound(to: uv_handle_t.self, capacity: 1) {
